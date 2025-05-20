@@ -1,0 +1,149 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "VistaPool Connection",
+        "description": "Configure the connection to your VistaPool controller.",
+        "data": {
+          "name": "A name to identify this VistaPool controller (used as prefix in entity IDs).",
+          "host": "IP address or hostname of the VistaPool controller.",
+          "port": "TCP port for Modbus (default: 8899).",
+          "scan_interval": "How often should data be updated from the VistaPool controller?",
+          "slave_id": "Address of the device on the Modbus network (default: 1)."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "VistaPool Options",
+        "description": "Configure additional options for the VistaPool integration.",
+        "data": {
+          "scan_interval": "How often should data be updated from the VistaPool controller?",
+          "use_aux1": "Enable AUX1 relay",
+          "use_aux2": "Enable AUX2 relay",
+          "use_aux3": "Enable AUX3 relay",
+          "use_aux4": "Enable AUX4 relay"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ion_current": { "name": "Ionization Level" },
+      "hidro_current": { "name": "Hydrolysis Intensity" },
+      "measure_ph": { "name": "pH Level" },
+      "measure_rx": { "name": "Redox Potential" },
+      "measure_cl": { "name": "Salt Level" },
+      "measure_conductivity": { "name": "Conductivity Level" },
+      "measure_temperature": { "name": "Water Temperature" },
+      "hidro_voltage": { "name": "Hydrolysis Voltage" },
+      "filtration_current_speed": { "name": "Filtration Current Speed" },
+      "device_time": { "name": "Device Time" },
+      "ph_status_alarm": { 
+        "name": "pH Alarm",
+        "state": {
+          "no_alarm": "OK",
+          "ph_high": "pH too high",
+          "ph_low": "pH too low",
+          "ph_stopped": "pH Pump Stopped (exceeded working time)",
+          "ph_over": "pH higher than the set point",
+          "ph_under": "pH lower than the set point",
+          "tank_level": "Tank level alarm"
+        }
+      },
+      "hidro_polarity": { 
+        "name": "Hydrolysis Polarity",
+        "state": {
+          "pol1": "Polarity 1",
+          "pol2": "Polarity 2",
+          "off": "Off"
+        }
+      },
+      "filt_mode": { 
+        "name": "Filtration Mode", 
+        "state": {
+          "manual": "Manual",
+          "automatic": "Automatic",
+          "heating": "Heating",
+          "smart": "Smart",
+          "intelligent": "Intelligent",
+          "backwash": "Backwash"
+        }
+      }
+    },
+    "binary_sensor": {
+      "ph_acid_pump": { "name": "pH Regulating" },
+      "filtration_pump": { "name": "Filtration Running" },
+      "pool_light": { "name": "Pool Light" },
+      "ph_module_control_status": { "name": "pH Control Module Status" },
+      "ph_acid_pump_active": { "name": "pH Acid Pump" },
+      "ph_control_module": { "name": "pH Control Module" },
+      "ph_measurement_active": { "name": "pH Measurement" },
+      "redox_pump_active": { "name": "Redox Pump" },
+      "redox_control_module": { "name": "Redox Control Module" },
+      "redox_measurement_active": { "name": "Redox Measurement" },
+      "chlorine_flow_sensor": { "name": "Chlorine Flow Sensor" },
+      "chlorine_pump": { "name": "Chlorine Pump" },
+      "chlorine_control_module": { "name": "Chlorine Control Module" },
+      "chlorine_measurement": { "name": "Chlorine Measurement" },
+      "conductivity_control_module": { "name": "Conductivity Control Module" },
+      "conductivity_measurement": { "name": "Conductivity Measurement" },
+      "ion_on_target": { "name": "Ionizer On Target" },
+      "ion_low_flow": { "name": "Ionizer Low Flow" },
+      "ion_program_time_exceeded": { "name": "Ionizer Program Time Exceeded" },
+      "ion_in_dead_time": { "name": "Ionizer In Dead Time" },
+      "ion_in_pol1": { "name": "Ionizer Polarity 1" },
+      "ion_in_pol2": { "name": "Ionizer Polarity 2" },
+      "hidro_on_target": { "name": "Hydrolysis On Target" },
+      "hidro_low_flow": { "name": "Hydrolysis Low Flow" },
+      "hidro_cell_flow_fl1": { "name": "Hydrolysis Cell Flow FL1" },
+      "hidro_cover_input_active": { "name": "Hydrolysis Cover Input Active" },
+      "hidro_module_active": { "name": "Hydrolysis Module Active" },
+      "hidro_module_regulated": { "name": "Hydrolysis Module Regulated" },
+      "hidro_activated_by_the_rx_module": { "name": "Hydrolysis Activated by Redox Module" },
+      "hidro_chlorine_shock_mode": { "name": "Hydrolysis Chlorine Shock Mode" },
+      "hidro_chlorine_flow_indicator_fl2": { "name": "Hydrolysis Chlorine Flow Indicator FL2" },
+      "hidro_activated_by_the_cl_module": { "name": "Hydrolysis Activated by Chlorine Module" },
+      "hidro_in_dead_time": { "name": "Hydrolysis In Dead Time" },
+      "hidro_in_pol1": { "name": "Hydrolysis Polarity 1" },
+      "hidro_in_pol2": { "name": "Hydrolysis Polarity 2" },
+      "aux1": { "name": "Auxiliary Relay 1" },
+      "aux2": { "name": "Auxiliary Relay 2" },
+      "aux3": { "name": "Auxiliary Relay 3" },
+      "aux4": { "name": "Auxiliary Relay 4" }
+    },
+    "number": {
+      "hidro": { "name": "Hydrolisis Target Production Level" },
+      "ph1": { "name": "pH Max Limit" },
+      "ph2": { "name": "pH Min Limit" },
+      "rx1": { "name": "Redox Setpoint" },
+      "cl1": { "name": "Chlorine Setpoint" },
+      "heating_temp": { "name": "Temperature Setpoint" }
+    },
+    "switch": {
+      "filt_manual_state": { "name": "Manual Filtration" },
+      "aux1": { "name": "Auxiliary Relay 1" },
+      "aux2": { "name": "Auxiliary Relay 2" },
+      "aux3": { "name": "Auxiliary Relay 3" },
+      "aux4": { "name": "Auxiliary Relay 4" }
+    },
+    "button": {
+      "sync_time": { "name": "Synchronize Device Time" }
+    },
+    "select": {
+      "filt_mode": { 
+        "name": "Filtration Mode", 
+        "state": {
+          "manual": "Manual",
+          "automatic": "Automatic",
+          "heating": "Heating",
+          "smart": "Smart",
+          "intelligent": "Intelligent",
+          "backwash": "Backwash"
+        }
+      }
+    }
+  }
+}

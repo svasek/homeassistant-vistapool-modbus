@@ -1,0 +1,149 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Připojení VistaPool",
+        "description": "Nakonfigurujte připojení k vašemu řadiči VistaPool.",
+        "data": {
+          "name": "Název pro identifikaci tohoto zařízení VistaPool (používá se jako prefix v ID entit).",
+          "host": "IP adresa nebo název hostitele zařízení VistaPool.",
+          "port": "TCP port pro Modbus (výchozí: 8899).",
+          "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool?",
+          "slave_id": "Adresa zařízení v síti Modbus (výchozí: 1)."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Nastavení VistaPool",
+        "description": "Nakonfigurujte další možnosti pro integraci VistaPool.",
+        "data": {
+          "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool?",
+          "use_aux1": "Povolit relé AUX1",
+          "use_aux2": "Povolit relé AUX2",
+          "use_aux3": "Povolit relé AUX3",
+          "use_aux4": "Povolit relé AUX4"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ion_current": { "name": "Úroveň ionizace" },
+      "hidro_current": { "name": "Intenzita hydrolýzy" },
+      "measure_ph": { "name": "Hladina pH" },
+      "measure_rx": { "name": "Redox potenciál" },
+      "measure_cl": { "name": "Hladina soli" },
+      "measure_conductivity": { "name": "Vodivost" },
+      "measure_temperature": { "name": "Teplota vody" },
+      "hidro_voltage": { "name": "Napětí hydrolýzy" },
+      "filtration_current_speed": { "name": "Aktuální rychlost filtrace" },
+      "device_time": { "name": "Čas zařízení" },
+      "ph_status_alarm": { 
+        "name": "pH Alarm",
+        "state": {
+          "no_alarm": "OK",
+          "ph_high": "pH je moc nízké",
+          "ph_low": "pH je moc vysoké",
+          "ph_stopped": "pH pumpa zastavena (překročený pracovní čas)",
+          "ph_over": "pH je vyšší než nastavená hodnota",
+          "ph_under": "pH je",
+          "tank_level": "Alarm hladiny nádrže"
+        }
+      },
+      "hidro_polarity": { 
+        "name": "Polarita hydrolýzy",
+        "state": {
+          "pol1": "Polarita 1",
+          "pol2": "Polarita 2",
+          "off": "Vypnuto"
+        }
+      },      
+      "filt_mode": { 
+        "name": "Režim filtrace", 
+        "state": {
+          "manual": "Ruční",
+          "auto": "Automatický",
+          "heating": "Ohřev",
+          "smart": "Chytrý režim",
+          "intelligent": "Inteligentní režim",
+          "backwash": "Zpětný proplach"
+        }
+      }
+    },
+    "binary_sensor": {
+      "ph_acid_pump": { "name": "Regulace pH" },
+      "filtration_pump": { "name": "Filtrace běží" },
+      "pool_light": { "name": "Osvětlení bazénu" },
+      "ph_module_control_status": { "name": "Stav pH modulu" },
+      "ph_acid_pump_active": { "name": "Čerpadlo kyseliny pH" },
+      "ph_control_module": { "name": "pH řídicí modul" },
+      "ph_measurement_active": { "name": "Měření pH" },
+      "redox_pump_active": { "name": "Redox čerpadlo" },
+      "redox_control_module": { "name": "Redox řídicí modul" },
+      "redox_measurement_active": { "name": "Měření Redox" },
+      "chlorine_flow_sensor": { "name": "Senzor průtoku chloru" },
+      "chlorine_pump": { "name": "Čerpadlo chloru" },
+      "chlorine_control_module": { "name": "Řídicí modul chloru" },
+      "chlorine_measurement": { "name": "Měření chloru" },
+      "conductivity_control_module": { "name": "Řídicí modul vodivosti" },
+      "conductivity_measurement": { "name": "Měření vodivosti" },
+      "ion_on_target": { "name": "Ionizátor na cíli" },
+      "ion_low_flow": { "name": "Nízký průtok ionizátoru" },
+      "ion_program_time_exceeded": { "name": "Překročen čas programu ionizátoru" },
+      "ion_in_dead_time": { "name": "Ionizátor v době mrtvého času" },
+      "ion_in_pol1": { "name": "Ionizátor polarita 1" },
+      "ion_in_pol2": { "name": "Ionizátor polarita 2" },
+      "hidro_on_target": { "name": "Hydrolýza na cíli" },
+      "hidro_low_flow": { "name": "Nízký průtok hydrolýzy" },
+      "hidro_cell_flow_fl1": { "name": "Proudění článkem hydrolýzy FL1" },
+      "hidro_cover_input_active": { "name": "Aktivní kryt hydrolýzy" },
+      "hidro_module_active": { "name": "Modul hydrolýzy aktivní" },
+      "hidro_module_regulated": { "name": "Modul hydrolýzy regulován" },
+      "hidro_activated_by_the_rx_module": { "name": "Hydrolýza aktivována RX modulem" },
+      "hidro_chlorine_shock_mode": { "name": "Hydrolýza šokový režim chloru" },
+      "hidro_chlorine_flow_indicator_fl2": { "name": "Průtokový indikátor chloru hydrolýzy FL2" },
+      "hidro_activated_by_the_cl_module": { "name": "Hydrolýza aktivována CL modulem" },
+      "hidro_in_dead_time": { "name": "Hydrolýza v době mrtvého času" },
+      "hidro_in_pol1": { "name": "Hydrolýza polarita 1" },
+      "hidro_in_pol2": { "name": "Hydrolýza polarita 2" },
+      "aux1": { "name": "Pomocné relé 1" },
+      "aux2": { "name": "Pomocné relé 2" },
+      "aux3": { "name": "Pomocné relé 3" },
+      "aux4": { "name": "Pomocné relé 4" }
+    },
+    "number": {
+      "hidro": { "name": "Hydrolýza (intenzita)" },
+      "ph1": { "name": "pH  limit min" },
+      "ph2": { "name": "pH limit max" },
+      "rx1": { "name": "Redox (úroveň)" },
+      "cl1": { "name": "Setpoint chloru" },
+      "heating_temp": { "name": "Nastavená teplota" }
+    },
+    "switch": {
+      "filt_manual_state": { "name": "Manuální filtrace" },
+      "aux1": { "name": "Pomocné relé 1" },
+      "aux2": { "name": "Pomocné relé 2" },
+      "aux3": { "name": "Pomocné relé 3" },
+      "aux4": { "name": "Pomocné relé 4" }
+    },
+    "button": {
+      "sync_time": { "name": "Synchronizovat čas zařízení" }
+    },
+    "select": {
+      "filt_mode": { 
+        "name": "Režim filtrace", 
+        "state": {
+          "manual": "Ruční",
+          "auto": "Automatický",
+          "heating": "Ohřev",
+          "smart": "Chytrý režim",
+          "intelligent": "Inteligentní režim",
+          "backwash": "Zpětný proplach"
+        }
+      }
+    }
+  }
+}

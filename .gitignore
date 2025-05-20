@@ -1,0 +1,10 @@
+.venv
+.DS_Store
+__pycache__
+tmp
+temp
+*.log
+*.pyc
+*.pyo
+*.pyd
+*.db
