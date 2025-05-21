@@ -6,6 +6,9 @@ from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)
 
+
+MANUAL_FILTRATION_REGISTER = 0x0413
+
 async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entry_id = entry.entry_id
@@ -62,11 +65,26 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             if v == option:
                 value = k
                 break
+            
         if value is not None:
+            # Special: MBF_PAR_FILT_MODE needs to handle manual → other
+            # We have to turn off manual filtration first (set register 0x0413 to 0)
+            # and then set the new mode
+            if self._key == "MBF_PAR_FILT_MODE":
+                current_mode = self.coordinator.data.get(self._key)
+                current_name = self._options_map.get(current_mode)
+                if current_name == "manual" and option != "manual":
+                    await self.coordinator.client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
+                    await asyncio.sleep(0.1)
+            # Set the new mode
             await self.coordinator.client.async_write_register(self._register, value)
             await asyncio.sleep(0.1)
             await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
+            
+        # Run a refresh to update the state
+        await asyncio.sleep(0.1)
+        await self.coordinator.async_request_refresh()
+        self.async_write_ha_state()
 
     async def async_added_to_hass(self):
         _LOGGER.debug(

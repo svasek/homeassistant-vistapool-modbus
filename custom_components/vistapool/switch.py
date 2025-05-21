@@ -72,7 +72,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await self.coordinator.set_auto_time_sync(True)
             
         # Run a refresh to update the state
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1.0)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 

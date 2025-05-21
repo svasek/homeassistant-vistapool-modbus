@@ -497,7 +497,7 @@ SELECT_DEFINITIONS = {
             2: "heating",
             3: "smart",
             4: "intelligent",
-            13: "backwash",
+            # 13: "backwash",
         },
         "register": 0x0411,  # FILTRATION_MODE_REGISTER
     },
@@ -506,7 +506,7 @@ SELECT_DEFINITIONS = {
 SWITCH_DEFINITIONS = {
     "TIME_AUTO_SYNC": {
         "name": "Automatic Time Sync",
-        "icon": "mdi:clock-star-four-points-outline",
+        "icon": "mdi:home-clock-outline",
         "entity_category": EntityCategory.CONFIG,
         "switch_type": "auto_time_sync",
     },
