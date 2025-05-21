@@ -197,7 +197,7 @@ class VistaPoolModbusClient:
                     reg04.extend(rr04.registers)
                     _LOGGER.debug(f"Raw rr04 from 0x{address:04X}: {rr04.registers}")
                 
-                # Example: [1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]    
+                # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 result.update({
                     "MBF_PAR_TIME_LOW": get_safe(reg04, 0),                    # 0x0408*        System timestamp as unix timestamp (32 bit value - low word).
                     "MBF_PAR_TIME_HIGH": get_safe(reg04, 1),                   # 0x0409*        System timestamp as unix timestamp (32 bit value - high word).

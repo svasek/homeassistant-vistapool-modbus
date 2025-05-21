@@ -96,7 +96,15 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
     @property
     def options(self):
-        return list(self._options_map.values())
+        options = list(self._options_map.values())
+        # Hide heating and intelligent if not enabled heating mode
+        if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_HEATING_MODE") == 0:
+            options = [opt for opt in options if opt not in ("heating", "intelligent")]
+        # Hide smart if temperature sensor is not active
+        if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
+            options = [opt for opt in options if opt != "smart"]
+        return options
+
 
     @property
     def current_option(self):

@@ -84,7 +84,7 @@ def modbus_regs_to_ascii(regs):
     return ''.join(chars)
 
 def modbus_regs_to_hex_string(regs):
-    """Return Modbus registers as hex string, e.g. '0058 002F 4143 5011 0238 3130'."""
+    """Return Modbus registers as hex string."""
     if not regs or not isinstance(regs, list):
         return ""
-    return " ".join(f"{reg:04X}" for reg in regs)
+    return "".join(f"{reg:04X}" for reg in regs)
