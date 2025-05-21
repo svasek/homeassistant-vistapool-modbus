@@ -1,6 +1,11 @@
+"""
+VistaPool Entity Module
+This module defines the base entity class for the VistaPool integration.
+It provides common functionality for all entities, including device information,
+"""
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from .helpers import parse_version, modbus_regs_to_hex_string
 from .const import DOMAIN, NAME
-from .modbus import modbus_regs_to_hex_string
 
 
 class VistaPoolEntity(CoordinatorEntity):
@@ -9,12 +14,6 @@ class VistaPoolEntity(CoordinatorEntity):
     def __init__(self, coordinator, entry_id):
         super().__init__(coordinator)
         self._entry_id = entry_id
-
-    # Generate a unique object ID for the entity to use in Home Assistant
-    # This remove the prefix "mbf_" and "par_" from the key and replaces spaces, dashes, and dots with underscores
-    @staticmethod
-    def slugify(name):
-        return name.lower().replace("mbf_", "", 1).replace("par_", "", 1).replace(" ", "_").replace("-", "_").replace(".", "_").replace(":", "_").replace(",", "_").replace("(", "_").replace(")", "_").replace("[", "_").replace("]", "_").replace("{", "_").replace("}", "_").replace("'", "_").replace('"', "_").replace("&", "_").replace("%", "_").replace("$", "_").replace("#", "_")
     
     @property
     def translation_key(self):
@@ -29,10 +28,17 @@ class VistaPoolEntity(CoordinatorEntity):
             "model": "NeoPool compatible",
             "manufacturer": "Sugar Valley",
             "hw_version": f"Detected Modules: [{self.decode_modules(self.coordinator.data.get("MBF_PAR_MODEL"))}]",
-            "sw_version": f"v{self.coordinator.firmware} (v{self.coordinator.parse_version(self.coordinator.data.get('MBF_PAR_VERSION'))})",
+            "sw_version": f"v{self.coordinator.firmware} (v{parse_version(self.coordinator.data.get('MBF_PAR_VERSION'))})",
             "serial_number": serial_number,
         }
         return info
+
+
+    # Generate a unique object ID for the entity to use in Home Assistant
+    # This remove the prefix "mbf_" and "par_" from the key and replaces spaces, dashes, and dots with underscores
+    @staticmethod
+    def slugify(name):
+        return name.lower().replace("mbf_", "", 1).replace("par_", "", 1).replace(" ", "_").replace("-", "_").replace(".", "_").replace(":", "_").replace(",", "_").replace("(", "_").replace(")", "_").replace("[", "_").replace("]", "_").replace("{", "_").replace("}", "_").replace("'", "_").replace('"', "_").replace("&", "_").replace("%", "_").replace("$", "_").replace("#", "_")
 
     @staticmethod
     def decode_modules(model_bitmask):

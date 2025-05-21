@@ -1,6 +1,7 @@
 import logging
 import asyncio
 from pymodbus.client import AsyncModbusTcpClient
+# from .helpers import modbus_regs_to_ascii
 
 from .status_mask import (
     decode_notification_mask,
@@ -37,7 +38,6 @@ class VistaPoolModbusClient:
                 _LOGGER.warning(f"Register at index {idx} is missing in {regs}")
                 return None
         
-
             
         try:
             async with AsyncModbusTcpClient(self._host, port=self._port) as client:
@@ -390,27 +390,3 @@ class VistaPoolModbusClient:
                 await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
         except Exception as e:
             _LOGGER.error("Modbus TCP AUX relay write exception: %s", e)
-
-def modbus_regs_to_ascii(regs):
-    """Convert list of uint16 Modbus registers to ASCII string (ASCIIZ, max 10 chars)."""
-    chars = []
-    for reg in regs:
-        # High byte (1st char)
-        high = (reg >> 8) & 0xFF
-        # Low byte (2nd char)
-        low = reg & 0xFF
-        if high != 0:
-            chars.append(chr(high))
-        else:
-            break
-        if low != 0:
-            chars.append(chr(low))
-        else:
-            break
-    return ''.join(chars)
-
-def modbus_regs_to_hex_string(regs):
-    """Return Modbus registers as hex string, e.g. '0058 002F 4143 5011 0238 3130'."""
-    if not regs or not isinstance(regs, list):
-        return ""
-    return " ".join(f"{reg:04X}" for reg in regs)

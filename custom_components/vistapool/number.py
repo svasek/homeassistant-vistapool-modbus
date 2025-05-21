@@ -90,7 +90,33 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             self._attr_native_value = None
 
         self.async_write_ha_state()
+        
+    async def async_set_native_value(self, value):
+        self._pending_value = value
+        if self._pending_write_task is not None and not self._pending_write_task.done():
+            self._pending_write_task.cancel()
+        self._pending_write_task = asyncio.create_task(self._debounced_write())
+        await asyncio.sleep(0.1)
+        await self.coordinator.async_request_refresh()
+        self.async_write_ha_state()
     
+    async def _debounced_write(self):
+        try:
+            await asyncio.sleep(self._debounce_delay)
+            raw = int(self._pending_value * self._scale)
+            await self.coordinator.client.async_write_register(self._register, raw, apply=True)
+            await self.coordinator.async_request_refresh()
+        except asyncio.CancelledError:
+            pass
+
+    async def async_added_to_hass(self):
+        _LOGGER.debug(
+            "VistaPoolNumber ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
+            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+        )
+        await super().async_added_to_hass()
+
+
     @property
     def suggested_display_precision(self):
         if self._key == "MBF_PAR_HIDRO":
@@ -133,29 +159,3 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             if hidro_nom is not None:
                 return hidro_nom
         return self._attr_native_max_value
-    
-    
-    async def async_set_native_value(self, value):
-        self._pending_value = value
-        if self._pending_write_task is not None and not self._pending_write_task.done():
-            self._pending_write_task.cancel()
-        self._pending_write_task = asyncio.create_task(self._debounced_write())
-        await asyncio.sleep(0.1)
-        await self.coordinator.async_request_refresh()
-        self.async_write_ha_state()
-    
-    async def _debounced_write(self):
-        try:
-            await asyncio.sleep(self._debounce_delay)
-            raw = int(self._pending_value * self._scale)
-            await self.coordinator.client.async_write_register(self._register, raw, apply=True)
-            await self.coordinator.async_request_refresh()
-        except asyncio.CancelledError:
-            pass
-
-    async def async_added_to_hass(self):
-        _LOGGER.debug(
-            "VistaPoolNumber ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
-        )
-        await super().async_added_to_hass()

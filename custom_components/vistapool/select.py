@@ -42,15 +42,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             self._attr_suggested_object_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
         )
 
-    @property
-    def options(self):
-        return list(self._options_map.values())
-
-    @property
-    def current_option(self):
-        value = self.coordinator.data.get(self._key)
-        return self._options_map.get(value)
-
     async def async_select_option(self, option: str):
         # Prevent switching to Backwash from HA UI
         if option == "backwash":
@@ -83,3 +74,13 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
         )
         await super().async_added_to_hass()
+
+
+    @property
+    def options(self):
+        return list(self._options_map.values())
+
+    @property
+    def current_option(self):
+        value = self.coordinator.data.get(self._key)
+        return self._options_map.get(value)
