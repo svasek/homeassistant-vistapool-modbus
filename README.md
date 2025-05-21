@@ -9,8 +9,8 @@ Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • 
 
 ## Hardware Connection
 
-- Buy some modbus TCP gateway (I use [USR-DR164](https://www.pusr.com/products/Serial-to-Dual-Band-WiFi-Converter.html) for example)
-- **RS485 port:** Use the WIFI or EXTERNAL connector (not DISPLAY, unless LCD is disconnected).
+- **Gateway:** Any modbus TCP gateway (I use [USR-DR164](https://www.pusr.com/products/Serial-to-Dual-Band-WiFi-Converter.html) for example)
+- **Connector:** Use standard **2.54mm** 5-Pin PCB female connector
 - **Settings:** 19200 Baud, 1 Stop bit, No parity
 - **Protocol:** Modbus RTU
 
@@ -77,8 +77,8 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 
 ### Options (after setup)
 
-- **Enable/disable AUX relays 1–4**
 - **Adjust scan interval**
+- ~~Enable/disable AUX relays 1–4~~
 
 ---
 
@@ -91,6 +91,21 @@ Entities are prefixed by the custom name (e.g. `sensor.bazen_jih_par_filt_mode`)
 - **Switches**: `switch.<name>_aux1`, `switch.<name>_mbf_par_filt_manual_state`
 - **Select**: `select.<name>_mbf_par_filt_mode`
 - **Buttons**: `button.<name>_sync_time`
+
+---
+
+## Recommendation:
+
+To disable [recording](https://www.home-assistant.io/integrations/recorder/) (logging) of timestamp sensors created by this integration, add the following `entity_globs` to your `configuration.yaml` file:
+
+```yaml
+recorder:
+  exclude:
+    entity_globs:
+      - sensor.*_device_time
+```
+> Note: This configuration prevents timestamp sensors from being stored in the Home Assistant database. These sensors typically update very frequently but provide limited value in the long-term history.
+>> This change only affects historical storage (via the recorder integration). The entities themselves will still exist and be available in the UI or automations.
 
 ---
 
