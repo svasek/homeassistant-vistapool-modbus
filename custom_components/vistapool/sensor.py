@@ -1,6 +1,4 @@
-import datetime
 import logging
-import homeassistant.util.dt as dt_util
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.sensor import SensorEntity
@@ -8,6 +6,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN, SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
+from .helpers import get_device_time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -101,6 +100,13 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             self._attr_suggested_object_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
         )
         
+    async def async_added_to_hass(self):
+        _LOGGER.debug(
+            "VistaPoolSensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s", 
+            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+        )
+        await super().async_added_to_hass()
+
 
     @property
     def icon(self):
@@ -154,19 +160,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "MBF_PH_STATUS_ALARM":
             raw = self.coordinator.data.get(self._key)
             return PH_STATUS_ALARM_MAP.get(raw)
-        
         if self._key == "MBF_DEVICE_TIME":
-            low = self.coordinator.data.get("MBF_PAR_TIME_LOW")
-            high = self.coordinator.data.get("MBF_PAR_TIME_HIGH")
-            if low is None or high is None:
-                return None
-            unix_ts = (high << 16) | low
-            local_tz = dt_util.get_time_zone(self.hass.config.time_zone)
-            # WORKAROUND: This is the naive datetime object, without timezone info
-            dt_naive = datetime.datetime(1970, 1, 1) + datetime.timedelta(seconds=unix_ts)
-            dt_local = dt_naive.replace(tzinfo=local_tz)
-            dt_utc = dt_local.astimezone(datetime.timezone.utc)
-            return dt_utc
+            return get_device_time(self.coordinator.data, self.hass)
         return self.coordinator.data.get(self._key)
 
     @property
@@ -178,11 +173,3 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "HIDRO_POLARITY":
             return ["pol1", "pol2", "off"]
         return None
-
-
-    async def async_added_to_hass(self):
-        _LOGGER.debug(
-            "VistaPoolSensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s", 
-            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
-        )
-        await super().async_added_to_hass()

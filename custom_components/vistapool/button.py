@@ -1,6 +1,4 @@
 import logging
-import datetime
-import homeassistant.util.dt as dt_util
 from homeassistant.components.button import ButtonEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
@@ -8,6 +6,7 @@ from homeassistant.config_entries import ConfigEntry
 from .const import DOMAIN, BUTTON_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
+from .helpers import prepare_device_time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,21 +53,11 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
     async def async_press(self) -> None:
         """Perform button action depending on key."""
         if self._key == "SYNC_TIME":
-            ha_tz = dt_util.get_time_zone(self.hass.config.time_zone)
-            now_local = datetime.datetime.now(ha_tz)
-            # WORKAROUND: This is the naive datetime object, without timezone info
-            epoch_local = datetime.datetime(1970, 1, 1, tzinfo=ha_tz)
-            unix_time_local = int((now_local - epoch_local).total_seconds())
-            low = unix_time_local & 0xFFFF
-            high = (unix_time_local >> 16) & 0xFFFF
             client = self.coordinator.client
-            await client.async_write_register(0x0408, [low, high])
+            _LOGGER.debug("Syncing time with device...")
+            await client.async_write_register(0x0408, prepare_device_time(self.hass))
             await client.async_write_register(0x04F0, 1)
             await self.coordinator.async_request_refresh()
-
-    @property
-    def icon(self):
-        return self._attr_icon
 
     async def async_added_to_hass(self):
         _LOGGER.debug(
@@ -76,3 +65,8 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
             self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
         )
         await super().async_added_to_hass()
+        
+        
+    @property
+    def icon(self):
+        return self._attr_icon

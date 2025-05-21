@@ -90,6 +90,7 @@ SENSOR_DEFINITIONS = {
         "unit": None,
         "device_class": SensorDeviceClass.ENUM,
         "state_class": None,
+        "icon": "mdi:water-sync",
     },
     "MBF_PH_STATUS_ALARM": {
         "name": "pH Alarm",
@@ -104,13 +105,13 @@ SENSOR_DEFINITIONS = {
         "state_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    "MBF_DEVICE_TIME": {
-        "name": "Device Time",
-        "unit": None,
-        "device_class": SensorDeviceClass.TIMESTAMP,
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
+    # "MBF_DEVICE_TIME": {
+    #     "name": "Device Time",
+    #     "unit": None,
+    #     "device_class": SensorDeviceClass.TIMESTAMP,
+    #     "state_class": None,
+    #     "entity_category": EntityCategory.DIAGNOSTIC,
+    # },
     "HIDRO_POLARITY": {
         "name": "Hydrolysis Polarity",
         "unit": None,
@@ -121,11 +122,20 @@ SENSOR_DEFINITIONS = {
 }
 
 BINARY_SENSOR_DEFINITIONS = {
+    "Device Time Out Of Sync": {
+        "name": "Device Time Out Of Sync",
+        "device_class": BinarySensorDeviceClass.PROBLEM,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:clock-alert",
+        "icon_off": "mdi:clock-check-outline",
+    },
     # Relay states
     "pH Acid Pump": {
         "name": "pH Regulating",
         "device_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:pump",
+        "icon_off": "mdi:pump-off",
     },
     "Filtration Pump": {
         "name": "Filtration Running",
@@ -179,15 +189,12 @@ BINARY_SENSOR_DEFINITIONS = {
         "name": "pH Acid Pump",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
-        "icon_on": "mdi:pump",
-        "icon_off": "mdi:pump-off",
+
     },
     "pH pump active": {
         "name": "pH Base Pump",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
-        "icon_on": "mdi:pump",
-        "icon_off": "mdi:pump-off",
     },
     "pH control module": {
         "name": "pH Control Module",
@@ -211,8 +218,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "name": "Redox Pump",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
-        "icon_on": "mdi:pump",
-        "icon_off": "mdi:pump-off",
     },
     "Redox control module": {
         "name": "Redox Control Module",
@@ -241,8 +246,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "name": "Chlorine Pump",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
-        "icon_on": "mdi:pump",
-        "icon_off": "mdi:pump-off",
     },
     "Chlorine control module": {
         "name": "Chlorine Control Module",
@@ -266,8 +269,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "name": "Conductivity Pump",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
-        "icon_on": "mdi:pump",
-        "icon_off": "mdi:pump-off",
     },
     "Conductivity control module": {
         "name": "Conductivity Control Module",
@@ -503,6 +504,12 @@ SELECT_DEFINITIONS = {
 }
 
 SWITCH_DEFINITIONS = {
+    "TIME_AUTO_SYNC": {
+        "name": "Automatic Time Sync",
+        "icon": "mdi:clock-star-four-points-outline",
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "auto_time_sync",
+    },
     "MBF_PAR_FILT_MANUAL_STATE": {
         "name": "Manual Filtration",
         "icon": "mdi:pump",

@@ -3,9 +3,12 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 from .const import DOMAIN, BINARY_SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
+from .helpers import is_device_time_out_of_sync
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -71,12 +74,10 @@ async def async_setup_entry(
                 props.get("icon_off") or None,
             )
         )
-
     async_add_entities(entities)
     
 class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
     """Representation of a VistaPool binary sensor."""
-
     def __init__(self, coordinator, entry_id, key, name, device_class=None, entity_category=None, icon_on=None, icon_off=None):
         super().__init__(coordinator, entry_id)
         self._key = key
@@ -110,8 +111,18 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         else:
             bit = self._key.lower() 
 
+    async def async_added_to_hass(self):
+        _LOGGER.debug(
+            "VistaPoolBinarySensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
+            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+        )
+        await super().async_added_to_hass()
+    
+    
     @property
     def is_on(self):
+        if self._key == "Device Time Out Of Sync":
+            return is_device_time_out_of_sync(self.coordinator.data, self.hass)
         parts = self._key.split("_", 1)
         if len(parts) == 2:
             base, flag = parts
@@ -133,10 +144,3 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
     def native_value(self):
         # Return the actual sensor value from coordinator data
         return self.coordinator.data.get(self._key)
-
-    async def async_added_to_hass(self):
-        _LOGGER.debug(
-            "VistaPoolBinarySensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
-        )
-        await super().async_added_to_hass()

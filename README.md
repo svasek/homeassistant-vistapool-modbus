@@ -94,21 +94,6 @@ Entities are prefixed by the custom name (e.g. `sensor.bazen_jih_par_filt_mode`)
 
 ---
 
-## Recommendation:
-
-To disable [recording](https://www.home-assistant.io/integrations/recorder/) (logging) of timestamp sensors created by this integration, add the following `entity_globs` to your `configuration.yaml` file:
-
-```yaml
-recorder:
-  exclude:
-    entity_globs:
-      - sensor.*_device_time
-```
-> Note: This configuration prevents timestamp sensors from being stored in the Home Assistant database. These sensors typically update very frequently but provide limited value in the long-term history.
->> This change only affects historical storage (via the recorder integration). The entities themselves will still exist and be available in the UI or automations.
-
----
-
 ## Special Notes
 
 - **Filtration mode "Backwash"**: Can only be enabled via device display, not via HA.

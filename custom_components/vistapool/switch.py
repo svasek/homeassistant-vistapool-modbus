@@ -65,25 +65,39 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     async def async_turn_on(self, **kwargs):
         if self._switch_type == "manual_filtration":
             await self.coordinator.client.async_write_register(MANUAL_FILTRATION_REGISTER, 1)
-            await self.coordinator.async_request_refresh()
         elif self._switch_type == "aux":
             _LOGGER.debug(f"Turning ON {self._key} (relay index {self._relay_index})")
             await self.coordinator.client.async_write_aux_relay(self._relay_index, True)
-            await asyncio.sleep(0.1)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
+        elif self._switch_type == "auto_time_sync":
+            await self.coordinator.set_auto_time_sync(True)
+            
+        # Run a refresh to update the state
+        await asyncio.sleep(0.1)
+        await self.coordinator.async_request_refresh()
+        self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         if self._switch_type == "manual_filtration":
             await self.coordinator.client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
-            await self.coordinator.async_request_refresh()
         elif self._switch_type == "aux":
             _LOGGER.debug(f"Turning OFF {self._key} (relay index {self._relay_index})")
             await self.coordinator.client.async_write_aux_relay(self._relay_index, False)
-            await asyncio.sleep(0.1)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
+        elif self._switch_type == "auto_time_sync":
+            await self.coordinator.set_auto_time_sync(False)
 
+        # Run a refresh to update the state
+        await asyncio.sleep(0.1)
+        await self.coordinator.async_request_refresh()
+        self.async_write_ha_state()
+
+    async def async_added_to_hass(self):
+        _LOGGER.debug(
+            "VistaPoolSwitch ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
+            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+        )
+        await super().async_added_to_hass()
+        
+        
     @property
     def is_on(self):
         if self._switch_type == "manual_filtration":
@@ -92,6 +106,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             return self.coordinator.data.get("MBF_PAR_FILT_MANUAL_STATE") == 1
         elif self._switch_type == "aux":
             return bool(self.coordinator.data.get(self._key, False))
+        elif self._switch_type == "auto_time_sync":
+            return getattr(self.coordinator, "auto_time_sync", False)
         return False
 
     @property
@@ -103,10 +119,3 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     @property
     def icon(self):
         return self._attr_icon
-
-    async def async_added_to_hass(self):
-        _LOGGER.debug(
-            "VistaPoolSwitch ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
-        )
-        await super().async_added_to_hass()
