@@ -140,6 +140,9 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         if self._pending_write_task is not None and not self._pending_write_task.done():
             self._pending_write_task.cancel()
         self._pending_write_task = asyncio.create_task(self._debounced_write())
+        await asyncio.sleep(0.1)
+        await self.coordinator.async_request_refresh()
+        self.async_write_ha_state()
     
     async def _debounced_write(self):
         try:

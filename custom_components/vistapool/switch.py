@@ -69,7 +69,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         elif self._switch_type == "aux":
             _LOGGER.debug(f"Turning ON {self._key} (relay index {self._relay_index})")
             await self.coordinator.client.async_write_aux_relay(self._relay_index, True)
+            await asyncio.sleep(0.1)
             await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs):
         if self._switch_type == "manual_filtration":
@@ -78,7 +80,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         elif self._switch_type == "aux":
             _LOGGER.debug(f"Turning OFF {self._key} (relay index {self._relay_index})")
             await self.coordinator.client.async_write_aux_relay(self._relay_index, False)
+            await asyncio.sleep(0.1)
             await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
 
     @property
     def is_on(self):

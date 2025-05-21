@@ -64,9 +64,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "title": "VistaPool Warning"
                 }
             )
-            await self.coordinator.async_request_refresh()
-            await asyncio.sleep(1.0)
-            self.async_write_ha_state()
             return
         
         value = None
@@ -76,7 +73,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 break
         if value is not None:
             await self.coordinator.client.async_write_register(self._register, value)
+            await asyncio.sleep(0.1)
             await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
 
     async def async_added_to_hass(self):
         _LOGGER.debug(
