@@ -50,7 +50,7 @@ async def async_setup_entry(
             continue
         if key == "MBF_MEASURE_CONDUCTIVITY" and not bool(coordinator.data.get("Conductivity measurement module detected")):
             continue
-        if key == "MBF_ION_CURRENT" and not bool(coordinator.data.get("MBF_PAR_MODEL") & 0x0001):
+        if key == "MBF_ION_CURRENT" and not bool((coordinator.data.get("MBF_PAR_MODEL") or 0 ) & 0x0001):
             continue
         
         value = coordinator.data.get(key)

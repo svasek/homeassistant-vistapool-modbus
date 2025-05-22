@@ -31,7 +31,7 @@ async def async_setup_entry(
             continue
         if key == "AUX4" and not entry.options.get("use_aux4", False):
             continue
-        if key.startswith("ION ") and not bool(coordinator.data.get("MBF_PAR_MODEL") & 0x0001):
+        if key.startswith("ION ") and not bool((coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001):
             continue
         
         # Hide all "measurement module detected" sensors
