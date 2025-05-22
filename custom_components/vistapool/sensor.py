@@ -150,7 +150,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             pol1 = self.coordinator.data.get("HIDRO in Pol1")
             pol2 = self.coordinator.data.get("HIDRO in Pol2")
             if pol1:
-                return "po1"
+                return "pol1"
             elif pol2:
                 return "pol2"
             return "off"
