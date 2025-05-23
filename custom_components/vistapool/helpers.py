@@ -106,18 +106,25 @@ def parse_timer_block(regs):
     }
 
 def build_timer_block(data):
-    """Convert dict of timer params to 15 Modbus registers."""
+    """Convert dict of timer params to 15 Modbus registers (all as int, never None)."""
+    def safe_int(val):
+        try:
+            return int(val)
+        except Exception:
+            return 0
+        
     def split_u32(val):
-        return [val & 0xFFFF, (val >> 16) & 0xFFFF]
+        v = safe_int(val)
+        return [v & 0xFFFF, (v >> 16) & 0xFFFF]
     regs = [
-        data.get("enable", 0),
+        safe_int(data.get("enable", 0)),
         *split_u32(data.get("on", 0)),
         *split_u32(data.get("off", 0)),
         *split_u32(data.get("period", 0)),
         *split_u32(data.get("interval", 0)),
         *split_u32(data.get("countdown", 0)),
-        data.get("function", 0),
-        0,  # reserved
+        safe_int(data.get("function", 0)),
+        0,
         *split_u32(data.get("work_time", 0))
     ]
     return regs

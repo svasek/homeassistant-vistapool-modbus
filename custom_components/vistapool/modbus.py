@@ -424,10 +424,35 @@ class VistaPoolModbusClient:
             return parse_timer_block(rr.registers)
 
     async def write_timer(self, block_name, timer_data):
-        """Writes one timer block and returns True on success."""
+        """
+        Writes only requested fields to a timer block. Preserves all other fields.
+        Only update 'on' and 'interval' (and optionally other editable fields).
+        Other values (enable, period, function, ...) are preserved as read.
+        """
         addr = TIMER_BLOCKS[block_name]
-        regs = build_timer_block(timer_data)
+
+        # 1. Read current timer block from Modbus
         async with AsyncModbusTcpClient(self._host, port=self._port) as client:
+            rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+            if rr.isError():
+                _LOGGER.error(f"Could not read timer block at {addr:#04x} before write: {rr}")
+                return False
+            current_regs = rr.registers
+            current_data = parse_timer_block(current_regs)
+
+            # 2. Update only requested fields
+            for k, v in timer_data.items():
+                current_data[k] = v
+
+            # 3. Build block for write (preserve other fields)
+            regs = build_timer_block(current_data)
+            for idx, reg in enumerate(regs):
+                if not isinstance(reg, int):
+                    _LOGGER.error(f"Register {idx} is not int: {reg!r}")
+                    
+            _LOGGER.debug(f"Timer block {block_name} ({addr:#04x}) to write: {regs}")
+
+            # 4. Write full block back to Modbus
             result = await client.write_registers(address=addr, values=regs, slave=self._unit)
             if result.isError():
                 _LOGGER.error(f"Timer block write error at {addr:#04x}: {result}")

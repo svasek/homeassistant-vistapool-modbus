@@ -122,7 +122,7 @@ async def async_setup(hass, config):
             timer_data["enable"] = enable
 
         _LOGGER.debug("Setting timer %s with data: %s", timer_name, timer_data)
-        # await coordinator.client.write_timer(timer_name, timer_data)
+        await coordinator.client.write_timer(timer_name, timer_data)
         await coordinator.async_request_refresh()
 
     hass.services.async_register(DOMAIN, "set_timer", async_handle_set_timer)

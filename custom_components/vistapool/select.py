@@ -51,23 +51,19 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         )
 
     async def async_select_option(self, option: str):
-        timer_keys = ["filtration1_start", "filtration1_stop"]
-        if self._key in timer_keys:
+        if self._select_type == "timer_time":
             timer_name, field = self._key.rsplit("_", 1)
-            # Get entry_id from coordinator or self
             entry_id = self._entry_id if hasattr(self, '_entry_id') else self.coordinator.entry_id
-            
             data = self.coordinator.data
             if field == "start":
-                start = option  # the new time
-                stop = seconds_to_hhmm(data.get(f"{timer_name}_stop", 0))  # actual "stop"
+                start = option
+                stop = seconds_to_hhmm(data.get(f"{timer_name}_stop", 0))
             elif field == "stop":
-                start = seconds_to_hhmm(data.get(f"{timer_name}_start", 0))  # actual "start"
-                stop = option  # the new time
+                start = seconds_to_hhmm(data.get(f"{timer_name}_start", 0))
+                stop = option
             else:
                 return
-            
-            # Call the service to set the timer
+
             await self.hass.services.async_call(
                 DOMAIN,
                 "set_timer",
@@ -78,7 +74,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "stop": stop,
                 }
             )
-            
             await asyncio.sleep(0.2)
             await self.coordinator.async_request_refresh()
             self.async_write_ha_state()

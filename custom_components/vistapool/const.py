@@ -568,24 +568,6 @@ SWITCH_DEFINITIONS = {
         "entity_category": None,
         "switch_type": "manual_filtration",
     },
-    "filtration1_enable": {
-        "name": "Filtration Timer 1 Enable",
-        "icon": "mdi:toggle-switch",
-        "entity_category": EntityCategory.CONFIG,
-        "switch_type": "timer_enable",
-    },
-    "filtration2_enable": {
-        "name": "Filtration Timer 2 Enable",
-        "icon": "mdi:toggle-switch",
-        "entity_category": EntityCategory.CONFIG,
-        "switch_type": "timer_enable",
-    },
-    "filtration3_enable": {
-        "name": "Filtration Timer 3 Enable",
-        "icon": "mdi:toggle-switch",
-        "entity_category": EntityCategory.CONFIG,
-        "switch_type": "timer_enable",
-    },
     # "AUX1": {
     #     "name": "Auxiliary Relay 1",
     #     "icon": "mdi:power-socket-eu",
