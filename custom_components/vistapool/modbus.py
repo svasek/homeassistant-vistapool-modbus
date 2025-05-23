@@ -279,7 +279,7 @@ class VistaPoolModbusClient:
                     _LOGGER.error("Read error 0x0600: %s", e)
                     return {}
                 if rr06.isError():
-                    _LOGGER.error("Modbus read error from 0x0600: %s", rr05)
+                    _LOGGER.error("Modbus read error from 0x0600: %s", rr06)
                 else:
                     reg06 = rr06.registers
                     _LOGGER.debug("Raw rr06: %s", reg06)
