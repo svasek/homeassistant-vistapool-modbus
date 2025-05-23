@@ -54,19 +54,19 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     def __init__(self, coordinator, entry_id, definition):
         super().__init__(coordinator, entry_id)
         self._definition = definition
-        self._register = definition["register"]
         self._key = definition["key"]
-        self._scale = definition["scale"]
+        self._register = definition.get("register", None)
+        self._scale = definition.get("scale", 1.0)
 
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
         self.entity_id = f"{self.platform}.{self._attr_suggested_object_id}"
         self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
         
-        self._attr_native_unit_of_measurement = definition["unit"]
-        self._attr_native_min_value = definition["min"]
-        self._attr_native_max_value = definition["max"]
-        self._attr_native_step = definition["step"]
+        self._attr_native_unit_of_measurement = definition.get("unit", None)
+        self._attr_native_min_value = definition.get("min", None)
+        self._attr_native_max_value = definition.get("max", None)
+        self._attr_native_step = definition.get("step", 1.0)
         self._attr_mode = "box"
         
         self._attr_device_class = definition.get("device_class") or None
