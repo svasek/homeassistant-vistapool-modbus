@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from pymodbus.client import AsyncModbusTcpClient
-# from .helpers import modbus_regs_to_ascii
+from .helpers import parse_timer_block, build_timer_block
 
 from .status_mask import (
     decode_notification_mask,
@@ -20,10 +20,18 @@ AUX_BITMASKS = {
     4: 0x0040,  # AUX4
 }
 
+''' Read timer blocks (0x0434-0x0461) in blocks of *15* due to device limits '''
+TIMER_BLOCKS = {
+    "filtration1": 0x0434,
+    "filtration2": 0x0443,
+    "filtration3": 0x0452,
+}
+
+    
 class VistaPoolModbusClient:
     def __init__(self, config):
         self._host = config["host"]
-        self._port = config.get("port", 8899)
+        self._port = config.get("port", 502)
         self._unit = config.get("slave", 1)
 
     async def async_read_all(self):
@@ -305,6 +313,8 @@ class VistaPoolModbusClient:
                         # "MBF_PAR_UICFG_MACH_NAME_AUX4": modbus_regs_to_ascii(reg06[31:36]), # 0x061F         Aux4 relay name: 5 register ASCIIZ string with up to 10 characters
                     })
                 
+                timer1 = await self.read_timer("filtration1")
+                
 
         except Exception as e:
             _LOGGER.error("Modbus TCP read error: %s", e)
@@ -390,3 +400,68 @@ class VistaPoolModbusClient:
                 await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
         except Exception as e:
             _LOGGER.error("Modbus TCP AUX relay write exception: %s", e)
+
+
+    async def read_all_timers(self):
+        timers = {}
+        for name, addr in TIMER_BLOCKS.items():
+            async with AsyncModbusTcpClient(self._host, port=self._port) as client:
+                rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+                if rr.isError():
+                    continue
+                _LOGGER.debug(f"Raw rr-{name} from 0x{addr:04X}: {rr.registers}")
+                timers[name] = parse_timer_block(rr.registers)
+        return timers
+
+    async def read_timer(self, block_name):
+        """Reads one timer block and returns dict of timer params."""
+        addr = TIMER_BLOCKS[block_name]
+        async with AsyncModbusTcpClient(self._host, port=self._port) as client:
+            rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+            if rr.isError():
+                _LOGGER.error(f"Timer block read error at {addr:#04x}: {rr}")
+                return None
+            return parse_timer_block(rr.registers)
+
+    async def write_timer(self, block_name, timer_data):
+        """
+        Writes only requested fields to a timer block. Preserves all other fields.
+        Only update 'on' and 'interval' (and optionally other editable fields).
+        Other values (enable, period, function, ...) are preserved as read.
+        """
+        addr = TIMER_BLOCKS[block_name]
+
+        # 1. Read current timer block from Modbus
+        async with AsyncModbusTcpClient(self._host, port=self._port) as client:
+            rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+            if rr.isError():
+                _LOGGER.error(f"Could not read timer block at {addr:#04x} before write: {rr}")
+                return False
+            current_regs = rr.registers
+            current_data = parse_timer_block(current_regs)
+
+            # 2. Update only requested fields
+            for k, v in timer_data.items():
+                current_data[k] = v
+
+            # 3. Build block for write (preserve other fields)
+            regs = build_timer_block(current_data)
+            for idx, reg in enumerate(regs):
+                if not isinstance(reg, int):
+                    _LOGGER.error(f"Register {idx} is not int: {reg!r}")
+                    
+            _LOGGER.debug(f"Timer block {block_name} ({addr:#04x}) to write: {regs}")
+
+            # 4. Write full block back to Modbus
+            result = await client.write_registers(address=addr, values=regs, slave=self._unit)
+            if result.isError():
+                _LOGGER.error(f"Timer block write error at {addr:#04x}: {result}")
+                return False
+            _LOGGER.debug(f"Wrote timer block {block_name} ({addr:#04x}): {regs}")
+            await asyncio.sleep(0.1)
+            # Write to EEPROM and execute
+            await client.write_registers(address=0x02F0, values=[1], slave=self._unit)
+            await asyncio.sleep(0.1)
+            await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
+            await asyncio.sleep(0.1)
+            return True

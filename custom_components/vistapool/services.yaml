@@ -1,0 +1,27 @@
+set_timer:
+  name: Set timer
+  description: Set timer for VistaPool device.
+  fields:
+    entry_id:
+      required: false
+      example: "your-entry-id"
+      selector:
+        text:
+    timer:
+      required: true
+      example: "filtration1"
+      selector:
+        select:
+          options:
+            - filtration1
+            - filtration2
+    start:
+      required: false
+      example: "08:30"
+      selector:
+        text:
+    stop:
+      required: false
+      example: "15:00"
+      selector:
+        text:

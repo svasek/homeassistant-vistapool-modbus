@@ -136,6 +136,12 @@
       "sync_time": { "name": "Synchronizovat čas zařízení" }
     },
     "select": {
+      "filtration1_start": { "name": "1.Čas  zapnutí filtrace" },
+      "filtration1_stop": { "name": "1.Čas vypnutí filtrace" },
+      "filtration2_start": { "name": "2.Čas  zapnutí filtrace" },
+      "filtration2_stop": { "name": "2.Čas vypnutí filtrace" },
+      "filtration3_start": { "name": "3.Čas  zapnutí filtrace" },
+      "filtration3_stop": { "name": "3.Čas vypnutí filtrace" },
       "filt_mode": { 
         "name": "Režim filtrace", 
         "state": {
@@ -145,6 +151,30 @@
           "smart": "Chytrý režim",
           "intelligent": "Inteligentní režim",
           "backwash": "Zpětný proplach"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_timer": {
+      "name": "Nastavit časovač",
+      "description": "Nastaví nebo upraví časovač v zařízení Vistapool.",
+      "fields": {
+        "entry_id": {
+          "name": "ID záznamu",
+          "description": "Jedinečný identifikátor záznamu zařízení Vistapool. Volitelné."
+        },
+        "timer": {
+          "name": "Název časovače",
+          "description": "Identifikátor časovače (například filtration1, filtration2 atd.)."
+        },
+        "start": {
+          "name": "Čas začátku",
+          "description": "Čas začátku ve formátu HH:MM (například 08:00)."
+        },
+        "stop": {
+          "name": "Čas konce",
+          "description": "Čas konce ve formátu HH:MM (například 16:00)."
         }
       }
     }

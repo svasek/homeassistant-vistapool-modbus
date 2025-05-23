@@ -1,10 +1,11 @@
 import json
 import logging
+from pathlib import Path
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.components.number import NumberDeviceClass
-from pathlib import Path
+from .helpers import generate_time_options, hhmm_to_seconds
 
 '''
 Load the manifest file
@@ -487,6 +488,9 @@ BUTTON_DEFINITIONS = {
     },
 }
 
+TIME_OPTIONS_15 = generate_time_options(15)
+TIME_OPTIONS_15_MAP = {hhmm_to_seconds(opt): opt for opt in TIME_OPTIONS_15}
+
 SELECT_DEFINITIONS = {
     "MBF_PAR_FILT_MODE": {
         "name": "Filtration Mode",
@@ -500,6 +504,54 @@ SELECT_DEFINITIONS = {
             # 13: "backwash",
         },
         "register": 0x0411,  # FILTRATION_MODE_REGISTER
+    },
+    "filtration1_start": {
+        "name": "Filtration Timer 1 Start",
+        "icon": "mdi:clock-outline",
+        "options_map": TIME_OPTIONS_15_MAP,
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "filtration1_stop": {
+        "name": "Filtration Timer 1 Stop",
+        "icon": "mdi:clock-outline",
+        "options_map": TIME_OPTIONS_15_MAP,
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "filtration2_start": {
+        "name": "Filtration Timer 2 Start",
+        "icon": "mdi:clock-outline",
+        "options_map": TIME_OPTIONS_15_MAP,
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "filtration2_stop": {
+        "name": "Filtration Timer 2 Stop",
+        "icon": "mdi:clock-outline",
+        "options_map": TIME_OPTIONS_15_MAP,
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "filtration3_start": {
+        "name": "Filtration Timer 3 Start",
+        "icon": "mdi:clock-outline",
+        "options_map": TIME_OPTIONS_15_MAP,
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "filtration3_stop": {
+        "name": "Filtration Timer 3 Stop",
+        "icon": "mdi:clock-outline",
+        "options_map": TIME_OPTIONS_15_MAP,
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
     },
 }
 

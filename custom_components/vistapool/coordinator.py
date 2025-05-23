@@ -33,6 +33,17 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             self._model = "VistaPool"
             # _LOGGER.debug("VistaPool raw coordinator data: %s", data)
             
+            timers = await self.client.read_all_timers()
+            for t_name, t in timers.items():
+                data[f"{t_name}_enable"] = t["enable"]
+                data[f"{t_name}_start"] = t["on"]   # saved as seconds since midnight
+                data[f"{t_name}_interval"] = t["interval"]
+                if t["on"] is not None and t["interval"] is not None:
+                    stop = (t["on"] + t["interval"]) % 86400
+                    data[f"{t_name}_stop"] = stop
+                else:
+                    data[f"{t_name}_stop"] = None
+            
             if self.auto_time_sync:
                 if is_device_time_out_of_sync(data, self.hass):
                     _LOGGER.debug("Device time is out of sync, updating...")

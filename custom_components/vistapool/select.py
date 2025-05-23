@@ -3,6 +3,7 @@ import asyncio
 from homeassistant.components.select import SelectEntity
 from .const import DOMAIN, SELECT_DEFINITIONS
 from .entity import VistaPoolEntity
+from .helpers import seconds_to_hhmm
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,13 +23,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 props.get("name"),
                 props.get("icon"),
                 props.get("options_map"),
+                props.get("entity_category"),
+                props.get("select_type"),
                 props.get("register"),
             )
         )
     async_add_entities(entities)
 
 class VistaPoolSelect(VistaPoolEntity, SelectEntity):
-    def __init__(self, coordinator, entry_id, key, name, icon, options_map, register):
+    def __init__(self, coordinator, entry_id, key, name, icon, options_map, entity_category=None, select_type=None, register=None):
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -38,6 +41,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         
         self._attr_icon = icon
         self._options_map = options_map
+        self._attr_entity_category = entity_category
+        self._select_type = select_type
         self._register = register
         
         _LOGGER.debug(
@@ -46,6 +51,34 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         )
 
     async def async_select_option(self, option: str):
+        if self._select_type == "timer_time":
+            timer_name, field = self._key.rsplit("_", 1)
+            entry_id = self._entry_id if hasattr(self, '_entry_id') else self.coordinator.entry_id
+            data = self.coordinator.data
+            if field == "start":
+                start = option
+                stop = seconds_to_hhmm(data.get(f"{timer_name}_stop", 0))
+            elif field == "stop":
+                start = seconds_to_hhmm(data.get(f"{timer_name}_start", 0))
+                stop = option
+            else:
+                return
+
+            await self.hass.services.async_call(
+                DOMAIN,
+                "set_timer",
+                {
+                    "entry_id": entry_id,
+                    "timer": timer_name,
+                    "start": start,
+                    "stop": stop,
+                }
+            )
+            await asyncio.sleep(0.2)
+            await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
+            return
+        
         # Prevent switching to Backwash from HA UI
         if option == "backwash":
             # Log warning
@@ -97,16 +130,30 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
     @property
     def options(self):
         options = list(self._options_map.values())
+        
         # Hide heating and intelligent if not enabled heating mode
         if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_HEATING_MODE") == 0:
             options = [opt for opt in options if opt not in ("heating", "intelligent")]
         # Hide smart if temperature sensor is not active
         if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
             options = [opt for opt in options if opt != "smart"]
+            
+        # Handle Timer options in cases where doesn't fit 15 minutes
+        if self._select_type == "timer_time":
+            value = self.coordinator.data.get(self._key)
+            if value is not None:
+                current_hhmm = seconds_to_hhmm(value)
+                if current_hhmm not in options:
+                    return [current_hhmm] + options
         return options
 
 
     @property
     def current_option(self):
         value = self.coordinator.data.get(self._key)
-        return self._options_map.get(value)
+        if value is None:
+            return None
+        if self._options_map:
+            # If not exactly in options_map, always return current HH:MM
+            return self._options_map.get(value) or seconds_to_hhmm(value)
+        return seconds_to_hhmm(value)

@@ -65,7 +65,7 @@
         "name": "Filtration Mode", 
         "state": {
           "manual": "Manual",
-          "automatic": "Automatic",
+          "auto": "Automatic",
           "heating": "Heating",
           "smart": "Smart",
           "intelligent": "Intelligent",
@@ -136,15 +136,45 @@
       "sync_time": { "name": "Synchronize Device Time" }
     },
     "select": {
+      "filtration1_start": { "name": "1.Filtration Start" },
+      "filtration1_stop": { "name": "1.Filtration Stop" },
+      "filtration2_start": { "name": "2.Filtration Start" },
+      "filtration2_stop": { "name": "2.Filtration Stop" },
+      "filtration3_start": { "name": "3.Filtration Start" },
+      "filtration3_stop": { "name": "3.Filtration Stop" },
       "filt_mode": { 
         "name": "Filtration Mode", 
         "state": {
           "manual": "Manual",
-          "automatic": "Automatic",
+          "auto": "Automatic",
           "heating": "Heating",
           "smart": "Smart",
           "intelligent": "Intelligent",
           "backwash": "Backwash"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_timer": {
+      "name": "Set timer",
+      "description": "Set or update a timer in the Vistapool device.",
+      "fields": {
+        "entry_id": {
+          "name": "Entry ID",
+          "description": "The unique ID of the Vistapool device entry. Optional."
+        },
+        "timer": {
+          "name": "Timer name",
+          "description": "The timer identifier (e.g., filtration1, filtration2, etc.)."
+        },
+        "start": {
+          "name": "Start time",
+          "description": "Start time in HH:MM format (e.g., 08:00)."
+        },
+        "stop": {
+          "name": "Stop time",
+          "description": "Stop time in HH:MM format (e.g., 16:00)."
         }
       }
     }
