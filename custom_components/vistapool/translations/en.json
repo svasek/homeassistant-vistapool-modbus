@@ -127,6 +127,7 @@
     "switch": {
       "filt_manual_state": { "name": "Manual Filtration" },
       "time_auto_sync": { "name": "Time Auto Sync" },
+      "filtration1_enable": { "name": "Filtration Timer 1 Enable" },
       "aux1": { "name": "Auxiliary Relay 1" },
       "aux2": { "name": "Auxiliary Relay 2" },
       "aux3": { "name": "Auxiliary Relay 3" },
@@ -136,6 +137,8 @@
       "sync_time": { "name": "Synchronize Device Time" }
     },
     "select": {
+      "filtration1_start": { "name": "Filtration 1 Start" },
+      "filtration1_stop": { "name": "Filtration 1 Stop" },
       "filt_mode": { 
         "name": "Filtration Mode", 
         "state": {

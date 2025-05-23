@@ -3,6 +3,7 @@ import asyncio
 from homeassistant.components.select import SelectEntity
 from .const import DOMAIN, SELECT_DEFINITIONS
 from .entity import VistaPoolEntity
+from .helpers import seconds_to_hhmm
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,13 +23,14 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 props.get("name"),
                 props.get("icon"),
                 props.get("options_map"),
+                props.get("entity_category"),
                 props.get("register"),
             )
         )
     async_add_entities(entities)
 
 class VistaPoolSelect(VistaPoolEntity, SelectEntity):
-    def __init__(self, coordinator, entry_id, key, name, icon, options_map, register):
+    def __init__(self, coordinator, entry_id, key, name, icon, options_map, entity_category=None, register=None):
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -39,6 +41,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._attr_icon = icon
         self._options_map = options_map
         self._register = register
+        self._attr_entity_category = entity_category
         
         _LOGGER.debug(
             "VistaPoolSelect INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
@@ -103,10 +106,20 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         # Hide smart if temperature sensor is not active
         if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
             options = [opt for opt in options if opt != "smart"]
+        # Handle Timer options in cases where doesn't fit 15 minutes
+        value = self.coordinator.data.get(self._key)
+        if value is not None:
+            current_hhmm = seconds_to_hhmm(value)
+            if current_hhmm not in options:
+                return [current_hhmm] + options
         return options
 
 
     @property
     def current_option(self):
         value = self.coordinator.data.get(self._key)
-        return self._options_map.get(value)
+        if value is None:
+            return None
+        if self._options_map:
+            return self._options_map.get(value)
+        return None

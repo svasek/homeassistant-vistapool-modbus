@@ -10,6 +10,7 @@ and parse version information.
 # It extracts the low and high parts of the time from the dictionary, combines them into a single timestamp,
 # and converts it to a datetime object in UTC timezone
 def get_device_time(data, hass=None):
+    """Get device time and convert to datetime object."""
     low = data.get("MBF_PAR_TIME_LOW")
     high = data.get("MBF_PAR_TIME_HIGH")
     if low is None or high is None:
@@ -88,3 +89,63 @@ def modbus_regs_to_hex_string(regs):
     if not regs or not isinstance(regs, list):
         return ""
     return "".join(f"{reg:04X}" for reg in regs)
+
+def parse_timer_block(regs):
+    """Convert 15 Modbus registers to dict of timer params."""
+    def u32(lsb, msb):
+        return (msb << 16) | lsb
+    return {
+        "enable": regs[0],
+        "on": u32(regs[1], regs[2]),
+        "off": u32(regs[3], regs[4]),
+        "period": u32(regs[5], regs[6]),
+        "interval": u32(regs[7], regs[8]),
+        "countdown": u32(regs[9], regs[10]),
+        "function": regs[11],
+        "work_time": u32(regs[13], regs[14]),
+    }
+
+def build_timer_block(data):
+    """Convert dict of timer params to 15 Modbus registers."""
+    def split_u32(val):
+        return [val & 0xFFFF, (val >> 16) & 0xFFFF]
+    regs = [
+        data.get("enable", 0),
+        *split_u32(data.get("on", 0)),
+        *split_u32(data.get("off", 0)),
+        *split_u32(data.get("period", 0)),
+        *split_u32(data.get("interval", 0)),
+        *split_u32(data.get("countdown", 0)),
+        data.get("function", 0),
+        0,  # reserved
+        *split_u32(data.get("work_time", 0))
+    ]
+    return regs
+
+def hhmm_to_seconds(hhmm):
+    """Convert HH:MM string to seconds since midnight."""
+    h, m = map(int, hhmm.split(":"))
+    return h * 3600 + m * 60
+
+def seconds_to_hhmm(seconds):
+    """Convert seconds since midnight to HH:MM string."""
+    h = seconds // 3600
+    m = (seconds % 3600) // 60
+    return f"{h:02d}:{m:02d}"
+
+def get_timer_interval(start_sec, stop_sec):
+    """Calculate interval in seconds, handle over-midnight."""
+    if stop_sec >= start_sec:
+        return stop_sec - start_sec
+    else:
+        # over-midnight
+        return (86400 - start_sec) + stop_sec
+    
+def generate_time_options(step_minutes=15):
+    """Generate a list of HH:MM strings for every step_minutes in a day."""
+    options = []
+    for mins in range(0, 24 * 60, step_minutes):
+        h = mins // 60
+        m = mins % 60
+        options.append(f"{h:02d}:{m:02d}")
+    return options
