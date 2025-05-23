@@ -24,13 +24,14 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 props.get("icon"),
                 props.get("options_map"),
                 props.get("entity_category"),
+                props.get("select_type"),
                 props.get("register"),
             )
         )
     async_add_entities(entities)
 
 class VistaPoolSelect(VistaPoolEntity, SelectEntity):
-    def __init__(self, coordinator, entry_id, key, name, icon, options_map, entity_category=None, register=None):
+    def __init__(self, coordinator, entry_id, key, name, icon, options_map, entity_category=None, select_type=None, register=None):
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -40,8 +41,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         
         self._attr_icon = icon
         self._options_map = options_map
-        self._register = register
         self._attr_entity_category = entity_category
+        self._select_type = select_type
+        self._register = register
         
         _LOGGER.debug(
             "VistaPoolSelect INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
@@ -133,18 +135,21 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
     @property
     def options(self):
         options = list(self._options_map.values())
+        
         # Hide heating and intelligent if not enabled heating mode
         if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_HEATING_MODE") == 0:
             options = [opt for opt in options if opt not in ("heating", "intelligent")]
         # Hide smart if temperature sensor is not active
         if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
             options = [opt for opt in options if opt != "smart"]
+            
         # Handle Timer options in cases where doesn't fit 15 minutes
-        value = self.coordinator.data.get(self._key)
-        if value is not None:
-            current_hhmm = seconds_to_hhmm(value)
-            if current_hhmm not in options:
-                return [current_hhmm] + options
+        if self._select_type == "timer_time":
+            value = self.coordinator.data.get(self._key)
+            if value is not None:
+                current_hhmm = seconds_to_hhmm(value)
+                if current_hhmm not in options:
+                    return [current_hhmm] + options
         return options
 
 

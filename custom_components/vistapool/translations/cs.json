@@ -127,7 +127,9 @@
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
-      "filtration1_enable": { "name": "Časovač filtrace 1" },
+      "filtration1_enable": { "name": "1.Časovač filtrace" },
+      "filtration2_enable": { "name": "2.Časovač filtrace" },
+      "filtration3_enable": { "name": "3.Časovač filtrace" },
       "aux1": { "name": "Pomocné relé 1" },
       "aux2": { "name": "Pomocné relé 2" },
       "aux3": { "name": "Pomocné relé 3" },
@@ -137,8 +139,12 @@
       "sync_time": { "name": "Synchronizovat čas zařízení" }
     },
     "select": {
-      "filtration1_start": { "name": "Čas zapnutí filtrace 1" },
-      "filtration1_stop": { "name": "Čas vypnutí filtrace 1" },
+      "filtration1_start": { "name": "1.Čas  zapnutí filtrace" },
+      "filtration1_stop": { "name": "1.Čas vypnutí filtrace" },
+      "filtration2_start": { "name": "2.Čas  zapnutí filtrace" },
+      "filtration2_stop": { "name": "2.Čas vypnutí filtrace" },
+      "filtration3_start": { "name": "3.Čas  zapnutí filtrace" },
+      "filtration3_stop": { "name": "3.Čas vypnutí filtrace" },
       "filt_mode": { 
         "name": "Režim filtrace", 
         "state": {
