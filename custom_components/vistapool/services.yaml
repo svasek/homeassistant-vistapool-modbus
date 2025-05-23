@@ -25,11 +25,3 @@ set_timer:
       example: "15:00"
       selector:
         text:
-    enable:
-      required: false
-      example: 1
-      selector:
-        number:
-          min: 0
-          max: 1
-          step: 1

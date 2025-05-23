@@ -127,9 +127,6 @@
     "switch": {
       "filt_manual_state": { "name": "Manual Filtration" },
       "time_auto_sync": { "name": "Time Auto Sync" },
-      "filtration1_enable": { "name": "1.Filtration Timer Enable" },
-      "filtration2_enable": { "name": "2.Filtration Timer Enable" },
-      "filtration3_enable": { "name": "3.Filtration Timer Enable" },
       "aux1": { "name": "Auxiliary Relay 1" },
       "aux2": { "name": "Auxiliary Relay 2" },
       "aux3": { "name": "Auxiliary Relay 3" },
@@ -154,6 +151,30 @@
           "smart": "Smart",
           "intelligent": "Intelligent",
           "backwash": "Backwash"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_timer": {
+      "name": "Set timer",
+      "description": "Set or update a timer in the Vistapool device.",
+      "fields": {
+        "entry_id": {
+          "name": "Entry ID",
+          "description": "The unique ID of the Vistapool device entry. Optional."
+        },
+        "timer": {
+          "name": "Timer name",
+          "description": "The timer identifier (e.g., filtration1, filtration2, etc.)."
+        },
+        "start": {
+          "name": "Start time",
+          "description": "Start time in HH:MM format (e.g., 08:00)."
+        },
+        "stop": {
+          "name": "Stop time",
+          "description": "Stop time in HH:MM format (e.g., 16:00)."
         }
       }
     }
