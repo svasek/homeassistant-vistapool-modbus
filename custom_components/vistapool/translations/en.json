@@ -65,7 +65,7 @@
         "name": "Filtration Mode", 
         "state": {
           "manual": "Manual",
-          "automatic": "Automatic",
+          "auto": "Automatic",
           "heating": "Heating",
           "smart": "Smart",
           "intelligent": "Intelligent",
