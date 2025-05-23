@@ -31,7 +31,7 @@ TIMER_BLOCKS = {
 class VistaPoolModbusClient:
     def __init__(self, config):
         self._host = config["host"]
-        self._port = config.get("port", 8899)
+        self._port = config.get("port", 502)
         self._unit = config.get("slave", 1)
 
     async def async_read_all(self):
@@ -409,7 +409,7 @@ class VistaPoolModbusClient:
                 rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
                 if rr.isError():
                     continue
-                _LOGGER.debug("Raw rr-tmr1: %s", rr.registers)
+                _LOGGER.debug(f"Raw rr-{name} from 0x{addr:04X}: {rr.registers}")
                 timers[name] = parse_timer_block(rr.registers)
         return timers
 
@@ -434,7 +434,7 @@ class VistaPoolModbusClient:
                 return False
             _LOGGER.debug(f"Wrote timer block {block_name} ({addr:#04x}): {regs}")
             await asyncio.sleep(0.1)
-            # Zápis do EEPROM a EXEC (jako při normálním zápisu konfigurace)
+            # Write to EEPROM and execute
             await client.write_registers(address=0x02F0, values=[1], slave=self._unit)
             await asyncio.sleep(0.1)
             await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
