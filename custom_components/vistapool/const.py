@@ -27,7 +27,7 @@ VERSION = MANIFEST.get("version") or None
 LOGGER = logging.getLogger(__name__)
 
 DEFAULT_SCAN_INTERVAL = 30
-DEFAULT_PORT = 8899
+DEFAULT_PORT = 502
 DEFAULT_SLAVE_ID = 1
 
 
