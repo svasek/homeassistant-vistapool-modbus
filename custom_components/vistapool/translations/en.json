@@ -7,7 +7,7 @@
         "data": {
           "name": "A name to identify this VistaPool controller (used as prefix in entity IDs).",
           "host": "IP address or hostname of the VistaPool controller.",
-          "port": "TCP port for Modbus (default: 8899).",
+          "port": "TCP port for Modbus (default: 502).",
           "scan_interval": "How often should data be updated from the VistaPool controller?",
           "slave_id": "Address of the device on the Modbus network (default: 1)."
         }

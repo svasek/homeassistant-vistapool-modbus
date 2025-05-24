@@ -1,0 +1,184 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Połączenie VistaPool",
+        "description": "Skonfiguruj połączenie z kontrolerem VistaPool.",
+        "data": {
+          "name": "Nazwa do identyfikacji tego kontrolera VistaPool (używana jako prefiks w identyfikatorach encji).",
+          "host": "Adres IP lub nazwa hosta kontrolera VistaPool.",
+          "port": "Port TCP dla Modbus (domyślnie: 502).",
+          "scan_interval": "Jak często należy aktualizować dane z kontrolera VistaPool?",
+          "slave_id": "Adres urządzenia w sieci Modbus (domyślnie: 1)."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje VistaPool",
+        "description": "UWAGA! Zmiany w dostępnych przekaźnikach będą zastosowane po ponownym uruchomieniu Home Assistant.",
+        "data": {
+          "scan_interval": "Jak często należy aktualizować dane z kontrolera VistaPool?",
+          "use_light": "Włącz przekaźnik światła",
+          "use_aux1": "Włącz przekaźnik AUX1",
+          "use_aux2": "Włącz przekaźnik AUX2",
+          "use_aux3": "Włącz przekaźnik AUX3",
+          "use_aux4": "Włącz przekaźnik AUX4"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ion_current": { "name": "Poziom jonizacji" },
+      "hidro_current": { "name": "Intensywność elektrolizy" },
+      "measure_ph": { "name": "pH" },
+      "measure_rx": { "name": "Potencjał redoks" },
+      "measure_cl": { "name": "Poziom soli" },
+      "measure_conductivity": { "name": "Poziom przewodności" },
+      "measure_temperature": { "name": "Temperatura wody" },
+      "hidro_voltage": { "name": "Napięcie elektrolizy" },
+      "filtration_current_speed": { "name": "Aktualna prędkość filtracji" },
+      "device_time": { "name": "Czas urządzenia" },
+      "ph_status_alarm": {
+        "name": "Alarm pH",
+        "state": {
+          "no_alarm": "OK",
+          "ph_high": "pH za wysokie",
+          "ph_low": "pH za niskie",
+          "ph_stopped": "Pompa pH zatrzymana (przekroczony czas pracy)",
+          "ph_over": "pH powyżej celu",
+          "ph_under": "pH poniżej celu",
+          "tank_level": "Alarm poziomu zbiornika"
+        }
+      },
+      "hidro_polarity": {
+        "name": "Polaryzacja elektrolizy",
+        "state": {
+          "pol1": "Polaryzacja 1",
+          "pol2": "Polaryzacja 2",
+          "off": "Wyłączone"
+        }
+      },
+      "filt_mode": {
+        "name": "Tryb filtracji",
+        "state": {
+          "manual": "Ręczny",
+          "auto": "Automatyczny",
+          "heating": "Ogrzewanie",
+          "smart": "Inteligentny",
+          "intelligent": "Inteligentny",
+          "backwash": "Płukanie wsteczne"
+        }
+      }
+    },
+    "binary_sensor": {
+      "ph_acid_pump": { "name": "Pompa kwasu pH" },
+      "filtration_pump": { "name": "Filtracja aktywna" },
+      "pool_light": { "name": "Oświetlenie basenu" },
+      "ph_module_control_status": { "name": "Status modułu sterowania pH" },
+      "ph_acid_pump_active": { "name": "Regulacja pH" },
+      "ph_control_module": { "name": "Moduł sterowania pH" },
+      "ph_measurement_active": { "name": "Pomiar pH" },
+      "redox_pump_active": { "name": "Regulacja redoks" },
+      "redox_control_module": { "name": "Moduł sterowania redoks" },
+      "redox_measurement_active": { "name": "Pomiar redoks" },
+      "chlorine_flow_sensor_problem": { "name": "Czujnik przepływu chloru" },
+      "chlorine_pump_active": { "name": "Regulacja chloru" },
+      "chlorine_control_module": { "name": "Moduł sterowania chlorem" },
+      "chlorine_measurement_active": { "name": "Pomiar chloru" },
+      "conductivity_pump_active": { "name": "Regulacja przewodności" },
+      "conductivity_control_module": { "name": "Moduł sterowania przewodnością" },
+      "conductivity_measurement_active": { "name": "Pomiar przewodności" },
+      "ion_on_target": { "name": "Jonizator na celu" },
+      "ion_low_flow": { "name": "Niski przepływ jonizatora" },
+      "ion_program_time_exceeded": { "name": "Przekroczony czas programu jonizatora" },
+      "ion_in_dead_time": { "name": "Jonizator w martwym czasie" },
+      "ion_in_pol1": { "name": "Jonizator polaryzacja 1" },
+      "ion_in_pol2": { "name": "Jonizator polaryzacja 2" },
+      "hidro_on_target": { "name": "Elektroliza na celu" },
+      "hidro_low_flow": { "name": "Niski przepływ elektrolizy" },
+      "hidro_cell_flow_fl1": { "name": "Przepływ komórki elektrolizy FL1" },
+      "hidro_cover_input_active": { "name": "Aktywne wejście pokrywy elektrolizy" },
+      "hidro_module_active": { "name": "Moduł elektrolizy aktywny" },
+      "hidro_module_regulated": { "name": "Moduł elektrolizy regulowany" },
+      "hidro_activated_by_the_rx_module": { "name": "Elektroliza aktywowana przez moduł redoks" },
+      "hidro_chlorine_shock_mode": { "name": "Tryb szoku chloru elektrolizy" },
+      "hidro_chlorine_flow_indicator_fl2": { "name": "Wskaźnik przepływu chloru elektrolizy FL2" },
+      "hidro_activated_by_the_cl_module": { "name": "Elektroliza aktywowana przez moduł chloru" },
+      "hidro_in_dead_time": { "name": "Elektroliza w martwym czasie" },
+      "hidro_in_pol1": { "name": "Elektroliza polaryzacja 1" },
+      "hidro_in_pol2": { "name": "Elektroliza polaryzacja 2" },
+      "device_time_out_of_sync": { "name": "Synchronizacja czasu urządzenia" },
+      "aux1": { "name": "Przekaźnik Aux1" },
+      "aux2": { "name": "Przekaźnik Aux2" },
+      "aux3": { "name": "Przekaźnik Aux3" },
+      "aux4": { "name": "Przekaźnik Aux4" }
+    },
+    "number": {
+      "hidro": { "name": "Docelowy poziom produkcji elektrolizy" },
+      "ph1": { "name": "Maksymalny limit pH" },
+      "ph2": { "name": "Minimalny limit pH" },
+      "rx1": { "name": "Docelowa wartość redoks" },
+      "cl1": { "name": "Docelowa wartość chloru" },
+      "heating_temp": { "name": "Docelowa wartość temperatury" }
+    },
+    "switch": {
+      "filt_manual_state": { "name": "Filtracja ręczna" },
+      "time_auto_sync": { "name": "Automatyczna synchronizacja czasu" },
+      "light": { "name": "Oświetlenie basenu" },
+      "aux1": { "name": "Przekaźnik pomocniczy 1" },
+      "aux2": { "name": "Przekaźnik pomocniczy 2" },
+      "aux3": { "name": "Przekaźnik pomocniczy 3" },
+      "aux4": { "name": "Przekaźnik pomocniczy 4" }
+    },
+    "button": {
+      "sync_time": { "name": "Synchronizuj czas urządzenia" }
+    },
+    "select": {
+      "filtration1_start": { "name": "Timer 1 - Start filtracji" },
+      "filtration1_stop": { "name": "Timer 1 - Stop filtracji" },
+      "filtration2_start": { "name": "Timer 2 - Start filtracji" },
+      "filtration2_stop": { "name": "Timer 2 - Stop filtracji" },
+      "filtration3_start": { "name": "Timer 3 - Start filtracji" },
+      "filtration3_stop": { "name": "Timer 3 - Stop filtracji" },
+      "filt_mode": {
+        "name": "Tryb filtracji",
+        "state": {
+          "manual": "Ręczny",
+          "auto": "Automatyczny",
+          "heating": "Ogrzewanie",
+          "smart": "Inteligentny",
+          "intelligent": "Inteligentny",
+          "backwash": "Płukanie wsteczne"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_timer": {
+      "name": "Ustaw timer",
+      "description": "Ustaw lub zaktualizuj timer w urządzeniu VistaPool.",
+      "fields": {
+        "entry_id": {
+          "name": "ID wpisu",
+          "description": "Unikalny identyfikator wpisu urządzenia VistaPool. Opcjonalne."
+        },
+        "timer": {
+          "name": "Nazwa timera",
+          "description": "Identyfikator timera (np. filtration1, filtration2 itd.)."
+        },
+        "start": {
+          "name": "Czas rozpoczęcia",
+          "description": "Czas rozpoczęcia w formacie HH:MM (np. 08:00)."
+        },
+        "stop": {
+          "name": "Czas zakończenia",
+          "description": "Czas zakończenia w formacie HH:MM (np. 16:00)."
+        }
+      }
+    }
+  }
+}

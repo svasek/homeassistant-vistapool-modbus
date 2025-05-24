@@ -7,7 +7,7 @@
         "data": {
           "name": "Název pro identifikaci tohoto zařízení VistaPool (používá se jako prefix v ID entit).",
           "host": "IP adresa nebo název hostitele zařízení VistaPool.",
-          "port": "TCP port pro Modbus (výchozí: 8899).",
+          "port": "TCP port pro Modbus (výchozí: 502).",
           "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool?",
           "slave_id": "Adresa zařízení v síti Modbus (výchozí: 1)."
         }
@@ -119,8 +119,8 @@
     },
     "number": {
       "hidro": { "name": "Hydrolýza (intenzita)" },
-      "ph1": { "name": "pH  limit min" },
-      "ph2": { "name": "pH limit max" },
+      "ph1": { "name": "pH max. limit" },
+      "ph2": { "name": "pH min. limit" },
       "rx1": { "name": "Redox (úroveň)" },
       "cl1": { "name": "Setpoint chloru" },
       "heating_temp": { "name": "Nastavená teplota" }

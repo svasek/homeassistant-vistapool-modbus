@@ -1,0 +1,184 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "VistaPool Verbindung",
+        "description": "Konfigurieren Sie die Verbindung zu Ihrem VistaPool-Controller.",
+        "data": {
+          "name": "Ein Name zur Identifizierung dieses VistaPool-Controllers (wird als Präfix in den Entity-IDs verwendet).",
+          "host": "IP-Adresse oder Hostname des VistaPool-Controllers.",
+          "port": "TCP-Port für Modbus (Standard: 502).",
+          "scan_interval": "Wie oft sollen die Daten vom VistaPool-Controller aktualisiert werden?",
+          "slave_id": "Adresse des Geräts im Modbus-Netzwerk (Standard: 1)."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "VistaPool Optionen",
+        "description": "WARNUNG: Änderungen an den erlaubten Relais werden erst nach einem Neustart von Home Assistant wirksam!",
+        "data": {
+          "scan_interval": "Wie oft sollen die Daten vom VistaPool-Controller aktualisiert werden?",
+          "use_light": "Lichtrelais aktivieren",
+          "use_aux1": "AUX1-Relais aktivieren",
+          "use_aux2": "AUX2-Relais aktivieren",
+          "use_aux3": "AUX3-Relais aktivieren",
+          "use_aux4": "AUX4-Relais aktivieren"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ion_current": { "name": "Ionisationsniveau" },
+      "hidro_current": { "name": "Hydrolyse-Intensität" },
+      "measure_ph": { "name": "pH-Wert" },
+      "measure_rx": { "name": "Redox-Potenzial" },
+      "measure_cl": { "name": "Salzgehalt" },
+      "measure_conductivity": { "name": "Leitfähigkeitsniveau" },
+      "measure_temperature": { "name": "Wassertemperatur" },
+      "hidro_voltage": { "name": "Hydrolyse-Spannung" },
+      "filtration_current_speed": { "name": "Aktuelle Filtergeschwindigkeit" },
+      "device_time": { "name": "Gerätezeit" },
+      "ph_status_alarm": {
+        "name": "pH-Alarm",
+        "state": {
+          "no_alarm": "OK",
+          "ph_high": "pH zu hoch",
+          "ph_low": "pH zu niedrig",
+          "ph_stopped": "pH-Pumpe gestoppt (Arbeitszeit überschritten)",
+          "ph_over": "pH über dem Sollwert",
+          "ph_under": "pH unter dem Sollwert",
+          "tank_level": "Tankfüllstandsalarm"
+        }
+      },
+      "hidro_polarity": {
+        "name": "Hydrolyse-Polarität",
+        "state": {
+          "pol1": "Polarität 1",
+          "pol2": "Polarität 2",
+          "off": "Aus"
+        }
+      },
+      "filt_mode": {
+        "name": "Filtermodus",
+        "state": {
+          "manual": "Manuell",
+          "auto": "Automatisch",
+          "heating": "Heizung",
+          "smart": "Smart",
+          "intelligent": "Intelligent",
+          "backwash": "Rückspülung"
+        }
+      }
+    },
+    "binary_sensor": {
+      "ph_acid_pump": { "name": "pH-Säurepumpe" },
+      "filtration_pump": { "name": "Filtration aktiv" },
+      "pool_light": { "name": "Poollicht" },
+      "ph_module_control_status": { "name": "pH-Steuermodul-Status" },
+      "ph_acid_pump_active": { "name": "pH-Regulierung" },
+      "ph_control_module": { "name": "pH-Steuermodul" },
+      "ph_measurement_active": { "name": "pH-Messung" },
+      "redox_pump_active": { "name": "Redox-Regulierung" },
+      "redox_control_module": { "name": "Redox-Steuermodul" },
+      "redox_measurement_active": { "name": "Redox-Messung" },
+      "chlorine_flow_sensor_problem": { "name": "Chlor-Durchflusssensor" },
+      "chlorine_pump_active": { "name": "Chlor-Regulierung" },
+      "chlorine_control_module": { "name": "Chlor-Steuermodul" },
+      "chlorine_measurement_active": { "name": "Chlor-Messung" },
+      "conductivity_pump_active": { "name": "Leitfähigkeitsregulierung" },
+      "conductivity_control_module": { "name": "Leitfähigkeits-Steuermodul" },
+      "conductivity_measurement_active": { "name": "Leitfähigkeitsmessung" },
+      "ion_on_target": { "name": "Ionisator am Ziel" },
+      "ion_low_flow": { "name": "Ionisator Niedriger Durchfluss" },
+      "ion_program_time_exceeded": { "name": "Ionisator Programmlaufzeit überschritten" },
+      "ion_in_dead_time": { "name": "Ionisator in Totzeit" },
+      "ion_in_pol1": { "name": "Ionisator Polarität 1" },
+      "ion_in_pol2": { "name": "Ionisator Polarität 2" },
+      "hidro_on_target": { "name": "Hydrolyse am Ziel" },
+      "hidro_low_flow": { "name": "Hydrolyse Niedriger Durchfluss" },
+      "hidro_cell_flow_fl1": { "name": "Hydrolyse-Zelldurchfluss FL1" },
+      "hidro_cover_input_active": { "name": "Hydrolyse Abdeckungseingang aktiv" },
+      "hidro_module_active": { "name": "Hydrolyse-Modul aktiv" },
+      "hidro_module_regulated": { "name": "Hydrolyse-Modul geregelt" },
+      "hidro_activated_by_the_rx_module": { "name": "Hydrolyse aktiviert durch Redox-Modul" },
+      "hidro_chlorine_shock_mode": { "name": "Hydrolyse Chlor-Schock-Modus" },
+      "hidro_chlorine_flow_indicator_fl2": { "name": "Hydrolyse Chlor-Durchflussanzeige FL2" },
+      "hidro_activated_by_the_cl_module": { "name": "Hydrolyse aktiviert durch Chlor-Modul" },
+      "hidro_in_dead_time": { "name": "Hydrolyse in Totzeit" },
+      "hidro_in_pol1": { "name": "Hydrolyse Polarität 1" },
+      "hidro_in_pol2": { "name": "Hydrolyse Polarität 2" },
+      "device_time_out_of_sync": { "name": "Gerätezeitsynchronisierung" },
+      "aux1": { "name": "Relais Aux1" },
+      "aux2": { "name": "Relais Aux2" },
+      "aux3": { "name": "Relais Aux3" },
+      "aux4": { "name": "Relais Aux4" }
+    },
+    "number": {
+      "hidro": { "name": "Hydrolyse Ziel-Produktionsniveau" },
+      "ph1": { "name": "pH Maximalgrenze" },
+      "ph2": { "name": "pH Minimalgrenze" },
+      "rx1": { "name": "Redox-Sollwert" },
+      "cl1": { "name": "Chlor-Sollwert" },
+      "heating_temp": { "name": "Temperatur Sollwert" }
+    },
+    "switch": {
+      "filt_manual_state": { "name": "Manuelle Filtration" },
+      "time_auto_sync": { "name": "Zeit automatische Synchronisierung" },
+      "light": { "name": "Poollicht" },
+      "aux1": { "name": "Hilfsrelais 1" },
+      "aux2": { "name": "Hilfsrelais 2" },
+      "aux3": { "name": "Hilfsrelais 3" },
+      "aux4": { "name": "Hilfsrelais 4" }
+    },
+    "button": {
+      "sync_time": { "name": "Gerätezeit synchronisieren" }
+    },
+    "select": {
+      "filtration1_start": { "name": "Timer 1 - Filtration Start" },
+      "filtration1_stop": { "name": "Timer 1 - Filtration Stop" },
+      "filtration2_start": { "name": "Timer 2 - Filtration Start" },
+      "filtration2_stop": { "name": "Timer 2 - Filtration Stop" },
+      "filtration3_start": { "name": "Timer 3 - Filtration Start" },
+      "filtration3_stop": { "name": "Timer 3 - Filtration Stop" },
+      "filt_mode": {
+        "name": "Filtermodus",
+        "state": {
+          "manual": "Manuell",
+          "auto": "Automatisch",
+          "heating": "Heizung",
+          "smart": "Smart",
+          "intelligent": "Intelligent",
+          "backwash": "Rückspülung"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_timer": {
+      "name": "Timer einstellen",
+      "description": "Stellen oder aktualisieren Sie einen Timer im VistaPool-Gerät ein.",
+      "fields": {
+        "entry_id": {
+          "name": "Entry ID",
+          "description": "Die eindeutige ID des VistaPool-Geräteeintrags. Optional."
+        },
+        "timer": {
+          "name": "Timer-Name",
+          "description": "Der Timer-Bezeichner (z. B. filtration1, filtration2, etc.)."
+        },
+        "start": {
+          "name": "Startzeit",
+          "description": "Startzeit im HH:MM-Format (z. B. 08:00)."
+        },
+        "stop": {
+          "name": "Stoppzeit",
+          "description": "Stoppzeit im HH:MM-Format (z. B. 16:00)."
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connexion VistaPool",
+        "description": "Configurez la connexion à votre contrôleur VistaPool.",
+        "data": {
+          "name": "Nom pour identifier ce contrôleur VistaPool (utilisé comme préfixe dans les identifiants d’entités).",
+          "host": "Adresse IP ou nom d’hôte du contrôleur VistaPool.",
+          "port": "Port TCP pour Modbus (par défaut : 502).",
+          "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ?",
+          "slave_id": "Adresse de l’appareil sur le réseau Modbus (par défaut : 1)."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options VistaPool",
+        "description": "ATTENTION : les modifications apportées aux relais autorisés seront prises en compte après le redémarrage de Home Assistant.",
+        "data": {
+          "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ?",
+          "use_light": "Activer le relais lumière",
+          "use_aux1": "Activer le relais AUX1",
+          "use_aux2": "Activer le relais AUX2",
+          "use_aux3": "Activer le relais AUX3",
+          "use_aux4": "Activer le relais AUX4"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "ion_current": { "name": "Niveau d’ionisation" },
+      "hidro_current": { "name": "Intensité d’hydrolyse" },
+      "measure_ph": { "name": "pH" },
+      "measure_rx": { "name": "Potentiel redox" },
+      "measure_cl": { "name": "Niveau de sel" },
+      "measure_conductivity": { "name": "Niveau de conductivité" },
+      "measure_temperature": { "name": "Température de l’eau" },
+      "hidro_voltage": { "name": "Tension d’hydrolyse" },
+      "filtration_current_speed": { "name": "Vitesse de filtration actuelle" },
+      "device_time": { "name": "Heure de l’appareil" },
+      "ph_status_alarm": {
+        "name": "Alarme pH",
+        "state": {
+          "no_alarm": "OK",
+          "ph_high": "pH trop élevé",
+          "ph_low": "pH trop bas",
+          "ph_stopped": "Pompe pH arrêtée (temps de fonctionnement dépassé)",
+          "ph_over": "pH au-dessus de la cible",
+          "ph_under": "pH en dessous de la cible",
+          "tank_level": "Alarme de niveau de cuve"
+        }
+      },
+      "hidro_polarity": {
+        "name": "Polarité de l’hydrolyse",
+        "state": {
+          "pol1": "Polarité 1",
+          "pol2": "Polarité 2",
+          "off": "Arrêté"
+        }
+      },
+      "filt_mode": {
+        "name": "Mode de filtration",
+        "state": {
+          "manual": "Manuel",
+          "auto": "Automatique",
+          "heating": "Chauffage",
+          "smart": "Intelligent",
+          "intelligent": "Intelligent",
+          "backwash": "Contre-lavage"
+        }
+      }
+    },
+    "binary_sensor": {
+      "ph_acid_pump": { "name": "Pompe à acide pH" },
+      "filtration_pump": { "name": "Filtration active" },
+      "pool_light": { "name": "Lumière de piscine" },
+      "ph_module_control_status": { "name": "Statut du module de contrôle pH" },
+      "ph_acid_pump_active": { "name": "Régulation du pH" },
+      "ph_control_module": { "name": "Module de contrôle pH" },
+      "ph_measurement_active": { "name": "Mesure du pH" },
+      "redox_pump_active": { "name": "Régulation redox" },
+      "redox_control_module": { "name": "Module de contrôle redox" },
+      "redox_measurement_active": { "name": "Mesure redox" },
+      "chlorine_flow_sensor_problem": { "name": "Capteur de débit de chlore" },
+      "chlorine_pump_active": { "name": "Régulation du chlore" },
+      "chlorine_control_module": { "name": "Module de contrôle chlore" },
+      "chlorine_measurement_active": { "name": "Mesure du chlore" },
+      "conductivity_pump_active": { "name": "Régulation de la conductivité" },
+      "conductivity_control_module": { "name": "Module de contrôle conductivité" },
+      "conductivity_measurement_active": { "name": "Mesure de conductivité" },
+      "ion_on_target": { "name": "Ioniseur sur cible" },
+      "ion_low_flow": { "name": "Faible débit de l’ioniseur" },
+      "ion_program_time_exceeded": { "name": "Temps de programme de l’ioniseur dépassé" },
+      "ion_in_dead_time": { "name": "Ioniseur en temps mort" },
+      "ion_in_pol1": { "name": "Ioniseur polarité 1" },
+      "ion_in_pol2": { "name": "Ioniseur polarité 2" },
+      "hidro_on_target": { "name": "Hydrolyse sur cible" },
+      "hidro_low_flow": { "name": "Hydrolyse faible débit" },
+      "hidro_cell_flow_fl1": { "name": "Débit cellule hydrolyse FL1" },
+      "hidro_cover_input_active": { "name": "Entrée couverture hydrolyse active" },
+      "hidro_module_active": { "name": "Module hydrolyse actif" },
+      "hidro_module_regulated": { "name": "Module hydrolyse régulé" },
+      "hidro_activated_by_the_rx_module": { "name": "Hydrolyse activée par le module redox" },
+      "hidro_chlorine_shock_mode": { "name": "Mode choc chlore hydrolyse" },
+      "hidro_chlorine_flow_indicator_fl2": { "name": "Indicateur de débit de chlore hydrolyse FL2" },
+      "hidro_activated_by_the_cl_module": { "name": "Hydrolyse activée par le module chlore" },
+      "hidro_in_dead_time": { "name": "Hydrolyse en temps mort" },
+      "hidro_in_pol1": { "name": "Hydrolyse polarité 1" },
+      "hidro_in_pol2": { "name": "Hydrolyse polarité 2" },
+      "device_time_out_of_sync": { "name": "Synchronisation de l’heure de l’appareil" },
+      "aux1": { "name": "Relais Aux1" },
+      "aux2": { "name": "Relais Aux2" },
+      "aux3": { "name": "Relais Aux3" },
+      "aux4": { "name": "Relais Aux4" }
+    },
+    "number": {
+      "hidro": { "name": "Niveau de production d’hydrolyse cible" },
+      "ph1": { "name": "Limite maximale pH" },
+      "ph2": { "name": "Limite minimale pH" },
+      "rx1": { "name": "Valeur redox cible" },
+      "cl1": { "name": "Valeur cible de chlore" },
+      "heating_temp": { "name": "Valeur cible de température" }
+    },
+    "switch": {
+      "filt_manual_state": { "name": "Filtration manuelle" },
+      "time_auto_sync": { "name": "Synchronisation automatique de l’heure" },
+      "light": { "name": "Lumière de piscine" },
+      "aux1": { "name": "Relais auxiliaire 1" },
+      "aux2": { "name": "Relais auxiliaire 2" },
+      "aux3": { "name": "Relais auxiliaire 3" },
+      "aux4": { "name": "Relais auxiliaire 4" }
+    },
+    "button": {
+      "sync_time": { "name": "Synchroniser l’heure de l’appareil" }
+    },
+    "select": {
+      "filtration1_start": { "name": "Minuteur 1 - Début de filtration" },
+      "filtration1_stop": { "name": "Minuteur 1 - Fin de filtration" },
+      "filtration2_start": { "name": "Minuteur 2 - Début de filtration" },
+      "filtration2_stop": { "name": "Minuteur 2 - Fin de filtration" },
+      "filtration3_start": { "name": "Minuteur 3 - Début de filtration" },
+      "filtration3_stop": { "name": "Minuteur 3 - Fin de filtration" },
+      "filt_mode": {
+        "name": "Mode de filtration",
+        "state": {
+          "manual": "Manuel",
+          "auto": "Automatique",
+          "heating": "Chauffage",
+          "smart": "Intelligent",
+          "intelligent": "Intelligent",
+          "backwash": "Contre-lavage"
+        }
+      }
+    }
+  },
+  "services": {
+    "set_timer": {
+      "name": "Définir un minuteur",
+      "description": "Définissez ou mettez à jour un minuteur sur l’appareil VistaPool.",
+      "fields": {
+        "entry_id": {
+          "name": "ID d’entrée",
+          "description": "Identifiant unique de l’entrée de l’appareil VistaPool. Optionnel."
+        },
+        "timer": {
+          "name": "Nom du minuteur",
+          "description": "Identifiant du minuteur (par ex. filtration1, filtration2, etc.)."
+        },
+        "start": {
+          "name": "Heure de début",
+          "description": "Heure de début au format HH:MM (par ex. 08:00)."
+        },
+        "stop": {
+          "name": "Heure de fin",
+          "description": "Heure de fin au format HH:MM (par ex. 16:00)."
+        }
+      }
+    }
+  }
+}
