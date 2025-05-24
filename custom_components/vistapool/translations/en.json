@@ -112,22 +112,22 @@
       "hidro_in_pol1": { "name": "Hydrolysis Polarity 1" },
       "hidro_in_pol2": { "name": "Hydrolysis Polarity 2" },
       "device_time_out_of_sync": { "name": "Device Time Sync" },
-      "aux1": { "name": "Auxiliary Relay 1" },
-      "aux2": { "name": "Auxiliary Relay 2" },
-      "aux3": { "name": "Auxiliary Relay 3" },
-      "aux4": { "name": "Auxiliary Relay 4" }
+      "aux1": { "name": "Relay Aux1" },
+      "aux2": { "name": "Relay Aux2" },
+      "aux3": { "name": "Relay Aux3" },
+      "aux4": { "name": "Relay Aux4" }
     },
     "number": {
-      "hidro": { "name": "\u2009Hydrolisis Target Production Level" },
-      "ph1": { "name": "\u2009pH Max Limit" },
-      "ph2": { "name": "\u2009pH Min Limit" },
-      "rx1": { "name": "\u2009Redox Setpoint" },
-      "cl1": { "name": "\u2009Chlorine Setpoint" },
-      "heating_temp": { "name": "\u2009Temperature Setpoint" }
+      "hidro": { "name": "Hydrolisis Target Production Level" },
+      "ph1": { "name": "pH Max Limit" },
+      "ph2": { "name": "pH Min Limit" },
+      "rx1": { "name": "Redox Setpoint" },
+      "cl1": { "name": "Chlorine Setpoint" },
+      "heating_temp": { "name": "Temperature Setpoint" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manual Filtration" },
-      "time_auto_sync": { "name": "\u2009Time Auto Sync" },
+      "time_auto_sync": { "name": "Time Auto Sync" },
       "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Auxiliary Relay 1" },
       "aux2": { "name": "Auxiliary Relay 2" },
@@ -138,14 +138,14 @@
       "sync_time": { "name": "Synchronize Device Time" }
     },
     "select": {
-      "filtration1_start": { "name": "1.Filtration Start" },
-      "filtration1_stop": { "name": "1.Filtration Stop" },
-      "filtration2_start": { "name": "2.Filtration Start" },
-      "filtration2_stop": { "name": "2.Filtration Stop" },
-      "filtration3_start": { "name": "3.Filtration Start" },
-      "filtration3_stop": { "name": "3.Filtration Stop" },
+      "filtration1_start": { "name": "Timer 1 - Filtration Start" },
+      "filtration1_stop": { "name": "Timer 1 - Filtration Stop" },
+      "filtration2_start": { "name": "Timer 2 - Filtration Start" },
+      "filtration2_stop": { "name": "Timer 2 - Filtration Stop" },
+      "filtration3_start": { "name": "Timer 3 - Filtration Start" },
+      "filtration3_stop": { "name": "Timer 3 - Filtration Stop" },
       "filt_mode": { 
-        "name": "\u2009Filtration Mode", 
+        "name": "Filtration Mode", 
         "state": {
           "manual": "Manual",
           "auto": "Automatic",

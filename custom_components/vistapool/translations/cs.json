@@ -118,16 +118,16 @@
       "aux4": { "name": "Pomocné relé 4" }
     },
     "number": {
-      "hidro": { "name": "\u2009Hydrolýza (intenzita)" },
-      "ph1": { "name": "\u2009pH  limit min" },
-      "ph2": { "name": "\u2009pH limit max" },
-      "rx1": { "name": "\u2009Redox (úroveň)" },
-      "cl1": { "name": "\u2009Setpoint chloru" },
-      "heating_temp": { "name": "\u2009Nastavená teplota" }
+      "hidro": { "name": "Hydrolýza (intenzita)" },
+      "ph1": { "name": "pH  limit min" },
+      "ph2": { "name": "pH limit max" },
+      "rx1": { "name": "Redox (úroveň)" },
+      "cl1": { "name": "Setpoint chloru" },
+      "heating_temp": { "name": "Nastavená teplota" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
-      "time_auto_sync": { "name": "\u2009Autosynchronizace času" },
+      "time_auto_sync": { "name": "Autosynchronizace času" },
       "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Pomocné relé 1" },
       "aux2": { "name": "Pomocné relé 2" },
@@ -138,14 +138,14 @@
       "sync_time": { "name": "Synchronizovat čas zařízení" }
     },
     "select": {
-      "filtration1_start": { "name": "1.Čas  zapnutí filtrace" },
-      "filtration1_stop": { "name": "1.Čas vypnutí filtrace" },
-      "filtration2_start": { "name": "2.Čas  zapnutí filtrace" },
-      "filtration2_stop": { "name": "2.Čas vypnutí filtrace" },
-      "filtration3_start": { "name": "3.Čas  zapnutí filtrace" },
-      "filtration3_stop": { "name": "3.Čas vypnutí filtrace" },
+      "filtration1_start": { "name": "Timer 1 - Spuštění filtrace" },
+      "filtration1_stop": { "name": "Timer 1 - Vypnutí filtrace" },
+      "filtration2_start": { "name": "Timer 2 -  Spuštění filtrace" },
+      "filtration2_stop": { "name": "Timer 2 - Vypnutí filtrace" },
+      "filtration3_start": { "name": "Timer 3 -  Spuštění filtrace" },
+      "filtration3_stop": { "name": "Timer 3 - Vypnutí filtrace" },
       "filt_mode": { 
-        "name": "\u2009Režim filtrace", 
+        "name": "Filtrační režim", 
         "state": {
           "manual": "Ruční",
           "auto": "Automatický",
