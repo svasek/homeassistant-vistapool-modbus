@@ -23,14 +23,10 @@ async def async_setup_entry(
     entities = []
 
     for key, props in BINARY_SENSOR_DEFINITIONS.items():
-        if key == "AUX1" and not entry.options.get("use_aux1", False):
+        option_key = props.get("option")
+        if option_key and not entry.options.get(option_key, False):
             continue
-        if key == "AUX2" and not entry.options.get("use_aux2", False):
-            continue
-        if key == "AUX3" and not entry.options.get("use_aux3", False):
-            continue
-        if key == "AUX4" and not entry.options.get("use_aux4", False):
-            continue
+        
         if key.startswith("ION ") and not bool((coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001):
             continue
         

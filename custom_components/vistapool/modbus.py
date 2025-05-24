@@ -20,11 +20,16 @@ AUX_BITMASKS = {
     4: 0x0040,  # AUX4
 }
 
-''' Read timer blocks (0x0434-0x0461) in blocks of *15* due to device limits '''
+''' Read timer blocks (0x0434-0x04E8) in blocks of *15* due to device limits '''
 TIMER_BLOCKS = {
     "filtration1": 0x0434,
     "filtration2": 0x0443,
     "filtration3": 0x0452,
+    "relay_light": 0x0470,
+    "relay_aux1": 0x04AC,
+    "relay_aux2": 0x04BB,
+    "relay_aux3": 0x04CA,
+    "relay_aux4": 0x04D9,
 }
 
     

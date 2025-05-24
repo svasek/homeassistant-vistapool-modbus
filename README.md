@@ -51,7 +51,7 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 - **Number entities**:  
   Setpoints for pH, Redox, Chlorine, Temperature, and Hydrolysis production
 - **Switches**:  
-  Manual filtration, auxiliary relays (*AUX1–AUX4*, enable in options), automatic time synchronization to HA
+  Manual filtration, auxiliary relays (*Light & AUX1–AUX4*, enable in options), automatic time synchronization to Home Assistant *(default: disabled)*
 - **Select entities**:  
   Filtration mode (*Manual, Auto, Heating, Smart, Intelligent*), timers for automatic filtration
 - **Buttons**:  
@@ -88,7 +88,7 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 ### Options (after setup)
 
 - **Adjust scan interval**
-- ~~Enable/disable AUX relays 1–4~~
+- **Enable/disable Relays** Light and AUX1–4 *(default: disabled)*
 
 ---
 
@@ -117,7 +117,7 @@ Entities are prefixed by the custom name (e.g. `sensor.bazen_jih_par_filt_mode`)
 
 - Add additional sensor coverage (e.g. flow rate, error states, power information)
 - ~~Add timers as a settings option~~
-- Add relay controls
+- ~~Add relay controls~~
 
 ---
 

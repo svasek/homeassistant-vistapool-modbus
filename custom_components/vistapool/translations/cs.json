@@ -18,9 +18,10 @@
     "step": {
       "init": {
         "title": "Nastavení VistaPool",
-        "description": "Nakonfigurujte další možnosti pro integraci VistaPool.",
+        "description": "POZOR: Změna povolených relé se projeví až po restartu Home Assistantu!",
         "data": {
           "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool?",
+          "use_light": "Povolit relé Osvětlení",
           "use_aux1": "Povolit relé AUX1",
           "use_aux2": "Povolit relé AUX2",
           "use_aux3": "Povolit relé AUX3",
@@ -127,6 +128,7 @@
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
+      "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Pomocné relé 1" },
       "aux2": { "name": "Pomocné relé 2" },
       "aux3": { "name": "Pomocné relé 3" },
@@ -136,14 +138,14 @@
       "sync_time": { "name": "Synchronizovat čas zařízení" }
     },
     "select": {
-      "filtration1_start": { "name": "1.Čas  zapnutí filtrace" },
-      "filtration1_stop": { "name": "1.Čas vypnutí filtrace" },
-      "filtration2_start": { "name": "2.Čas  zapnutí filtrace" },
-      "filtration2_stop": { "name": "2.Čas vypnutí filtrace" },
-      "filtration3_start": { "name": "3.Čas  zapnutí filtrace" },
-      "filtration3_stop": { "name": "3.Čas vypnutí filtrace" },
+      "filtration1_start": { "name": "Timer 1 - Spuštění filtrace" },
+      "filtration1_stop": { "name": "Timer 1 - Vypnutí filtrace" },
+      "filtration2_start": { "name": "Timer 2 -  Spuštění filtrace" },
+      "filtration2_stop": { "name": "Timer 2 - Vypnutí filtrace" },
+      "filtration3_start": { "name": "Timer 3 -  Spuštění filtrace" },
+      "filtration3_stop": { "name": "Timer 3 - Vypnutí filtrace" },
       "filt_mode": { 
-        "name": "Režim filtrace", 
+        "name": "Filtrační režim", 
         "state": {
           "manual": "Ruční",
           "auto": "Automatický",
