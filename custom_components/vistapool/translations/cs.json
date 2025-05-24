@@ -18,9 +18,10 @@
     "step": {
       "init": {
         "title": "Nastavení VistaPool",
-        "description": "Nakonfigurujte další možnosti pro integraci VistaPool.",
+        "description": "POZOR: Změna povolených relé se projeví až po restartu Home Assistantu!",
         "data": {
           "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool?",
+          "use_light": "Povolit relé Osvětlení",
           "use_aux1": "Povolit relé AUX1",
           "use_aux2": "Povolit relé AUX2",
           "use_aux3": "Povolit relé AUX3",
@@ -117,16 +118,16 @@
       "aux4": { "name": "Pomocné relé 4" }
     },
     "number": {
-      "hidro": { "name": "Hydrolýza (intenzita)" },
-      "ph1": { "name": "pH  limit min" },
-      "ph2": { "name": "pH limit max" },
-      "rx1": { "name": "Redox (úroveň)" },
-      "cl1": { "name": "Setpoint chloru" },
-      "heating_temp": { "name": "Nastavená teplota" }
+      "hidro": { "name": " Hydrolýza (intenzita)" },
+      "ph1": { "name": " pH  limit min" },
+      "ph2": { "name": " pH limit max" },
+      "rx1": { "name": " Redox (úroveň)" },
+      "cl1": { "name": " Setpoint chloru" },
+      "heating_temp": { "name": " Nastavená teplota" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
-      "time_auto_sync": { "name": "Autosynchronizace času" },
+      "time_auto_sync": { "name": " Autosynchronizace času" },
       "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Pomocné relé 1" },
       "aux2": { "name": "Pomocné relé 2" },
@@ -144,7 +145,7 @@
       "filtration3_start": { "name": "3.Čas  zapnutí filtrace" },
       "filtration3_stop": { "name": "3.Čas vypnutí filtrace" },
       "filt_mode": { 
-        "name": "Režim filtrace", 
+        "name": " Režim filtrace", 
         "state": {
           "manual": "Ruční",
           "auto": "Automatický",

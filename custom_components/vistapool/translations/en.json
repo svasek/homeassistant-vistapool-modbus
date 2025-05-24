@@ -18,9 +18,10 @@
     "step": {
       "init": {
         "title": "VistaPool Options",
-        "description": "Configure additional options for the VistaPool integration.",
+        "description": "WARNING: Changes to allowed relays will take effect only after a restart of Home Assistant!",
         "data": {
           "scan_interval": "How often should data be updated from the VistaPool controller?",
+          "use_light": "Enable Light relay",
           "use_aux1": "Enable AUX1 relay",
           "use_aux2": "Enable AUX2 relay",
           "use_aux3": "Enable AUX3 relay",
@@ -117,16 +118,16 @@
       "aux4": { "name": "Auxiliary Relay 4" }
     },
     "number": {
-      "hidro": { "name": "Hydrolisis Target Production Level" },
-      "ph1": { "name": "pH Max Limit" },
-      "ph2": { "name": "pH Min Limit" },
-      "rx1": { "name": "Redox Setpoint" },
-      "cl1": { "name": "Chlorine Setpoint" },
-      "heating_temp": { "name": "Temperature Setpoint" }
+      "hidro": { "name": " Hydrolisis Target Production Level" },
+      "ph1": { "name": " pH Max Limit" },
+      "ph2": { "name": " pH Min Limit" },
+      "rx1": { "name": " Redox Setpoint" },
+      "cl1": { "name": " Chlorine Setpoint" },
+      "heating_temp": { "name": " Temperature Setpoint" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manual Filtration" },
-      "time_auto_sync": { "name": "Time Auto Sync" },
+      "time_auto_sync": { "name": " Time Auto Sync" },
       "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Auxiliary Relay 1" },
       "aux2": { "name": "Auxiliary Relay 2" },
@@ -144,7 +145,7 @@
       "filtration3_start": { "name": "3.Filtration Start" },
       "filtration3_stop": { "name": "3.Filtration Stop" },
       "filt_mode": { 
-        "name": "Filtration Mode", 
+        "name": " Filtration Mode", 
         "state": {
           "manual": "Manual",
           "auto": "Automatic",

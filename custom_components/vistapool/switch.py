@@ -24,9 +24,11 @@ async def async_setup_entry(
     entities = []
 
     for key, props in SWITCH_DEFINITIONS.items():
-        # Only create AUX switches if enabled in options
-        if props.get("switch_type") == "aux" and not entry.options.get(props["option"], False):
+        # Only create relay switches if enabled in options
+        option_key = props.get("option")
+        if option_key and not entry.options.get(option_key, False):
             continue
+        
         entities.append(
             VistaPoolSwitch(
                 coordinator,
@@ -51,6 +53,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         self._relay_index = props.get("relay_index") or None
         self._attr_icon = props.get("icon") or None
         self._attr_entity_category = props.get("entity_category") or None
+        self._icon_on = props.get("icon_on")
+        self._icon_off = props.get("icon_off")
+        self._attr_icon = props.get("icon") or None
         
         # Initialize properties for relay timer switches
         self.timer_block_addr = props.get("timer_block_addr") or None
@@ -77,10 +82,6 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_register(self.function_addr, self.function_code)   # Set function (if needed)
             await client.async_write_register(self.timer_block_addr, 3)                 # Relay assigned to this timer always on
             await client.async_write_register(COMMIT_REGISTER, 1)                       # Commit
-            await asyncio.sleep(0.1)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
-            return
         
         # Run a refresh to update the state
         await asyncio.sleep(1.0)
@@ -101,10 +102,6 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             _LOGGER.debug(f"Turning OFF relay {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}")
             await client.async_write_register(self.timer_block_addr, 4)     # Relay assigned to this timer always off
             await client.async_write_register(COMMIT_REGISTER, 1)           # Commit
-            await asyncio.sleep(0.1)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
-            return
 
         # Run a refresh to update the state
         await asyncio.sleep(0.1)
@@ -145,4 +142,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     @property
     def icon(self):
-        return self._attr_icon
+        if self._icon_on and self._icon_off:
+            return self._icon_on if self.is_on else self._icon_off
+        if self._attr_icon:
+            return self._attr_icon
+        return None
