@@ -118,16 +118,16 @@
       "aux4": { "name": "Pomocné relé 4" }
     },
     "number": {
-      "hidro": { "name": "\u200CHydrolýza (intenzita)" },
-      "ph1": { "name": "\u200CpH  limit min" },
-      "ph2": { "name": "\u200CpH limit max" },
-      "rx1": { "name": "\u200CRedox (úroveň)" },
-      "cl1": { "name": "\u200CSetpoint chloru" },
-      "heating_temp": { "name": "\u200CNastavená teplota" }
+      "hidro": { "name": "\u200AHydrolýza (intenzita)" },
+      "ph1": { "name": "\u200ApH  limit min" },
+      "ph2": { "name": "\u200ApH limit max" },
+      "rx1": { "name": "\u200ARedox (úroveň)" },
+      "cl1": { "name": "\u200ASetpoint chloru" },
+      "heating_temp": { "name": "\u200ANastavená teplota" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
-      "time_auto_sync": { "name": "\u200CAutosynchronizace času" },
+      "time_auto_sync": { "name": "\u200AAutosynchronizace času" },
       "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Pomocné relé 1" },
       "aux2": { "name": "Pomocné relé 2" },
@@ -145,7 +145,7 @@
       "filtration3_start": { "name": "3.Čas  zapnutí filtrace" },
       "filtration3_stop": { "name": "3.Čas vypnutí filtrace" },
       "filt_mode": { 
-        "name": "\u200CRežim filtrace", 
+        "name": "\u200ARežim filtrace", 
         "state": {
           "manual": "Ruční",
           "auto": "Automatický",

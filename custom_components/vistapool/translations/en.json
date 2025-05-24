@@ -118,16 +118,16 @@
       "aux4": { "name": "Auxiliary Relay 4" }
     },
     "number": {
-      "hidro": { "name": "\u200CHydrolisis Target Production Level" },
-      "ph1": { "name": "\u200CpH Max Limit" },
-      "ph2": { "name": "\u200CpH Min Limit" },
-      "rx1": { "name": "\u200CRedox Setpoint" },
-      "cl1": { "name": "\u200CChlorine Setpoint" },
-      "heating_temp": { "name": "\u200CTemperature Setpoint" }
+      "hidro": { "name": "\u200AHydrolisis Target Production Level" },
+      "ph1": { "name": "\u200ApH Max Limit" },
+      "ph2": { "name": "\u200ApH Min Limit" },
+      "rx1": { "name": "\u200ARedox Setpoint" },
+      "cl1": { "name": "\u200AChlorine Setpoint" },
+      "heating_temp": { "name": "\u200ATemperature Setpoint" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manual Filtration" },
-      "time_auto_sync": { "name": "\u200CTime Auto Sync" },
+      "time_auto_sync": { "name": "\u200ATime Auto Sync" },
       "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Auxiliary Relay 1" },
       "aux2": { "name": "Auxiliary Relay 2" },
@@ -145,7 +145,7 @@
       "filtration3_start": { "name": "3.Filtration Start" },
       "filtration3_stop": { "name": "3.Filtration Stop" },
       "filt_mode": { 
-        "name": "\u200CFiltration Mode", 
+        "name": "\u200AFiltration Mode", 
         "state": {
           "manual": "Manual",
           "auto": "Automatic",
