@@ -20,18 +20,13 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 coordinator,
                 entry_id,
                 key,
-                props.get("name"),
-                props.get("icon"),
-                props.get("options_map"),
-                props.get("entity_category"),
-                props.get("select_type"),
-                props.get("register"),
+                props
             )
         )
     async_add_entities(entities)
 
 class VistaPoolSelect(VistaPoolEntity, SelectEntity):
-    def __init__(self, coordinator, entry_id, key, name, icon, options_map, entity_category=None, select_type=None, register=None):
+    def __init__(self, coordinator, entry_id, key, props):
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -39,11 +34,11 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
         
-        self._attr_icon = icon
-        self._options_map = options_map
-        self._attr_entity_category = entity_category
-        self._select_type = select_type
-        self._register = register
+        self._attr_icon = props.get("icon") or None
+        self._options_map = props.get("options_map") or {}
+        self._attr_entity_category = props.get("entity_category") or None
+        self._select_type = props.get("select_type") or None
+        self._register = props.get("register") or None
         
         _LOGGER.debug(
             "VistaPoolSelect INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",

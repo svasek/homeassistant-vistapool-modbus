@@ -2,9 +2,6 @@ import voluptuous as vol
 from homeassistant import config_entries
 from .const import DEFAULT_SCAN_INTERVAL
 
-import logging
-_LOGGER = logging.getLogger(__name__)
-
 class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry):
         super().__init__()

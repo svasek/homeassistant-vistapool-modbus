@@ -26,15 +26,13 @@ async def async_setup_entry(
                 coordinator,
                 entry_id,
                 key,
-                props.get("name"),
-                props.get("icon"),
-                props.get("entity_category"),
+                props
             )
         )
     async_add_entities(entities)
 
 class VistaPoolButton(VistaPoolEntity, ButtonEntity):
-    def __init__(self, coordinator, entry_id, key, name, icon=None, entity_category=None):
+    def __init__(self, coordinator, entry_id, key, props):
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -42,8 +40,8 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
         self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
         
-        self._attr_entity_category = entity_category
-        self._attr_icon = icon or "mdi:button-pointer"
+        self._attr_entity_category = props.get("entity_category") or None
+        self._attr_icon = props.get("icon") or "mdi:button-pointer"
 
         _LOGGER.debug(
             "VistaPoolButton INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",

@@ -66,21 +66,14 @@ async def async_setup_entry(
                     coordinator,
                     entry.entry_id,  # Pass entry_id explicitly
                     key,
-                    props.get("name"),
-                    props.get("unit") or None,
-                    props.get("device_class") or None,
-                    props.get("state_class") or None,
-                    props.get("entity_category") or None,
-                    props.get("icon") or None,
+                    props
                 )
             )
     async_add_entities(entities)
 
 
 class VistaPoolSensor(VistaPoolEntity, SensorEntity):
-    def __init__(
-        self, coordinator, entry_id, key, name, unit=None, device_class=None, state_class=None, entity_category=None, icon=None
-    ):
+    def __init__(self, coordinator, entry_id, key, props):
         super().__init__(coordinator, entry_id)  # Pass entry_id to the parent class
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -88,12 +81,12 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
 
-        self._attr_native_unit_of_measurement = unit or None
-        self._attr_unit_of_measurement = unit or None
-        self._attr_device_class = device_class
-        self._attr_state_class = state_class
-        self._attr_entity_category = entity_category
-        self._attr_icon = icon
+        self._attr_native_unit_of_measurement = props.get("unit") or None
+        self._attr_unit_of_measurement = props.get("unit") or None
+        self._attr_device_class = props.get("device_class") or None
+        self._attr_state_class = props.get("state_class") or None
+        self._attr_entity_category = props.get("entity_category") or None
+        self._attr_icon = props.get("icon") or None
         
         _LOGGER.debug(
             "VistaPoolSensor INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",

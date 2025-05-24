@@ -3,7 +3,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.util import dt as dt_util
 from .const import DOMAIN, BINARY_SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
@@ -26,16 +25,20 @@ async def async_setup_entry(
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):
             continue
-        
+        # Skip sensors that are not detected
         if key.startswith("ION ") and not bool((coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001):
             continue
-        
         # Hide all "measurement module detected" sensors
         if "measurement module detected" in key.lower():
             continue
-        
         # Skip the base pump if the relay is not assigned
         if key == "pH pump active" and not bool(coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO")):
+            continue
+        # Skip chlorine related sensors
+        if key.endswith("Activated by the CL module") and not bool(coordinator.data.get("Chlorine measurement module detected")):
+            continue
+        # Skip redox related sensors
+        if key.endswith("Activated by the RX module") and not bool(coordinator.data.get("Redox measurement module detected")):
             continue
         
         # Check if the entity should be skipped based on the suffixes
@@ -63,18 +66,14 @@ async def async_setup_entry(
                 coordinator,
                 entry.entry_id,  # Pass entry_id explicitly
                 key,             # Pass key as a positional argument
-                props["name"],
-                props.get("device_class") or None,
-                props.get("entity_category") or None,
-                props.get("icon_on") or None,
-                props.get("icon_off") or None,
+                props
             )
         )
     async_add_entities(entities)
     
 class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
     """Representation of a VistaPool binary sensor."""
-    def __init__(self, coordinator, entry_id, key, name, device_class=None, entity_category=None, icon_on=None, icon_off=None):
+    def __init__(self, coordinator, entry_id, key, props):
         super().__init__(coordinator, entry_id)
         self._key = key
         self._bit = None
@@ -90,10 +89,10 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
         
-        self._attr_device_class = device_class
-        self._attr_entity_category = entity_category
-        self._icon_on = icon_on
-        self._icon_off = icon_off
+        self._attr_device_class = props.get("device_class") or None
+        self._attr_entity_category = props.get("entity_category") or None
+        self._icon_on = props.get("icon_on") or None
+        self._icon_off = props.get("icon_off") or None
         
         _LOGGER.debug(
             "VistaPoolBinarySensor INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",

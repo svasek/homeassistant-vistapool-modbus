@@ -14,6 +14,8 @@ The manifest file is loaded to get the integration name and version
 The integration name and version are used to identify the integration
 and to display information about the integration in Home Assistant
 '''
+PLATFORMS = ["sensor", "binary_sensor", "switch", "number", "button", "select"]
+
 manifest_path = Path(__file__).parent / "manifest.json"
 with open(manifest_path, encoding="utf-8") as f:
     MANIFEST = json.load(f)
@@ -413,85 +415,77 @@ BINARY_SENSOR_DEFINITIONS = {
     # },
 }
 
-NUMBER_DEFINITIONS = [
-    {
+NUMBER_DEFINITIONS = {
+    "MBF_PAR_HIDRO": {
         "name": "Hydrolisis target production level",
         "unit": "%",
         "min": 0.0,
         "max": 100.0,
         "step": 1.0,
         "register": 0x0502,  # MBF_PAR_HIDRO
-        "key": "MBF_PAR_HIDRO",
         "scale": 10.0,
         "device_class": None,
         "entity_category": EntityCategory.CONFIG,
         "icon": "mdi:air-humidifier",
     },
-    {
+    "MBF_PAR_PH1": {
         "name": "pH Max Limit",
         "unit": "pH",
         "min": 5.0,
         "max": 9.0,
         "step": 0.1,
         "register": 0x0504,  # MBF_PAR_PH1
-        "key": "MBF_PAR_PH1",
         "scale": 100.0,
         "device_class": NumberDeviceClass.PH,
         "entity_category": EntityCategory.CONFIG,
-        # "icon": "mdi:ph"
     },
-    {
+    "MBF_PAR_PH2":{
         "name": "pH Min Limit",
         "unit": "pH",
         "min": 5.0,
         "max": 9.0,
         "step": 0.1,
         "register": 0x0505,  # MBF_PAR_PH2
-        "key": "MBF_PAR_PH2",
         "scale": 100.0,
         "device_class": NumberDeviceClass.PH,
         "entity_category": EntityCategory.CONFIG,
-        # "icon": "mdi:ph",
     },
-    {
+    "MBF_PAR_RX1": {
         "name": "Redox Setpoint",
         "unit": "mV",
         "min": 0.0,
         "max": 1000.0,
         "step": 10.0,
         "register": 0x0508,  # MBF_PAR_RX1
-        "key": "MBF_PAR_RX1",
         "scale": 1.0,
         "device_class": NumberDeviceClass.VOLTAGE,
         "entity_category": EntityCategory.CONFIG,
         "icon": "mdi:gradient-vertical"
     },
-    {
+    "MBF_PAR_CL1": {
         "name": "Chlorine Setpoint",
         "unit": "ppm",
         "min": 0.0,
         "max": 10.0,
         "step": 0.1,
         "register": 0x050A,  # MBF_PAR_CL1
-        "key": "MBF_PAR_CL1",
         "scale": 100.0,
         "device_class": None,
         "entity_category": EntityCategory.CONFIG,
         "icon": "mdi:test-tube"
     },
-    {
+    "MBF_PAR_HEATING_TEMP":{
         "name": "Temperature Setpoint",
         "unit": "°C",
         "min": 10.0,
         "max": 40.0,
         "step": 1.0,
         "register": 0x0416,  # MBF_PAR_HEATING_TEMP
-        "key": "MBF_PAR_HEATING_TEMP",
         "scale": 1.0,
         "device_class": NumberDeviceClass.TEMPERATURE,
         "entity_category": EntityCategory.CONFIG,
     },
-]
+}
 
 BUTTON_DEFINITIONS = {
     "SYNC_TIME": {

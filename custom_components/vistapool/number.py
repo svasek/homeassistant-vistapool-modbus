@@ -21,28 +21,37 @@ async def async_setup_entry(
     entry_id = entry.entry_id
 
     entities = []
-    for definition in NUMBER_DEFINITIONS:
+    for key, props in NUMBER_DEFINITIONS.items():
         # Conditionally add heating setpoint only if heating relay is assigned
-        if definition["key"] == "MBF_PAR_HEATING_TEMP":
+        if key == "MBF_PAR_HEATING_TEMP":
             if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")):
                 continue
         # Conditionally add pH high limit only if acid pump relay is assigned
-        if definition["key"] == "MBF_PAR_PH1":
+        if key == "MBF_PAR_PH1":
             if not bool(coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO")):
                 continue
         # Conditionally add pH low limit only if base pump relay is assigned
-        if definition["key"] == "MBF_PAR_PH2":
+        if key == "MBF_PAR_PH2":
             if not bool(coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO")):
                 continue
         # Conditionally add redox setpoint only if redox relay is assigned
-        if definition["key"] == "MBF_PAR_RX1":
+        if key == "MBF_PAR_RX1":
             if not bool(coordinator.data.get("Redox measurement module detected")):
                 continue
         # Conditionally add chlorine setpoint only if chlorine pump relay is assigned
-        if definition["key"] == "MBF_PAR_CL1":
+        if key == "MBF_PAR_CL1":
             if not bool(coordinator.data.get("Chlorine measurement module detected")):
                 continue
-        entities.append(VistaPoolNumber(coordinator, entry_id, definition))
+            
+        entities.append(
+            VistaPoolNumber(
+                coordinator, 
+                entry_id, 
+                key, 
+                props
+            )
+        )
+        
     async_add_entities(entities)
 
 
@@ -51,27 +60,26 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     _pending_value = None
     _debounce_delay = 2.0
     
-    def __init__(self, coordinator, entry_id, definition):
+    def __init__(self, coordinator, entry_id, key, props):
         super().__init__(coordinator, entry_id)
-        self._definition = definition
-        self._key = definition["key"]
-        self._register = definition.get("register", None)
-        self._scale = definition.get("scale", 1.0)
+        self._key = key
+        self._register = props.get("register", None)
+        self._scale = props.get("scale", 1.0)
 
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
         self.entity_id = f"{self.platform}.{self._attr_suggested_object_id}"
         self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
         
-        self._attr_native_unit_of_measurement = definition.get("unit", None)
-        self._attr_native_min_value = definition.get("min", None)
-        self._attr_native_max_value = definition.get("max", None)
-        self._attr_native_step = definition.get("step", 1.0)
+        self._attr_native_unit_of_measurement = props.get("unit", None)
+        self._attr_native_min_value = props.get("min", None)
+        self._attr_native_max_value = props.get("max", None)
+        self._attr_native_step = props.get("step", 1.0)
         self._attr_mode = "box"
         
-        self._attr_device_class = definition.get("device_class") or None
-        self._attr_entity_category = definition.get("entity_category") or None
-        self._attr_icon = definition.get("icon")
+        self._attr_device_class = props.get("device_class") or None
+        self._attr_entity_category = props.get("entity_category") or None
+        self._attr_icon = props.get("icon")
     
         _LOGGER.debug(
             "VistaPoolNumber INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
