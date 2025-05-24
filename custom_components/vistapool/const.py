@@ -568,32 +568,49 @@ SWITCH_DEFINITIONS = {
         "entity_category": None,
         "switch_type": "manual_filtration",
     },
-    # "AUX1": {
-    #     "name": "Auxiliary Relay 1",
-    #     "icon": "mdi:power-socket-eu",
-    #     "switch_type": "aux",
-    #     "relay_index": 1,
-    #     "option": "use_aux1",
-    # },
-    # "AUX2": {
-    #     "name": "Auxiliary Relay 2",
-    #     "icon": "mdi:power-socket-eu",
-    #     "switch_type": "aux",
-    #     "relay_index": 2,
-    #     "option": "use_aux2",
-    # },
-    # "AUX3": {
-    #     "name": "Auxiliary Relay 3",
-    #     "icon": "mdi:power-socket-eu",
-    #     "switch_type": "aux",
-    #     "relay_index": 3,
-    #     "option": "use_aux3",
-    # },
-    # "AUX4": {
-    #     "name": "Auxiliary Relay 4",
-    #     "icon": "mdi:power-socket-eu",
-    #     "switch_type": "aux",
-    #     "relay_index": 4,
-    #     "option": "use_aux4",
-    # },
+    "light": {
+        "name": "Pool Light",
+        "icon": "mdi:lightbulb",
+        "switch_type": "relay_timer",
+        "timer_block_addr": 0x0470,
+        "function_addr": 0x047B,
+        "function_code": 2,  # LIGHTING
+        "option": "use_light",
+    },
+    "aux1": {
+        "name": "Auxiliary Relay 1",
+        "icon": "mdi:power-socket-eu",
+        "switch_type": "relay_timer",
+        "timer_block_addr": 0x04AC,
+        "function_addr": 0x04B7,
+        "function_code": 0x0800,  # AUX1 relay code
+        "option": "use_aux1",
+    },
+    "aux2": {
+        "name": "Auxiliary Relay 2",
+        "icon": "mdi:power-socket-eu",
+        "switch_type": "relay_timer",
+        "timer_block_addr": 0x04BB,
+        "function_addr": 0x04C6,
+        "function_code": 0x1000,  # AUX2 relay code
+        "option": "use_aux2",
+    },
+    "aux3": {
+        "name": "Auxiliary Relay 3",
+        "icon": "mdi:power-socket-eu",
+        "switch_type": "relay_timer",
+        "timer_block_addr": 0x04CA,
+        "function_addr": 0x04D5,
+        "function_code": 0x2000,  # AUX3 relay code
+        "option": "use_aux3",
+    },
+    "aux4": {
+        "name": "Auxiliary Relay 4",
+        "icon": "mdi:power-socket-eu",
+        "switch_type": "relay_timer",
+        "timer_block_addr": 0x04D9,
+        "function_addr": 0x04E4,
+        "function_code": 0x4000,  # AUX4 relay code
+        "option": "use_aux4",
+    },
 }
