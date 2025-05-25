@@ -6,7 +6,11 @@ permissions:
 on:
   workflow_dispatch:
   push:
+    paths:
+      - 'custom_components/vistapool/**'
   pull_request:
+    paths:
+      - 'custom_components/vistapool/**'
   # schedule:
   #   - cron:  '0 0 * * *'
 
