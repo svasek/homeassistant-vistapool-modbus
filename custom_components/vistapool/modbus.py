@@ -96,6 +96,7 @@ class VistaPoolModbusClient:
                 Contains the different measurement information including hydrolysis current, pH level, redox level, etc.
                 For measurements registers, we have to use function 0x04 (Read Input Registers).
                 '''
+                await asyncio.sleep(0.05)
                 try:
                     rr01_count = 18
                     rr01 = await client.read_input_registers(address=0x0100, count=rr01_count, slave=self._unit)
@@ -318,8 +319,6 @@ class VistaPoolModbusClient:
                         # "MBF_PAR_UICFG_MACH_NAME_AUX4": modbus_regs_to_ascii(reg06[31:36]), # 0x061F         Aux4 relay name: 5 register ASCIIZ string with up to 10 characters
                     })
                 
-                timer1 = await self.read_timer("filtration1")
-                
 
         except Exception as e:
             _LOGGER.error("Modbus TCP read error: %s", e)
@@ -409,24 +408,20 @@ class VistaPoolModbusClient:
 
     async def read_all_timers(self):
         timers = {}
-        for name, addr in TIMER_BLOCKS.items():
-            async with AsyncModbusTcpClient(self._host, port=self._port) as client:
-                rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+        async with AsyncModbusTcpClient(self._host, port=self._port) as client:
+            for name, addr in TIMER_BLOCKS.items():
+                try:
+                    rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+                except Exception as e:
+                    _LOGGER.error(f"Timer block read error at {addr:#04x}: {e}")
+                    continue
                 if rr.isError():
+                    _LOGGER.error(f"Modbus read error from 0x{addr:04X}: {rr}")
                     continue
                 _LOGGER.debug(f"Raw rr-{name} from 0x{addr:04X}: {rr.registers}")
                 timers[name] = parse_timer_block(rr.registers)
+                await asyncio.sleep(0.05)
         return timers
-
-    async def read_timer(self, block_name):
-        """Reads one timer block and returns dict of timer params."""
-        addr = TIMER_BLOCKS[block_name]
-        async with AsyncModbusTcpClient(self._host, port=self._port) as client:
-            rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
-            if rr.isError():
-                _LOGGER.error(f"Timer block read error at {addr:#04x}: {rr}")
-                return None
-            return parse_timer_block(rr.registers)
 
     async def write_timer(self, block_name, timer_data):
         """
