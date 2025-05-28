@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from pymodbus.client import AsyncModbusTcpClient
-from .helpers import parse_timer_block, build_timer_block
+from .helpers import parse_timer_block, build_timer_block, get_filtration_speed
 
 from .status_mask import (
     decode_notification_mask,
@@ -317,26 +317,30 @@ class VistaPoolModbusClient:
                 '''
                 await asyncio.sleep(0.05)
                 try:
-                    rr05_count = 9
+                    rr05_count = 14
                     rr05 = await client.read_holding_registers(address=0x0502, count=rr05_count, slave=self._unit)
                 except Exception as e:
-                    _LOGGER.error("Read error 0x0504: %s", e)
+                    _LOGGER.error("Read error 0x0502: %s", e)
                     return {}
                 if rr05.isError():
-                    _LOGGER.error("Modbus read error from 0x0504: %s", rr05)
+                    _LOGGER.error("Modbus read error from 0x0502: %s", rr05)
                 else:
                     reg05 = rr05.registers
                     _LOGGER.debug("Raw rr05: %s", reg05)
                     if len(reg05) < rr05_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0504, got %d", rr05_count, len(reg05))
+                        _LOGGER.warning("Expected at least %d registers from 0x0502, got %d", rr05_count, len(reg05))
                         return result
-                    # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100]
+                    # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
                     result.update({
                         "MBF_PAR_HIDRO": get_safe(reg05, 0) / 10.0,       # 0x0502        Hydrolisis target production level. When the hydrolysis production is to be set in percent values, this value will contain the percent of production. If the hydrolysis module is set to work in g/h production, this module will contain the desired amount of production in g/h units. The value adjusted in this register must not exceed the value set in the MBF_PAR_HIDRO_NOM factory register.
                         "MBF_PAR_PH1": get_safe(reg05, 2) / 100.0,        # 0x0504        Higher limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.5, the numerical content that we must write in this register is 750. This register must be always higher than MBF_PAR_PH2.
                         "MBF_PAR_PH2": get_safe(reg05, 3) / 100.0,        # 0x0505        Lower limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.0, the numerical content that we must write in this register is 700. This register must be always lower than MBF_PAR_PH1.
+                        # 0x0506–0x0507 skipped
                         "MBF_PAR_RX1": get_safe(reg05, 6),                # 0x0508        Set point for the redox regulation system. This value must be in the range of 0 to 1000.
+                        # 0x0509 skipped
                         "MBF_PAR_CL1": get_safe(reg05, 8) / 100.0,        # 0x050A        Set point for the chlorine regulation system. The value stored in this register is multiplied by 100. This mean that if we want to set a value of 1.5 ppm, we will have to write a numerical value of 150. This value stored in this register must be in the range of 0 to 1000.
+                        # 0x050B-0x050E skipped
+                        "MBF_PAR_FILTRATION_CONF": get_safe(reg05, 13),    # 0x050F* mask   ! filtration type and speed, see MBMSK_PAR_FILTRATION_CONF_*
                     })
 
 
@@ -382,6 +386,10 @@ class VistaPoolModbusClient:
 
         except Exception as e:
             _LOGGER.error("Modbus TCP read error: %s", e)
+            
+        # Add filtration speed and type    
+        result["FILTRATION_SPEED"] = get_filtration_speed(result)
+        
         # _LOGGER.debug("All Results: %s", result)
         return result
 

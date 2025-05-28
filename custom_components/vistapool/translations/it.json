@@ -40,7 +40,6 @@
       "measure_conductivity": { "name": "Livello di conducibilità" },
       "measure_temperature": { "name": "Temperatura dell'acqua" },
       "hidro_voltage": { "name": "Tensione di idrolisi" },
-      "filtration_current_speed": { "name": "Velocità di filtrazione attuale" },
       "device_time": { "name": "Ora del dispositivo" },
       "ph_status_alarm": {
         "name": "Allarme pH",
@@ -71,6 +70,15 @@
           "smart": "Smart",
           "intelligent": "Intelligente",
           "backwash": "Controlavaggio"
+        }
+      },
+      "filtration_speed": { 
+        "name": "Velocità attuale di filtrazione",
+        "state": {
+          "off": "Spento",
+          "low": "Bassa",
+          "mid": "Media",
+          "high": "Alta"
         }
       }
     },

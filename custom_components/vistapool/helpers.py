@@ -156,3 +156,31 @@ def generate_time_options(step_minutes=15):
         m = mins % 60
         options.append(f"{h:02d}:{m:02d}")
     return options
+
+def get_filtration_speed(data):
+    relay_state = data.get("MBF_RELAY_STATE", 0)
+    # Filtration is off if the bit 0x0002 is not set
+    if not (relay_state & 0x0002):
+        return 0  # Filtration is off
+
+    par_filtration_conf = data.get("MBF_PAR_FILTRATION_CONF", 0)
+    relay_speed = (relay_state & 0x00E0) >> 5
+    if relay_speed == 1:
+        return 1  # Low
+    elif relay_speed == 2:
+        return 2  # Mid
+    elif relay_speed == 4:
+        return 3  # High
+
+    conf_speed = (par_filtration_conf & 0x0070) >> 4
+    if conf_speed == 0:
+        return 1
+    elif conf_speed == 1:
+        return 2
+    elif conf_speed == 2:
+        return 3
+    return 0
+
+def get_filtration_pump_type(par_filtration_conf):
+    pump_type = (par_filtration_conf & 0x000F) >> 0
+    return pump_type  # 0 = standard, 1/2 = variable speed

@@ -6,7 +6,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN, SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
-from .helpers import get_device_time
+from .helpers import get_device_time, get_filtration_pump_type
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +18,13 @@ FILTRATION_MODE_MAP = {
     3: "smart",         # This filtration mode adjusts the pump operating times depending on the temperature. This mode is activated only if the MBF_PAR_TEMPERATURE_ACTIVE register is at 1.
     4: "intelligent",   # This mode performs an intelligent filtration process in combination with the heating function. This mode is activated only if the MBF_PAR_HEATING_MODE register is at 1 and there is a heating relay assigned.
     13: "backwash",     # This filter mode is started when the backwash operation is activated.
+}
+
+FILTRATION_SPEED_MAP = {
+    0: "off",
+    1: "low",
+    2: "mid",
+    3: "high",
 }
 
 PH_STATUS_ALARM_MAP = {
@@ -51,6 +58,8 @@ async def async_setup_entry(
         if key == "MBF_MEASURE_CONDUCTIVITY" and not bool(coordinator.data.get("Conductivity measurement module detected")):
             continue
         if key == "MBF_ION_CURRENT" and not bool((coordinator.data.get("MBF_PAR_MODEL") or 0 ) & 0x0001):
+            continue
+        if key == "FILTRATION_SPEED" and not bool(get_filtration_pump_type(coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0))):
             continue
         
         value = coordinator.data.get(key)
@@ -150,6 +159,9 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "MBF_PAR_FILT_MODE":
             raw = self.coordinator.data.get(self._key)
             return FILTRATION_MODE_MAP.get(raw)
+        if self._key == "FILTRATION_SPEED":
+            raw = self.coordinator.data.get(self._key)
+            return FILTRATION_SPEED_MAP.get(raw)
         if self._key == "MBF_PH_STATUS_ALARM":
             raw = self.coordinator.data.get(self._key)
             return PH_STATUS_ALARM_MAP.get(raw)
@@ -161,6 +173,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
     def options(self):
         if self._key == "MBF_PAR_FILT_MODE":
             return list(FILTRATION_MODE_MAP.values())
+        if self._key == "FILTRATION_SPEED":
+            return list(FILTRATION_SPEED_MAP.values())
         if self._key == "MBF_PH_STATUS_ALARM":
             return list(PH_STATUS_ALARM_MAP.values())
         if self._key == "HIDRO_POLARITY":

@@ -102,18 +102,19 @@ SENSOR_DEFINITIONS = {
         "state_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    "Filtration current speed": {
-        "name": "Filtration Current Speed",
-        "device_class": "motor_speed",
-        "state_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
     "HIDRO_POLARITY": {
         "name": "Hydrolysis Polarity",
         "unit": None,
         "device_class": SensorDeviceClass.ENUM,
         "state_class": None,
         "icon": "mdi:plus-minus-variant",
+    },
+    "FILTRATION_SPEED": {
+        "name": "Filtration Current Speed",
+        "unit": None,
+        "device_class": SensorDeviceClass.ENUM,
+        "state_class": None,
+        "icon": "mdi:fan",
     },
 }
 

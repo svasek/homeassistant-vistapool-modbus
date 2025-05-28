@@ -40,7 +40,6 @@
       "measure_conductivity": { "name": "Conductivity Level" },
       "measure_temperature": { "name": "Water Temperature" },
       "hidro_voltage": { "name": "Hydrolysis Voltage" },
-      "filtration_current_speed": { "name": "Filtration Current Speed" },
       "device_time": { "name": "Device Time" },
       "ph_status_alarm": { 
         "name": "pH Alarm",
@@ -71,6 +70,15 @@
           "smart": "Smart",
           "intelligent": "Intelligent",
           "backwash": "Backwash"
+        }
+      },
+      "filtration_speed": { 
+        "name": "Current filtration speed",
+        "state": {
+          "off": "Off",
+          "low": "Low",
+          "mid": "Medium",
+          "high": "High"
         }
       }
     },

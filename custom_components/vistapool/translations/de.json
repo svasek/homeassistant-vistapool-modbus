@@ -40,7 +40,6 @@
       "measure_conductivity": { "name": "Leitfähigkeitsniveau" },
       "measure_temperature": { "name": "Wassertemperatur" },
       "hidro_voltage": { "name": "Hydrolyse-Spannung" },
-      "filtration_current_speed": { "name": "Aktuelle Filtergeschwindigkeit" },
       "device_time": { "name": "Gerätezeit" },
       "ph_status_alarm": {
         "name": "pH-Alarm",
@@ -72,7 +71,16 @@
           "intelligent": "Intelligent",
           "backwash": "Rückspülung"
         }
-      }
+      },
+      "filtration_speed": { 
+          "name": "Aktuelle Filtergeschwindigkeit",
+          "state": {
+            "off": "Aus",
+            "low": "Niedrig",
+            "mid": "Mittel",
+            "high": "Hoch"
+          }
+        }
     },
     "binary_sensor": {
       "ph_acid_pump": { "name": "pH-Säurepumpe" },
