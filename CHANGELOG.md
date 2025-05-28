@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.0.3...v1.1.0) (2025-05-28)
+
+
+### Features
+
+* **boost:** ✨ add boost mode functionality and translations ([62617d5](https://github.com/svasek/homeassistant-vistapool-modbus/commit/62617d59997b21ec607b57b57f4285c3a60771c3))
+* **button:** ✨ add "Clear Errors" button functionality and translations ([b07dfe9](https://github.com/svasek/homeassistant-vistapool-modbus/commit/b07dfe9ea9f6e65291c8257c13d524a32199af11))
+* **sensor:** ✨ add filtration speed sensor and update translations ([cf5b51f](https://github.com/svasek/homeassistant-vistapool-modbus/commit/cf5b51f1f1e34182b21e2debb9b14c9b3f45883f))
+
 ## [1.0.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.0.2...v1.0.3) (2025-05-26)
 
 
