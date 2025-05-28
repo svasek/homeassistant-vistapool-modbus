@@ -88,6 +88,30 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             )
             return
         
+        if self._key == "MBF_CELL_BOOST":
+            value = None
+            for k, v in self._options_map.items():
+                if v == option:
+                    value = k
+                    break
+
+            reg = SELECT_DEFINITIONS[self._key]["register"]
+            if value is not None:
+                if value == 0:
+                    write_val = 0
+                elif value == 1:
+                    write_val = 0x0500 | 0x00A0 | 0x8000  # 0x85A0 = Boost active, redox control DISABLED
+                elif value == 2:
+                    write_val = 0x0500 | 0x00A0           # 0x05A0 = Boost active, redox control ENABLED
+                else:
+                    return
+
+                await self.coordinator.client.async_write_register(reg, write_val)
+                await asyncio.sleep(0.2)
+                await self.coordinator.async_request_refresh()
+                self.async_write_ha_state()
+            return
+        
         value = None
         for k, v in self._options_map.items():
             if v == option:
@@ -124,27 +148,53 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
     @property
     def options(self):
-        options = list(self._options_map.values())
-        
+        option_keys = list(self._options_map.keys())
+
         # Hide heating and intelligent if not enabled heating mode
         if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_HEATING_MODE") == 0:
-            options = [opt for opt in options if opt not in ("heating", "intelligent")]
+            # Remove keys for "heating" and "intelligent"
+            option_keys = [k for k in option_keys if k not in (2, 4)]
+
         # Hide smart if temperature sensor is not active
         if self._key == "MBF_PAR_FILT_MODE" and self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
-            options = [opt for opt in options if opt != "smart"]
-            
+            # Remove key for "smart"
+            option_keys = [k for k in option_keys if k != 3]
+
+        # Hide "Active (Redox control)" if no Redox module
+        if self._key == "MBF_CELL_BOOST" and not bool(self.coordinator.data.get("Redox measurement module detected")):
+            option_keys = [k for k in option_keys if k != 2]
+
         # Handle Timer options in cases where doesn't fit 15 minutes
         if self._select_type == "timer_time":
             value = self.coordinator.data.get(self._key)
+            options_list = [self._options_map[k] for k in option_keys]
             if value is not None:
                 current_hhmm = seconds_to_hhmm(value)
-                if current_hhmm not in options:
-                    return [current_hhmm] + options
-        return options
+                if current_hhmm not in options_list:
+                    return [current_hhmm] + options_list
+            return options_list
+
+        return [self._options_map[k] for k in option_keys]
 
 
     @property
     def current_option(self):
+        if self._key == "MBF_CELL_BOOST":
+            reg_val = self.coordinator.data.get(self._key)
+            if reg_val is None:
+                return None
+            # 0: Inactive
+            if reg_val == 0:
+                return self._options_map[0]
+            # 1: Active (redox control disabled) – bit 0x8000 set
+            elif (reg_val & 0x8000):
+                return self._options_map[1]
+            # 2: Active (Redox control) – bits 0x0500 | 0x00A0 set and 0x8000 NOT set
+            elif (reg_val & (0x0500 | 0x00A0)) == (0x0500 | 0x00A0):
+                return self._options_map[2]
+            # fallback (should not occur)
+            return self._options_map[0]
+        
         value = self.coordinator.data.get(self._key)
         if value is None:
             return None

@@ -105,7 +105,7 @@
       "hidro_module_active": { "name": "Modul hydrolýzy aktivní" },
       "hidro_module_regulated": { "name": "Modul hydrolýzy regulován" },
       "hidro_activated_by_the_rx_module": { "name": "Hydrolýza aktivována RX modulem" },
-      "hidro_chlorine_shock_mode": { "name": "Hydrolýza šokový režim chloru" },
+      "hidro_chlorine_shock_mode": { "name": "Hydrolýza šokový režim chloru (Boost)" },
       "hidro_chlorine_flow_indicator_fl2": { "name": "Průtokový indikátor chloru hydrolýzy FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolýza aktivována CL modulem" },
       "hidro_in_dead_time": { "name": "Hydrolýza v době mrtvého času" },
@@ -153,6 +153,14 @@
           "smart": "Chytrý režim",
           "intelligent": "Inteligentní režim",
           "backwash": "Zpětný proplach"
+        }
+      },
+      "cell_boost": {
+        "name": "Režim boost",
+        "state": {
+          "inactive": "Neaktivní",
+          "active": "Aktivní",
+          "active_redox": "Aktivní (řízeno redoxem)"
         }
       }
     }

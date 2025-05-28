@@ -147,6 +147,65 @@ class VistaPoolModbusClient:
                 
 
                 '''
+                Request GLOBAL page of registers starting from 0x0206
+                Contains global information, such as the amount of time that each power unit has been working.
+                For configuration registers, we have to use function 0x03 (Read Holding Registers)
+                '''
+                try:
+                    rr02_count = 20  # 0x0206 to 0x0219 
+                    rr02 = await client.read_holding_registers(address=0x0206, count=rr02_count, slave=self._unit)
+                except Exception as e:
+                    _LOGGER.error("Read error 0x0206: %s", e)
+                    return {}
+                if rr02.isError():
+                    _LOGGER.error("Modbus read error from 0x0206: %s", rr02)
+                else:
+                    reg02 = rr02.registers
+                    _LOGGER.debug("Raw rr02: %s", reg02)
+                    if len(reg02) < rr02_count:
+                        _LOGGER.warning("Expected at least %d registers from 0x0206, got %d", rr02_count, len(reg02))
+                        return result
+                    # Example: [23971, 8, 23971, 8, 26922, 0, 34208, 0, 0, 65426, 0, 0, 0, 0, 64136, 3, 25371, 4, 16, 0]
+                    result.update({
+                        "MBF_CELL_RUNTIME_LOW":      get_safe(reg02, 0),            # 0x0206*        ! Cell runtime (32 bit value - low word)
+                        "MBF_CELL_RUNTIME_HIGH":     get_safe(reg02, 1),            # 0x0207*        ! Cell runtime (32 bit value - high word)
+                        "MBF_CELL_RUNTIME_PART_LOW": get_safe(reg02, 2),            # 0x0208*        ! Cell part runtime (32 bit value - low word)
+                        "MBF_CELL_RUNTIME_PART_HIGH":get_safe(reg02, 3),            # 0x0209*        ! Cell part runtime (32 bit value - high word)
+                        # 0x020A–0x020B skipped
+                        "MBF_CELL_BOOST":            get_safe(reg02, 6),            # 0x020C* mask   ! Boost control (see MBMSK_CELL_BOOST_*)
+                        # 0x020D–0x0213 skipped
+                        "MBF_CELL_RUNTIME_POLA_LOW": get_safe(reg02, 14),           # 0x0214*        ! Cell runtime polarity 1 (32 bit value - low word)
+                        "MBF_CELL_RUNTIME_POLA_HIGH":get_safe(reg02, 15),           # 0x0215*        ! Cell runtime polarity 1 (32 bit value - high word)
+                        "MBF_CELL_RUNTIME_POLB_LOW": get_safe(reg02, 16),           # 0x0216*        ! Cell runtime polarity 2 (32 bit value - low word)
+                        "MBF_CELL_RUNTIME_POLB_HIGH":get_safe(reg02, 17),           # 0x0217*        ! Cell runtime polarity 2 (32 bit value - high word)
+                        "MBF_CELL_RUNTIME_POL_CHANGES_LOW": get_safe(reg02, 18),    # 0x0218*        ! Cell runtime polarity change count (32 bit value - low word)
+                        "MBF_CELL_RUNTIME_POL_CHANGES_HIGH":get_safe(reg02, 19),    # 0x0219*        ! Cell runtime polarity change count (32 bit value - high word)
+                    })
+                await asyncio.sleep(0.05)
+
+                try:
+                    rr02_hidro_count = 2
+                    rr02_hidro = await client.read_holding_registers(address=0x0280, count=rr02_hidro_count, slave=self._unit)
+                except Exception as e:
+                    _LOGGER.error("Read error 0x0280: %s", e)
+                    return {}
+                if rr02_hidro.isError():
+                    _LOGGER.error("Modbus read error from 0x0280: %s", rr02_hidro)
+                else:
+                    reg02_hidro = rr02_hidro.registers
+                    _LOGGER.debug("Raw rr02_hidro: %s", reg02_hidro)
+                    if len(reg02_hidro) < rr02_hidro_count:
+                        _LOGGER.warning("Expected at least %d registers from 0x0280, got %d", rr02_hidro_count, len(reg02_hidro))
+                        return result
+                    # Example: [266, 10000]
+                    result.update({
+                        "MBF_HIDRO_MODULE_VERSION":      get_safe(reg02_hidro, 0),  # 0x0280         ! Hydrolysis module version
+                        "MBF_HIDRO_MODULE_CONNECTIVITY": get_safe(reg02_hidro, 1),  # 0x0281         ! Hydrolysis module connection quality (in myriad: 0..10000)
+                    })
+                await asyncio.sleep(0.05)
+
+
+                '''
                 Request FACTORY page of registers starting from 0x0300
                 Contains factory data such as calibration parameters for the different power units.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
@@ -172,6 +231,7 @@ class VistaPoolModbusClient:
                         "MBF_PAR_MODEL": get_safe(reg03, 1),                  # 0x0301* mask   System model options
                         "MBF_PAR_SERNUM": get_safe(reg03, 2),                 # 0x0302*        Serial number of the PowerBox
                         "MBF_PAR_ION_NOM":  get_safe(reg03, 3),		          # 0x0303*        Ionization maximum production level (DO NOT WRITE!)
+                        # 0x0304–0x0305 skipped
                         "MBF_PAR_HIDRO_NOM":  get_safe(reg03, 6) / 10.0,      # 0x0306*        Hydrolysis maximum production level. (DO NOT WRITE!) If the hydrolysis is set to work in percent mode, this value will be 100. If the hydrolysis module is set to work in g/h production, this module will contain the maximum amount of production in g/h units. (DO NOT WRITE!)
                         "MBF_PAR_SAL_AMPS":  get_safe(reg03, 10),	          # 0x030A         Current command in regulation for which we are going to measure voltage
                         "MBF_PAR_SAL_CELLK":  get_safe(reg03, 11),		      # 0x030B         Specifies the relationship between the resistance obtained in the measurement process and its equivalence in g / l (grams per liter)

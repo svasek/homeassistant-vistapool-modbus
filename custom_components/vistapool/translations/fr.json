@@ -105,7 +105,7 @@
       "hidro_module_active": { "name": "Module hydrolyse actif" },
       "hidro_module_regulated": { "name": "Module hydrolyse régulé" },
       "hidro_activated_by_the_rx_module": { "name": "Hydrolyse activée par le module redox" },
-      "hidro_chlorine_shock_mode": { "name": "Mode choc chlore hydrolyse" },
+      "hidro_chlorine_shock_mode": { "name": "Mode choc chlore hydrolyse (Boost)" },
       "hidro_chlorine_flow_indicator_fl2": { "name": "Indicateur de débit de chlore hydrolyse FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolyse activée par le module chlore" },
       "hidro_in_dead_time": { "name": "Hydrolyse en temps mort" },
@@ -153,6 +153,14 @@
           "smart": "Intelligent",
           "intelligent": "Intelligent",
           "backwash": "Contre-lavage"
+        }
+      },
+      "cell_boost": {
+        "name": "Mode boost",
+        "state": {
+          "inactive": "Inactif",
+          "active": "Actif",
+          "active_redox": "Actif (contrôle Redox)"
         }
       }
     }

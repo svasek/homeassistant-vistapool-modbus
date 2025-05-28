@@ -108,13 +108,6 @@ SENSOR_DEFINITIONS = {
         "state_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    # "MBF_DEVICE_TIME": {
-    #     "name": "Device Time",
-    #     "unit": None,
-    #     "device_class": SensorDeviceClass.TIMESTAMP,
-    #     "state_class": None,
-    #     "entity_category": EntityCategory.DIAGNOSTIC,
-    # },
     "HIDRO_POLARITY": {
         "name": "Hydrolysis Polarity",
         "unit": None,
@@ -402,17 +395,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": BinarySensorDeviceClass.PROBLEM,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    # Replaced by HIDRO Polarity sensor
-    # "HIDRO in Pol1": {
-    #     "name": "Hydrolysis Polarity 1",
-    #     "device_class": None,
-    #     "entity_category": EntityCategory.DIAGNOSTIC,
-    # },
-    # "HIDRO in Pol2": {
-    #     "name": "Hydrolysis Polarity 2",
-    #     "device_class": None,
-    #     "entity_category": EntityCategory.DIAGNOSTIC,
-    # },
 }
 
 NUMBER_DEFINITIONS = {
@@ -511,6 +493,16 @@ SELECT_DEFINITIONS = {
             # 13: "backwash",
         },
         "register": 0x0411,  # FILTRATION_MODE_REGISTER
+    },
+    "MBF_CELL_BOOST": {
+        "name": "Boost Mode",
+        "icon": "mdi:flash-outline",
+        "options_map": {
+            0: "inactive",
+            1: "active",
+            2: "active_redox",
+        },
+        "register": 0x020C,
     },
     "filtration1_start": {
         "name": "Filtration Timer 1 Start",
