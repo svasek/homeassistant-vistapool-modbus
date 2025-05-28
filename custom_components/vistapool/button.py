@@ -56,6 +56,12 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
             await client.async_write_register(0x0408, prepare_device_time(self.hass))
             await client.async_write_register(0x04F0, 1)
             await self.coordinator.async_request_refresh()
+        elif self._key == "MBF_ESCAPE":
+            client = self.coordinator.client
+            _LOGGER.debug("Clearing all possible errors...")
+            await client.async_write_register(0x0297, 1)
+            await self.coordinator.async_request_refresh()
+        
 
     async def async_added_to_hass(self):
         _LOGGER.debug(

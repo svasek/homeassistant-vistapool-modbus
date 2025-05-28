@@ -135,7 +135,8 @@
       "aux4": { "name": "Relais auxiliaire 4" }
     },
     "button": {
-      "sync_time": { "name": "Synchroniser l’heure de l’appareil" }
+      "sync_time": { "name": "Synchroniser l’heure de l’appareil" },
+      "escape": { "name": "Effacer les messages d’erreur" }
     },
     "select": {
       "filtration1_start": { "name": "Minuteur 1 - Début de filtration" },

@@ -135,7 +135,8 @@
       "aux4": { "name": "Relè ausiliario 4" }
     },
     "button": {
-      "sync_time": { "name": "Sincronizza orario dispositivo" }
+      "sync_time": { "name": "Sincronizza orario dispositivo" },
+      "escape": { "name": "Cancella messaggi di errore" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Inizio filtrazione" },

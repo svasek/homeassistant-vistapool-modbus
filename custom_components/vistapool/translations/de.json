@@ -135,7 +135,8 @@
       "aux4": { "name": "Hilfsrelais 4" }
     },
     "button": {
-      "sync_time": { "name": "Gerätezeit synchronisieren" }
+      "sync_time": { "name": "Gerätezeit synchronisieren" },
+      "escape": { "name": "Fehlermeldungen löschen" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Filtration Start" },

@@ -475,6 +475,11 @@ BUTTON_DEFINITIONS = {
         "icon": "mdi:clock-check-outline",
         "entity_category": EntityCategory.CONFIG,
     },
+    "MBF_ESCAPE": {
+        "name": "Clear Errors",
+        "icon": "mdi:reload-alert",
+        "entity_category": EntityCategory.CONFIG,
+    },
 }
 
 TIME_OPTIONS_15 = generate_time_options(15)

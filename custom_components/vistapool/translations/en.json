@@ -135,7 +135,8 @@
       "aux4": { "name": "Auxiliary Relay 4" }
     },
     "button": {
-      "sync_time": { "name": "Synchronize Device Time" }
+      "sync_time": { "name": "Synchronize Device Time" },
+      "escape": { "name": "Clear Error Messages" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Filtration Start" },

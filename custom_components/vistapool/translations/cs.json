@@ -135,7 +135,8 @@
       "aux4": { "name": "Pomocné relé 4" }
     },
     "button": {
-      "sync_time": { "name": "Synchronizovat čas zařízení" }
+      "sync_time": { "name": "Synchronizovat čas zařízení" },
+      "escape": { "name": "Vymazat chybová hlášení" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Spuštění filtrace" },

@@ -135,7 +135,8 @@
       "aux4": { "name": "Przekaźnik pomocniczy 4" }
     },
     "button": {
-      "sync_time": { "name": "Synchronizuj czas urządzenia" }
+      "sync_time": { "name": "Synchronizuj czas urządzenia" },
+      "escape": { "name": "Wyczyść komunikaty o błędach" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Start filtracji" },
