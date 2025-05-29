@@ -19,6 +19,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
         # Skip the selects if they are not detected
         if key == "MBF_PAR_FILTRATION_SPEED" and not bool(get_filtration_pump_type(coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0))):
             continue
+        # Skip boost mode select if model does not support "Hydro/Electrolysis"
+        if key == "MBF_CELL_BOOST":
+            mbf_par_model = coordinator.data.get("MBF_PAR_MODEL", 0)
+            if not (mbf_par_model & 0x0002):
+                continue
         
         entities.append(
             VistaPoolSelect(
