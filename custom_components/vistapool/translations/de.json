@@ -164,6 +164,14 @@
           "backwash": "Rückspülung"
         }
       },
+      "filtration_speed": { 
+          "name": "Filtergeschwindigkeit",
+          "state": {
+            "low": "Niedrig",
+            "mid": "Mittel",
+            "high": "Hoch"
+          }
+        },
       "cell_boost": {
         "name": "Boost-Modus",
         "state": {

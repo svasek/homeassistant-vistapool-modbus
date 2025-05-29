@@ -164,6 +164,14 @@
           "backwash": "Backwash"
         }
       },
+      "filtration_speed": { 
+        "name": "Filtration speed",
+        "state": {
+          "low": "Low",
+          "mid": "Medium",
+          "high": "High"
+        }
+      },
       "cell_boost": {
         "name": "Boost Mode",
         "state": {

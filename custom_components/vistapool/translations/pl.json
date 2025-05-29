@@ -164,6 +164,14 @@
           "backwash": "Płukanie wsteczne"
         }
       },
+      "filtration_speed": { 
+        "name": "Prędkość filtracji",
+        "state": {
+          "low": "Niska",
+          "mid": "Średnia",
+          "high": "Wysoka"
+        }
+      },
       "cell_boost": {
         "name": "Tryb boost",
         "state": {

@@ -164,6 +164,14 @@
           "backwash": "Contre-lavage"
         }
       },
+      "filtration_speed": { 
+        "name": "Vitesse de filtration",
+        "state": {
+          "low": "Basse",
+          "mid": "Moyenne",
+          "high": "Haute"
+        }
+      },
       "cell_boost": {
         "name": "Mode boost",
         "state": {

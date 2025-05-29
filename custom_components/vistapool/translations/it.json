@@ -164,6 +164,14 @@
           "backwash": "Controlavaggio"
         }
       },
+      "filtration_speed": { 
+        "name": "Velocità di filtrazione",
+        "state": {
+          "low": "Bassa",
+          "mid": "Media",
+          "high": "Alta"
+        }
+      },
       "cell_boost": {
         "name": "Modalità boost",
         "state": {

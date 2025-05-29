@@ -164,6 +164,14 @@
           "backwash": "Lavado inverso"
         }
       },
+      "filtration_speed": { 
+        "name": "Velocidad de filtración",
+        "state": {
+          "low": "Baja",
+          "mid": "Media",
+          "high": "Alta"
+        }
+      },
       "cell_boost": {
         "name": "Modo Boost",
         "state": {

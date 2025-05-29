@@ -164,6 +164,14 @@
           "backwash": "Zpětný proplach"
         }
       },
+      "filtration_speed": { 
+        "name": "Rychlost filtrace",
+        "state": {
+          "low": "Nízká",
+          "mid": "Střední",
+          "high": "Vysoká"
+        }
+      },
       "cell_boost": {
         "name": "Režim boost",
         "state": {

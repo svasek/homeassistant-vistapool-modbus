@@ -3,7 +3,7 @@ import asyncio
 from homeassistant.components.select import SelectEntity
 from .const import DOMAIN, SELECT_DEFINITIONS
 from .entity import VistaPoolEntity
-from .helpers import seconds_to_hhmm
+from .helpers import seconds_to_hhmm, get_filtration_pump_type
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +14,12 @@ async def async_setup_entry(hass, entry, async_add_entities):
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entry_id = entry.entry_id
     entities = []
+    
     for key, props in SELECT_DEFINITIONS.items():
+        # Skip the selects if they are not detected
+        if key == "MBF_PAR_FILTRATION_SPEED" and not bool(get_filtration_pump_type(coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0))):
+            continue
+        
         entities.append(
             VistaPoolSelect(
                 coordinator,
@@ -39,6 +44,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._attr_entity_category = props.get("entity_category") or None
         self._select_type = props.get("select_type") or None
         self._register = props.get("register") or None
+        self._attr_mask = props.get("mask") or None
+        self._attr_shift = props.get("shift") or None
         
         _LOGGER.debug(
             "VistaPoolSelect INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
@@ -70,11 +77,10 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 }
             )
             await asyncio.sleep(0.2)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
             return
         
         # Prevent switching to Backwash from HA UI
+        # Can be removed
         if option == "backwash":
             # Log warning
             _LOGGER.warning("Cannot switch to Backwash from Home Assistant UI.")
@@ -108,8 +114,25 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
                 await self.coordinator.client.async_write_register(reg, write_val)
                 await asyncio.sleep(0.2)
-                await self.coordinator.async_request_refresh()
-                self.async_write_ha_state()
+            return
+        
+        if self._key == "MBF_PAR_FILTRATION_SPEED":
+            rev_map = {v: k for k, v in self._options_map.items()}
+            value = rev_map.get(option)
+            if value is None:
+                return
+
+            current = self.coordinator.data.get("MBF_PAR_FILTRATION_CONF")
+            if current is None or self._attr_mask is None or self._attr_shift is None:
+                return
+
+            new_val = (current & ~self._attr_mask) | (value << self._attr_shift)
+            _LOGGER.debug(
+                "Setting new filtration speed: current=0x%04X, new_val=0x%04X, mask=0x%04X, shift=%d",
+                current, new_val, self._attr_mask, self._attr_shift
+            )
+            await self.coordinator.client.async_write_register(self._register, new_val, apply=True)
+            await asyncio.sleep(0.2)
             return
         
         value = None
@@ -130,11 +153,10 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     await asyncio.sleep(0.1)
             # Set the new mode
             await self.coordinator.client.async_write_register(self._register, value)
-            await asyncio.sleep(0.1)
-            await self.coordinator.async_request_refresh()
+            await asyncio.sleep(0.2)
             
         # Run a refresh to update the state
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.5)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
@@ -194,6 +216,15 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 return self._options_map[2]
             # fallback (should not occur)
             return self._options_map[0]
+        
+        if self._key == "MBF_PAR_FILTRATION_SPEED":
+            raw = self.coordinator.data.get("MBF_PAR_FILTRATION_CONF")
+            if raw is None:
+                return None
+            if self._attr_mask is None or self._attr_shift is None:
+                return None
+            value = (raw & self._attr_mask) >> self._attr_shift
+            return self._options_map.get(value)
         
         value = self.coordinator.data.get(self._key)
         if value is None:

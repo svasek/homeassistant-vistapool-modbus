@@ -466,7 +466,7 @@ class VistaPoolModbusClient:
                 else:
                     value = current & ~aux_bit
                 await client.write_registers(address=0x0289, values=[1], slave=self._unit)
-                # await client.write_registers(address=0x010E, values=[value], slave=self._unit)
+                await client.write_registers(address=0x010E, values=[value], slave=self._unit)
                 _LOGGER.debug("Wrote relay state at 0x010E: 0x%04X", value)
                 await client.write_registers(address=0x0289, values=[0], slave=self._unit)
                 await client.write_registers(address=0x02F5, values=[1], slave=self._unit)

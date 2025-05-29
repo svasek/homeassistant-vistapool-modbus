@@ -175,18 +175,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "icon_off": "mdi:electric-switch",
         "option": "use_aux4",
     },
-    # "Filtration low speed": {
-    #     "name": "Filtration Low Speed",
-    #     "device_class": None,
-    # },
-    # "Filtration mid speed": {
-    #     "name": "Filtration Mid Speed",
-    #     "device_class": None,
-    # },
-    # "Filtration high speed": {
-    #     "name": "Filtration High Speed",
-    #     "device_class": None,
-    # },
 
     # pH/Redox/CL/CD status bits from decode_ph_rx_cl_cd_status_bits
     # pH
@@ -499,6 +487,18 @@ SELECT_DEFINITIONS = {
             # 13: "backwash",
         },
         "register": 0x0411,  # FILTRATION_MODE_REGISTER
+    },
+    "MBF_PAR_FILTRATION_SPEED": {
+        "name": "Filtration Speed",
+        "icon": "mdi:fan-speed-3",
+        "options_map": {
+            0: "low",
+            1: "mid",
+            2: "high"
+        },
+        "register": 0x050F,
+        "mask": 0x0070,
+        "shift": 4,
     },
     "MBF_CELL_BOOST": {
         "name": "Boost Mode",
