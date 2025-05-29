@@ -44,18 +44,21 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 
 ## Features
 
-
 - **Multi-hub support**: Add multiple VistaPool devices to Home Assistant, each with a custom name (used as a prefix in entity IDs).
 - **Sensors**:  
-  pH, Redox (ORP), Salt, Conductivity, Water Temperature, Ionization, Hydrolysis Intensity/Voltage, Device Time, Status/Alarm bits, Filtration Speed
+  pH, Redox (ORP), Salt, Conductivity, Water Temperature, Ionization, Hydrolysis Intensity/Voltage, Device Time, Status/Alarm bits  
+  - **Filtration speed** *(only if the model has a variable-speed filtration pump)*
 - **Number entities**:  
   Setpoints for pH, Redox, Chlorine, Temperature, and Hydrolysis production
 - **Switches**:  
   Manual filtration, auxiliary relays (*Light & AUX1–AUX4*, enable in options), automatic time synchronization to Home Assistant *(default: disabled)*
 - **Select entities**:  
-  Filtration mode (*Manual, Auto, Heating, Smart, Intelligent*), timers for automatic filtration
+  Filtration mode (*Manual, Auto, Heating, Smart, Intelligent*), timers for automatic filtration  
+  - **Filtration speed control** *(select entity; only if the model has a variable-speed pump)*  
+  - **Boost control** *(only if the Hydro/Electrolysis module is detected)*
 - **Buttons**:  
-  Manual sync of device time to Home Assistant time
+  Manual sync of device time to Home Assistant time  
+  - **Reset Alarm** *(clears error/alarm states)*
 
 ---
 
@@ -98,21 +101,36 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 
 ## Example Entities
 
-Entities are prefixed by the custom name (e.g. `sensor.bazen_jih_par_filt_mode`):
+Entities are prefixed by the custom name (e.g. `sensor.pool1_filt_mode`):
 
-- **Sensors**: `sensor.<name>_measure_ph`, `sensor.<name>_device_time`
-- **Numbers**: `number.<name>_par_heating_temp`
-- **Switches**: `switch.<name>_aux1`, `switch.<name>_mbf_par_filt_manual_state`
-- **Select**: `select.<name>_mbf_par_filt_mode`
-- **Buttons**: `button.<name>_sync_time`
+- **Sensors**:  
+  `sensor.<name>_measure_ph`, `sensor.<name>_device_time`,  
+  `sensor.<name>_filtration_speed` *(if supported)*
+- **Numbers**:  
+  `number.<name>_par_heating_temp`
+- **Switches**:  
+  `switch.<name>_aux1`, `switch.<name>_mbf_par_filt_manual_state`
+- **Selects**:  
+  `select.<name>_mbf_par_filt_mode`,  
+  `select.<name>_mbf_par_filtration_speed` *(if supported)*,  
+  `select.<name>_mbf_cell_boost` *(if supported)*
+- **Buttons**:  
+  `button.<name>_sync_time`, `button.<name>_reset_alarm`
 
 ---
 
 ## Special Notes
 
-- **Filtration mode "Backwash"**: This mode can only be enabled via the device's display. It is not available in Home Assistant, as remote activation does not make practical sense.
-- **Multi-hub**: Each device uses its unique name as prefix in all entity_ids.
-- **Time sync**: Use the *Sync Time* button to manually set the device's internal clock (RTC) to Home Assistant time. You can also enable *automatic time synchronization* with Home Assistant in the integration options.
+- **Filtration speed sensor and control**:  
+  Only available for variable-speed pump models.
+- **Boost control (select)**:  
+  Only available for models with the Hydro/Electrolysis module detected.
+- **Reset Alarm button**:  
+  Allows remote clearing of error and alarm states from Home Assistant.
+- **Filtration mode "Backwash"**:  
+  This mode can only be enabled via the device's display. It is not available in Home Assistant, as remote activation does not make practical sense.
+- **Auxiliary relays (Light & AUX1–AUX4)**:  
+  Only available if enabled in integration options.
 
 
 ---
