@@ -104,18 +104,20 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 Entities are prefixed by the custom name (e.g. `sensor.pool1_filt_mode`):
 
 - **Sensors**:  
-  `sensor.<name>_measure_ph`, `sensor.<name>_device_time`,  
+  `sensor.<name>_measure_ph`, `sensor.<name>_measure_temperature`, `sensor.<name>_filt_mode`,  
   `sensor.<name>_filtration_speed` *(if supported)*
 - **Numbers**:  
-  `number.<name>_par_heating_temp`
+  `number.<name>_hidro`, `number.<name>_ph1`, 
+  `number.<name>_heating_temp` *(if supported)*
 - **Switches**:  
-  `switch.<name>_aux1`, `switch.<name>_mbf_par_filt_manual_state`
+  `switch.<name>_filt_manual_state`, `switch.<name>_time_auto_sync`,
+  `switch.<name>_light`, `switch.<name>_aux1`-`switch.<name>_aux4`   *(if enabled)*
 - **Selects**:  
-  `select.<name>_mbf_par_filt_mode`,  
-  `select.<name>_mbf_par_filtration_speed` *(if supported)*,  
-  `select.<name>_mbf_cell_boost` *(if supported)*
+  `select.<name>_filt_mode`, `select.<name>_filtration1_start`, `select.<name>_filtration1_stop`,
+  `select.<name>_filtration_speed` *(if supported)*,  
+  `select.<name>_cell_boost` *(if supported)*
 - **Buttons**:  
-  `button.<name>_sync_time`, `button.<name>_reset_alarm`
+  `button.<name>_sync_time`, `button.<name>_escape`
 
 ---
 
