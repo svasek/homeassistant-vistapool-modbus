@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.1.0...v1.2.0) (2025-05-29)
+
+
+### Features
+
+* **filtration:** ✨ add filtration speed functionality controll for devices which support it ([5aed83c](https://github.com/svasek/homeassistant-vistapool-modbus/commit/5aed83c9322b07da889eb83a06f09cadbc5683e8))
+
 ## [1.1.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.0.3...v1.1.0) (2025-05-28)
 
 
