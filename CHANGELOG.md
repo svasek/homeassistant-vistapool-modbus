@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.0...v1.2.1) (2025-05-29)
+
+
+### Bug Fixes
+
+* **select:** ✨ show/hide boost mode select based on model support ([9cca2ef](https://github.com/svasek/homeassistant-vistapool-modbus/commit/9cca2efc646a96d635f659b70fa9471ae243125f))
+
 ## [1.2.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.1.0...v1.2.0) (2025-05-29)
 
 
