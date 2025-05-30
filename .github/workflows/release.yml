@@ -40,8 +40,11 @@ jobs:
       - name: Commit manifest.json version bump
         if: startsWith(github.ref, 'refs/heads/release-please--')
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          AUTHOR_NAME=$(git log -1 --pretty=format:'%an')
+          AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          git config user.name "$AUTHOR_NAME"
+          git config user.email "$AUTHOR_EMAIL"
           git add custom_components/vistapool/manifest.json
           git commit -m "chore(manifest): bump version to $VERSION"
+          git pull --rebase
           git push
