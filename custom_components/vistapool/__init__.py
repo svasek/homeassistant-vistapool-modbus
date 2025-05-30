@@ -1,9 +1,12 @@
 import logging
+from homeassistant.helpers import config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from .const import DOMAIN, PLATFORMS
 from .modbus import VistaPoolModbusClient
 from .coordinator import VistaPoolCoordinator
+
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 
