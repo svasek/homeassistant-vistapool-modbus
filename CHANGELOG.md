@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.1...v1.2.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* **manifest:** 🐛 Fixed integration version ([ebab4c1](https://github.com/svasek/homeassistant-vistapool-modbus/commit/ebab4c10e40d22db028f2e12ba198184be73512c))
+
 ## [1.2.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.0...v1.2.1) (2025-05-29)
 
 
