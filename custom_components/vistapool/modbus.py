@@ -477,6 +477,9 @@ class VistaPoolModbusClient:
     async def read_all_timers(self):
         timers = {}
         async with AsyncModbusTcpClient(self._host, port=self._port) as client:
+            if not client.connected:
+                _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                return {}
             for name, addr in TIMER_BLOCKS.items():
                 try:
                     rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
@@ -501,6 +504,9 @@ class VistaPoolModbusClient:
 
         # 1. Read current timer block from Modbus
         async with AsyncModbusTcpClient(self._host, port=self._port) as client:
+            if not client.connected:
+                _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                return {}
             rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
             if rr.isError():
                 _LOGGER.error(f"Could not read timer block at {addr:#04x} before write: {rr}")
@@ -521,6 +527,9 @@ class VistaPoolModbusClient:
             _LOGGER.debug(f"Timer block {block_name} ({addr:#04x}) to write: {regs}")
 
             # 4. Write full block back to Modbus
+            if not client.connected:
+                _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                return
             result = await client.write_registers(address=addr, values=regs, slave=self._unit)
             if result.isError():
                 _LOGGER.error(f"Timer block write error at {addr:#04x}: {result}")
