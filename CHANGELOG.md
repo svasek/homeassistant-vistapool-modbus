@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.3...v1.2.4) (2025-06-06)
+
+
+### Bug Fixes
+
+* **timer:** 🐛 pad timer registers to ensure correct parsing ([4d12a1c](https://github.com/svasek/homeassistant-vistapool-modbus/commit/4d12a1ceec68bd78a522a2d780dd6411dd9cba4e))
+
 ## [1.2.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.2...v1.2.3) (2025-06-03)
 
 
