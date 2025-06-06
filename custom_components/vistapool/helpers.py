@@ -92,17 +92,19 @@ def modbus_regs_to_hex_string(regs):
 
 def parse_timer_block(regs):
     """Convert 15 Modbus registers to dict of timer params."""
+    # Pads the regs list to length 15 with zeros if needed
+    padded = pad_list(regs, 15)
     def u32(lsb, msb):
         return (msb << 16) | lsb
     return {
-        "enable": regs[0],
-        "on": u32(regs[1], regs[2]),
-        "off": u32(regs[3], regs[4]),
-        "period": u32(regs[5], regs[6]),
-        "interval": u32(regs[7], regs[8]),
-        "countdown": u32(regs[9], regs[10]),
-        "function": regs[11],
-        "work_time": u32(regs[13], regs[14]),
+        "enable": padded[0],
+        "on": u32(padded[1], padded[2]),
+        "off": u32(padded[3], padded[4]),
+        "period": u32(padded[5], padded[6]),
+        "interval": u32(padded[7], padded[8]),
+        "countdown": u32(padded[9], padded[10]),
+        "function": padded[11],
+        "work_time": u32(padded[13], padded[14]),
     }
 
 def build_timer_block(data):
@@ -184,3 +186,7 @@ def get_filtration_speed(data):
 def get_filtration_pump_type(par_filtration_conf):
     pump_type = (par_filtration_conf & 0x000F) >> 0
     return pump_type  # 0 = standard, 1/2 = variable speed
+
+def pad_list(regs, length, pad_value=0):
+    """Return a list padded with pad_value to desired length."""
+    return regs + [pad_value] * (length - len(regs))
