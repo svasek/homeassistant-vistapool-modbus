@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.2...v1.2.3) (2025-06-03)
+
+
+### Bug Fixes
+
+* **modbus:** 🐛 add connection error handling for Modbus client ([e429430](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e4294303703ef031e7a966967a97d357fd7b5c8f))
+
 ## [1.2.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.1...v1.2.2) (2025-05-30)
 
 
