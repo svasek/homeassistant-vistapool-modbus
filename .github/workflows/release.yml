@@ -45,6 +45,16 @@ jobs:
           git config user.name "$AUTHOR_NAME"
           git config user.email "$AUTHOR_EMAIL"
           git add custom_components/vistapool/manifest.json
-          git commit -m "chore(manifest): bump version to $VERSION" || echo "No changes to commit"
+          # Commit only if there are changes
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(manifest): bump version to $VERSION"
+          else
+            echo "No changes to commit"
+          fi
           git pull --rebase
-          git push
+          # Push only if HEAD is ahead of remote
+          if [ $(git rev-list --left-right --count origin/$(git rev-parse --abbrev-ref HEAD)...HEAD | awk '{print $2}') -gt 0 ]; then
+            git push
+          else
+            echo "Nothing new to push."
+          fi
