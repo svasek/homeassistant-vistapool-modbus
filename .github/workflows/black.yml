@@ -1,8 +1,5 @@
-name: Lint
+name: Lint & Autoformat
 
-permissions:
-  contents: read
-  
 on:
   workflow_dispatch:
   push:
@@ -11,14 +8,39 @@ on:
   pull_request:
     paths:
       - 'custom_components/vistapool/**'
-  # schedule:
-  #   - cron:  '0 0 * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
-  lint:
+  lint-and-format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: psf/black@stable
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          options: "--line-length=119"
+          token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+
+      - name: Run Black (auto-format)
+        uses: psf/black@stable
+
+      - name: Commit changes (if any)
+        run: |
+          AUTHOR_NAME=$(git log -1 --pretty=format:'%an')
+          AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
+          git config user.name "$AUTHOR_NAME"
+          git config user.email "$AUTHOR_EMAIL"
+          if ! git diff --quiet; then
+            git add custom_components/vistapool
+            git commit -m "style: autoformat Python files with Black"
+          else
+            echo "No changes to commit"
+          fi
+          git pull --rebase
+          # Push only if HEAD is ahead of remote
+          if [ $(git rev-list --left-right --count origin/$(git rev-parse --abbrev-ref HEAD)...HEAD | awk '{print $2}') -gt 0 ]; then
+            git push
+          else
+            echo "Nothing new to push."
+          fi
