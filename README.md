@@ -1,5 +1,11 @@
 # VistaPool Modbus Integration for Home Assistant
 
+[![Release](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/release.yml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/release.yml)
+[![Validate with Hassfest](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hassfest.yml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hassfest.yml)
+[![HACS Action](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/validate-hacs.yaml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/validate-hacs.yaml)
+[![CodeQL](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 Custom integration for connecting Sugar Valley pool controllers and salt chlorinators to Home Assistant via Modbus TCP.
 
 
