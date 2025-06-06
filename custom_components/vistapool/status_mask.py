@@ -1,9 +1,9 @@
-
 """
 Mask decoders for VistaPool / NeoPool integration, based on xsns_83_neopool.ino
 
 WARNING: DO NOT change names of this keys, they are used in the code !!!
 """
+
 
 def decode_notification_mask(value: int) -> dict:
     if value is None:
@@ -19,7 +19,8 @@ def decode_notification_mask(value: int) -> dict:
         "NOTIF_PAGE": bool(value & 0x0080),
     }
 
-'''
+
+"""
 TODO: Check against GPIO configuration
     MBF_PAR_LIGHTING_GPIO for relay number assigned to the lighting function (0: inactive).
     MBF_PAR_FILT_GPIO for relay number assigned to the filtration function (0: inactive).    
@@ -30,7 +31,9 @@ TODO: Check against GPIO configuration
     There should be also name for each relay available in the settings.
     Each relay name has 5 register ASCIIZ string with up to 10 characters.
     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
-'''
+"""
+
+
 def decode_relay_state(value: int) -> dict:
     if value is None:
         return {}
@@ -62,6 +65,7 @@ def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:
         f"{unit} measurement module detected": bool(status & 0x8000),
     }
 
+
 def decode_ion_status_bits(status: int) -> dict:
     if status is None:
         return {}
@@ -75,6 +79,7 @@ def decode_ion_status_bits(status: int) -> dict:
         "ION in Pol2": bool(status & 0x4000),
     }
 
+
 def decode_hidro_status_bits(status: int) -> dict:
     if status is None:
         return {}
@@ -82,16 +87,15 @@ def decode_hidro_status_bits(status: int) -> dict:
         "HIDRO On Target": bool(status & 0x0001),
         "HIDRO Low Flow": bool(status & 0x0002),
         "HIDRO Reserved": bool(status & 0x0004),
-        "HIDRO Cell Flow FL1": bool(status & 0x0008),   # if present
+        "HIDRO Cell Flow FL1": bool(status & 0x0008),  # if present
         "HIDRO Cover input active": bool(status & 0x0010),
         "HIDRO Module active": bool(status & 0x0020),
         "HIDRO Module regulated": bool(status & 0x0040),
         "HIDRO Activated by the RX module": bool(status & 0x0080),
         "HIDRO Chlorine shock mode": bool(status & 0x0100),
-        "HIDRO Chlorine flow indicator FL2": bool(status & 0x0200), # if present
+        "HIDRO Chlorine flow indicator FL2": bool(status & 0x0200),  # if present
         "HIDRO Activated by the CL module": bool(status & 0x0400),
         "HIDRO in dead time": bool(status & 0x1000),
         "HIDRO in Pol1": bool(status & 0x2000),
         "HIDRO in Pol2": bool(status & 0x4000),
     }
-

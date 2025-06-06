@@ -15,15 +15,18 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=vol.Schema({
-                vol.Optional(CONF_NAME, default=DOMAIN.capitalize()): str,
-                vol.Required(CONF_HOST): str,
-                vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
-                vol.Optional("scan_interval", default=DEFAULT_SCAN_INTERVAL): int,
-                vol.Optional("slave_id", default=DEFAULT_SLAVE_ID): int,
-            })
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(CONF_NAME, default=DOMAIN.capitalize()): str,
+                    vol.Required(CONF_HOST): str,
+                    vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
+                    vol.Optional("scan_interval", default=DEFAULT_SCAN_INTERVAL): int,
+                    vol.Optional("slave_id", default=DEFAULT_SLAVE_ID): int,
+                }
+            ),
         )
-        
+
     def async_get_options_flow(config_entry):
         from .options_flow import VistaPoolOptionsFlowHandler
+
         return VistaPoolOptionsFlowHandler(config_entry)

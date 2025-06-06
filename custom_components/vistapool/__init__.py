@@ -10,6 +10,7 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
 
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up the VistaPool integration."""
     # Initialize Modbus client and coordinator
@@ -21,12 +22,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     # Store the coordinator and client in hass.data for easy access
     # hass.data.setdefault(DOMAIN, {})
-    # hass.data[DOMAIN][entry.entry_id] = coordinator 
+    # hass.data[DOMAIN][entry.entry_id] = coordinator
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
     # Forward entities setup to Home Assistant
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
+
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a VistaPool config entry."""
@@ -35,8 +37,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data[DOMAIN].pop(entry.entry_id, None)
     return unload_ok
 
+
 async def async_setup(hass, config):
     from .helpers import get_timer_interval, hhmm_to_seconds
+
     # Register the service to set timers
     async def async_handle_set_timer(call):
         timer_name = call.data["timer"]
@@ -70,4 +74,3 @@ async def async_setup(hass, config):
 
     hass.services.async_register(DOMAIN, "set_timer", async_handle_set_timer)
     return True
-

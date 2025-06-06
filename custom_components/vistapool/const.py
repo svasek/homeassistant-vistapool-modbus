@@ -7,13 +7,13 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.components.number import NumberDeviceClass
 from .helpers import generate_time_options, hhmm_to_seconds
 
-'''
+"""
 Load the manifest file
 This file contains metadata about the integration such as name, version, domain, etc.
 The manifest file is loaded to get the integration name and version
 The integration name and version are used to identify the integration
 and to display information about the integration in Home Assistant
-'''
+"""
 PLATFORMS = ["sensor", "binary_sensor", "switch", "number", "button", "select"]
 
 manifest_path = Path(__file__).parent / "manifest.json"
@@ -23,8 +23,11 @@ with open(manifest_path, encoding="utf-8") as f:
 INTEGRATION_NAME = MANIFEST.get("name")
 INTEGRATION_VERSION = MANIFEST.get("version")
 
-DOMAIN = MANIFEST.get("domain").lower().replace("-", "_").replace(" ", "_").replace(".", "_") or "vistapool"
-NAME = MANIFEST.get("name") or"VistaPool Integration"
+DOMAIN = (
+    MANIFEST.get("domain").lower().replace("-", "_").replace(" ", "_").replace(".", "_")
+    or "vistapool"
+)
+NAME = MANIFEST.get("name") or "VistaPool Integration"
 VERSION = MANIFEST.get("version") or None
 
 LOGGER = logging.getLogger(__name__)
@@ -175,7 +178,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "icon_off": "mdi:electric-switch",
         "option": "use_aux4",
     },
-
     # pH/Redox/CL/CD status bits from decode_ph_rx_cl_cd_status_bits
     # pH
     "pH module control status": {
@@ -187,7 +189,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "name": "pH Acid Pump",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
-
     },
     "pH pump active": {
         "name": "pH Base Pump",
@@ -285,7 +286,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": BinarySensorDeviceClass.CONNECTIVITY,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-
     # Ion status bits
     "ION On Target": {
         "name": "Ionizer On Target",
@@ -322,11 +322,10 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    
     # Hydrolysis status bits
     "HIDRO On Target": {
         "name": "Hydrolysis On Target",
-        "device_class": None, 
+        "device_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "HIDRO Low Flow": {
@@ -410,7 +409,7 @@ NUMBER_DEFINITIONS = {
         "device_class": NumberDeviceClass.PH,
         "entity_category": EntityCategory.CONFIG,
     },
-    "MBF_PAR_PH2":{
+    "MBF_PAR_PH2": {
         "name": "pH Min Limit",
         "unit": "pH",
         "min": 5.0,
@@ -431,7 +430,7 @@ NUMBER_DEFINITIONS = {
         "scale": 1.0,
         "device_class": NumberDeviceClass.VOLTAGE,
         "entity_category": EntityCategory.CONFIG,
-        "icon": "mdi:gradient-vertical"
+        "icon": "mdi:gradient-vertical",
     },
     "MBF_PAR_CL1": {
         "name": "Chlorine Setpoint",
@@ -443,9 +442,9 @@ NUMBER_DEFINITIONS = {
         "scale": 100.0,
         "device_class": None,
         "entity_category": EntityCategory.CONFIG,
-        "icon": "mdi:test-tube"
+        "icon": "mdi:test-tube",
     },
-    "MBF_PAR_HEATING_TEMP":{
+    "MBF_PAR_HEATING_TEMP": {
         "name": "Temperature Setpoint",
         "unit": "°C",
         "min": 10.0,
@@ -491,11 +490,7 @@ SELECT_DEFINITIONS = {
     "MBF_PAR_FILTRATION_SPEED": {
         "name": "Filtration Speed",
         "icon": "mdi:fan-speed-3",
-        "options_map": {
-            0: "low",
-            1: "mid",
-            2: "high"
-        },
+        "options_map": {0: "low", 1: "mid", 2: "high"},
         "register": 0x050F,
         "mask": 0x0070,
         "shift": 4,

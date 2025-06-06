@@ -1,10 +1,12 @@
 """Diagnostics support for VistaPool."""
+
 from __future__ import annotations
 
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
 from .const import DOMAIN
+
 
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant, entry: ConfigEntry
@@ -15,7 +17,11 @@ async def async_get_config_entry_diagnostics(
 
     # Basic config and options (without any sensitive data)
     diagnostics["config_entry"] = {
-        "data": {k: v for k, v in entry.data.items() if "password" not in k and "token" not in k},
+        "data": {
+            k: v
+            for k, v in entry.data.items()
+            if "password" not in k and "token" not in k
+        },
         "options": dict(entry.options),
         "title": entry.title,
         "entry_id": entry.entry_id,

@@ -11,6 +11,7 @@ from .helpers import get_device_time, get_filtration_pump_type
 _LOGGER = logging.getLogger(__name__)
 
 # Add mapping for MBF_PAR_FILT_MODE values
+# fmt: off
 FILTRATION_MODE_MAP = {
     0: "manual",        # This mode allows to turn the filtration (and all other systems that depend on it) on and off manually
     1: "auto",          # This mode allows filtering to be turned on and off according to the settings of the TIMER1, TIMER2 and TIMER3 timers.
@@ -19,6 +20,7 @@ FILTRATION_MODE_MAP = {
     4: "intelligent",   # This mode performs an intelligent filtration process in combination with the heating function. This mode is activated only if the MBF_PAR_HEATING_MODE register is at 1 and there is a heating relay assigned.
     13: "backwash",     # This filter mode is started when the backwash operation is activated.
 }
+# fmt: on
 
 FILTRATION_SPEED_MAP = {
     0: "off",
@@ -37,6 +39,7 @@ PH_STATUS_ALARM_MAP = {
     6: "tank_level",
 }
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -45,23 +48,35 @@ async def async_setup_entry(
     """Set up VistaPool sensors from a config entry."""
     coordinator: VistaPoolCoordinator = hass.data[DOMAIN][entry.entry_id]
     entities = []
-    
+
     # Loop through the defined sensors and create SensorEntity instances
     for key, props in SENSOR_DEFINITIONS.items():
         # Skip the sensors if they are not detected
-        if key == "MBF_MEASURE_PH" and not bool(coordinator.data.get("pH measurement module detected")):
+        if key == "MBF_MEASURE_PH" and not bool(
+            coordinator.data.get("pH measurement module detected")
+        ):
             continue
-        if key == "MBF_MEASURE_RX" and not bool(coordinator.data.get("Redox measurement module detected")):
+        if key == "MBF_MEASURE_RX" and not bool(
+            coordinator.data.get("Redox measurement module detected")
+        ):
             continue
-        if key == "MBF_MEASURE_CL" and not bool(coordinator.data.get("Chlorine measurement module detected")):
+        if key == "MBF_MEASURE_CL" and not bool(
+            coordinator.data.get("Chlorine measurement module detected")
+        ):
             continue
-        if key == "MBF_MEASURE_CONDUCTIVITY" and not bool(coordinator.data.get("Conductivity measurement module detected")):
+        if key == "MBF_MEASURE_CONDUCTIVITY" and not bool(
+            coordinator.data.get("Conductivity measurement module detected")
+        ):
             continue
-        if key == "MBF_ION_CURRENT" and not bool((coordinator.data.get("MBF_PAR_MODEL") or 0 ) & 0x0001):
+        if key == "MBF_ION_CURRENT" and not bool(
+            (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
+        ):
             continue
-        if key == "FILTRATION_SPEED" and not bool(get_filtration_pump_type(coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0))):
+        if key == "FILTRATION_SPEED" and not bool(
+            get_filtration_pump_type(coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0))
+        ):
             continue
-        
+
         value = coordinator.data.get(key)
         if (
             isinstance(value, (int, float))
@@ -72,10 +87,7 @@ async def async_setup_entry(
         ):
             entities.append(
                 VistaPoolSensor(
-                    coordinator,
-                    entry.entry_id,  # Pass entry_id explicitly
-                    key,
-                    props
+                    coordinator, entry.entry_id, key, props  # Pass entry_id explicitly
                 )
             )
     async_add_entities(entities)
@@ -87,7 +99,9 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
         self.entity_id = f"{self.platform}.{self._attr_suggested_object_id}"
-        self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
+        self._attr_unique_id = (
+            f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
+        )
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
 
         self._attr_native_unit_of_measurement = props.get("unit") or None
@@ -96,24 +110,27 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         self._attr_state_class = props.get("state_class") or None
         self._attr_entity_category = props.get("entity_category") or None
         self._attr_icon = props.get("icon") or None
-        
+
         _LOGGER.debug(
             "VistaPoolSensor INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+            self._attr_suggested_object_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
-        
+
     async def async_added_to_hass(self):
         _LOGGER.debug(
-            "VistaPoolSensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s", 
-            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+            "VistaPoolSensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
+            self.entity_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
         await super().async_added_to_hass()
-
 
     @property
     def icon(self):
         """Return custom icon depending on state."""
-        if self._key == "MBF_PAR_FILT_MODE": 
+        if self._key == "MBF_PAR_FILT_MODE":
             raw = self.coordinator.data.get(self._key)
             if FILTRATION_MODE_MAP.get(raw) == "Auto":
                 return "mdi:water-boiler-auto"
@@ -125,7 +142,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
                 return "mdi:water-boiler-check"
             elif FILTRATION_MODE_MAP.get(raw) == "Intelligent":
                 return "mdi:water-boiler-thermometer"
-            elif FILTRATION_MODE_MAP.get(raw) == "Backwash":    
+            elif FILTRATION_MODE_MAP.get(raw) == "Backwash":
                 return "mdi:water-boiler-off"
         if self._key == "MBF_PH_STATUS_ALARM":
             raw = self.coordinator.data.get(self._key)
@@ -134,8 +151,12 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             else:
                 return "mdi:alert"
         if self._key == "MBF_HIDRO_CURRENT":
-            return "mdi:air-humidifier" if bool(self.coordinator.data.get(self._key)) else "mdi:air-humidifier-off"
-        return self._attr_icon or None 
+            return (
+                "mdi:air-humidifier"
+                if bool(self.coordinator.data.get(self._key))
+                else "mdi:air-humidifier-off"
+            )
+        return self._attr_icon or None
 
     @property
     def suggested_display_precision(self):

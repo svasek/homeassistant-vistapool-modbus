@@ -13,12 +13,15 @@ _LOGGER = logging.getLogger(__name__)
 
 class VistaPoolCoordinator(DataUpdateCoordinator):
     """Coordinator for VistaPool platform."""
+
     def __init__(self, hass: HomeAssistant, client, entry, entry_id: str):
         super().__init__(
             hass,
             _LOGGER,
             name=f"{DOMAIN} coordinator",
-            update_interval=timedelta(seconds=entry.options.get("scan_interval", DEFAULT_SCAN_INTERVAL)),
+            update_interval=timedelta(
+                seconds=entry.options.get("scan_interval", DEFAULT_SCAN_INTERVAL)
+            ),
         )
         self.client = client
         self.entry = entry
@@ -32,28 +35,30 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             self._firmware = parse_version(data.get("MBF_POWER_MODULE_VERSION"))
             self._model = "VistaPool"
             # _LOGGER.debug("VistaPool raw coordinator data: %s", data)
-            
+
             timers = await self.client.read_all_timers()
             for t_name, t in timers.items():
                 data[f"{t_name}_enable"] = t["enable"]
-                data[f"{t_name}_start"] = t["on"]   # saved as seconds since midnight
+                data[f"{t_name}_start"] = t["on"]  # saved as seconds since midnight
                 data[f"{t_name}_interval"] = t["interval"]
                 if t["on"] is not None and t["interval"] is not None:
                     stop = (t["on"] + t["interval"]) % 86400
                     data[f"{t_name}_stop"] = stop
                 else:
                     data[f"{t_name}_stop"] = None
-            
+
             if self.auto_time_sync:
                 if is_device_time_out_of_sync(data, self.hass):
                     _LOGGER.debug("Device time is out of sync, updating...")
-                    await self.client.async_write_register(0x0408, prepare_device_time(self.hass))
-                    await self.client.async_write_register(0x04F0, 1) 
+                    await self.client.async_write_register(
+                        0x0408, prepare_device_time(self.hass)
+                    )
+                    await self.client.async_write_register(0x04F0, 1)
             return data
 
         except Exception as err:
             raise ConfigEntryNotReady(f"Error fetching data: {err}") from err
-    
+
     async def set_auto_time_sync(self, enabled: bool):
         self.auto_time_sync = enabled
         # Update the entry options to reflect the change
@@ -63,7 +68,6 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         options = dict(self.entry.options)
         options["auto_time_sync"] = enabled
         self.hass.config_entries.async_update_entry(self.entry, options=options)
-
 
     @property
     def firmware(self) -> str:

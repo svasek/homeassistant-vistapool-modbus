@@ -11,10 +11,9 @@ from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)
 
+
 async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    async_add_entities: AddEntitiesCallback
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up VistaPool number entities from a config entry."""
     coordinator: VistaPoolCoordinator = hass.data[DOMAIN][entry.entry_id]
@@ -42,16 +41,9 @@ async def async_setup_entry(
         if key == "MBF_PAR_CL1":
             if not bool(coordinator.data.get("Chlorine measurement module detected")):
                 continue
-            
-        entities.append(
-            VistaPoolNumber(
-                coordinator, 
-                entry_id, 
-                key, 
-                props
-            )
-        )
-        
+
+        entities.append(VistaPoolNumber(coordinator, entry_id, key, props))
+
     async_add_entities(entities)
 
 
@@ -59,7 +51,7 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     _pending_write_task = None
     _pending_value = None
     _debounce_delay = 2.0
-    
+
     def __init__(self, coordinator, entry_id, key, props):
         super().__init__(coordinator, entry_id)
         self._key = key
@@ -68,22 +60,26 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
         self.entity_id = f"{self.platform}.{self._attr_suggested_object_id}"
-        self._attr_unique_id = f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
+        self._attr_unique_id = (
+            f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
+        )
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
-        
+
         self._attr_native_unit_of_measurement = props.get("unit", None)
         self._attr_native_min_value = props.get("min", None)
         self._attr_native_max_value = props.get("max", None)
         self._attr_native_step = props.get("step", 1.0)
         self._attr_mode = "box"
-        
+
         self._attr_device_class = props.get("device_class") or None
         self._attr_entity_category = props.get("entity_category") or None
         self._attr_icon = props.get("icon")
-    
+
         _LOGGER.debug(
             "VistaPoolNumber INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+            self._attr_suggested_object_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
 
     async def async_added_to_hass(self):
@@ -98,7 +94,7 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             self._attr_native_value = None
 
         self.async_write_ha_state()
-        
+
     async def async_set_native_value(self, value):
         self._pending_value = value
         if self._pending_write_task is not None and not self._pending_write_task.done():
@@ -107,12 +103,14 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         await asyncio.sleep(0.1)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
-    
+
     async def _debounced_write(self):
         try:
             await asyncio.sleep(self._debounce_delay)
             raw = int(self._pending_value * self._scale)
-            await self.coordinator.client.async_write_register(self._register, raw, apply=True)
+            await self.coordinator.client.async_write_register(
+                self._register, raw, apply=True
+            )
             await self.coordinator.async_request_refresh()
         except asyncio.CancelledError:
             pass
@@ -120,10 +118,11 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     async def async_added_to_hass(self):
         _LOGGER.debug(
             "VistaPoolNumber ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, "has_entity_name", None)
+            self.entity_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
         await super().async_added_to_hass()
-
 
     @property
     def suggested_display_precision(self):
@@ -132,7 +131,7 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         if self._key == "MBF_PAR_HEATING_TEMP":
             return 0
         return None
-    
+
     @property
     def icon(self):
         """Return custom icon depending on state."""
@@ -146,7 +145,7 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         if raw is None:
             return self._attr_native_value  # fallback if coordinator is not updated yet
         return round(raw, 2)
-    
+
     # Property to set correct native value for hydrolysis
     @property
     def native_unit_of_measurement(self):

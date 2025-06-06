@@ -1,10 +1,12 @@
 import datetime
 import homeassistant.util.dt as dt_util
+
 """
 This module contains helper functions for the VistaPool integration.
 It includes functions to handle device time, prepare data for writing to the device,
 and parse version information.
 """
+
 
 # This function takes a dictionary of data and returns the device time as a datetime object
 # It extracts the low and high parts of the time from the dictionary, combines them into a single timestamp,
@@ -26,6 +28,7 @@ def get_device_time(data, hass=None):
     else:
         return datetime.datetime.fromtimestamp(unix_ts, tz=datetime.timezone.utc)
 
+
 # This function prepares the device time for writing to the device
 # It takes the current time in the local timezone and converts it to a format suitable for the device
 def prepare_device_time(hass=None):
@@ -45,12 +48,14 @@ def prepare_device_time(hass=None):
     high = (unix_time_local >> 16) & 0xFFFF
     return [low, high]
 
+
 def parse_version(val):
     if isinstance(val, int):
         major = (val >> 8) & 0xFF
         minor = val & 0xFF
         return f"{major}.{minor:02d}"
     return "?"
+
 
 # This function checks if the device time is out of sync with the Home Assistant time
 # It compares the device time with the current time in UTC and returns True if the difference is greater than the threshold
@@ -82,7 +87,8 @@ def modbus_regs_to_ascii(regs):
             chars.append(chr(low))
         else:
             break
-    return ''.join(chars)
+    return "".join(chars)
+
 
 def modbus_regs_to_hex_string(regs):
     """Return Modbus registers as hex string."""
@@ -90,12 +96,15 @@ def modbus_regs_to_hex_string(regs):
         return ""
     return "".join(f"{reg:04X}" for reg in regs)
 
+
 def parse_timer_block(regs):
     """Convert 15 Modbus registers to dict of timer params."""
     # Pads the regs list to length 15 with zeros if needed
     padded = pad_list(regs, 15)
+
     def u32(lsb, msb):
         return (msb << 16) | lsb
+
     return {
         "enable": padded[0],
         "on": u32(padded[1], padded[2]),
@@ -107,17 +116,20 @@ def parse_timer_block(regs):
         "work_time": u32(padded[13], padded[14]),
     }
 
+
 def build_timer_block(data):
     """Convert dict of timer params to 15 Modbus registers (all as int, never None)."""
+
     def safe_int(val):
         try:
             return int(val)
         except Exception:
             return 0
-        
+
     def split_u32(val):
         v = safe_int(val)
         return [v & 0xFFFF, (v >> 16) & 0xFFFF]
+
     regs = [
         safe_int(data.get("enable", 0)),
         *split_u32(data.get("on", 0)),
@@ -127,20 +139,23 @@ def build_timer_block(data):
         *split_u32(data.get("countdown", 0)),
         safe_int(data.get("function", 0)),
         0,
-        *split_u32(data.get("work_time", 0))
+        *split_u32(data.get("work_time", 0)),
     ]
     return regs
+
 
 def hhmm_to_seconds(hhmm):
     """Convert HH:MM string to seconds since midnight."""
     h, m = map(int, hhmm.split(":"))
     return h * 3600 + m * 60
 
+
 def seconds_to_hhmm(seconds):
     """Convert seconds since midnight to HH:MM string."""
     h = seconds // 3600
     m = (seconds % 3600) // 60
     return f"{h:02d}:{m:02d}"
+
 
 def get_timer_interval(start_sec, stop_sec):
     """Calculate interval in seconds, handle over-midnight."""
@@ -149,7 +164,8 @@ def get_timer_interval(start_sec, stop_sec):
     else:
         # over-midnight
         return (86400 - start_sec) + stop_sec
-    
+
+
 def generate_time_options(step_minutes=15):
     """Generate a list of HH:MM strings for every step_minutes in a day."""
     options = []
@@ -158,6 +174,7 @@ def generate_time_options(step_minutes=15):
         m = mins % 60
         options.append(f"{h:02d}:{m:02d}")
     return options
+
 
 def get_filtration_speed(data):
     relay_state = data.get("MBF_RELAY_STATE", 0)
@@ -183,9 +200,11 @@ def get_filtration_speed(data):
         return 3
     return 0
 
+
 def get_filtration_pump_type(par_filtration_conf):
     pump_type = (par_filtration_conf & 0x000F) >> 0
     return pump_type  # 0 = standard, 1/2 = variable speed
+
 
 def pad_list(regs, length, pad_value=0):
     """Return a list padded with pad_value to desired length."""

@@ -20,7 +20,7 @@ AUX_BITMASKS = {
     4: 0x0040,  # AUX4
 }
 
-''' Read timer blocks (0x0434-0x04E8) in blocks of *15* due to device limits '''
+""" Read timer blocks (0x0434-0x04E8) in blocks of *15* due to device limits """
 TIMER_BLOCKS = {
     "filtration1": 0x0434,
     "filtration2": 0x0443,
@@ -32,7 +32,7 @@ TIMER_BLOCKS = {
     "relay_aux4": 0x04D9,
 }
 
-    
+
 class VistaPoolModbusClient:
     def __init__(self, config):
         self._host = config["host"]
@@ -42,29 +42,34 @@ class VistaPoolModbusClient:
     async def async_read_all(self):
         result = {}
 
-        '''WARNING: Device limit for reading registers is 31 at one request !!!'''
-        
+        """WARNING: Device limit for reading registers is 31 at one request !!!"""
+
         def get_safe(regs, idx):
             try:
                 return regs[idx]
             except IndexError:
                 _LOGGER.warning(f"Register at index {idx} is missing in {regs}")
                 return None
-        
-            
+
         try:
             async with AsyncModbusTcpClient(self._host, port=self._port) as client:
                 if not client.connected:
-                    _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                    _LOGGER.error(
+                        "Modbus client connection failed to %s:%s",
+                        self._host,
+                        self._port,
+                    )
                     return {}
 
-                '''
+                """
                 Request MODBUS page of registers starting from 0x0000
                 Manages general configuration of the box. This page is reserved for internal purposes
-                '''
+                """
                 try:
                     rr00_count = 15
-                    rr00 = await client.read_holding_registers(address=0x0000, count=rr00_count, slave=self._unit)
+                    rr00 = await client.read_holding_registers(
+                        address=0x0000, count=rr00_count, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error("Read error 0x0000: %s", e)
                     return {}
@@ -74,9 +79,14 @@ class VistaPoolModbusClient:
                     reg00 = rr00.registers
                     _LOGGER.debug("Raw rr00: %s", reg00)
                     if len(reg00) < rr00_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0300, got %d", rr00_count, len(reg00))
+                        _LOGGER.warning(
+                            "Expected at least %d registers from 0x0300, got %d",
+                            rr00_count,
+                            len(reg00),
+                        )
                         return result
                     # Example: [1, 3, 1280, 32768, 88, 47, 16707, 20497, 8248, 12592, 0, 0, 0, 22069, 0]
+                    # fmt: off
                     result.update({
                         "MBF_POWER_MODULE_VERSION": get_safe(reg00, 2),		# 0x0002         ! Power module version (MSB=Major, LSB=Minor)
                         "MBF_POWER_MODULE_NODEID": reg00[4:10],             # 0x0004         ! Power module Node ID (6 register 0x0004 - 0x0009)
@@ -89,17 +99,19 @@ class VistaPoolModbusClient:
                         # "MBF_VOLT_5": get_safe(reg00, 0),		            # 0x006A*        ! 5V line in mV / 0,62069
                         # "MBF_AMP_4_20_MICRO": get_safe(reg00, 0),		    # 0x0072*        ! 2-40mA line in µA * 10 (1=0,01mA)
                     })
-                    
-                
-                '''
+                    # fmt: on
+
+                """
                 Request MEASURE page of registers starting from 0x0100
                 Contains the different measurement information including hydrolysis current, pH level, redox level, etc.
                 For measurements registers, we have to use function 0x04 (Read Input Registers).
-                '''
+                """
                 await asyncio.sleep(0.05)
                 try:
                     rr01_count = 18
-                    rr01 = await client.read_input_registers(address=0x0100, count=rr01_count, slave=self._unit)
+                    rr01 = await client.read_input_registers(
+                        address=0x0100, count=rr01_count, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error("Read error 0x0100: %s", e)
                     return {}
@@ -109,9 +121,14 @@ class VistaPoolModbusClient:
                     reg01 = rr01.registers
                     _LOGGER.debug("Raw rr01: %s", reg01)
                     if len(reg01) < rr01_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0100, got %d", rr01_count, len(reg01))
+                        _LOGGER.warning(
+                            "Expected at least %d registers from 0x0100, got %d",
+                            rr01_count,
+                            len(reg01),
+                        )
                         return result
                     # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
+                    # fmt: off
                     result.update({
                         "MBF_ION_CURRENT": get_safe(reg01, 0),                # 0x0100        Ionization level measured
                         "MBF_HIDRO_CURRENT": get_safe(reg01, 1) / 10.0,       # 0x0101        Hydrolysis intensity level
@@ -131,29 +148,36 @@ class VistaPoolModbusClient:
                         "MBF_NOTIFICATION": get_safe(reg01, 16),              # 0x0110 mask   Bit field that informs whether a property page has changed since the last time it was queried. (see MBMSK_NOTIF_*). This register makes it possible to refresh the content of the registers maintained by a modbus master in an optimized way, without the need to reread all registers periodically, but only those on a page that has been changed.
                         "MBF_HIDRO_VOLTAGE": get_safe(reg01, 17),             # 0x0111        The voltage applied to the hydrolysis cell. This register, together with that of MBF_HIDRO_CURRENT allows extrapolation of water salinity.
                     })
-                
-                
-                # After loading reg01, update result with all decodings:
-                result.update({
-                    **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 7), "pH"),
-                    **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 8), "Redox"),
-                    **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 9), "Chlorine"),
-                    **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 10), "Conductivity"),
-                    **decode_ion_status_bits(get_safe(reg01, 12)),
-                    **decode_hidro_status_bits(get_safe(reg01, 13)),
-                    **decode_relay_state(get_safe(reg01, 14)),
-                    **decode_notification_mask(get_safe(reg01, 16)),
-                })
-                
+                    # fmt: on
 
-                '''
+                # After loading reg01, update result with all decodings:
+                result.update(
+                    {
+                        **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 7), "pH"),
+                        **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 8), "Redox"),
+                        **decode_ph_rx_cl_cd_status_bits(
+                            get_safe(reg01, 9), "Chlorine"
+                        ),
+                        **decode_ph_rx_cl_cd_status_bits(
+                            get_safe(reg01, 10), "Conductivity"
+                        ),
+                        **decode_ion_status_bits(get_safe(reg01, 12)),
+                        **decode_hidro_status_bits(get_safe(reg01, 13)),
+                        **decode_relay_state(get_safe(reg01, 14)),
+                        **decode_notification_mask(get_safe(reg01, 16)),
+                    }
+                )
+
+                """
                 Request GLOBAL page of registers starting from 0x0206
                 Contains global information, such as the amount of time that each power unit has been working.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
-                '''
+                """
                 try:
-                    rr02_count = 20  # 0x0206 to 0x0219 
-                    rr02 = await client.read_holding_registers(address=0x0206, count=rr02_count, slave=self._unit)
+                    rr02_count = 20  # 0x0206 to 0x0219
+                    rr02 = await client.read_holding_registers(
+                        address=0x0206, count=rr02_count, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error("Read error 0x0206: %s", e)
                     return {}
@@ -163,9 +187,14 @@ class VistaPoolModbusClient:
                     reg02 = rr02.registers
                     _LOGGER.debug("Raw rr02: %s", reg02)
                     if len(reg02) < rr02_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0206, got %d", rr02_count, len(reg02))
+                        _LOGGER.warning(
+                            "Expected at least %d registers from 0x0206, got %d",
+                            rr02_count,
+                            len(reg02),
+                        )
                         return result
                     # Example: [23971, 8, 23971, 8, 26922, 0, 34208, 0, 0, 65426, 0, 0, 0, 0, 64136, 3, 25371, 4, 16, 0]
+                    # fmt: off
                     result.update({
                         "MBF_CELL_RUNTIME_LOW":      get_safe(reg02, 0),            # 0x0206*        ! Cell runtime (32 bit value - low word)
                         "MBF_CELL_RUNTIME_HIGH":     get_safe(reg02, 1),            # 0x0207*        ! Cell runtime (32 bit value - high word)
@@ -181,11 +210,14 @@ class VistaPoolModbusClient:
                         "MBF_CELL_RUNTIME_POL_CHANGES_LOW": get_safe(reg02, 18),    # 0x0218*        ! Cell runtime polarity change count (32 bit value - low word)
                         "MBF_CELL_RUNTIME_POL_CHANGES_HIGH":get_safe(reg02, 19),    # 0x0219*        ! Cell runtime polarity change count (32 bit value - high word)
                     })
+                    # fmt: on
                 await asyncio.sleep(0.05)
 
                 try:
                     rr02_hidro_count = 2
-                    rr02_hidro = await client.read_holding_registers(address=0x0280, count=rr02_hidro_count, slave=self._unit)
+                    rr02_hidro = await client.read_holding_registers(
+                        address=0x0280, count=rr02_hidro_count, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error("Read error 0x0280: %s", e)
                     return {}
@@ -195,25 +227,32 @@ class VistaPoolModbusClient:
                     reg02_hidro = rr02_hidro.registers
                     _LOGGER.debug("Raw rr02_hidro: %s", reg02_hidro)
                     if len(reg02_hidro) < rr02_hidro_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0280, got %d", rr02_hidro_count, len(reg02_hidro))
+                        _LOGGER.warning(
+                            "Expected at least %d registers from 0x0280, got %d",
+                            rr02_hidro_count,
+                            len(reg02_hidro),
+                        )
                         return result
                     # Example: [266, 10000]
+                    # fmt: off
                     result.update({
                         "MBF_HIDRO_MODULE_VERSION":      get_safe(reg02_hidro, 0),  # 0x0280         ! Hydrolysis module version
                         "MBF_HIDRO_MODULE_CONNECTIVITY": get_safe(reg02_hidro, 1),  # 0x0281         ! Hydrolysis module connection quality (in myriad: 0..10000)
                     })
+                    # fmt: on
                 await asyncio.sleep(0.05)
 
-
-                '''
+                """
                 Request FACTORY page of registers starting from 0x0300
                 Contains factory data such as calibration parameters for the different power units.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
-                '''
+                """
                 await asyncio.sleep(0.05)
                 try:
                     rr03_count = 13
-                    rr03 = await client.read_holding_registers(address=0x0300, count=rr03_count, slave=self._unit)
+                    rr03 = await client.read_holding_registers(
+                        address=0x0300, count=rr03_count, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error("Read error 0x0300: %s", e)
                     return {}
@@ -223,9 +262,14 @@ class VistaPoolModbusClient:
                     reg03 = rr03.registers
                     _LOGGER.debug("Raw rr03: %s", reg03)
                     if len(reg03) < rr03_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0300, got %d", rr03_count, len(reg03))
+                        _LOGGER.warning(
+                            "Expected at least %d registers from 0x0300, got %d",
+                            rr03_count,
+                            len(reg03),
+                        )
                         return result
                     # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297]
+                    # fmt: off
                     result.update({
                         "MBF_PAR_VERSION": get_safe(reg03, 0),                # 0x0300*        Software version of the PowerBox
                         "MBF_PAR_MODEL": get_safe(reg03, 1),                  # 0x0301* mask   System model options
@@ -237,14 +281,15 @@ class VistaPoolModbusClient:
                         "MBF_PAR_SAL_CELLK":  get_safe(reg03, 11),		      # 0x030B         Specifies the relationship between the resistance obtained in the measurement process and its equivalence in g / l (grams per liter)
                         "MBF_PAR_SAL_TCOMP":  get_safe(reg03, 12),		      # 0x030C         Specifies the deviation in temperature from the conductivity.
                     })
+                    # fmt: on
 
-                '''
+                """
                 Request INSTALLER page of registers starting from 0x0400 
                 Contains a set of configuration registers related to the equipment installation,
                 such as the relays used for each function, the amount of time that each pump must operate, etc.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
-                '''
-                
+                """
+
                 # Read configuration registers (0x0408–0x04E0) in blocks of *31* due to device limits
                 register_ranges = [
                     (0x0408, 31),  # 0x0408–0x0426
@@ -256,12 +301,14 @@ class VistaPoolModbusClient:
                     # (0x04A3, 31),  # 0x04A3–0x04C1
                     # (0x04C2, 31),  # 0x04C2–0x04E0
                 ]
-                
+
                 reg04 = []
                 for address, count in register_ranges:
                     await asyncio.sleep(0.05)
                     try:
-                        rr04 = await client.read_holding_registers(address=address, count=count, slave=self._unit)
+                        rr04 = await client.read_holding_registers(
+                            address=address, count=count, slave=self._unit
+                        )
                     except Exception as e:
                         _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                         return {}
@@ -270,8 +317,9 @@ class VistaPoolModbusClient:
                         return {}
                     reg04.extend(rr04.registers)
                     _LOGGER.debug(f"Raw rr04 from 0x{address:04X}: {rr04.registers}")
-                
+
                 # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                # fmt: off
                 result.update({
                     "MBF_PAR_TIME_LOW": get_safe(reg04, 0),                    # 0x0408*        System timestamp as unix timestamp (32 bit value - low word).
                     "MBF_PAR_TIME_HIGH": get_safe(reg04, 1),                   # 0x0409*        System timestamp as unix timestamp (32 bit value - high word).
@@ -308,17 +356,20 @@ class VistaPoolModbusClient:
                     "MBF_PAR_UV_HIDE_WARN": get_safe(reg04, 32),                # 0x0428  mask  Suppression for warning messages in the UV mode (see MBMSK_UV_HIDE_WARN_*)
                     "MBF_PAR_UV_RELAY_GPIO": get_safe(reg04, 33),               # 0x0429        Relay number assigned to the UV function.
                 })
-                
-                ''' 
+                # fmt: on
+
+                """ 
                 Request INSTALLER page of registers starting from 0x0500
                 Contains user configuration registers, such as the production level
                 for the ionization and the hydrolysis, or the set points for the pH, redox, or chlorine regulation loops.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
-                '''
+                """
                 await asyncio.sleep(0.05)
                 try:
                     rr05_count = 14
-                    rr05 = await client.read_holding_registers(address=0x0502, count=rr05_count, slave=self._unit)
+                    rr05 = await client.read_holding_registers(
+                        address=0x0502, count=rr05_count, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error("Read error 0x0502: %s", e)
                     return {}
@@ -328,9 +379,14 @@ class VistaPoolModbusClient:
                     reg05 = rr05.registers
                     _LOGGER.debug("Raw rr05: %s", reg05)
                     if len(reg05) < rr05_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0502, got %d", rr05_count, len(reg05))
+                        _LOGGER.warning(
+                            "Expected at least %d registers from 0x0502, got %d",
+                            rr05_count,
+                            len(reg05),
+                        )
                         return result
                     # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
+                    # fmt: off
                     result.update({
                         "MBF_PAR_HIDRO": get_safe(reg05, 0) / 10.0,       # 0x0502        Hydrolisis target production level. When the hydrolysis production is to be set in percent values, this value will contain the percent of production. If the hydrolysis module is set to work in g/h production, this module will contain the desired amount of production in g/h units. The value adjusted in this register must not exceed the value set in the MBF_PAR_HIDRO_NOM factory register.
                         "MBF_PAR_PH1": get_safe(reg05, 2) / 100.0,        # 0x0504        Higher limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.5, the numerical content that we must write in this register is 750. This register must be always higher than MBF_PAR_PH2.
@@ -342,17 +398,19 @@ class VistaPoolModbusClient:
                         # 0x050B-0x050E skipped
                         "MBF_PAR_FILTRATION_CONF": get_safe(reg05, 13),    # 0x050F* mask   ! filtration type and speed, see MBMSK_PAR_FILTRATION_CONF_*
                     })
+                    # fmt: on
 
-
-                ''' 
+                """ 
                 Request MISC page of registers starting from 0x0600
                 Contains the configuration parameters for the screen controllers (language, colours, sound, etc).
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
-                '''
+                """
                 await asyncio.sleep(0.05)
                 try:
                     rr06_count = 13
-                    rr06 = await client.read_holding_registers(address=0x0600, count=rr06_count, slave=self._unit)
+                    rr06 = await client.read_holding_registers(
+                        address=0x0600, count=rr06_count, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error("Read error 0x0600: %s", e)
                     return {}
@@ -362,9 +420,14 @@ class VistaPoolModbusClient:
                     reg06 = rr06.registers
                     _LOGGER.debug("Raw rr06: %s", reg06)
                     if len(reg06) < rr06_count:
-                        _LOGGER.warning("Expected at least %d registers from 0x0600, got %d", rr06_count, len(reg06))
+                        _LOGGER.warning(
+                            "Expected at least %d registers from 0x0600, got %d",
+                            rr06_count,
+                            len(reg06),
+                        )
                         return result
                     # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0, 0]
+                    # fmt: off
                     result.update({
                         "MBF_PAR_UICFG_MACHINE": get_safe(reg06, 0),                # 0x0600        Machine type (see MBV_PAR_MACH_* and  kNeoPoolMachineNames[])
                         "MBF_PAR_UICFG_LANGUAGE": get_safe(reg06, 1),               # 0x0601        Selected language (see MBV_PAR_LANG_*)
@@ -382,14 +445,14 @@ class VistaPoolModbusClient:
                         # "MBF_PAR_UICFG_MACH_NAME_AUX3": modbus_regs_to_ascii(reg06[26:31]), # 0x061A         Aux3 relay name: 5 register ASCIIZ string with up to 10 characters
                         # "MBF_PAR_UICFG_MACH_NAME_AUX4": modbus_regs_to_ascii(reg06[31:36]), # 0x061F         Aux4 relay name: 5 register ASCIIZ string with up to 10 characters
                     })
-                
+                    # fmt: on
 
         except Exception as e:
             _LOGGER.error("Modbus TCP read error: %s", e)
-            
-        # Add filtration speed and type    
+
+        # Add filtration speed and type
         result["FILTRATION_SPEED"] = get_filtration_speed(result)
-        
+
         # _LOGGER.debug("All Results: %s", result)
         return result
 
@@ -403,14 +466,20 @@ class VistaPoolModbusClient:
         try:
             async with AsyncModbusTcpClient(self._host, port=self._port) as client:
                 if not client.connected:
-                    _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                    _LOGGER.error(
+                        "Modbus client connection failed to %s:%s",
+                        self._host,
+                        self._port,
+                    )
                     return
 
                 # Ensure value is always a list, even for a single register
                 if not isinstance(value, list):
                     value = [value]
 
-                result = await client.write_registers(address=address, values=value, slave=self._unit)
+                result = await client.write_registers(
+                    address=address, values=value, slave=self._unit
+                )
                 if result.isError():
                     _LOGGER.error("Write failed at 0x%04X: %s", address, result)
                     return
@@ -419,23 +488,29 @@ class VistaPoolModbusClient:
                 # Confirm the write
                 await asyncio.sleep(0.05)
                 # Read back the register to confirm the write
-                confirm = await client.read_holding_registers(address=address, count=len(value), slave=self._unit)
+                confirm = await client.read_holding_registers(
+                    address=address, count=len(value), slave=self._unit
+                )
                 if confirm.isError():
                     _LOGGER.error("Read failed at 0x%04X: %s", address, confirm)
                     return
-                
+
                 # If apply is True, save the configuration to EEPROM and execute
                 if apply:
                     await asyncio.sleep(0.1)
-                    result = await client.write_registers(address=0x02F0, values=[1], slave=self._unit)
-                    
+                    result = await client.write_registers(
+                        address=0x02F0, values=[1], slave=self._unit
+                    )
+
                     if result.isError():
                         _LOGGER.error("EEPROM save failed (0x02F0): %s", result)
                         return
                     _LOGGER.debug("EEPROM save triggered (0x02F0)")
 
                     await asyncio.sleep(0.1)
-                    result = await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
+                    result = await client.write_registers(
+                        address=0x02F5, values=[1], slave=self._unit
+                    )
                     if result.isError():
                         _LOGGER.error("EXEC failed (0x02F5): %s", result)
                         return
@@ -445,19 +520,27 @@ class VistaPoolModbusClient:
         except Exception as e:
             _LOGGER.error("Modbus TCP write exception: %s", e)
 
+    """ Manual controller for AUX relays (1-4) """
 
-    ''' Manual controller for AUX relays (1-4) '''
     async def async_write_aux_relay(self, relay_index, on):
         aux_bit = AUX_BITMASKS[relay_index]
         try:
             async with AsyncModbusTcpClient(self._host, port=self._port) as client:
                 if not client.connected:
-                    _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                    _LOGGER.error(
+                        "Modbus client connection failed to %s:%s",
+                        self._host,
+                        self._port,
+                    )
                     return
                 # Read current relay state
-                current_result = await client.read_input_registers(address=0x010E, count=1, slave=self._unit)
+                current_result = await client.read_input_registers(
+                    address=0x010E, count=1, slave=self._unit
+                )
                 if current_result.isError():
-                    _LOGGER.error("Modbus read error from %s: %s", 0x010E, current_result)
+                    _LOGGER.error(
+                        "Modbus read error from %s: %s", 0x010E, current_result
+                    )
                     return
                 current = current_result.registers[0]
                 # Set or clear the aux bit
@@ -465,24 +548,35 @@ class VistaPoolModbusClient:
                     value = current | aux_bit
                 else:
                     value = current & ~aux_bit
-                await client.write_registers(address=0x0289, values=[1], slave=self._unit)
-                await client.write_registers(address=0x010E, values=[value], slave=self._unit)
+                await client.write_registers(
+                    address=0x0289, values=[1], slave=self._unit
+                )
+                await client.write_registers(
+                    address=0x010E, values=[value], slave=self._unit
+                )
                 _LOGGER.debug("Wrote relay state at 0x010E: 0x%04X", value)
-                await client.write_registers(address=0x0289, values=[0], slave=self._unit)
-                await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
+                await client.write_registers(
+                    address=0x0289, values=[0], slave=self._unit
+                )
+                await client.write_registers(
+                    address=0x02F5, values=[1], slave=self._unit
+                )
         except Exception as e:
             _LOGGER.error("Modbus TCP AUX relay write exception: %s", e)
-
 
     async def read_all_timers(self):
         timers = {}
         async with AsyncModbusTcpClient(self._host, port=self._port) as client:
             if not client.connected:
-                _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                _LOGGER.error(
+                    "Modbus client connection failed to %s:%s", self._host, self._port
+                )
                 return {}
             for name, addr in TIMER_BLOCKS.items():
                 try:
-                    rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+                    rr = await client.read_holding_registers(
+                        address=addr, count=15, slave=self._unit
+                    )
                 except Exception as e:
                     _LOGGER.error(f"Timer block read error at {addr:#04x}: {e}")
                     continue
@@ -505,11 +599,17 @@ class VistaPoolModbusClient:
         # 1. Read current timer block from Modbus
         async with AsyncModbusTcpClient(self._host, port=self._port) as client:
             if not client.connected:
-                _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                _LOGGER.error(
+                    "Modbus client connection failed to %s:%s", self._host, self._port
+                )
                 return {}
-            rr = await client.read_holding_registers(address=addr, count=15, slave=self._unit)
+            rr = await client.read_holding_registers(
+                address=addr, count=15, slave=self._unit
+            )
             if rr.isError():
-                _LOGGER.error(f"Could not read timer block at {addr:#04x} before write: {rr}")
+                _LOGGER.error(
+                    f"Could not read timer block at {addr:#04x} before write: {rr}"
+                )
                 return False
             current_regs = rr.registers
             current_data = parse_timer_block(current_regs)
@@ -523,14 +623,18 @@ class VistaPoolModbusClient:
             for idx, reg in enumerate(regs):
                 if not isinstance(reg, int):
                     _LOGGER.error(f"Register {idx} is not int: {reg!r}")
-                    
+
             _LOGGER.debug(f"Timer block {block_name} ({addr:#04x}) to write: {regs}")
 
             # 4. Write full block back to Modbus
             if not client.connected:
-                _LOGGER.error("Modbus client connection failed to %s:%s", self._host, self._port)
+                _LOGGER.error(
+                    "Modbus client connection failed to %s:%s", self._host, self._port
+                )
                 return
-            result = await client.write_registers(address=addr, values=regs, slave=self._unit)
+            result = await client.write_registers(
+                address=addr, values=regs, slave=self._unit
+            )
             if result.isError():
                 _LOGGER.error(f"Timer block write error at {addr:#04x}: {result}")
                 return False

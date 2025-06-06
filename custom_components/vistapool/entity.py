@@ -3,6 +3,7 @@ VistaPool Entity Module
 This module defines the base entity class for the VistaPool integration.
 It provides common functionality for all entities, including device information,
 """
+
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from .helpers import parse_version, modbus_regs_to_hex_string
 from .const import DOMAIN, NAME
@@ -10,18 +11,20 @@ from .const import DOMAIN, NAME
 
 class VistaPoolEntity(CoordinatorEntity):
     _attr_has_entity_name = True
-    
+
     def __init__(self, coordinator, entry_id):
         super().__init__(coordinator)
         self._entry_id = entry_id
-    
+
     @property
     def translation_key(self):
         return getattr(self, "_attr_translation_key", None)
-    
+
     @property
     def device_info(self) -> dict:
-        serial_number = modbus_regs_to_hex_string(self.coordinator.data.get("MBF_POWER_MODULE_NODEID"))
+        serial_number = modbus_regs_to_hex_string(
+            self.coordinator.data.get("MBF_POWER_MODULE_NODEID")
+        )
         info = {
             "identifiers": {(DOMAIN, self._entry_id)},
             "name": getattr(self.coordinator, "device_name", NAME),
@@ -33,12 +36,32 @@ class VistaPoolEntity(CoordinatorEntity):
         }
         return info
 
-
     # Generate a unique object ID for the entity to use in Home Assistant
     # This remove the prefix "mbf_" and "par_" from the key and replaces spaces, dashes, and dots with underscores
     @staticmethod
     def slugify(name):
-        return name.lower().replace("mbf_", "", 1).replace("par_", "", 1).replace(" ", "_").replace("-", "_").replace(".", "_").replace(":", "_").replace(",", "_").replace("(", "_").replace(")", "_").replace("[", "_").replace("]", "_").replace("{", "_").replace("}", "_").replace("'", "_").replace('"', "_").replace("&", "_").replace("%", "_").replace("$", "_").replace("#", "_")
+        return (
+            name.lower()
+            .replace("mbf_", "", 1)
+            .replace("par_", "", 1)
+            .replace(" ", "_")
+            .replace("-", "_")
+            .replace(".", "_")
+            .replace(":", "_")
+            .replace(",", "_")
+            .replace("(", "_")
+            .replace(")", "_")
+            .replace("[", "_")
+            .replace("]", "_")
+            .replace("{", "_")
+            .replace("}", "_")
+            .replace("'", "_")
+            .replace('"', "_")
+            .replace("&", "_")
+            .replace("%", "_")
+            .replace("$", "_")
+            .replace("#", "_")
+        )
 
     @staticmethod
     def decode_modules(model_bitmask):
