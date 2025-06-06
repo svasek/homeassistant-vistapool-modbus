@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.2.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.2...v1.2.3) (2025-06-06)
+## [1.2.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.2...v1.2.3) (2025-06-03)
 
 
 ### Bug Fixes
