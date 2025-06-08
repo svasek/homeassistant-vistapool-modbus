@@ -11,8 +11,6 @@ on:
   pull_request:
     paths:
       - 'custom_components/vistapool/**'
-  # schedule:
-  #   - cron:  '0 0 * * *'
 
 jobs:
   validate:
