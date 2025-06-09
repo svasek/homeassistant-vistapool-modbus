@@ -77,14 +77,24 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 1. Add this repository as a [custom repository](https://hacs.xyz/docs/faq/custom_repositories/) in HACS (you can use the button above).
 2. Install **VistaPool Modbus Integration**.
 3. Restart Home Assistant.
-4. Go to **Settings → Devices & Services**, click **Add Integration**, and search for **VistaPool**.
 
 ### Manual
 
 1. Download or clone this repository.
 2. Copy the `custom_components/vistapool` folder to your `/config/custom_components` directory.
 3. Restart Home Assistant.
-4. Go to **Settings → Devices & Services**, click **Add Integration**, and search for **VistaPool**.
+
+### Add Your Pool to Home Assistant
+
+Now you just need to add your pool. You can click the button below:
+
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=vistapool)
+
+Or you can add it manually:
+
+  - Navigate to **Devices & Services**.
+  - Click **Add Integration**.
+  - Search for and select **VistaPool Modbus Integration**.
 
 ---
 
