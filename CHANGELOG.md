@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.5](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.4...v1.2.5) (2025-06-11)
+
+
+### Bug Fixes
+
+* **binary_sensor:** 🛠️ skip acid pump if relay is not assigned ([89e7529](https://github.com/svasek/homeassistant-vistapool-modbus/commit/89e752964c3fe193d6c3ed628a43730db540154d))
+
 ## [1.2.4](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.3...v1.2.4) (2025-06-06)
 
 
