@@ -20,6 +20,7 @@ Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • 
 - **Connector:** Standard **2.54 mm** 5-pin PCB female connector
 - **Settings:** 19200 baud, 1 stop bit, no parity
 - **Protocol:** Modbus RTU
+- **For more information, check out our [Modbus Connection Guide](docs/modbus-connection-guide.md)**, which includes images.
 
 ### Plug Connector
 
@@ -150,14 +151,6 @@ Entities are prefixed by the custom name (e.g. `sensor.pool1_filt_mode`):
 - **Auxiliary relays (Light & AUX1–AUX4)**:  
   Only available if enabled in integration options.
 
-
----
-
-## To Do
-
-- Add additional sensor coverage (e.g. flow rate, error states, power information)
-- ~~Add timers as a settings option~~
-- ~~Add relay controls~~
 
 ---
 
