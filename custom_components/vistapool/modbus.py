@@ -293,13 +293,9 @@ class VistaPoolModbusClient:
                 # Read configuration registers (0x0408–0x04E0) in blocks of *31* due to device limits
                 register_ranges = [
                     (0x0408, 31),  # 0x0408–0x0426
-                    (0x0427, 3),  # 0x0427–0x0445
-                    # Prepared for future use:
-                    # (0x0446, 31),  # 0x0446–0x0464
-                    # (0x0465, 31),  # 0x0465–0x0483
-                    # (0x0484, 31),  # 0x0484–0x04A2
-                    # (0x04A3, 31),  # 0x04A3–0x04C1
-                    # (0x04C2, 31),  # 0x04C2–0x04E0
+                    (0x0427, 13),  # 0x0427–0x0433
+                    # TIMER_BLOCKS starts at 0x0434, so we skip 0x0434-0x04E8
+                    # (0x04E8, 9),  # 0x04F0-0x04E8
                 ]
 
                 reg04 = []
@@ -353,10 +349,26 @@ class VistaPoolModbusClient:
                     "MBF_PAR_INTELLIGENT_INTERVAL_TIME_LOW": get_safe(reg04, 29), # 0x0425      Internal timer that counts the filtration interval assigned to the the intelligent mode (32-bit value - low word). This register is only for internal use and should not be modified by the user.
                     "MBF_PAR_INTELLIGENT_INTERVAL_TIME_HIGH": get_safe(reg04, 30), # 0x0426     Internal timer that counts the filtration interval assigned to the the intelligent mode (32-bit value - high word)
                     "MBF_PAR_UV_MODE": get_safe(reg04, 31),                    # 0x0427         UV mode active or not - see MBV_PAR_UV_MODE*. To enable UV support for a given device, add the mask MBMSK_MODEL_UV to the MBF_PAR_MODEL register.
-                    "MBF_PAR_UV_HIDE_WARN": get_safe(reg04, 32),                # 0x0428  mask  Suppression for warning messages in the UV mode (see MBMSK_UV_HIDE_WARN_*)
-                    "MBF_PAR_UV_RELAY_GPIO": get_safe(reg04, 33),               # 0x0429        Relay number assigned to the UV function.
+                    "MBF_PAR_UV_HIDE_WARN": get_safe(reg04, 32),               # 0x0428  mask   Suppression for warning messages in the UV mode (see MBMSK_UV_HIDE_WARN_*)
+                    "MBF_PAR_UV_RELAY_GPIO": get_safe(reg04, 33),              # 0x0429         Relay number assigned to the UV function.
+                    "MBF_PAR_PH_PUMP_REP_TIME_ON": get_safe(reg04, 34),        # 0x042A  mask   Time that the pH pump will be turn on in the repetitive mode (see MBMSK_PH_PUMP_*). Contains a special time format, see desc for MBMSK_PH_PUMP_TIME.
+                    "MBF_PAR_PH_PUMP_REP_TIME_OFF": get_safe(reg04, 35),       # 0x042B  mask   Time that the pH pump will be turn off in the repetitive mode. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
+                    "MBF_PAR_HIDRO_COVER_ENABLE": get_safe(reg04, 36),         # 0x042C  mask   Options for the hydrolysis/electrolysis module (see MBMSK_HIDRO_*)
+                    "MBF_PAR_HIDRO_COVER_REDUCTION": get_safe(reg04, 37),      # 0x042D         Configured levels for the cover reduction and the hydrolysis shutdown temperature options: LSB = Percentage for the cover reduction, MSB = Temperature level for the hydrolysis shutdown (see MBMSK_HIDRO_*)
+                    "MBF_PAR_PUMP_RELAY_TIME_OFF": get_safe(reg04, 38),        # 0x042E         Time level in minutes or seconds that the dosing pump must remain off when the temporized pump mode is selected. This time level register applies to all pumps except pH. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
+                    "MBF_PAR_PUMP_RELAY_TIME_ON": get_safe(reg04, 39),         # 0x042F         Time level in minutes or seconds that the dosing pump must remain on when the temporized pump mode is selected. This time level register applies to all pumps except pH. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
+                    "MBF_PAR_RELAY_PH": get_safe(reg04, 40),                   # 0x0430         Determine what pH regulation configuration the equipment has (see MBV_PAR_RELAY_PH_*)
+                    "MBF_PAR_RELAY_MAX_TIME": get_safe(reg04, 41),             # 0x0431         Maximum amount of time in seconds, that a dosing pump can operate before rising an alarm signal. The behavior of the system when the dosing time is exceeded is regulated by the type of action stored in the MBF_PAR_RELAY_MODE register.
+                    "MBF_PAR_RELAY_MODE": get_safe(reg04, 42),                 # 0x0432         Behavior of the system when the dosing time is exceeded (see MBMSK_PAR_RELAY_MODE_* and MBV_PAR_RELAY_MODE_*)
+                    "MBF_PAR_RELAY_ACTIVATION_DELAY": get_safe(reg04, 43),     # 0x0433         Delay time in seconds for the pH pump when the measured pH value is outside the allowable pH setpoints. The system internally adds an extra time of 10 seconds to the value stored here. The pump starts the dosing operation once the condition of pH out of valid interval is maintained during the time specified in this register.
+
                 })
                 # fmt: on
+
+                # MBF_PAR_RELAY_PH:
+                #   0: The equipment works with an acid and base pump
+                #   1: The equipment works with acid pump only
+                #   2: The equipment works with base pump only
 
                 """ 
                 Request INSTALLER page of registers starting from 0x0500
