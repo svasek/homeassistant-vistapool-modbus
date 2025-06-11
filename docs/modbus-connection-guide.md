@@ -59,11 +59,12 @@ Below you will find screenshots of the relevant settings:
 
 1. **Serial Settings**
 
-   ![Serial Settings](images/serial-settings.webp)
+   <img src="images/serial-settings.webp" width="600">
 
 2. **Network Settings**
 
-    ![Serial Settings](images/net-settings.webp)
+    <img src="images/net-settings.webp" width="600">
+
 
 ## Adding to Home Assistant
 
