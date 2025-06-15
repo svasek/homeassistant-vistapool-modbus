@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.5...v1.3.0) (2025-06-15)
+
+
+### Features
+
+* **options:** ✨ add advanced options for enabling 'Backwash' mode ([9993931](https://github.com/svasek/homeassistant-vistapool-modbus/commit/99939316b815c09539d93a304a93870ee2fddda5))
+* **options:** ✨ enhance options flow with automatic integration reload ([02d1e21](https://github.com/svasek/homeassistant-vistapool-modbus/commit/02d1e215a825ff28c4094e16d14293e86a53639e))
+
 ## [1.2.5](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.4...v1.2.5) (2025-06-11)
 
 
