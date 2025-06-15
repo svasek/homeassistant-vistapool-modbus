@@ -1,4 +1,5 @@
 import logging
+import asyncio
 import voluptuous as vol
 from datetime import date
 from homeassistant import config_entries
@@ -80,7 +81,22 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                     )
             data = user_input.copy()
             data.pop("unlock_advanced", None)
-            return self.async_create_entry(title="", data=data)
+            prev_options = dict(self._config_entry.options)
+            result = self.async_create_entry(title="", data=data)
+
+            if (
+                prev_options.get("use_light") != user_input.get("use_light")
+                or prev_options.get("use_aux1") != user_input.get("use_aux1")
+                or prev_options.get("use_aux2") != user_input.get("use_aux2")
+                or prev_options.get("use_aux3") != user_input.get("use_aux3")
+                or prev_options.get("use_aux4") != user_input.get("use_aux4")
+            ):
+                self.hass.loop.call_soon(
+                    asyncio.create_task,
+                    self.hass.config_entries.async_reload(self._config_entry.entry_id),
+                )
+
+            return result
 
         return self.async_show_form(
             step_id="init",
@@ -100,8 +116,23 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
         )
 
         if user_input is not None:
+            prev_options = dict(self._config_entry.options)
             all_options = {**self._base_options, **user_input}
-            return self.async_create_entry(title="", data=all_options)
+            result = self.async_create_entry(title="", data=all_options)
+
+            if (
+                prev_options.get("use_light") != all_options.get("use_light")
+                or prev_options.get("use_aux1") != all_options.get("use_aux1")
+                or prev_options.get("use_aux2") != all_options.get("use_aux2")
+                or prev_options.get("use_aux3") != all_options.get("use_aux3")
+                or prev_options.get("use_aux4") != all_options.get("use_aux4")
+            ):
+                self.hass.loop.call_soon(
+                    asyncio.create_task,
+                    self.hass.config_entries.async_reload(self._config_entry.entry_id),
+                )
+
+            return result
 
         return self.async_show_form(
             step_id="advanced",

@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "VistaPool Einstellungen",
-        "description": "HINWEIS: Änderungen an den aktivierten Relais werden erst nach einem Neustart von Home Assistant wirksam!",
+        "description": "ACHTUNG: Das Ändern der erlaubten Relais löst automatisch das Neuladen der Integration aus! Änderungen werden sofort wirksam.",
         "data": {
           "scan_interval": "Wie oft sollen die Daten vom VistaPool-Controller aktualisiert werden?",
           "use_light": "Relais Beleuchtung aktivieren",

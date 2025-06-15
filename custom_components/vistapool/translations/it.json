@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Impostazioni VistaPool",
-        "description": "NOTA: Le modifiche ai relè abilitati avranno effetto solo dopo il riavvio di Home Assistant!",
+        "description": "ATTENZIONE: La modifica dei relè abilitati ricaricherà automaticamente l’integrazione! Le modifiche avranno effetto immediato.",
         "data": {
           "scan_interval": "Con quale frequenza devono essere aggiornati i dati dal controller VistaPool?",
           "use_light": "Abilita relè luce",

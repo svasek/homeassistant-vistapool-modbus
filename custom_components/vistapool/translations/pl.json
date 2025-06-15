@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Ustawienia VistaPool",
-        "description": "UWAGA: Zmiany w dozwolonych przekaźnikach będą widoczne dopiero po ponownym uruchomieniu Home Assistant!",
+        "description": "UWAGA: Zmiana dozwolonych przekaźników spowoduje automatyczne przeładowanie integracji! Zmiany zostaną zastosowane natychmiast.",
         "data": {
           "scan_interval": "Jak często mają być aktualizowane dane z kontrolera VistaPool?",
           "use_light": "Włącz przekaźnik oświetlenia",

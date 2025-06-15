@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "VistaPool SeOptionstup",
-        "description": "NOTE: Changes to enabled relays will only take effect after Home Assistant restart!",
+        "description": "WARNING: Changing enabled relays will automatically reload the integration! Changes will take effect immediately.",
         "data": {
           "scan_interval": "How often should data be updated from the VistaPool controller?",
           "use_light": "Enable Light relay",

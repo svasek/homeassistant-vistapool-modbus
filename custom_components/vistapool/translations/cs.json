@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Nastavení VistaPool",
-        "description": "POZOR: Změna povolených relé se projeví až po restartu Home Assistantu!",
+        "description": "POZOR: Změna povolených relé vyvolá automaticky reload integrace! Změny se projeví ihned.",
         "data": {
           "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool?",
           "use_light": "Povolit relé Osvětlení",

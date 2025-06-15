@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Configuración de VistaPool",
-        "description": "NOTA: ¡Los cambios en los relés habilitados solo tendrán efecto después de reiniciar Home Assistant!",
+        "description": "ATENCIÓN: Cambiar los relés habilitados recargará automáticamente la integración. Los cambios surtirán efecto inmediatamente.",
         "data": {
           "scan_interval": "¿Con qué frecuencia se deben actualizar los datos del controlador VistaPool?",
           "use_light": "Activar relé de luz",
