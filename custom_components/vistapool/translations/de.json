@@ -17,17 +17,30 @@
   "options": {
     "step": {
       "init": {
-        "title": "VistaPool Optionen",
-        "description": "WARNUNG: Änderungen an den erlaubten Relais werden erst nach einem Neustart von Home Assistant wirksam!",
+        "title": "VistaPool Einstellungen",
+        "description": "HINWEIS: Änderungen an den aktivierten Relais werden erst nach einem Neustart von Home Assistant wirksam!",
         "data": {
           "scan_interval": "Wie oft sollen die Daten vom VistaPool-Controller aktualisiert werden?",
-          "use_light": "Lichtrelais aktivieren",
-          "use_aux1": "AUX1-Relais aktivieren",
-          "use_aux2": "AUX2-Relais aktivieren",
-          "use_aux3": "AUX3-Relais aktivieren",
-          "use_aux4": "AUX4-Relais aktivieren"
+          "use_light": "Relais Beleuchtung aktivieren",
+          "use_aux1": "Relais AUX1 aktivieren",
+          "use_aux2": "Relais AUX2 aktivieren",
+          "use_aux3": "Relais AUX3 aktivieren",
+          "use_aux4": "Relais AUX4 aktivieren",
+          "unlock_advanced": "Erweiterte Optionen freischalten",
+          "enable_backwash_option": "⚠️ ‘Backwash’-Modus aktivieren"
+        }
+      },
+      "advanced": {
+        "title": "Erweiterte Einstellungen",
+        "description": "⚠️ WARNUNG: Unsachgemäße Verwendung kann die Filtration beschädigen!",
+        "data": {
+          "enable_backwash_option": "‘Backwash’-Modus aktivieren",
+          "enable_backwash_option_description": "⚠️ Fortgeschritten! Aktiviert die Option ‘backwash’ im Filtermodus. Unsachgemäße Verwendung kann das Filtersystem beschädigen!"
         }
       }
+    },
+    "error": {
+      "unlock_advanced_error": "Falscher Code. Bitte versuchen Sie es erneut oder löschen Sie das Feld."
     }
   },
   "entity": {
@@ -72,15 +85,15 @@
           "backwash": "Rückspülung"
         }
       },
-      "filtration_speed": { 
-          "name": "Aktuelle Filtergeschwindigkeit",
-          "state": {
-            "off": "Aus",
-            "low": "Niedrig",
-            "mid": "Mittel",
-            "high": "Hoch"
-          }
+      "filtration_speed": {
+        "name": "Aktuelle Filtergeschwindigkeit",
+        "state": {
+          "off": "Aus",
+          "low": "Niedrig",
+          "mid": "Mittel",
+          "high": "Hoch"
         }
+      }
     },
     "binary_sensor": {
       "ph_acid_pump": { "name": "pH-Säurepumpe" },
@@ -164,14 +177,14 @@
           "backwash": "Rückspülung"
         }
       },
-      "filtration_speed": { 
-          "name": "Filtergeschwindigkeit",
-          "state": {
-            "low": "Niedrig",
-            "mid": "Mittel",
-            "high": "Hoch"
-          }
-        },
+      "filtration_speed": {
+        "name": "Filtergeschwindigkeit",
+        "state": {
+          "low": "Niedrig",
+          "mid": "Mittel",
+          "high": "Hoch"
+        }
+      },
       "cell_boost": {
         "name": "Boost-Modus",
         "state": {

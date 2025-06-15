@@ -25,9 +25,22 @@
           "use_aux1": "Povolit relé AUX1",
           "use_aux2": "Povolit relé AUX2",
           "use_aux3": "Povolit relé AUX3",
-          "use_aux4": "Povolit relé AUX4"
+          "use_aux4": "Povolit relé AUX4",
+          "unlock_advanced": "Odemknout pokročilé možnosti",
+          "enable_backwash_option": "⚠️ Povolit režim ‘Backwash’"
+        }
+      },
+      "advanced": {
+        "title": "Pokročilá nastavení",
+        "description": "⚠️ POZOR: Nesprávné použití může poškodit filtraci!",
+        "data": {
+          "enable_backwash_option": "Povolit režim ‘Backwash’",
+          "enable_backwash_option_description": "⚠️ Pokročilé! Zpřístupní volbu ‘backwash’ v režimu filtrace. Nesprávné použití může poškodit filtraci!"
         }
       }
+    },
+    "error": {
+      "unlock_advanced_error": "Chybné heslo. Zkuste to znovu, nebo heslo smažte."
     }
   },
   "entity": {
@@ -41,7 +54,7 @@
       "measure_temperature": { "name": "Teplota vody" },
       "hidro_voltage": { "name": "Napětí hydrolýzy" },
       "device_time": { "name": "Čas zařízení" },
-      "ph_status_alarm": { 
+      "ph_status_alarm": {
         "name": "pH Alarm",
         "state": {
           "no_alarm": "OK",
@@ -53,16 +66,16 @@
           "tank_level": "Alarm hladiny nádrže"
         }
       },
-      "hidro_polarity": { 
+      "hidro_polarity": {
         "name": "Polarita hydrolýzy",
         "state": {
           "pol1": "Polarita 1",
           "pol2": "Polarita 2",
           "off": "Vypnuto"
         }
-      },      
-      "filt_mode": { 
-        "name": "Režim filtrace", 
+      },
+      "filt_mode": {
+        "name": "Režim filtrace",
         "state": {
           "manual": "Ruční",
           "auto": "Automatický",
@@ -72,7 +85,7 @@
           "backwash": "Zpětný proplach"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Aktuální rychlost filtrace",
         "state": {
           "off": "Vypnuto",
@@ -153,8 +166,8 @@
       "filtration2_stop": { "name": "Timer 2 - Vypnutí filtrace" },
       "filtration3_start": { "name": "Timer 3 -  Spuštění filtrace" },
       "filtration3_stop": { "name": "Timer 3 - Vypnutí filtrace" },
-      "filt_mode": { 
-        "name": "Filtrační režim", 
+      "filt_mode": {
+        "name": "Filtrační režim",
         "state": {
           "manual": "Ruční",
           "auto": "Automatický",
@@ -164,7 +177,7 @@
           "backwash": "Zpětný proplach"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Rychlost filtrace",
         "state": {
           "low": "Nízká",

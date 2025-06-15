@@ -17,17 +17,30 @@
   "options": {
     "step": {
       "init": {
-        "title": "Opzioni VistaPool",
-        "description": "ATTENZIONE: Le modifiche ai relè abilitati si applicano solo dopo il riavvio di Home Assistant!",
+        "title": "Impostazioni VistaPool",
+        "description": "NOTA: Le modifiche ai relè abilitati avranno effetto solo dopo il riavvio di Home Assistant!",
         "data": {
           "scan_interval": "Con quale frequenza devono essere aggiornati i dati dal controller VistaPool?",
           "use_light": "Abilita relè luce",
           "use_aux1": "Abilita relè AUX1",
           "use_aux2": "Abilita relè AUX2",
           "use_aux3": "Abilita relè AUX3",
-          "use_aux4": "Abilita relè AUX4"
+          "use_aux4": "Abilita relè AUX4",
+          "unlock_advanced": "Sblocca opzioni avanzate",
+          "enable_backwash_option": "⚠️ Abilita modalità ‘Backwash’"
+        }
+      },
+      "advanced": {
+        "title": "Impostazioni avanzate",
+        "description": "⚠️ ATTENZIONE: Un uso improprio può danneggiare la filtrazione!",
+        "data": {
+          "enable_backwash_option": "Abilita modalità ‘Backwash’",
+          "enable_backwash_option_description": "⚠️ Avanzato! Abilita l’opzione ‘backwash’ nella modalità di filtrazione. Un uso improprio può danneggiare il filtro!"
         }
       }
+    },
+    "error": {
+      "unlock_advanced_error": "Codice errato. Riprova o cancella il codice."
     }
   },
   "entity": {
@@ -72,7 +85,7 @@
           "backwash": "Controlavaggio"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Velocità attuale di filtrazione",
         "state": {
           "off": "Spento",
@@ -164,7 +177,7 @@
           "backwash": "Controlavaggio"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Velocità di filtrazione",
         "state": {
           "low": "Bassa",

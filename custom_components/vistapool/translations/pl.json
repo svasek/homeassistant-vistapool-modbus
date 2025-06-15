@@ -17,17 +17,30 @@
   "options": {
     "step": {
       "init": {
-        "title": "Opcje VistaPool",
-        "description": "UWAGA! Zmiany w dostępnych przekaźnikach będą zastosowane po ponownym uruchomieniu Home Assistant.",
+        "title": "Ustawienia VistaPool",
+        "description": "UWAGA: Zmiany w dozwolonych przekaźnikach będą widoczne dopiero po ponownym uruchomieniu Home Assistant!",
         "data": {
-          "scan_interval": "Jak często należy aktualizować dane z kontrolera VistaPool?",
-          "use_light": "Włącz przekaźnik światła",
+          "scan_interval": "Jak często mają być aktualizowane dane z kontrolera VistaPool?",
+          "use_light": "Włącz przekaźnik oświetlenia",
           "use_aux1": "Włącz przekaźnik AUX1",
           "use_aux2": "Włącz przekaźnik AUX2",
           "use_aux3": "Włącz przekaźnik AUX3",
-          "use_aux4": "Włącz przekaźnik AUX4"
+          "use_aux4": "Włącz przekaźnik AUX4",
+          "unlock_advanced": "Odblokuj opcje zaawansowane",
+          "enable_backwash_option": "⚠️ Włącz tryb ‘Backwash’"
+        }
+      },
+      "advanced": {
+        "title": "Ustawienia zaawansowane",
+        "description": "⚠️ UWAGA: Nieprawidłowe użycie może uszkodzić filtrację!",
+        "data": {
+          "enable_backwash_option": "Włącz tryb ‘Backwash’",
+          "enable_backwash_option_description": "⚠️ Zaawansowane! Umożliwia opcję ‘backwash’ w trybie filtracji. Nieprawidłowe użycie może uszkodzić filtr!"
         }
       }
+    },
+    "error": {
+      "unlock_advanced_error": "Nieprawidłowy kod. Spróbuj ponownie lub usuń kod."
     }
   },
   "entity": {
@@ -72,7 +85,7 @@
           "backwash": "Płukanie wsteczne"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Aktualna prędkość filtracji",
         "state": {
           "off": "Wyłączone",
@@ -164,7 +177,7 @@
           "backwash": "Płukanie wsteczne"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Prędkość filtracji",
         "state": {
           "low": "Niska",

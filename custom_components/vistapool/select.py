@@ -89,18 +89,11 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             await asyncio.sleep(0.2)
             return
 
-        # Prevent switching to Backwash from HA UI
-        # Can be removed
         if option == "backwash":
-            # Log warning
-            _LOGGER.warning("Cannot switch to Backwash from Home Assistant UI.")
-            await self.hass.services.async_call(
-                "persistent_notification",
-                "create",
-                {
-                    "message": "Cannot switch to Backwash from Home Assistant. Please use device display instead.",
-                    "title": "VistaPool Warning",
-                },
+            # Log info about backwash
+            _LOGGER.info(
+                'Your pool "%s" has been switched to the BACKWASH mode!',
+                VistaPoolEntity.slugify(self.coordinator.device_name),
             )
             return
 
@@ -209,6 +202,21 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         ):
             # Remove key for "smart"
             option_keys = [k for k in option_keys if k != 3]
+
+        # Add backwash option if enabled in config
+        if (
+            self._key == "MBF_PAR_FILT_MODE"
+            and self.coordinator.config_entry.options.get(
+                "enable_backwash_option", False
+            )
+        ):
+            # Add backwash as the last option (key 13)
+            if 13 not in option_keys:
+                option_keys.append(13)
+                self._options_map[13] = "backwash"
+        else:
+            # Remove key for "backwash" if it exists and not enabled
+            option_keys = [k for k in option_keys if k != 13]
 
         # Hide "Active (Redox control)" if no Redox module
         if self._key == "MBF_CELL_BOOST" and not bool(

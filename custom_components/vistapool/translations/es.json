@@ -17,17 +17,30 @@
   "options": {
     "step": {
       "init": {
-        "title": "Opciones de VistaPool",
-        "description": "¡ATENCIÓN! Los cambios en los relés permitidos se aplicarán después de reiniciar Home Assistant.",
+        "title": "Configuración de VistaPool",
+        "description": "NOTA: ¡Los cambios en los relés habilitados solo tendrán efecto después de reiniciar Home Assistant!",
         "data": {
           "scan_interval": "¿Con qué frecuencia se deben actualizar los datos del controlador VistaPool?",
-          "use_light": "Habilitar relé de luz",
-          "use_aux1": "Habilitar relé AUX1",
-          "use_aux2": "Habilitar relé AUX2",
-          "use_aux3": "Habilitar relé AUX3",
-          "use_aux4": "Habilitar relé AUX4"
+          "use_light": "Activar relé de luz",
+          "use_aux1": "Activar relé AUX1",
+          "use_aux2": "Activar relé AUX2",
+          "use_aux3": "Activar relé AUX3",
+          "use_aux4": "Activar relé AUX4",
+          "unlock_advanced": "Desbloquear opciones avanzadas",
+          "enable_backwash_option": "⚠️ Activar el modo ‘Backwash’"
+        }
+      },
+      "advanced": {
+        "title": "Configuraciones avanzadas",
+        "description": "⚠️ ADVERTENCIA: ¡El uso incorrecto puede dañar la filtración!",
+        "data": {
+          "enable_backwash_option": "Activar el modo ‘Backwash’",
+          "enable_backwash_option_description": "⚠️ ¡Avanzado! Habilita la opción ‘backwash’ en el modo de filtración. ¡El uso inadecuado puede dañar el filtro!"
         }
       }
+    },
+    "error": {
+      "unlock_advanced_error": "Código incorrecto. Inténtalo de nuevo o borra el código."
     }
   },
   "entity": {
@@ -72,7 +85,7 @@
           "backwash": "Lavado inverso"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Velocidad actual de filtración",
         "state": {
           "off": "Apagado",
@@ -164,7 +177,7 @@
           "backwash": "Lavado inverso"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Velocidad de filtración",
         "state": {
           "low": "Baja",

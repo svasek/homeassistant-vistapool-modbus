@@ -17,17 +17,30 @@
   "options": {
     "step": {
       "init": {
-        "title": "VistaPool Options",
-        "description": "WARNING: Changes to allowed relays will take effect only after a restart of Home Assistant!",
+        "title": "VistaPool SeOptionstup",
+        "description": "NOTE: Changes to enabled relays will only take effect after Home Assistant restart!",
         "data": {
           "scan_interval": "How often should data be updated from the VistaPool controller?",
           "use_light": "Enable Light relay",
           "use_aux1": "Enable AUX1 relay",
           "use_aux2": "Enable AUX2 relay",
           "use_aux3": "Enable AUX3 relay",
-          "use_aux4": "Enable AUX4 relay"
+          "use_aux4": "Enable AUX4 relay",
+          "unlock_advanced": "Unlock advanced options",
+          "enable_backwash_option": "⚠️ Enable ‘Backwash’ mode"
+        }
+      },
+      "advanced": {
+        "title": "Advanced settings",
+        "description": "⚠️ WARNING: Improper use may damage filtration!",
+        "data": {
+          "enable_backwash_option": "Enable ‘Backwash’ mode",
+          "enable_backwash_option_description": "⚠️ Advanced! Enables ‘backwash’ option in filtration mode. Improper use may damage the filter!"
         }
       }
+    },
+    "error": {
+      "unlock_advanced_error": "Incorrect code. Please try again or clear the code."
     }
   },
   "entity": {
@@ -41,7 +54,7 @@
       "measure_temperature": { "name": "Water Temperature" },
       "hidro_voltage": { "name": "Hydrolysis Voltage" },
       "device_time": { "name": "Device Time" },
-      "ph_status_alarm": { 
+      "ph_status_alarm": {
         "name": "pH Alarm",
         "state": {
           "no_alarm": "OK",
@@ -53,7 +66,7 @@
           "tank_level": "Tank level alarm"
         }
       },
-      "hidro_polarity": { 
+      "hidro_polarity": {
         "name": "Hydrolysis Polarity",
         "state": {
           "pol1": "Polarity 1",
@@ -61,8 +74,8 @@
           "off": "Off"
         }
       },
-      "filt_mode": { 
-        "name": "Filtration Mode", 
+      "filt_mode": {
+        "name": "Filtration Mode",
         "state": {
           "manual": "Manual",
           "auto": "Automatic",
@@ -72,7 +85,7 @@
           "backwash": "Backwash"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Current filtration speed",
         "state": {
           "off": "Off",
@@ -153,8 +166,8 @@
       "filtration2_stop": { "name": "Timer 2 - Filtration Stop" },
       "filtration3_start": { "name": "Timer 3 - Filtration Start" },
       "filtration3_stop": { "name": "Timer 3 - Filtration Stop" },
-      "filt_mode": { 
-        "name": "Filtration Mode", 
+      "filt_mode": {
+        "name": "Filtration Mode",
         "state": {
           "manual": "Manual",
           "auto": "Automatic",
@@ -164,7 +177,7 @@
           "backwash": "Backwash"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Filtration speed",
         "state": {
           "low": "Low",

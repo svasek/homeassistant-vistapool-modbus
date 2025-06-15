@@ -17,17 +17,30 @@
   "options": {
     "step": {
       "init": {
-        "title": "Options VistaPool",
-        "description": "ATTENTION : les modifications apportées aux relais autorisés seront prises en compte après le redémarrage de Home Assistant.",
+        "title": "Configuration VistaPool",
+        "description": "REMARQUE : Les modifications des relais activés ne prendront effet qu'après le redémarrage de Home Assistant !",
         "data": {
           "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ?",
           "use_light": "Activer le relais lumière",
           "use_aux1": "Activer le relais AUX1",
           "use_aux2": "Activer le relais AUX2",
           "use_aux3": "Activer le relais AUX3",
-          "use_aux4": "Activer le relais AUX4"
+          "use_aux4": "Activer le relais AUX4",
+          "unlock_advanced": "Débloquer les options avancées",
+          "enable_backwash_option": "⚠️ Activer le mode ‘Backwash’"
+        }
+      },
+      "advanced": {
+        "title": "Paramètres avancés",
+        "description": "⚠️ ATTENTION : Une mauvaise utilisation peut endommager la filtration !",
+        "data": {
+          "enable_backwash_option": "Activer le mode ‘Backwash’",
+          "enable_backwash_option_description": "⚠️ Avancé ! Active l’option ‘backwash’ dans le mode de filtration. Une mauvaise utilisation peut endommager le filtre !"
         }
       }
+    },
+    "error": {
+      "unlock_advanced_error": "Code incorrect. Veuillez réessayer ou effacer le code."
     }
   },
   "entity": {
@@ -72,7 +85,7 @@
           "backwash": "Contre-lavage"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Vitesse de filtration actuelle",
         "state": {
           "off": "Éteint",
@@ -164,7 +177,7 @@
           "backwash": "Contre-lavage"
         }
       },
-      "filtration_speed": { 
+      "filtration_speed": {
         "name": "Vitesse de filtration",
         "state": {
           "low": "Basse",
