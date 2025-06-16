@@ -20,7 +20,8 @@
         "title": "Configuration VistaPool",
         "description": "ATTENTION : La modification des relais autorisés va automatiquement recharger l’intégration ! Les changements prendront effet immédiatement.",
         "data": {
-          "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ?",
+          "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ? (en secondes)",
+          "timer_resolution": "Quel doit être le pas pour le réglage des minuteries ? (en minutes)",
           "use_light": "Activer le relais lumière",
           "use_aux1": "Activer le relais AUX1",
           "use_aux2": "Activer le relais AUX2",

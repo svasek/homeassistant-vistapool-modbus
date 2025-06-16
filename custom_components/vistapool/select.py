@@ -1,9 +1,14 @@
 import logging
 import asyncio
 from homeassistant.components.select import SelectEntity
-from .const import DOMAIN, SELECT_DEFINITIONS
+from .const import DOMAIN, SELECT_DEFINITIONS, DEFAULT_TIMER_RESOLUTION
 from .entity import VistaPoolEntity
-from .helpers import seconds_to_hhmm, get_filtration_pump_type
+from .helpers import (
+    seconds_to_hhmm,
+    get_filtration_pump_type,
+    hhmm_to_seconds,
+    generate_time_options,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -224,10 +229,22 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         ):
             option_keys = [k for k in option_keys if k != 2]
 
-        # Handle Timer options in cases where doesn't fit 15 minutes
+        # Generate options list based on config entry options
+        # Also, handle Timer options in cases where doesn't fit the options_map
         if self._select_type == "timer_time":
+            resolution = max(
+                1,
+                self.coordinator.config_entry.options.get(
+                    "timer_resolution", DEFAULT_TIMER_RESOLUTION
+                ),
+            )
+            options_map = {
+                hhmm_to_seconds(opt): opt for opt in generate_time_options(resolution)
+            }
+            option_keys = list(options_map.keys())
+
             value = self.coordinator.data.get(self._key)
-            options_list = [self._options_map[k] for k in option_keys]
+            options_list = [options_map[k] for k in option_keys]
             if value is not None:
                 current_hhmm = seconds_to_hhmm(value)
                 if current_hhmm not in options_list:

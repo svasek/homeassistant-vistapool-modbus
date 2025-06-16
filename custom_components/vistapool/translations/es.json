@@ -20,7 +20,8 @@
         "title": "Configuración de VistaPool",
         "description": "ATENCIÓN: Cambiar los relés habilitados recargará automáticamente la integración. Los cambios surtirán efecto inmediatamente.",
         "data": {
-          "scan_interval": "¿Con qué frecuencia se deben actualizar los datos del controlador VistaPool?",
+          "scan_interval": "¿Con qué frecuencia deben actualizarse los datos del controlador VistaPool? (en segundos)",
+          "timer_resolution": "¿Cuál debe ser el paso para la configuración de los temporizadores? (en minutos)",
           "use_light": "Activar relé de luz",
           "use_aux1": "Activar relé AUX1",
           "use_aux2": "Activar relé AUX2",

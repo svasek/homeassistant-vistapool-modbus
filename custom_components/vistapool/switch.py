@@ -10,7 +10,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 MANUAL_FILTRATION_REGISTER = 0x0413
-COMMIT_REGISTER = 0x02F5
+EXEC_REGISTER = 0x02F5
 
 
 async def async_setup_entry(
@@ -88,7 +88,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_register(
                 self.timer_block_addr, 3
             )  # Relay assigned to this timer always on
-            await client.async_write_register(COMMIT_REGISTER, 1)  # Commit
+            await client.async_write_register(EXEC_REGISTER, 1)  # Commit
 
         # Run a refresh to update the state
         await asyncio.sleep(1.0)
@@ -116,7 +116,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_register(
                 self.timer_block_addr, 4
             )  # Relay assigned to this timer always off
-            await client.async_write_register(COMMIT_REGISTER, 1)  # Commit
+            await client.async_write_register(EXEC_REGISTER, 1)  # Commit
 
         # Run a refresh to update the state
         await asyncio.sleep(0.1)

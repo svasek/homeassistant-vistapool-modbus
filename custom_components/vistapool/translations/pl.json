@@ -20,7 +20,8 @@
         "title": "Ustawienia VistaPool",
         "description": "UWAGA: Zmiana dozwolonych przekaźników spowoduje automatyczne przeładowanie integracji! Zmiany zostaną zastosowane natychmiast.",
         "data": {
-          "scan_interval": "Jak często mają być aktualizowane dane z kontrolera VistaPool?",
+          "scan_interval": "Jak często powinny być aktualizowane dane z kontrolera VistaPool? (w sekundach)",
+          "timer_resolution": "Jaki powinien być krok dla ustawień timerów? (w minutach)",
           "use_light": "Włącz przekaźnik oświetlenia",
           "use_aux1": "Włącz przekaźnik AUX1",
           "use_aux2": "Włącz przekaźnik AUX2",

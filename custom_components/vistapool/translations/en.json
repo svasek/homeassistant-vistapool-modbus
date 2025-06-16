@@ -20,7 +20,8 @@
         "title": "VistaPool SeOptionstup",
         "description": "WARNING: Changing enabled relays will automatically reload the integration! Changes will take effect immediately.",
         "data": {
-          "scan_interval": "How often should data be updated from the VistaPool controller?",
+          "scan_interval": "How often should data be updated from the VistaPool controller? (in seconds)",
+          "timer_resolution": "What should be the step for timer settings? (in minutes)",
           "use_light": "Enable Light relay",
           "use_aux1": "Enable AUX1 relay",
           "use_aux2": "Enable AUX2 relay",

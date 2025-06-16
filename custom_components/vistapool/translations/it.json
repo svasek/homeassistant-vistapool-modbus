@@ -20,7 +20,8 @@
         "title": "Impostazioni VistaPool",
         "description": "ATTENZIONE: La modifica dei relè abilitati ricaricherà automaticamente l’integrazione! Le modifiche avranno effetto immediato.",
         "data": {
-          "scan_interval": "Con quale frequenza devono essere aggiornati i dati dal controller VistaPool?",
+          "scan_interval": "Ogni quanto devono essere aggiornati i dati dal controller VistaPool? (in secondi)",
+          "timer_resolution": "Quale dovrebbe essere il passo per l’impostazione dei timer? (in minuti)",
           "use_light": "Abilita relè luce",
           "use_aux1": "Abilita relè AUX1",
           "use_aux2": "Abilita relè AUX2",

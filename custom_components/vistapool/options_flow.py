@@ -4,7 +4,7 @@ import voluptuous as vol
 from datetime import date
 from homeassistant import config_entries
 from .entity import VistaPoolEntity
-from .const import DEFAULT_SCAN_INTERVAL
+from .const import DEFAULT_SCAN_INTERVAL, DEFAULT_TIMER_RESOLUTION
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -28,7 +28,11 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             vol.Optional(
                 "scan_interval",
                 default=options.get("scan_interval", DEFAULT_SCAN_INTERVAL),
-            ): int,
+            ): vol.In([5, 10, 15, 20, 30, 45, 60, 120, 180, 300]),
+            vol.Optional(
+                "timer_resolution",
+                default=options.get("timer_resolution", DEFAULT_TIMER_RESOLUTION),
+            ): vol.In([1, 5, 10, 15, 30, 60]),
             vol.Optional(
                 "use_light",
                 default=options.get("use_light", False),
