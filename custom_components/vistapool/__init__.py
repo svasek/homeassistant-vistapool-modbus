@@ -48,6 +48,7 @@ async def async_setup(hass, config):
         stop = call.data.get("stop")
         enable = call.data.get("enable")
         entry_id = call.data.get("entry_id")
+        period = call.data.get("period")
         if not entry_id:
             # fallback: if entry_id is not provided, use the first entry_id in hass.data[DOMAIN]
             entry_id = next(iter(hass.data[DOMAIN]), None)
@@ -65,6 +66,8 @@ async def async_setup(hass, config):
             timer_data["on"] = start_sec
         if interval is not None:
             timer_data["interval"] = interval
+        if period is not None:
+            timer_data["period"] = int(period)
         if enable is not None:
             timer_data["enable"] = enable
 
