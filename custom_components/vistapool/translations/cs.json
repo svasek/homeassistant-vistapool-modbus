@@ -23,10 +23,10 @@
           "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool? (v sekundách)",
           "timer_resolution": "Jaký má být krok pro nastavení časovačů? (v minutách)",
           "use_light": "Povolit relé Osvětlení",
-          "use_aux1": "Povolit relé AUX1",
-          "use_aux2": "Povolit relé AUX2",
-          "use_aux3": "Povolit relé AUX3",
-          "use_aux4": "Povolit relé AUX4",
+          "use_aux1": "Povolit relé Aux1",
+          "use_aux2": "Povolit relé Aux2",
+          "use_aux3": "Povolit relé Aux3",
+          "use_aux4": "Povolit relé Aux4",
           "unlock_advanced": "Odemknout pokročilé možnosti",
           "enable_backwash_option": "⚠️ Povolit režim ‘Backwash’"
         }
@@ -134,10 +134,10 @@
       "hidro_in_pol1": { "name": "Hydrolýza polarita 1" },
       "hidro_in_pol2": { "name": "Hydrolýza polarita 2" },
       "device_time_out_of_sync": { "name": "Čas v zařízení" },
-      "aux1": { "name": "Pomocné relé 1" },
-      "aux2": { "name": "Pomocné relé 2" },
-      "aux3": { "name": "Pomocné relé 3" },
-      "aux4": { "name": "Pomocné relé 4" }
+      "aux1": { "name": "Pomocné relé Aux1" },
+      "aux2": { "name": "Pomocné relé Aux2" },
+      "aux3": { "name": "Pomocné relé Aux3" },
+      "aux4": { "name": "Pomocné relé Aux4" }
     },
     "number": {
       "hidro": { "name": "Hydrolýza (intenzita)" },
@@ -151,10 +151,10 @@
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
       "light": { "name": "Osvětlení bazénu" },
-      "aux1": { "name": "Pomocné relé 1" },
-      "aux2": { "name": "Pomocné relé 2" },
-      "aux3": { "name": "Pomocné relé 3" },
-      "aux4": { "name": "Pomocné relé 4" }
+      "aux1": { "name": "Pomocné relé Aux1" },
+      "aux2": { "name": "Pomocné relé Aux2" },
+      "aux3": { "name": "Pomocné relé Aux3" },
+      "aux4": { "name": "Pomocné relé Aux4" }
     },
     "button": {
       "sync_time": { "name": "Synchronizovat čas zařízení" },
@@ -167,18 +167,40 @@
       "filtration2_stop": { "name": "Timer 2 - Vypnutí filtrace" },
       "filtration3_start": { "name": "Timer 3 -  Spuštění filtrace" },
       "filtration3_stop": { "name": "Timer 3 - Vypnutí filtrace" },
-      "relay_aux1_start": { "name": "Timer AUX1 -  Spuštění" },
-      "relay_aux1_stop": { "name": "Timer AUX1 -  Vypnutí" },
-      "relay_aux2_start": { "name": "Timer AUX2 -  Spuštění" },
-      "relay_aux2_stop": { "name": "Timer AUX2 -  Vypnutí" },
-      "relay_aux3_start": { "name": "Timer AUX3 -  Spuštění" },
-      "relay_aux3_stop": { "name": "Timer AUX3 -  Vypnutí" },
-      "relay_aux4_start": { "name": "Timer AUX4 -  Spuštění" },
-      "relay_aux4_stop": { "name": "Timer AUX4 -  Vypnutí" },
+      "relay_aux1_start": { "name": "Timer Aux1 (1) -  Spuštění" },
+      "relay_aux1_stop": { "name": "Timer Aux1 (1) -  Vypnutí" },
+      "relay_aux1b_start": { "name": "Timer Aux1 (2) -  Spuštění" },
+      "relay_aux1b_stop": { "name": "Timer Aux1 (2) -  Vypnutí" },
+      "relay_aux2_start": { "name": "Timer Aux2 (1) -  Spuštění" },
+      "relay_aux2_stop": { "name": "Timer Aux2 (1) -  Vypnutí" },
+      "relay_aux2b_start": { "name": "Timer Aux2 (2) -  Spuštění" },
+      "relay_aux2b_stop": { "name": "Timer Aux2 (2) -  Vypnutí" },
+      "relay_aux3_start": { "name": "Timer Aux3 (1) -  Spuštění" },
+      "relay_aux3_stop": { "name": "Timer Aux3 (1) -  Vypnutí" },
+      "relay_aux3b_start": { "name": "Timer Aux3 (2) -  Spuštění" },
+      "relay_aux3b_stop": { "name": "Timer Aux3 (2) -  Vypnutí" },
+      "relay_aux4_start": { "name": "Timer Aux4 (1) -  Spuštění" },
+      "relay_aux4_stop": { "name": "Timer Aux4 (1) -  Vypnutí" },
+      "relay_aux4b_start": { "name": "Timer Aux4 (2) -  Spuštění" },
+      "relay_aux4b_stop": { "name": "Timer Aux4 (2) -  Vypnutí" },
       "relay_light_start": { "name": "Timer Světla -  Spuštění" },
       "relay_light_stop": { "name": "Timer Světla -  Vypnutí" },
       "relay_aux1_period": {
-        "name": "Timer AUX1 - Interval",
+        "name": "Timer Aux1 (1) - Interval",
+        "state": {
+          "1_day": "1 den",
+          "2_days": "2 dny",
+          "3_days": "3 dny",
+          "4_days": "4 dny",
+          "5_days": "5 dní",
+          "1_week": "1 týden",
+          "2_weeks": "2 týdny",
+          "3_weeks": "3 týdny",
+          "4_weeks": "4 týdny"
+        }
+      },
+      "relay_aux1b_period": {
+        "name": "Timer Aux1 (2) - Interval",
         "state": {
           "1_day": "1 den",
           "2_days": "2 dny",
@@ -192,7 +214,21 @@
         }
       },
       "relay_aux2_period": {
-        "name": "Timer AUX2 - Interval",
+        "name": "Timer Aux2 (1) - Interval",
+        "state": {
+          "1_day": "1 den",
+          "2_days": "2 dny",
+          "3_days": "3 dny",
+          "4_days": "4 dny",
+          "5_days": "5 dní",
+          "1_week": "1 týden",
+          "2_weeks": "2 týdny",
+          "3_weeks": "3 týdny",
+          "4_weeks": "4 týdny"
+        }
+      },
+      "relay_aux2b_period": {
+        "name": "Timer Aux2 (2) - Interval",
         "state": {
           "1_day": "1 den",
           "2_days": "2 dny",
@@ -206,7 +242,21 @@
         }
       },
       "relay_aux3_period": {
-        "name": "Timer AUX3 - Interval",
+        "name": "Timer Aux3 (1) - Interval",
+        "state": {
+          "1_day": "1 den",
+          "2_days": "2 dny",
+          "3_days": "3 dny",
+          "4_days": "4 dny",
+          "5_days": "5 dní",
+          "1_week": "1 týden",
+          "2_weeks": "2 týdny",
+          "3_weeks": "3 týdny",
+          "4_weeks": "4 týdny"
+        }
+      },
+      "relay_aux3b_period": {
+        "name": "Timer Aux3 (2) - Interval",
         "state": {
           "1_day": "1 den",
           "2_days": "2 dny",
@@ -220,7 +270,21 @@
         }
       },
       "relay_aux4_period": {
-        "name": "Timer AUX4 - Interval",
+        "name": "Timer Aux4 (1) - Interval",
+        "state": {
+          "1_day": "1 den",
+          "2_days": "2 dny",
+          "3_days": "3 dny",
+          "4_days": "4 dny",
+          "5_days": "5 dní",
+          "1_week": "1 týden",
+          "2_weeks": "2 týdny",
+          "3_weeks": "3 týdny",
+          "4_weeks": "4 týdny"
+        }
+      },
+      "relay_aux4b_period": {
+        "name": "Timer Aux4 (2) - Interval",
         "state": {
           "1_day": "1 den",
           "2_days": "2 dny",
@@ -248,7 +312,7 @@
         }
       },
       "relay_aux1_mode": {
-        "name": "Režim AUX1 relé",
+        "name": "Režim relé Aux1",
         "state": {
           "disabled": "Zakázáno",
           "auto": "Automaticky",
@@ -258,7 +322,7 @@
         }
       },
       "relay_aux2_mode": {
-        "name": "Režim AUX2 relé",
+        "name": "Režim relé Aux2",
         "state": {
           "disabled": "Zakázáno",
           "auto": "Automaticky",
@@ -268,7 +332,7 @@
         }
       },
       "relay_aux3_mode": {
-        "name": "Režim AUX3 relé",
+        "name": "Režim relé Aux3",
         "state": {
           "disabled": "Zakázáno",
           "auto": "Automaticky",
@@ -278,7 +342,7 @@
         }
       },
       "relay_aux4_mode": {
-        "name": "Režim AUX4 relé",
+        "name": "Režim relé Aux4",
         "state": {
           "disabled": "Zakázáno",
           "auto": "Automaticky",

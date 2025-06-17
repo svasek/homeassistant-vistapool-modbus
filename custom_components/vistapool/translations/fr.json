@@ -23,10 +23,10 @@
           "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ? (en secondes)",
           "timer_resolution": "Quel doit être le pas pour le réglage des minuteries ? (en minutes)",
           "use_light": "Activer le relais lumière",
-          "use_aux1": "Activer le relais AUX1",
-          "use_aux2": "Activer le relais AUX2",
-          "use_aux3": "Activer le relais AUX3",
-          "use_aux4": "Activer le relais AUX4",
+          "use_aux1": "Activer le relais Aux1",
+          "use_aux2": "Activer le relais Aux2",
+          "use_aux3": "Activer le relais Aux3",
+          "use_aux4": "Activer le relais Aux4",
           "unlock_advanced": "Débloquer les options avancées",
           "enable_backwash_option": "⚠️ Activer le mode ‘Backwash’"
         }
@@ -151,10 +151,10 @@
       "filt_manual_state": { "name": "Filtration manuelle" },
       "time_auto_sync": { "name": "Synchronisation automatique de l’heure" },
       "light": { "name": "Lumière de piscine" },
-      "aux1": { "name": "Relais auxiliaire 1" },
-      "aux2": { "name": "Relais auxiliaire 2" },
-      "aux3": { "name": "Relais auxiliaire 3" },
-      "aux4": { "name": "Relais auxiliaire 4" }
+      "aux1": { "name": "Relais Aux1" },
+      "aux2": { "name": "Relais Aux2" },
+      "aux3": { "name": "Relais Aux3" },
+      "aux4": { "name": "Relais Aux4" }
     },
     "button": {
       "sync_time": { "name": "Synchroniser l’heure de l’appareil" },
@@ -167,18 +167,40 @@
       "filtration2_stop": { "name": "Minuteur 2 - Fin de filtration" },
       "filtration3_start": { "name": "Minuteur 3 - Début de filtration" },
       "filtration3_stop": { "name": "Minuteur 3 - Fin de filtration" },
-      "relay_aux1_start": { "name": "Minuteur AUX1 - Démarrage" },
-      "relay_aux1_stop": { "name": "Minuteur AUX1 - Arrêt" },
-      "relay_aux2_start": { "name": "Minuteur AUX2 - Démarrage" },
-      "relay_aux2_stop": { "name": "Minuteur AUX2 - Arrêt" },
-      "relay_aux3_start": { "name": "Minuteur AUX3 - Démarrage" },
-      "relay_aux3_stop": { "name": "Minuteur AUX3 - Arrêt" },
-      "relay_aux4_start": { "name": "Minuteur AUX4 - Démarrage" },
-      "relay_aux4_stop": { "name": "Minuteur AUX4 - Arrêt" },
+      "relay_aux1_start": { "name": "Minuteur Aux1 (1) - Démarrage" },
+      "relay_aux1_stop": { "name": "Minuteur Aux1 (1) - Arrêt" },
+      "relay_aux1b_start": { "name": "Minuteur Aux1 (2) - Démarrage" },
+      "relay_aux1b_stop": { "name": "Minuteur Aux1 (2) - Arrêt" },
+      "relay_aux2_start": { "name": "Minuteur Aux2 (1) - Démarrage" },
+      "relay_aux2_stop": { "name": "Minuteur Aux2 (1) - Arrêt" },
+      "relay_aux2b_start": { "name": "Minuteur Aux2 (2) - Démarrage" },
+      "relay_aux2b_stop": { "name": "Minuteur Aux2 (2) - Arrêt" },
+      "relay_aux3_start": { "name": "Minuteur Aux3 (1) - Démarrage" },
+      "relay_aux3_stop": { "name": "Minuteur Aux3 (1) - Arrêt" },
+      "relay_aux3b_start": { "name": "Minuteur Aux3 (2) - Démarrage" },
+      "relay_aux3b_stop": { "name": "Minuteur Aux3 (2) - Arrêt" },
+      "relay_aux4_start": { "name": "Minuteur Aux4 (1) - Démarrage" },
+      "relay_aux4_stop": { "name": "Minuteur Aux4 (1) - Arrêt" },
+      "relay_aux4b_start": { "name": "Minuteur Aux4 (2) - Démarrage" },
+      "relay_aux4b_stop": { "name": "Minuteur Aux4 (2) - Arrêt" },
       "relay_light_start": { "name": "Minuteur Lumière - Démarrage" },
       "relay_light_stop": { "name": "Minuteur Lumière - Arrêt" },
       "relay_aux1_period": {
-        "name": "Minuteur AUX1 - Intervalle",
+        "name": "Minuteur Aux1 (1) - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_aux1b_period": {
+        "name": "Minuteur Aux1 (2) - Intervalle",
         "state": {
           "1_day": "1 jour",
           "2_days": "2 jours",
@@ -192,7 +214,21 @@
         }
       },
       "relay_aux2_period": {
-        "name": "Minuteur AUX2 - Intervalle",
+        "name": "Minuteur Aux2 (1) - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_aux2b_period": {
+        "name": "Minuteur Aux2 (2) - Intervalle",
         "state": {
           "1_day": "1 jour",
           "2_days": "2 jours",
@@ -206,7 +242,21 @@
         }
       },
       "relay_aux3_period": {
-        "name": "Minuteur AUX3 - Intervalle",
+        "name": "Minuteur Aux3 (1) - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_aux3b_period": {
+        "name": "Minuteur Aux3 (2) - Intervalle",
         "state": {
           "1_day": "1 jour",
           "2_days": "2 jours",
@@ -220,7 +270,21 @@
         }
       },
       "relay_aux4_period": {
-        "name": "Minuteur AUX4 - Intervalle",
+        "name": "Minuteur Aux4 (1) - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_aux4b_period": {
+        "name": "Minuteur Aux4 (2) - Intervalle",
         "state": {
           "1_day": "1 jour",
           "2_days": "2 jours",
@@ -248,7 +312,7 @@
         }
       },
       "relay_aux1_mode": {
-        "name": "Mode relais AUX1",
+        "name": "Mode relais Aux1",
         "state": {
           "disabled": "Désactivé",
           "auto": "Automatique",
@@ -258,7 +322,7 @@
         }
       },
       "relay_aux2_mode": {
-        "name": "Mode relais AUX2",
+        "name": "Mode relais Aux2",
         "state": {
           "disabled": "Désactivé",
           "auto": "Automatique",
@@ -268,7 +332,7 @@
         }
       },
       "relay_aux3_mode": {
-        "name": "Mode relais AUX3",
+        "name": "Mode relais Aux3",
         "state": {
           "disabled": "Désactivé",
           "auto": "Automatique",
@@ -278,7 +342,7 @@
         }
       },
       "relay_aux4_mode": {
-        "name": "Mode relais AUX4",
+        "name": "Mode relais Aux4",
         "state": {
           "disabled": "Désactivé",
           "auto": "Automatique",

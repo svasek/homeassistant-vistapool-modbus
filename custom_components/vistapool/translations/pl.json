@@ -23,10 +23,10 @@
           "scan_interval": "Jak często powinny być aktualizowane dane z kontrolera VistaPool? (w sekundach)",
           "timer_resolution": "Jaki powinien być krok dla ustawień timerów? (w minutach)",
           "use_light": "Włącz przekaźnik oświetlenia",
-          "use_aux1": "Włącz przekaźnik AUX1",
-          "use_aux2": "Włącz przekaźnik AUX2",
-          "use_aux3": "Włącz przekaźnik AUX3",
-          "use_aux4": "Włącz przekaźnik AUX4",
+          "use_aux1": "Włącz przekaźnik Aux1",
+          "use_aux2": "Włącz przekaźnik Aux2",
+          "use_aux3": "Włącz przekaźnik Aux3",
+          "use_aux4": "Włącz przekaźnik Aux4",
           "unlock_advanced": "Odblokuj opcje zaawansowane",
           "enable_backwash_option": "⚠️ Włącz tryb ‘Backwash’"
         }
@@ -134,10 +134,10 @@
       "hidro_in_pol1": { "name": "Elektroliza polaryzacja 1" },
       "hidro_in_pol2": { "name": "Elektroliza polaryzacja 2" },
       "device_time_out_of_sync": { "name": "Synchronizacja czasu urządzenia" },
-      "aux1": { "name": "Przekaźnik Aux1" },
-      "aux2": { "name": "Przekaźnik Aux2" },
-      "aux3": { "name": "Przekaźnik Aux3" },
-      "aux4": { "name": "Przekaźnik Aux4" }
+      "aux1": { "name": "Przekaźnik pomocniczy Aux1" },
+      "aux2": { "name": "Przekaźnik pomocniczy Aux2" },
+      "aux3": { "name": "Przekaźnik pomocniczy Aux3" },
+      "aux4": { "name": "Przekaźnik pomocniczy Aux4" }
     },
     "number": {
       "hidro": { "name": "Docelowy poziom produkcji elektrolizy" },
@@ -151,10 +151,10 @@
       "filt_manual_state": { "name": "Filtracja ręczna" },
       "time_auto_sync": { "name": "Automatyczna synchronizacja czasu" },
       "light": { "name": "Oświetlenie basenu" },
-      "aux1": { "name": "Przekaźnik pomocniczy 1" },
-      "aux2": { "name": "Przekaźnik pomocniczy 2" },
-      "aux3": { "name": "Przekaźnik pomocniczy 3" },
-      "aux4": { "name": "Przekaźnik pomocniczy 4" }
+      "aux1": { "name": "Przekaźnik pomocniczy Aux1" },
+      "aux2": { "name": "Przekaźnik pomocniczy Aux2" },
+      "aux3": { "name": "Przekaźnik pomocniczy Aux3" },
+      "aux4": { "name": "Przekaźnik pomocniczy Aux4" }
     },
     "button": {
       "sync_time": { "name": "Synchronizuj czas urządzenia" },
@@ -167,18 +167,40 @@
       "filtration2_stop": { "name": "Timer 2 - Stop filtracji" },
       "filtration3_start": { "name": "Timer 3 - Start filtracji" },
       "filtration3_stop": { "name": "Timer 3 - Stop filtracji" },
-      "relay_aux1_start": { "name": "Timer AUX1 - Start" },
-      "relay_aux1_stop": { "name": "Timer AUX1 - Zatrzymanie" },
-      "relay_aux2_start": { "name": "Timer AUX2 - Start" },
-      "relay_aux2_stop": { "name": "Timer AUX2 - Zatrzymanie" },
-      "relay_aux3_start": { "name": "Timer AUX3 - Start" },
-      "relay_aux3_stop": { "name": "Timer AUX3 - Zatrzymanie" },
-      "relay_aux4_start": { "name": "Timer AUX4 - Start" },
-      "relay_aux4_stop": { "name": "Timer AUX4 - Zatrzymanie" },
+      "relay_aux1_start": { "name": "Timer Aux1 (1) - Start" },
+      "relay_aux1_stop": { "name": "Timer Aux1 (1) - Zatrzymanie" },
+      "relay_aux1b_start": { "name": "Timer Aux1 (2) - Start" },
+      "relay_aux1b_stop": { "name": "Timer Aux1 (2) - Zatrzymanie" },
+      "relay_aux2_start": { "name": "Timer Aux2 (1) - Start" },
+      "relay_aux2_stop": { "name": "Timer Aux2 (1) - Zatrzymanie" },
+      "relay_aux2b_start": { "name": "Timer Aux2 (2) - Start" },
+      "relay_aux2b_stop": { "name": "Timer Aux2 (2) - Zatrzymanie" },
+      "relay_aux3_start": { "name": "Timer Aux3 (1) - Start" },
+      "relay_aux3_stop": { "name": "Timer Aux3 (1) - Zatrzymanie" },
+      "relay_aux3b_start": { "name": "Timer Aux3 (2) - Start" },
+      "relay_aux3b_stop": { "name": "Timer Aux3 (2) - Zatrzymanie" },
+      "relay_aux4_start": { "name": "Timer Aux4 (1) - Start" },
+      "relay_aux4_stop": { "name": "Timer Aux4 (1) - Zatrzymanie" },
+      "relay_aux4b_start": { "name": "Timer Aux4 (2) - Start" },
+      "relay_aux4b_stop": { "name": "Timer Aux4 (2) - Zatrzymanie" },
       "relay_light_start": { "name": "Timer Światła - Start" },
       "relay_light_stop": { "name": "Timer Światła - Zatrzymanie" },
       "relay_aux1_period": {
-        "name": "Timer AUX1 - Interwał",
+        "name": "Timer Aux1 (1) - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_aux1b_period": {
+        "name": "Timer Aux1 (2) - Interwał",
         "state": {
           "1_day": "1 dzień",
           "2_days": "2 dni",
@@ -192,7 +214,21 @@
         }
       },
       "relay_aux2_period": {
-        "name": "Timer AUX2 - Interwał",
+        "name": "Timer Aux2 (1) - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_aux2b_period": {
+        "name": "Timer Aux2 (2) - Interwał",
         "state": {
           "1_day": "1 dzień",
           "2_days": "2 dni",
@@ -206,7 +242,21 @@
         }
       },
       "relay_aux3_period": {
-        "name": "Timer AUX3 - Interwał",
+        "name": "Timer Aux3 (1) - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_aux3b_period": {
+        "name": "Timer Aux3 (2) - Interwał",
         "state": {
           "1_day": "1 dzień",
           "2_days": "2 dni",
@@ -220,7 +270,21 @@
         }
       },
       "relay_aux4_period": {
-        "name": "Timer AUX4 - Interwał",
+        "name": "Timer Aux4 (1) - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_aux4b_period": {
+        "name": "Timer Aux4 (2) - Interwał",
         "state": {
           "1_day": "1 dzień",
           "2_days": "2 dni",
@@ -248,7 +312,7 @@
         }
       },
       "relay_aux1_mode": {
-        "name": "Tryb przekaźnika AUX1",
+        "name": "Tryb przekaźnika Aux1",
         "state": {
           "disabled": "Wyłączone",
           "auto": "Automatyczny",
@@ -258,7 +322,7 @@
         }
       },
       "relay_aux2_mode": {
-        "name": "Tryb przekaźnika AUX2",
+        "name": "Tryb przekaźnika Aux2",
         "state": {
           "disabled": "Wyłączone",
           "auto": "Automatyczny",
@@ -268,7 +332,7 @@
         }
       },
       "relay_aux3_mode": {
-        "name": "Tryb przekaźnika AUX3",
+        "name": "Tryb przekaźnika Aux3",
         "state": {
           "disabled": "Wyłączone",
           "auto": "Automatyczny",
@@ -278,7 +342,7 @@
         }
       },
       "relay_aux4_mode": {
-        "name": "Tryb przekaźnika AUX4",
+        "name": "Tryb przekaźnika Aux4",
         "state": {
           "disabled": "Wyłączone",
           "auto": "Automatyczny",

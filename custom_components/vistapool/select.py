@@ -33,13 +33,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
             if not (mbf_par_model & 0x0002):
                 continue
 
-        options = coordinator.config_entry.options
-        # Skip the Relay TIMER selects if they are not enabled in options
-        if key.startswith("relay_aux"):
-            aux_idx = int(key.split("_")[1][3:])  # relay_aux1_start → 1
-            if not options.get(f"use_aux{aux_idx}", False):
-                continue
-        if key.startswith("relay_light") and not options.get("use_light", False):
+        option_key = props.get("option")
+        if option_key and not entry.options.get(option_key, False):
             continue
 
         entities.append(VistaPoolSelect(coordinator, entry_id, key, props))

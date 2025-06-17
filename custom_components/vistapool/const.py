@@ -562,6 +562,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux1",
     },
     "relay_aux1_stop": {
         "name": "Relay AUX1 Timer 1 Stop",
@@ -569,6 +570,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux1",
     },
     "relay_aux1_period": {
         "name": "Relay AUX1 Timer 1 Repeat",
@@ -576,6 +578,31 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_period",
         "register": None,
+        "option": "use_aux1",
+    },
+    "relay_aux1b_start": {
+        "name": "Relay AUX1 Timer 2 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux1",
+    },
+    "relay_aux1b_stop": {
+        "name": "Relay AUX1 Timer 2 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux1",
+    },
+    "relay_aux1b_period": {
+        "name": "Relay AUX1 Timer 2 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+        "option": "use_aux1",
     },
     "relay_aux2_start": {
         "name": "Relay AUX2 Timer 1 Start",
@@ -583,6 +610,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux2",
     },
     "relay_aux2_stop": {
         "name": "Relay AUX2 Timer 1 Stop",
@@ -590,6 +618,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux2",
     },
     "relay_aux2_period": {
         "name": "Relay AUX2 Timer 1 Repeat",
@@ -597,6 +626,31 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_period",
         "register": None,
+        "option": "use_aux2",
+    },
+    "relay_aux2b_start": {
+        "name": "Relay AUX2 Timer 2 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux2",
+    },
+    "relay_aux2b_stop": {
+        "name": "Relay AUX2 Timer 2 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux2",
+    },
+    "relay_aux2b_period": {
+        "name": "Relay AUX2 Timer 2 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+        "option": "use_aux2",
     },
     "relay_aux3_start": {
         "name": "Relay AUX3 Timer 1 Start",
@@ -604,6 +658,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux3",
     },
     "relay_aux3_stop": {
         "name": "Relay AUX3 Timer 1 Stop",
@@ -611,6 +666,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux3",
     },
     "relay_aux3_period": {
         "name": "Relay AUX3 Timer 1 Repeat",
@@ -618,6 +674,31 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_period",
         "register": None,
+        "option": "use_aux3",
+    },
+    "relay_aux3b_start": {
+        "name": "Relay AUX3 Timer 2 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux3",
+    },
+    "relay_aux3b_stop": {
+        "name": "Relay AUX3 Timer 2 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux3",
+    },
+    "relay_aux3b_period": {
+        "name": "Relay AUX3 Timer 2 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+        "option": "use_aux3",
     },
     "relay_aux4_start": {
         "name": "Relay AUX4 Timer 1 Start",
@@ -625,6 +706,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux4",
     },
     "relay_aux4_stop": {
         "name": "Relay AUX4 Timer 1 Stop",
@@ -632,6 +714,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_aux4",
     },
     "relay_aux4_period": {
         "name": "Relay AUX4 Timer 1 Repeat",
@@ -639,6 +722,31 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_period",
         "register": None,
+        "option": "use_aux4",
+    },
+    "relay_aux4b_start": {
+        "name": "Relay AUX4 Timer 2 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux4",
+    },
+    "relay_aux4b_stop": {
+        "name": "Relay AUX4 Timer 2 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+        "option": "use_aux4",
+    },
+    "relay_aux4b_period": {
+        "name": "Relay AUX4 Timer 2 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+        "option": "use_aux4",
     },
     "relay_light_start": {
         "name": "Relay Light Timer 1 Start",
@@ -646,6 +754,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_light",
     },
     "relay_light_stop": {
         "name": "Relay Light Timer 1 Stop",
@@ -653,6 +762,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_light",
     },
     "relay_light_period": {
         "name": "Relay Light Timer 1 Repeat",
@@ -660,6 +770,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_period",
         "register": None,
+        "option": "use_light",
     },
     "relay_aux1_mode": {
         "name": "AUX1 Mode",
@@ -674,6 +785,7 @@ SELECT_DEFINITIONS = {
         "register": 0x04AC,
         "register_offset": 0,
         "select_type": "relay_mode",
+        "option": "use_aux1",
     },
     "relay_aux2_mode": {
         "name": "AUX2 Mode",
@@ -688,6 +800,7 @@ SELECT_DEFINITIONS = {
         "register": 0x04BB,
         "register_offset": 0,
         "select_type": "relay_mode",
+        "option": "use_aux2",
     },
     "relay_aux3_mode": {
         "name": "AUX3 Mode",
@@ -702,6 +815,7 @@ SELECT_DEFINITIONS = {
         "register": 0x04CA,
         "register_offset": 0,
         "select_type": "relay_mode",
+        "option": "use_aux3",
     },
     "relay_aux4_mode": {
         "name": "AUX4 Mode",
@@ -716,6 +830,7 @@ SELECT_DEFINITIONS = {
         "register": 0x04D9,
         "register_offset": 0,
         "select_type": "relay_mode",
+        "option": "use_aux4",
     },
     "relay_light_mode": {
         "name": "Light Mode",
@@ -730,6 +845,7 @@ SELECT_DEFINITIONS = {
         "register": 0x0470,
         "register_offset": 0,
         "select_type": "relay_mode",
+        "option": "use_light",
     },
 }
 

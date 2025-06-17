@@ -23,10 +23,10 @@
           "scan_interval": "Ogni quanto devono essere aggiornati i dati dal controller VistaPool? (in secondi)",
           "timer_resolution": "Quale dovrebbe essere il passo per l’impostazione dei timer? (in minuti)",
           "use_light": "Abilita relè luce",
-          "use_aux1": "Abilita relè AUX1",
-          "use_aux2": "Abilita relè AUX2",
-          "use_aux3": "Abilita relè AUX3",
-          "use_aux4": "Abilita relè AUX4",
+          "use_aux1": "Abilita relè Aux1",
+          "use_aux2": "Abilita relè Aux2",
+          "use_aux3": "Abilita relè Aux3",
+          "use_aux4": "Abilita relè Aux4",
           "unlock_advanced": "Sblocca opzioni avanzate",
           "enable_backwash_option": "⚠️ Abilita modalità ‘Backwash’"
         }
@@ -151,10 +151,10 @@
       "filt_manual_state": { "name": "Filtrazione manuale" },
       "time_auto_sync": { "name": "Sincronizzazione orario automatica" },
       "light": { "name": "Luce piscina" },
-      "aux1": { "name": "Relè ausiliario 1" },
-      "aux2": { "name": "Relè ausiliario 2" },
-      "aux3": { "name": "Relè ausiliario 3" },
-      "aux4": { "name": "Relè ausiliario 4" }
+      "aux1": { "name": "Relè Aux1" },
+      "aux2": { "name": "Relè Aux2" },
+      "aux3": { "name": "Relè Aux3" },
+      "aux4": { "name": "Relè Aux4" }
     },
     "button": {
       "sync_time": { "name": "Sincronizza orario dispositivo" },
@@ -167,18 +167,40 @@
       "filtration2_stop": { "name": "Timer 2 - Fine filtrazione" },
       "filtration3_start": { "name": "Timer 3 - Inizio filtrazione" },
       "filtration3_stop": { "name": "Timer 3 - Fine filtrazione" },
-      "relay_aux1_start": { "name": "Timer AUX1 - Avvio" },
-      "relay_aux1_stop": { "name": "Timer AUX1 - Arresto" },
-      "relay_aux2_start": { "name": "Timer AUX2 - Avvio" },
-      "relay_aux2_stop": { "name": "Timer AUX2 - Arresto" },
-      "relay_aux3_start": { "name": "Timer AUX3 - Avvio" },
-      "relay_aux3_stop": { "name": "Timer AUX3 - Arresto" },
-      "relay_aux4_start": { "name": "Timer AUX4 - Avvio" },
-      "relay_aux4_stop": { "name": "Timer AUX4 - Arresto" },
+      "relay_aux1_start": { "name": "Timer Aux1 (1) - Avvio" },
+      "relay_aux1_stop": { "name": "Timer Aux1 (1) - Arresto" },
+      "relay_aux1b_start": { "name": "Timer Aux1 (2) - Avvio" },
+      "relay_aux1b_stop": { "name": "Timer Aux1 (2) - Arresto" },
+      "relay_aux2_start": { "name": "Timer Aux2 (1) - Avvio" },
+      "relay_aux2_stop": { "name": "Timer Aux2 (1) - Arresto" },
+      "relay_aux2b_start": { "name": "Timer Aux2 (2) - Avvio" },
+      "relay_aux2b_stop": { "name": "Timer Aux2 (2) - Arresto" },
+      "relay_aux3_start": { "name": "Timer Aux3 (1) - Avvio" },
+      "relay_aux3_stop": { "name": "Timer Aux3 (1) - Arresto" },
+      "relay_aux3b_start": { "name": "Timer Aux3 (2) - Avvio" },
+      "relay_aux3b_stop": { "name": "Timer Aux3 (2) - Arresto" },
+      "relay_aux4_start": { "name": "Timer Aux4 (1) - Avvio" },
+      "relay_aux4_stop": { "name": "Timer Aux4 (1) - Arresto" },
+      "relay_aux4b_start": { "name": "Timer Aux4 (2) - Avvio" },
+      "relay_aux4b_stop": { "name": "Timer Aux4 (2) - Arresto" },
       "relay_light_start": { "name": "Timer Luce - Avvio" },
       "relay_light_stop": { "name": "Timer Luce - Arresto" },
       "relay_aux1_period": {
-        "name": "Timer AUX1 - Intervallo",
+        "name": "Timer Aux1 (1) - Intervallo",
+        "state": {
+          "1_day": "1 giorno",
+          "2_days": "2 giorni",
+          "3_days": "3 giorni",
+          "4_days": "4 giorni",
+          "5_days": "5 giorni",
+          "1_week": "1 settimana",
+          "2_weeks": "2 settimane",
+          "3_weeks": "3 settimane",
+          "4_weeks": "4 settimane"
+        }
+      },
+      "relay_aux1b_period": {
+        "name": "Timer Aux1 (2) - Intervallo",
         "state": {
           "1_day": "1 giorno",
           "2_days": "2 giorni",
@@ -192,7 +214,21 @@
         }
       },
       "relay_aux2_period": {
-        "name": "Timer AUX2 - Intervallo",
+        "name": "Timer Aux2 (1) - Intervallo",
+        "state": {
+          "1_day": "1 giorno",
+          "2_days": "2 giorni",
+          "3_days": "3 giorni",
+          "4_days": "4 giorni",
+          "5_days": "5 giorni",
+          "1_week": "1 settimana",
+          "2_weeks": "2 settimane",
+          "3_weeks": "3 settimane",
+          "4_weeks": "4 settimane"
+        }
+      },
+      "relay_aux2b_period": {
+        "name": "Timer Aux2 (2) - Intervallo",
         "state": {
           "1_day": "1 giorno",
           "2_days": "2 giorni",
@@ -206,7 +242,21 @@
         }
       },
       "relay_aux3_period": {
-        "name": "Timer AUX3 - Intervallo",
+        "name": "Timer Aux3 (1) - Intervallo",
+        "state": {
+          "1_day": "1 giorno",
+          "2_days": "2 giorni",
+          "3_days": "3 giorni",
+          "4_days": "4 giorni",
+          "5_days": "5 giorni",
+          "1_week": "1 settimana",
+          "2_weeks": "2 settimane",
+          "3_weeks": "3 settimane",
+          "4_weeks": "4 settimane"
+        }
+      },
+      "relay_aux3b_period": {
+        "name": "Timer Aux3 (2) - Intervallo",
         "state": {
           "1_day": "1 giorno",
           "2_days": "2 giorni",
@@ -220,7 +270,21 @@
         }
       },
       "relay_aux4_period": {
-        "name": "Timer AUX4 - Intervallo",
+        "name": "Timer Aux4 (1) - Intervallo",
+        "state": {
+          "1_day": "1 giorno",
+          "2_days": "2 giorni",
+          "3_days": "3 giorni",
+          "4_days": "4 giorni",
+          "5_days": "5 giorni",
+          "1_week": "1 settimana",
+          "2_weeks": "2 settimane",
+          "3_weeks": "3 settimane",
+          "4_weeks": "4 settimane"
+        }
+      },
+      "relay_aux4b_period": {
+        "name": "Timer Aux4 (2) - Intervallo",
         "state": {
           "1_day": "1 giorno",
           "2_days": "2 giorni",
@@ -248,7 +312,7 @@
         }
       },
       "relay_aux1_mode": {
-        "name": "Modalità relè AUX1",
+        "name": "Modalità relè Aux1",
         "state": {
           "disabled": "Disabilitato",
           "auto": "Automatico",
@@ -258,7 +322,7 @@
         }
       },
       "relay_aux2_mode": {
-        "name": "Modalità relè AUX2",
+        "name": "Modalità relè Aux2",
         "state": {
           "disabled": "Disabilitato",
           "auto": "Automatico",
@@ -268,7 +332,7 @@
         }
       },
       "relay_aux3_mode": {
-        "name": "Modalità relè AUX3",
+        "name": "Modalità relè Aux3",
         "state": {
           "disabled": "Disabilitato",
           "auto": "Automatico",
@@ -278,7 +342,7 @@
         }
       },
       "relay_aux4_mode": {
-        "name": "Modalità relè AUX4",
+        "name": "Modalità relè Aux4",
         "state": {
           "disabled": "Disabilitato",
           "auto": "Automatico",
