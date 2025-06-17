@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.3.0...v1.4.0) (2025-06-17)
+
+
+### Features
+
+* **options:** ✨ add timer resolution and update scan interval descriptions ([d83053d](https://github.com/svasek/homeassistant-vistapool-modbus/commit/d83053d499a6f3f5157ab5c9425dac298978dfa1))
+* **relays:** ✨ Add timer functionality for AUX and Light relays ([#27](https://github.com/svasek/homeassistant-vistapool-modbus/issues/27)) ([89c312b](https://github.com/svasek/homeassistant-vistapool-modbus/commit/89c312b90c675a0418e3f219e92caefc2e912e5b))
+
 ## [1.3.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.2.5...v1.3.0) (2025-06-15)
 
 
