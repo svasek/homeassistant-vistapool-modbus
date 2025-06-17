@@ -41,6 +41,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 data[f"{t_name}_enable"] = t["enable"]
                 data[f"{t_name}_start"] = t["on"]  # saved as seconds since midnight
                 data[f"{t_name}_interval"] = t["interval"]
+                data[f"{t_name}_period"] = t["period"]
                 if t["on"] is not None and t["interval"] is not None:
                     stop = (t["on"] + t["interval"]) % 86400
                     data[f"{t_name}_stop"] = stop

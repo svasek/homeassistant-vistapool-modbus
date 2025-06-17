@@ -36,6 +36,18 @@ DEFAULT_SCAN_INTERVAL = 30  # in seconds
 DEFAULT_PORT = 502
 DEFAULT_SLAVE_ID = 1
 
+PERIOD_MAP = {
+    "1_day": 86400,
+    "2_days": 2 * 86400,
+    "3_days": 3 * 86400,
+    "4_days": 4 * 86400,
+    "5_days": 5 * 86400,
+    "1_week": 7 * 86400,
+    "2_weeks": 14 * 86400,
+    "3_weeks": 21 * 86400,
+    "4_weeks": 28 * 86400,
+}
+
 
 SENSOR_DEFINITIONS = {
     "MBF_ION_CURRENT": {
@@ -542,6 +554,111 @@ SELECT_DEFINITIONS = {
         "icon": "mdi:clock-end",
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux1_start": {
+        "name": "Relay AUX1 Timer 1 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux1_stop": {
+        "name": "Relay AUX1 Timer 1 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux1_period": {
+        "name": "Relay AUX1 Timer 1 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+    },
+    "relay_aux2_start": {
+        "name": "Relay AUX2 Timer 1 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux2_stop": {
+        "name": "Relay AUX2 Timer 1 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux2_period": {
+        "name": "Relay AUX2 Timer 1 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+    },
+    "relay_aux3_start": {
+        "name": "Relay AUX3 Timer 1 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux3_stop": {
+        "name": "Relay AUX3 Timer 1 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux3_period": {
+        "name": "Relay AUX3 Timer 1 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+    },
+    "relay_aux4_start": {
+        "name": "Relay AUX4 Timer 1 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux4_stop": {
+        "name": "Relay AUX4 Timer 1 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_aux4_period": {
+        "name": "Relay AUX4 Timer 1 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
+        "register": None,
+    },
+    "relay_light_start": {
+        "name": "Relay Light Timer 1 Start",
+        "icon": "mdi:clock-start",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_light_stop": {
+        "name": "Relay Light Timer 1 Stop",
+        "icon": "mdi:clock-end",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_time",
+        "register": None,
+    },
+    "relay_light_period": {
+        "name": "Relay Light Timer 1 Repeat",
+        "icon": "mdi:repeat-variant",
+        "entity_category": EntityCategory.CONFIG,
+        "select_type": "timer_period",
         "register": None,
     },
 }

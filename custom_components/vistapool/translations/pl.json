@@ -167,6 +167,86 @@
       "filtration2_stop": { "name": "Timer 2 - Stop filtracji" },
       "filtration3_start": { "name": "Timer 3 - Start filtracji" },
       "filtration3_stop": { "name": "Timer 3 - Stop filtracji" },
+      "relay_aux1_start": { "name": "Timer AUX1 - Start" },
+      "relay_aux1_stop": { "name": "Timer AUX1 - Zatrzymanie" },
+      "relay_aux2_start": { "name": "Timer AUX2 - Start" },
+      "relay_aux2_stop": { "name": "Timer AUX2 - Zatrzymanie" },
+      "relay_aux3_start": { "name": "Timer AUX3 - Start" },
+      "relay_aux3_stop": { "name": "Timer AUX3 - Zatrzymanie" },
+      "relay_aux4_start": { "name": "Timer AUX4 - Start" },
+      "relay_aux4_stop": { "name": "Timer AUX4 - Zatrzymanie" },
+      "relay_light_start": { "name": "Timer Światła - Start" },
+      "relay_light_stop": { "name": "Timer Światła - Zatrzymanie" },
+      "relay_aux1_period": {
+        "name": "Timer AUX1 - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_aux2_period": {
+        "name": "Timer AUX2 - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_aux3_period": {
+        "name": "Timer AUX3 - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_aux4_period": {
+        "name": "Timer AUX4 - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
+      "relay_light_period": {
+        "name": "Timer Światła - Interwał",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      },
       "filt_mode": {
         "name": "Tryb filtracji",
         "state": {

@@ -1,27 +1,37 @@
 set_timer:
-  name: Set timer
-  description: Set timer for VistaPool device.
+  name: Set Timer
+  description: >
+    Set timer parameters for Filtration and relays (AUX, Light).
+    You can set start and stop time (in HH:MM format), and for AUX/Light also repeat interval ("period" in seconds).
+    Internally, the system stores "start" and "interval" (duration) in the device.
   fields:
     entry_id:
       required: false
       example: "your-entry-id"
       selector:
         text:
+      description: "Entry ID of the integration instance"
     timer:
       required: true
       example: "filtration1"
       selector:
-        select:
-          options:
-            - filtration1
-            - filtration2
+        text:
+      description: "Timer name (e.g. relay_aux1, relay_aux2, relay_light, ...)"
     start:
       required: false
-      example: "08:30"
       selector:
         text:
+      description: "Start time (in HH:MM, e.g. 08:00)"
     stop:
       required: false
-      example: "15:00"
       selector:
         text:
+      description: "Stop time (in HH:MM, e.g. 10:00)"
+    period:
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 604800
+          step: 1
+      description: "Repeat interval in seconds for AUX/Light timers (e.g. 86400 = every day). Not used for filtration timers."

@@ -27,9 +27,13 @@ TIMER_BLOCKS = {
     "filtration3": 0x0452,
     "relay_light": 0x0470,
     "relay_aux1": 0x04AC,
+    "relay_aux1b": 0x0461,
     "relay_aux2": 0x04BB,
+    "relay_aux2b": 0x047F,
     "relay_aux3": 0x04CA,
+    "relay_aux3b": 0x048E,
     "relay_aux4": 0x04D9,
+    "relay_aux4b": 0x049D,
 }
 
 
@@ -620,7 +624,7 @@ class VistaPoolModbusClient:
             )
             if rr.isError():
                 _LOGGER.error(
-                    f"Could not read timer block at {addr:#04x} before write: {rr}"
+                    f"Could not read timer block at 0x{addr:04X} before write: {rr}"
                 )
                 return False
             current_regs = rr.registers
@@ -636,7 +640,7 @@ class VistaPoolModbusClient:
                 if not isinstance(reg, int):
                     _LOGGER.error(f"Register {idx} is not int: {reg!r}")
 
-            _LOGGER.debug(f"Timer block {block_name} ({addr:#04x}) to write: {regs}")
+            _LOGGER.debug(f"Timer block {block_name} (0x{addr:04X}) to write: {regs}")
 
             # 4. Write full block back to Modbus
             if not client.connected:
@@ -648,9 +652,9 @@ class VistaPoolModbusClient:
                 address=addr, values=regs, slave=self._unit
             )
             if result.isError():
-                _LOGGER.error(f"Timer block write error at {addr:#04x}: {result}")
+                _LOGGER.error(f"Timer block write error at 0x{addr:04X}: {result}")
                 return False
-            _LOGGER.debug(f"Wrote timer block {block_name} ({addr:#04x}): {regs}")
+            _LOGGER.debug(f"Wrote timer block {block_name} (0x{addr:04X}): {regs}")
             await asyncio.sleep(0.1)
             # Write to EEPROM and execute
             await client.write_registers(address=0x02F0, values=[1], slave=self._unit)

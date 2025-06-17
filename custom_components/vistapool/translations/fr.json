@@ -167,6 +167,86 @@
       "filtration2_stop": { "name": "Minuteur 2 - Fin de filtration" },
       "filtration3_start": { "name": "Minuteur 3 - Début de filtration" },
       "filtration3_stop": { "name": "Minuteur 3 - Fin de filtration" },
+      "relay_aux1_start": { "name": "Minuteur AUX1 - Démarrage" },
+      "relay_aux1_stop": { "name": "Minuteur AUX1 - Arrêt" },
+      "relay_aux2_start": { "name": "Minuteur AUX2 - Démarrage" },
+      "relay_aux2_stop": { "name": "Minuteur AUX2 - Arrêt" },
+      "relay_aux3_start": { "name": "Minuteur AUX3 - Démarrage" },
+      "relay_aux3_stop": { "name": "Minuteur AUX3 - Arrêt" },
+      "relay_aux4_start": { "name": "Minuteur AUX4 - Démarrage" },
+      "relay_aux4_stop": { "name": "Minuteur AUX4 - Arrêt" },
+      "relay_light_start": { "name": "Minuteur Lumière - Démarrage" },
+      "relay_light_stop": { "name": "Minuteur Lumière - Arrêt" },
+      "relay_aux1_period": {
+        "name": "Minuteur AUX1 - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_aux2_period": {
+        "name": "Minuteur AUX2 - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_aux3_period": {
+        "name": "Minuteur AUX3 - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_aux4_period": {
+        "name": "Minuteur AUX4 - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
+      "relay_light_period": {
+        "name": "Minuteur Lumière - Intervalle",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      },
       "filt_mode": {
         "name": "Mode de filtration",
         "state": {

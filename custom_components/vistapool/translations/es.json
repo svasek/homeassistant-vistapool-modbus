@@ -167,6 +167,86 @@
       "filtration2_stop": { "name": "Temporizador 2 - Fin de filtración" },
       "filtration3_start": { "name": "Temporizador 3 - Inicio de filtración" },
       "filtration3_stop": { "name": "Temporizador 3 - Fin de filtración" },
+      "relay_aux1_start": { "name": "Temporizador AUX1 - Inicio" },
+      "relay_aux1_stop": { "name": "Temporizador AUX1 - Parada" },
+      "relay_aux2_start": { "name": "Temporizador AUX2 - Inicio" },
+      "relay_aux2_stop": { "name": "Temporizador AUX2 - Parada" },
+      "relay_aux3_start": { "name": "Temporizador AUX3 - Inicio" },
+      "relay_aux3_stop": { "name": "Temporizador AUX3 - Parada" },
+      "relay_aux4_start": { "name": "Temporizador AUX4 - Inicio" },
+      "relay_aux4_stop": { "name": "Temporizador AUX4 - Parada" },
+      "relay_light_start": { "name": "Temporizador Luz - Inicio" },
+      "relay_light_stop": { "name": "Temporizador Luz - Parada" },
+      "relay_aux1_period": {
+        "name": "Temporizador AUX1 - Intervalo",
+        "state": {
+          "1_day": "1 día",
+          "2_days": "2 días",
+          "3_days": "3 días",
+          "4_days": "4 días",
+          "5_days": "5 días",
+          "1_week": "1 semana",
+          "2_weeks": "2 semanas",
+          "3_weeks": "3 semanas",
+          "4_weeks": "4 semanas"
+        }
+      },
+      "relay_aux2_period": {
+        "name": "Temporizador AUX2 - Intervalo",
+        "state": {
+          "1_day": "1 día",
+          "2_days": "2 días",
+          "3_days": "3 días",
+          "4_days": "4 días",
+          "5_days": "5 días",
+          "1_week": "1 semana",
+          "2_weeks": "2 semanas",
+          "3_weeks": "3 semanas",
+          "4_weeks": "4 semanas"
+        }
+      },
+      "relay_aux3_period": {
+        "name": "Temporizador AUX3 - Intervalo",
+        "state": {
+          "1_day": "1 día",
+          "2_days": "2 días",
+          "3_days": "3 días",
+          "4_days": "4 días",
+          "5_days": "5 días",
+          "1_week": "1 semana",
+          "2_weeks": "2 semanas",
+          "3_weeks": "3 semanas",
+          "4_weeks": "4 semanas"
+        }
+      },
+      "relay_aux4_period": {
+        "name": "Temporizador AUX4 - Intervalo",
+        "state": {
+          "1_day": "1 día",
+          "2_days": "2 días",
+          "3_days": "3 días",
+          "4_days": "4 días",
+          "5_days": "5 días",
+          "1_week": "1 semana",
+          "2_weeks": "2 semanas",
+          "3_weeks": "3 semanas",
+          "4_weeks": "4 semanas"
+        }
+      },
+      "relay_light_period": {
+        "name": "Temporizador Luz - Intervalo",
+        "state": {
+          "1_day": "1 día",
+          "2_days": "2 días",
+          "3_days": "3 días",
+          "4_days": "4 días",
+          "5_days": "5 días",
+          "1_week": "1 semana",
+          "2_weeks": "2 semanas",
+          "3_weeks": "3 semanas",
+          "4_weeks": "4 semanas"
+        }
+      },
       "filt_mode": {
         "name": "Modo de filtración",
         "state": {

@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from homeassistant.components.select import SelectEntity
-from .const import DOMAIN, SELECT_DEFINITIONS, DEFAULT_TIMER_RESOLUTION
+from .const import DOMAIN, SELECT_DEFINITIONS, DEFAULT_TIMER_RESOLUTION, PERIOD_MAP
 from .entity import VistaPoolEntity
 from .helpers import (
     seconds_to_hhmm,
@@ -12,7 +12,7 @@ from .helpers import (
 
 _LOGGER = logging.getLogger(__name__)
 
-
+PERIOD_SECONDS_TO_KEY = {v: k for k, v in PERIOD_MAP.items()}
 MANUAL_FILTRATION_REGISTER = 0x0413
 
 
@@ -32,6 +32,15 @@ async def async_setup_entry(hass, entry, async_add_entities):
             mbf_par_model = coordinator.data.get("MBF_PAR_MODEL", 0)
             if not (mbf_par_model & 0x0002):
                 continue
+
+        options = coordinator.config_entry.options
+        # Skip the Relay TIMER selects if they are not enabled in options
+        if key.startswith("relay_aux"):
+            aux_idx = int(key.split("_")[1][3:])  # relay_aux1_start → 1
+            if not options.get(f"use_aux{aux_idx}", False):
+                continue
+        if key.startswith("relay_light") and not options.get("use_light", False):
+            continue
 
         entities.append(VistaPoolSelect(coordinator, entry_id, key, props))
     async_add_entities(entities)
@@ -89,6 +98,34 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "timer": timer_name,
                     "start": start,
                     "stop": stop,
+                },
+            )
+            await asyncio.sleep(0.2)
+            return
+
+        if self._select_type == "timer_period":
+            timer_name = self._key.rsplit("_", 1)[0]  # for example, "relay_aux1"
+            entry_id = (
+                self._entry_id
+                if hasattr(self, "_entry_id")
+                else self.coordinator.entry_id
+            )
+
+            period_value = PERIOD_MAP.get(option)
+            if period_value is None:
+                # fallback to integer conversion
+                try:
+                    period_value = int(option)
+                except Exception:
+                    return
+
+            await self.hass.services.async_call(
+                DOMAIN,
+                "set_timer",
+                {
+                    "entry_id": entry_id,
+                    "timer": timer_name,
+                    "period": period_value,
                 },
             )
             await asyncio.sleep(0.2)
@@ -251,6 +288,18 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     return [current_hhmm] + options_list
             return options_list
 
+        # Handle Timer Period options
+        # If the select type is "timer_period", we need to generate a list of periods
+        # based on the PERIOD_MAP and the current value in the coordinator data
+        if self._select_type == "timer_period":
+            options_list = list(PERIOD_MAP.keys())
+            value = self.coordinator.data.get(f"{self._key}")
+            if value is not None:
+                current_key = PERIOD_SECONDS_TO_KEY.get(value)
+                if current_key and current_key not in options_list:
+                    options_list.insert(0, current_key)
+            return options_list
+
         return [self._options_map[k] for k in option_keys]
 
     @property
@@ -279,6 +328,12 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 return None
             value = (raw & self._attr_mask) >> self._attr_shift
             return self._options_map.get(value)
+
+        if self._select_type == "timer_period":
+            value = self.coordinator.data.get(self._key)
+            if value is None:
+                return None
+            return PERIOD_SECONDS_TO_KEY.get(value, str(value))
 
         value = self.coordinator.data.get(self._key)
         if value is None:
