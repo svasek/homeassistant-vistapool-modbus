@@ -64,6 +64,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._register = props.get("register") or None
         self._attr_mask = props.get("mask") or None
         self._attr_shift = props.get("shift") or None
+        self._props = props
 
         _LOGGER.debug(
             "VistaPoolSelect INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
@@ -129,6 +130,32 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 },
             )
             await asyncio.sleep(0.2)
+            return
+
+        if self._select_type == "relay_mode":
+            timer_field = self._props.get("timer_field", "enable")
+            timer_name = self._key.rsplit("_", 1)[0]  # for example, "relay_aux1"
+            reverse_map = {v: k for k, v in self._options_map.items()}
+            value = reverse_map.get(option)
+            if value is None:
+                return
+            entry_id = (
+                self._entry_id
+                if hasattr(self, "_entry_id")
+                else self.coordinator.entry_id
+            )
+            await self.hass.services.async_call(
+                DOMAIN,
+                "set_timer",
+                {
+                    "entry_id": entry_id,
+                    "timer": timer_name,
+                    timer_field: value,
+                },
+            )
+            await asyncio.sleep(0.2)
+            await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
             return
 
         if option == "backwash":
@@ -300,6 +327,17 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     options_list.insert(0, current_key)
             return options_list
 
+        if self._select_type == "relay_mode":
+            options = list(dict.fromkeys(self._options_map.values()))
+            timer_name = self._key.rsplit("_", 1)[0]
+            value = self.coordinator.data.get(f"{timer_name}_enable")
+            # Dynamically add "disabled" at the beginning if enable==0
+            if value == 0 and "disabled" not in options:
+                options = ["disabled"] + options
+            if value == 2 and "auto_linked" not in options:
+                options = ["auto_linked"] + options
+            return options
+
         return [self._options_map[k] for k in option_keys]
 
     @property
@@ -334,6 +372,16 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             if value is None:
                 return None
             return PERIOD_SECONDS_TO_KEY.get(value, str(value))
+
+        if self._select_type == "relay_mode":
+            # Get the timer_block and timer_field from properties
+            timer_name = self._key.rsplit("_", 1)[0]
+            value = self.coordinator.data.get(f"{timer_name}_enable")
+            if value == 0:
+                return "disabled"
+            if value == 2:
+                return "auto_linked"
+            return self._options_map.get(value)
 
         value = self.coordinator.data.get(self._key)
         if value is None:

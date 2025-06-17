@@ -247,6 +247,55 @@
           "4_weeks": "4 weeks"
         }
       },
+      "relay_aux1_mode": {
+        "name": "AUX1 Relay Mode",
+        "state": {
+          "disabled": "Disabled",
+          "auto": "Automatic",
+          "auto_linked": "Automatic (linked)",
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "relay_aux2_mode": {
+        "name": "AUX2 Relay Mode",
+        "state": {
+          "disabled": "Disabled",
+          "auto": "Automatic",
+          "auto_linked": "Automatic (linked)",
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "relay_aux3_mode": {
+        "name": "AUX3 Relay Mode",
+        "state": {
+          "disabled": "Disabled",
+          "auto": "Automatic",
+          "auto_linked": "Automatic (linked)",
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "relay_aux4_mode": {
+        "name": "AUX4 Relay Mode",
+        "state": {
+          "disabled": "Disabled",
+          "auto": "Automatic",
+          "auto_linked": "Automatic (linked)",
+          "on": "On",
+          "off": "Off"
+        }
+      },
+      "relay_light_mode": {
+        "name": "Light Mode",
+        "state": {
+          "disabled": "Disabled",
+          "auto": "Automatic",
+          "on": "On",
+          "off": "Off"
+        }
+      },
       "filt_mode": {
         "name": "Filtration Mode",
         "state": {

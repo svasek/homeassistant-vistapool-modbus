@@ -247,6 +247,55 @@
           "4_weeks": "4 týdny"
         }
       },
+      "relay_aux1_mode": {
+        "name": "Režim AUX1 relé",
+        "state": {
+          "disabled": "Zakázáno",
+          "auto": "Automaticky",
+          "auto_linked": "Automaticky (propojeno)",
+          "on": "Zapnuto",
+          "off": "Vypnuto"
+        }
+      },
+      "relay_aux2_mode": {
+        "name": "Režim AUX2 relé",
+        "state": {
+          "disabled": "Zakázáno",
+          "auto": "Automaticky",
+          "auto_linked": "Automaticky (propojeno)",
+          "on": "Zapnuto",
+          "off": "Vypnuto"
+        }
+      },
+      "relay_aux3_mode": {
+        "name": "Režim AUX3 relé",
+        "state": {
+          "disabled": "Zakázáno",
+          "auto": "Automaticky",
+          "auto_linked": "Automaticky (propojeno)",
+          "on": "Zapnuto",
+          "off": "Vypnuto"
+        }
+      },
+      "relay_aux4_mode": {
+        "name": "Režim AUX4 relé",
+        "state": {
+          "disabled": "Zakázáno",
+          "auto": "Automaticky",
+          "auto_linked": "Automaticky (propojeno)",
+          "on": "Zapnuto",
+          "off": "Vypnuto"
+        }
+      },
+      "relay_light_mode": {
+        "name": "Režim světla",
+        "state": {
+          "disabled": "Zakázáno",
+          "auto": "Automaticky",
+          "on": "Zapnuto",
+          "off": "Vypnuto"
+        }
+      },
       "filt_mode": {
         "name": "Filtrační režim",
         "state": {

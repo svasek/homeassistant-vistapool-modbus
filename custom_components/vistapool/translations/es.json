@@ -247,6 +247,55 @@
           "4_weeks": "4 semanas"
         }
       },
+      "relay_aux1_mode": {
+        "name": "Modo de relé AUX1",
+        "state": {
+          "disabled": "Desactivado",
+          "auto": "Automático",
+          "auto_linked": "Automático (enlazado)",
+          "on": "Encendido",
+          "off": "Apagado"
+        }
+      },
+      "relay_aux2_mode": {
+        "name": "Modo de relé AUX2",
+        "state": {
+          "disabled": "Desactivado",
+          "auto": "Automático",
+          "auto_linked": "Automático (enlazado)",
+          "on": "Encendido",
+          "off": "Apagado"
+        }
+      },
+      "relay_aux3_mode": {
+        "name": "Modo de relé AUX3",
+        "state": {
+          "disabled": "Desactivado",
+          "auto": "Automático",
+          "auto_linked": "Automático (enlazado)",
+          "on": "Encendido",
+          "off": "Apagado"
+        }
+      },
+      "relay_aux4_mode": {
+        "name": "Modo de relé AUX4",
+        "state": {
+          "disabled": "Desactivado",
+          "auto": "Automático",
+          "auto_linked": "Automático (enlazado)",
+          "on": "Encendido",
+          "off": "Apagado"
+        }
+      },
+      "relay_light_mode": {
+        "name": "Modo de luz",
+        "state": {
+          "disabled": "Desactivado",
+          "auto": "Automático",
+          "on": "Encendido",
+          "off": "Apagado"
+        }
+      },
       "filt_mode": {
         "name": "Modo de filtración",
         "state": {

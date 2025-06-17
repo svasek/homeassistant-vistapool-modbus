@@ -247,6 +247,55 @@
           "4_weeks": "4 tygodnie"
         }
       },
+      "relay_aux1_mode": {
+        "name": "Tryb przekaźnika AUX1",
+        "state": {
+          "disabled": "Wyłączone",
+          "auto": "Automatyczny",
+          "auto_linked": "Automatyczny (połączony)",
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "relay_aux2_mode": {
+        "name": "Tryb przekaźnika AUX2",
+        "state": {
+          "disabled": "Wyłączone",
+          "auto": "Automatyczny",
+          "auto_linked": "Automatyczny (połączony)",
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "relay_aux3_mode": {
+        "name": "Tryb przekaźnika AUX3",
+        "state": {
+          "disabled": "Wyłączone",
+          "auto": "Automatyczny",
+          "auto_linked": "Automatyczny (połączony)",
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "relay_aux4_mode": {
+        "name": "Tryb przekaźnika AUX4",
+        "state": {
+          "disabled": "Wyłączone",
+          "auto": "Automatyczny",
+          "auto_linked": "Automatyczny (połączony)",
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
+      "relay_light_mode": {
+        "name": "Tryb światła",
+        "state": {
+          "disabled": "Wyłączone",
+          "auto": "Automatyczny",
+          "on": "Włączone",
+          "off": "Wyłączone"
+        }
+      },
       "filt_mode": {
         "name": "Tryb filtracji",
         "state": {

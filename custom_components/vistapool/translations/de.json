@@ -247,6 +247,55 @@
           "4_weeks": "4 Wochen"
         }
       },
+      "relay_aux1_mode": {
+        "name": "AUX1 Relaismodus",
+        "state": {
+          "disabled": "Deaktiviert",
+          "auto": "Automatisch",
+          "auto_linked": "Automatisch (verknüpft)",
+          "on": "Eingeschaltet",
+          "off": "Ausgeschaltet"
+        }
+      },
+      "relay_aux2_mode": {
+        "name": "AUX2 Relaismodus",
+        "state": {
+          "disabled": "Deaktiviert",
+          "auto": "Automatisch",
+          "auto_linked": "Automatisch (verknüpft)",
+          "on": "Eingeschaltet",
+          "off": "Ausgeschaltet"
+        }
+      },
+      "relay_aux3_mode": {
+        "name": "AUX3 Relaismodus",
+        "state": {
+          "disabled": "Deaktiviert",
+          "auto": "Automatisch",
+          "auto_linked": "Automatisch (verknüpft)",
+          "on": "Eingeschaltet",
+          "off": "Ausgeschaltet"
+        }
+      },
+      "relay_aux4_mode": {
+        "name": "AUX4 Relaismodus",
+        "state": {
+          "disabled": "Deaktiviert",
+          "auto": "Automatisch",
+          "auto_linked": "Automatisch (verknüpft)",
+          "on": "Eingeschaltet",
+          "off": "Ausgeschaltet"
+        }
+      },
+      "relay_light_mode": {
+        "name": "Lichtmodus",
+        "state": {
+          "disabled": "Deaktiviert",
+          "auto": "Automatisch",
+          "on": "Eingeschaltet",
+          "off": "Ausgeschaltet"
+        }
+      },
       "filt_mode": {
         "name": "Filtermodus",
         "state": {

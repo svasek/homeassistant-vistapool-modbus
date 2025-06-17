@@ -154,6 +154,17 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     def available(self) -> bool:
         if self._switch_type == "manual_filtration":
             return self.coordinator.data.get("MBF_PAR_FILT_MODE") != 1
+        if self._switch_type == "relay_timer":
+            # Getting the timer name based on the switch key (e.g., "aux1" -> "relay_aux1_enable")
+            if self._key.startswith("aux"):
+                timer_name = f"relay_{self._key}_enable"
+            elif self._key == "light":
+                timer_name = "relay_light_enable"
+            else:
+                return True
+            mode_val = self.coordinator.data.get(timer_name, None)
+            # 3 = on, 4 = off → available; 0 (disabled) or 1 (auto) → not available
+            return mode_val in (3, 4)
         return True
 
     @property
