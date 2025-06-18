@@ -48,6 +48,8 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 
 ## Features
 
+- **Persistent TCP client:**  
+  Only a single, persistent TCP connection is used per configured hub, improving performance and stability.
 - **Multi-hub support**: Add multiple VistaPool devices to Home Assistant, each with a custom name (used as a prefix in entity IDs).
 - **Sensors**:  
   pH, Redox (ORP), Salt, Conductivity, Water Temperature, Ionization, Hydrolysis Intensity/Voltage, Device Time, Status/Alarm bits
@@ -108,8 +110,9 @@ Or you can add it manually:
 
 ### Options (after setup)
 
-- **Adjust scan interval**
-- **Enable/disable Relays** Light and AUX1–4 _(default: disabled)_
+- **Adjust scan interval** _(default: 30s)_
+- **Adjust timer resolution** in select entities _(default: 15m)_
+- **Enable/disable Relays** Light and Aux1–4 _(default: disabled)_
 
 ### Advanced Options: Unlocking “Backwash” Mode
 
@@ -155,14 +158,22 @@ Entities are prefixed by the custom name (e.g. `sensor.pool1_filt_mode`):
 
 ## Special Notes
 
+- **Timer/relay options:**  
+  Only enabled timers and relays (according to integration options) are queried from the controller and shown in Home Assistant.
+- **Timer resolution:**  
+  You can set the timer period with a finer resolution (in minutes) in the integration options.
+- **Cached values on error:**  
+  Entities keep their last known value in case of temporary Modbus communication problems.
+- **Backwash mode and advanced options:**  
+  See "Advanced Options: Unlocking 'Backwash' Mode" below for details on enabling these features.
+- **Automatic reload:**  
+  Changing integration options will automatically reload the integration to apply the new settings.
 - **Filtration speed sensor and control**:  
   Only available for variable-speed pump models.
 - **Boost control (select)**:  
   Only available for models with the Hydro/Electrolysis module detected.
 - **Reset Alarm button**:  
   Allows remote clearing of error and alarm states from Home Assistant.
-- **Auxiliary relays (Light & AUX1–AUX4)**:  
-  Only available if enabled in integration options.
 
 ---
 
