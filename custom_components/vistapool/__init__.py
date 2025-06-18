@@ -32,6 +32,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a VistaPool config entry."""
+    coordinator = hass.data[DOMAIN].get(entry.entry_id)
+    if coordinator and getattr(coordinator, "client", None):
+        await coordinator.client.close()
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
