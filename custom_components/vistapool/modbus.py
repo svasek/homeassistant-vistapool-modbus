@@ -611,7 +611,7 @@ class VistaPoolModbusClient:
             _LOGGER.error("Modbus TCP AUX relay write exception: %s", e)
             return {}
 
-    async def read_all_timers(self):
+    async def read_all_timers(self, enabled_timers=None):
         timers = {}
         client = await self.get_client()
         if client is None or not client.connected:
@@ -620,6 +620,9 @@ class VistaPoolModbusClient:
             )
             return {}
         for name, addr in TIMER_BLOCKS.items():
+            # If enabled_timers is provided, limit to those timers only
+            if enabled_timers is not None and name not in enabled_timers:
+                continue
             try:
                 rr = await client.read_holding_registers(
                     address=addr, count=15, slave=self._unit

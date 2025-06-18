@@ -36,7 +36,22 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             self._model = "VistaPool"
             # _LOGGER.debug("VistaPool raw coordinator data: %s", data)
 
-            timers = await self.client.read_all_timers()
+            options = self.entry.options
+            enabled_timers = []
+            # Check which timers are enabled based on options
+            if options.get("use_light"):
+                enabled_timers.append("relay_light")
+            if options.get("use_aux1"):
+                enabled_timers.extend(["relay_aux1", "relay_aux1b"])
+            if options.get("use_aux2"):
+                enabled_timers.extend(["relay_aux2", "relay_aux2b"])
+            if options.get("use_aux3"):
+                enabled_timers.extend(["relay_aux3", "relay_aux3b"])
+            if options.get("use_aux4"):
+                enabled_timers.extend(["relay_aux4", "relay_aux4b"])
+
+            timers = await self.client.read_all_timers(enabled_timers=enabled_timers)
+
             for t_name, t in timers.items():
                 data[f"{t_name}_enable"] = t["enable"]
                 data[f"{t_name}_start"] = t["on"]  # saved as seconds since midnight
