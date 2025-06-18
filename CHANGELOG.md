@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.5.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.4.0...v1.5.0) (2025-06-18)
+
+
+### Features
+
+* **light:** ✨ changed pool light from switch to light entity ([4666d21](https://github.com/svasek/homeassistant-vistapool-modbus/commit/4666d211a8a5e32f6b2b64e4879806e2c81cd0ed))
+* **modbus:** ✨ persistent TCP client, reconnect and safe close ([cfac5c6](https://github.com/svasek/homeassistant-vistapool-modbus/commit/cfac5c660bc3caf0fc04e59e4639d5697350c7f4))
+
+
+### Bug Fixes
+
+* **coordinator:** 🐛 add support for enabling/disabling timers in coordinator ([abc6c2e](https://github.com/svasek/homeassistant-vistapool-modbus/commit/abc6c2ef3d1f5daac85e4d8802e78a8f02b66e81))
+* **coordinator:** 🐛 handle Modbus communication errors gracefully ([d7972f2](https://github.com/svasek/homeassistant-vistapool-modbus/commit/d7972f2ad7ee50470df052aa1b498c15310c255b))
+* **modbus:** 🐛 improve client closing logic for Modbus connection ([f075caf](https://github.com/svasek/homeassistant-vistapool-modbus/commit/f075cafc8c74bfc6985c52ef4da9a13a5c8fa16e))
+
 ## [1.4.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.3.0...v1.4.0) (2025-06-17)
 
 
