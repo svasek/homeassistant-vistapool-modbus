@@ -58,6 +58,14 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             return data
 
         except Exception as err:
+            _LOGGER.error("Modbus communication error: %s", err)
+            # This allows the integration to continue functioning with cached data
+            # if the Modbus communication fails, but only if we have cached data
+            # This is useful for scenarios where the device might be temporarily unreachable
+            # or if the Modbus server is down, but we still want to use the last known good data
+            if getattr(self, "data", None):
+                _LOGGER.warning("Using cached data due to Modbus error")
+                return self.data
             raise ConfigEntryNotReady(f"Error fetching data: {err}") from err
 
     async def set_auto_time_sync(self, enabled: bool):
