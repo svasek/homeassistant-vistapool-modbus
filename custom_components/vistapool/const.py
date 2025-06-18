@@ -48,6 +48,21 @@ PERIOD_MAP = {
     "4_weeks": 28 * 86400,
 }
 
+""" Read timer blocks (0x0434-0x04E8) in blocks of *15* due to device limits """
+TIMER_BLOCKS = {
+    "filtration1": 0x0434,
+    "filtration2": 0x0443,
+    "filtration3": 0x0452,
+    "relay_light": 0x0470,
+    "relay_aux1": 0x04AC,
+    "relay_aux1b": 0x0461,
+    "relay_aux2": 0x04BB,
+    "relay_aux2b": 0x047F,
+    "relay_aux3": 0x04CA,
+    "relay_aux3b": 0x048E,
+    "relay_aux4": 0x04D9,
+    "relay_aux4b": 0x049D,
+}
 
 SENSOR_DEFINITIONS = {
     "MBF_ION_CURRENT": {

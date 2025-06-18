@@ -6,7 +6,7 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.const import CONF_NAME
 
 from .helpers import parse_version, prepare_device_time, is_device_time_out_of_sync
-from .const import DOMAIN, DEFAULT_SCAN_INTERVAL
+from .const import DOMAIN, DEFAULT_SCAN_INTERVAL, TIMER_BLOCKS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,7 +37,9 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             # _LOGGER.debug("VistaPool raw coordinator data: %s", data)
 
             options = self.entry.options
-            enabled_timers = []
+            enabled_timers = [
+                key for key in TIMER_BLOCKS if not key.startswith("relay")
+            ]
             # Check which timers are enabled based on options
             if options.get("use_light"):
                 enabled_timers.append("relay_light")

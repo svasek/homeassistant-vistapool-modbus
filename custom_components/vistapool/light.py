@@ -76,7 +76,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
 
         # Run a refresh to update the state
-        await asyncio.sleep(1.0)
+        await asyncio.sleep(2.0)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
