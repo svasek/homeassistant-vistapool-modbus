@@ -56,7 +56,7 @@ class VistaPoolModbusClient:
             self._client = None
             if client is not None:
                 close_method = getattr(client, "close", None)
-                if close_method is not None:
+                if callable(close_method):
                     result = close_method()
                     if asyncio.iscoroutine(result):
                         try:
