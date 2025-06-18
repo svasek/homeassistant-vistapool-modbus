@@ -150,11 +150,13 @@
     "switch": {
       "filt_manual_state": { "name": "Manuelle Filtration" },
       "time_auto_sync": { "name": "Zeit automatische Synchronisierung" },
-      "light": { "name": "Poollicht" },
       "aux1": { "name": "Relais Aux1" },
       "aux2": { "name": "Relais Aux2" },
       "aux3": { "name": "Relais Aux3" },
       "aux4": { "name": "Relais Aux4" }
+    },
+    "light": {
+      "light": { "name": "Poollicht" }
     },
     "button": {
       "sync_time": { "name": "Gerätezeit synchronisieren" },

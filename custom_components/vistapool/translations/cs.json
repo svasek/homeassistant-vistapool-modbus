@@ -150,11 +150,13 @@
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
-      "light": { "name": "Osvětlení bazénu" },
       "aux1": { "name": "Pomocné relé Aux1" },
       "aux2": { "name": "Pomocné relé Aux2" },
       "aux3": { "name": "Pomocné relé Aux3" },
       "aux4": { "name": "Pomocné relé Aux4" }
+    },
+    "light": {
+      "light": { "name": "Osvětlení bazénu" }
     },
     "button": {
       "sync_time": { "name": "Synchronizovat čas zařízení" },

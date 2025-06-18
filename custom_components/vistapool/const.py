@@ -13,7 +13,7 @@ The manifest file is loaded to get the integration name and version
 The integration name and version are used to identify the integration
 and to display information about the integration in Home Assistant
 """
-PLATFORMS = ["sensor", "binary_sensor", "switch", "number", "button", "select"]
+PLATFORMS = ["sensor", "binary_sensor", "switch", "number", "button", "select", "light"]
 
 manifest_path = Path(__file__).parent / "manifest.json"
 with open(manifest_path, encoding="utf-8") as f:
@@ -862,16 +862,6 @@ SWITCH_DEFINITIONS = {
         "entity_category": None,
         "switch_type": "manual_filtration",
     },
-    "light": {
-        "name": "Pool Light",
-        "icon_on": "mdi:lightbulb-on",
-        "icon_off": "mdi:lightbulb-off",
-        "switch_type": "relay_timer",
-        "timer_block_addr": 0x0470,
-        "function_addr": 0x047B,
-        "function_code": 2,  # LIGHTING
-        "option": "use_light",
-    },
     "aux1": {
         "name": "Auxiliary Relay 1",
         "icon_on": "mdi:electric-switch-closed",
@@ -911,5 +901,18 @@ SWITCH_DEFINITIONS = {
         "function_addr": 0x04E4,
         "function_code": 0x4000,  # AUX4 relay code
         "option": "use_aux4",
+    },
+}
+
+LIGHT_DEFINITIONS = {
+    "light": {
+        "name": "Pool Light",
+        "icon_on": "mdi:lightbulb-on",
+        "icon_off": "mdi:lightbulb-off",
+        "switch_type": "relay_timer",
+        "timer_block_addr": 0x0470,
+        "function_addr": 0x047B,
+        "function_code": 2,  # LIGHTING
+        "option": "use_light",
     },
 }

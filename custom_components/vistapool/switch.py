@@ -85,9 +85,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_register(
                 self.function_addr, self.function_code
             )  # Set function (if needed)
-            await client.async_write_register(
-                self.timer_block_addr, 3
-            )  # Relay assigned to this timer always on
+            await client.async_write_register(self.timer_block_addr, 3)  # Always on
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
 
         # Run a refresh to update the state
@@ -113,9 +111,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             _LOGGER.debug(
                 f"Turning OFF relay {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}"
             )
-            await client.async_write_register(
-                self.timer_block_addr, 4
-            )  # Relay assigned to this timer always off
+            await client.async_write_register(self.timer_block_addr, 4)  # Always off
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
 
         # Run a refresh to update the state

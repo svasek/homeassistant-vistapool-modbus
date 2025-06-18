@@ -150,11 +150,13 @@
     "switch": {
       "filt_manual_state": { "name": "Filtration manuelle" },
       "time_auto_sync": { "name": "Synchronisation automatique de l’heure" },
-      "light": { "name": "Lumière de piscine" },
       "aux1": { "name": "Relais Aux1" },
       "aux2": { "name": "Relais Aux2" },
       "aux3": { "name": "Relais Aux3" },
       "aux4": { "name": "Relais Aux4" }
+    },
+    "light": {
+      "light": { "name": "Lumière de piscine" }
     },
     "button": {
       "sync_time": { "name": "Synchroniser l’heure de l’appareil" },

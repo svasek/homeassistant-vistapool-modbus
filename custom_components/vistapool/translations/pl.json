@@ -150,11 +150,13 @@
     "switch": {
       "filt_manual_state": { "name": "Filtracja ręczna" },
       "time_auto_sync": { "name": "Automatyczna synchronizacja czasu" },
-      "light": { "name": "Oświetlenie basenu" },
       "aux1": { "name": "Przekaźnik pomocniczy Aux1" },
       "aux2": { "name": "Przekaźnik pomocniczy Aux2" },
       "aux3": { "name": "Przekaźnik pomocniczy Aux3" },
       "aux4": { "name": "Przekaźnik pomocniczy Aux4" }
+    },
+    "light": {
+      "pool_light": { "name": "Oświetlenie basenu" }
     },
     "button": {
       "sync_time": { "name": "Synchronizuj czas urządzenia" },
