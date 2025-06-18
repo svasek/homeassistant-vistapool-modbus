@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.5.0...v1.5.1) (2025-06-18)
+
+
+### Bug Fixes
+
+* **modbus:** 🐛 ensure close method is callable before invoking ([6870501](https://github.com/svasek/homeassistant-vistapool-modbus/commit/6870501968fd301bccd8b4243412f08defe239d3))
+
 ## [1.5.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.4.0...v1.5.0) (2025-06-18)
 
 
