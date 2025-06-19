@@ -61,6 +61,15 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._attr_shift = props.get("shift") or None
         self._props = props
 
+        # Disable some entities by default. Mostly for secondary timers.
+        if (
+            any(self._key.startswith(f"relay_aux{n}b") for n in range(1, 5))
+            or self._key.startswith("filtration2")
+            or self._key.startswith("filtration3")
+            or self._key.startswith("MBF_CELL_BOOST")
+        ):
+            self._attr_entity_registry_enabled_default = False
+
         _LOGGER.debug(
             "VistaPoolSelect INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
             self._attr_suggested_object_id,

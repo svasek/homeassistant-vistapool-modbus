@@ -111,6 +111,10 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         self._attr_entity_category = props.get("entity_category") or None
         self._attr_icon = props.get("icon") or None
 
+        # Disable some entities by default.
+        if self._attr_suggested_object_id.endswith("_voltage"):
+            self._attr_entity_registry_enabled_default = False
+
         _LOGGER.debug(
             "VistaPoolSensor INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
             self._attr_suggested_object_id,

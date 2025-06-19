@@ -118,6 +118,19 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         self._icon_on = props.get("icon_on") or None
         self._icon_off = props.get("icon_off") or None
 
+        # Disable some entities by default.
+        if (
+            self._attr_suggested_object_id.endswith("_measurement_active")
+            or self._attr_suggested_object_id.endswith("_pump_active")
+            or self._attr_suggested_object_id.endswith("_acid_pump")
+            or self._attr_suggested_object_id.endswith("_shock_mode")
+            or self._attr_suggested_object_id.endswith("_on_target")
+            or self._attr_suggested_object_id.endswith("_low_flow")
+            or self._attr_suggested_object_id.endswith("_input_active")
+            or self._attr_suggested_object_id.endswith("_indicator_fl2")
+        ):
+            self._attr_entity_registry_enabled_default = False
+
         _LOGGER.debug(
             "VistaPoolBinarySensor INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
             self._attr_suggested_object_id,
