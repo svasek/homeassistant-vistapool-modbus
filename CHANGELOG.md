@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.1...v1.7.2) (2025-06-19)
+
+
+### Bug Fixes
+
+* **sensor:** 🩹 enhance sensor definitions with device and state classes ([c55a15f](https://github.com/svasek/homeassistant-vistapool-modbus/commit/c55a15f93d9ca228c76fa640df2f07f1bc0bd6d5))
+
 ## [1.7.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.0...v1.7.1) (2025-06-19)
 
 
