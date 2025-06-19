@@ -170,6 +170,15 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         if self._key == "Device Time Out Of Sync":
             return is_device_time_out_of_sync(self.coordinator.data, self.hass)
         parts = self._key.split("_", 1)
+
+        # Check if the filtration pump is active
+        if self._attr_suggested_object_id.endswith(
+            "_measurement_active"
+        ) or self._attr_suggested_object_id.endswith("_module_active"):
+            filtration_state = self.coordinator.data.get("Filtration Pump")
+            if filtration_state is not None and filtration_state is False:
+                return False
+
         if len(parts) == 2:
             base, flag = parts
             status = self.coordinator.data.get(f"{base}_STATUS", {})

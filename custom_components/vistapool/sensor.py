@@ -225,3 +225,23 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "HIDRO_POLARITY":
             return ["pol1", "pol2", "off"]
         return None
+
+    @property
+    def available(self) -> bool:
+        """Return True if the sensor should be available (based on filtration state)."""
+        # Sensors that only make sense when filtration is running
+        _flow_dependent_keys = {
+            "MBF_MEASURE_TEMPERATURE",
+            "MBF_MEASURE_PH",
+            "MBF_MEASURE_RX",
+            "MBF_MEASURE_CONDUCTIVITY",
+            "MBF_HIDRO_VOLTAGE",
+            "FILTRATION_SPEED",
+        }
+        if self._key in _flow_dependent_keys:
+            # Check if the filtration pump is running (binary_sensor "Filtration Pump" must be ON)
+            filtration_state = self.coordinator.data.get("Filtration Pump")
+            if filtration_state is not None:
+                return filtration_state is True
+            return False  # unknown state, so not available
+        return True
