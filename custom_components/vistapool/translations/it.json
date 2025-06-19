@@ -5,43 +5,44 @@
         "title": "Connessione VistaPool",
         "description": "Configura la connessione al tuo controller VistaPool.",
         "data": {
-          "name": "Nome per identificare questo controller VistaPool (verrà usato come prefisso negli ID delle entità).",
-          "host": "Indirizzo IP o nome host del controller VistaPool.",
+          "name": "Nome del dispositivo (usato come prefisso ID entità).",
+          "host": "Indirizzo IP gateway Modbus",
           "port": "Porta TCP per Modbus (predefinito: 502).",
-          "scan_interval": "Con quale frequenza devono essere aggiornati i dati dal controller VistaPool?",
-          "slave_id": "Indirizzo del dispositivo nella rete Modbus (predefinito: 1)."
+          "scan_interval": "Intervallo aggiornamento dati (secondi)",
+          "slave_id": "Indirizzo dispositivo Modbus (predefinito: 1)."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Impossibile connettersi all'indirizzo e alla porta specificati."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Impostazioni VistaPool",
-        "description": "ATTENZIONE: La modifica dei relè abilitati ricaricherà automaticamente l’integrazione! Le modifiche avranno effetto immediato.",
+        "description": "ATTENZIONE: Cambiare i relè abilitati ricaricherà automaticamente l’integrazione! Le modifiche hanno effetto immediato.",
         "data": {
-          "scan_interval": "Ogni quanto devono essere aggiornati i dati dal controller VistaPool? (in secondi)",
-          "timer_resolution": "Quale dovrebbe essere il passo per l’impostazione dei timer? (in minuti)",
+          "scan_interval": "Intervallo aggiornamento dati (secondi)",
+          "timer_resolution": "Passo regolazione timer (minuti)",
           "use_light": "Abilita relè luce",
           "use_aux1": "Abilita relè Aux1",
           "use_aux2": "Abilita relè Aux2",
           "use_aux3": "Abilita relè Aux3",
           "use_aux4": "Abilita relè Aux4",
-          "unlock_advanced": "Sblocca opzioni avanzate",
-          "enable_backwash_option": "⚠️ Abilita modalità ‘Backwash’"
+          "unlock_advanced": "Sblocca opzioni avanzate"
         }
       },
       "advanced": {
         "title": "Impostazioni avanzate",
-        "description": "⚠️ ATTENZIONE: Un uso improprio può danneggiare la filtrazione!",
+        "description": "⚠️ ATTENZIONE: Un uso scorretto può danneggiare la filtrazione!",
         "data": {
-          "enable_backwash_option": "Abilita modalità ‘Backwash’",
-          "enable_backwash_option_description": "⚠️ Avanzato! Abilita l’opzione ‘backwash’ nella modalità di filtrazione. Un uso improprio può danneggiare il filtro!"
+          "enable_backwash_option": "Abilita modalità ‘Backwash’"
         }
       }
     },
     "error": {
-      "unlock_advanced_error": "Codice errato. Riprova o cancella il codice."
+      "unlock_advanced_error": "Password errata. Riprova o rimuovi la password."
     }
   },
   "entity": {

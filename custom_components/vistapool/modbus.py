@@ -58,17 +58,19 @@ class VistaPoolModbusClient:
                 close_method = getattr(client, "close", None)
                 if callable(close_method):
                     result = close_method()
-                    if asyncio.iscoroutine(result):
+                    if result is not None and asyncio.iscoroutine(result):
                         try:
                             await result
                         except Exception as e:
                             _LOGGER.warning(f"Error closing Modbus client: {e}")
-                    else:
-                        # If close is a synchronous method (rare case)
-                        try:
-                            close_method()
-                        except Exception as e:
-                            _LOGGER.warning(f"Error closing Modbus client (sync): {e}")
+                    elif result is not None:
+                        # If close() returns something else (unexpected), log it
+                        _LOGGER.warning(
+                            f"Modbus client close() returned non-coroutine: {type(result)}: {result!r}"
+                        )
+                    # If result is None, do nothing (no await)
+                else:
+                    _LOGGER.debug("Modbus client has no callable close() method.")
 
     async def async_read_all(self):
         result = {}

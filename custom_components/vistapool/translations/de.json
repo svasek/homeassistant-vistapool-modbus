@@ -5,43 +5,44 @@
         "title": "VistaPool Verbindung",
         "description": "Konfigurieren Sie die Verbindung zu Ihrem VistaPool-Controller.",
         "data": {
-          "name": "Ein Name zur Identifizierung dieses VistaPool-Controllers (wird als Präfix in den Entity-IDs verwendet).",
-          "host": "IP-Adresse oder Hostname des VistaPool-Controllers.",
+          "name": "Gerätename (als Präfix für Entitäten-IDs verwendet).",
+          "host": "IP-Adresse des Modbus-Gateways",
           "port": "TCP-Port für Modbus (Standard: 502).",
-          "scan_interval": "Wie oft sollen die Daten vom VistaPool-Controller aktualisiert werden?",
-          "slave_id": "Adresse des Geräts im Modbus-Netzwerk (Standard: 1)."
+          "scan_interval": "Datenaktualisierungsintervall (Sekunden)",
+          "slave_id": "Modbus-Geräteadresse (Standard: 1)."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zur angegebenen Adresse und Port nicht möglich."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "VistaPool Einstellungen",
-        "description": "ACHTUNG: Das Ändern der erlaubten Relais löst automatisch das Neuladen der Integration aus! Änderungen werden sofort wirksam.",
+        "description": "ACHTUNG: Das Ändern der aktivierten Relais lädt die Integration automatisch neu! Änderungen werden sofort wirksam.",
         "data": {
-          "scan_interval": "Wie oft sollen die Daten vom VistaPool-Controller aktualisiert werden? (in Sekunden)",
-          "timer_resolution": "Wie groß soll der Schritt für die Timer-Einstellungen sein? (in Minuten)",
-          "use_light": "Relais Beleuchtung aktivieren",
-          "use_aux1": "Relais Aux1 aktivieren",
-          "use_aux2": "Relais Aux2 aktivieren",
-          "use_aux3": "Relais Aux3 aktivieren",
-          "use_aux4": "Relais Aux4 aktivieren",
-          "unlock_advanced": "Erweiterte Optionen freischalten",
-          "enable_backwash_option": "⚠️ ‘Backwash’-Modus aktivieren"
+          "scan_interval": "Datenaktualisierungsintervall (Sekunden)",
+          "timer_resolution": "Schrittweite für Timer (Minuten)",
+          "use_light": "Licht-Relais aktivieren",
+          "use_aux1": "Aux1-Relais aktivieren",
+          "use_aux2": "Aux2-Relais aktivieren",
+          "use_aux3": "Aux3-Relais aktivieren",
+          "use_aux4": "Aux4-Relais aktivieren",
+          "unlock_advanced": "Erweiterte Optionen freischalten"
         }
       },
       "advanced": {
         "title": "Erweiterte Einstellungen",
-        "description": "⚠️ WARNUNG: Unsachgemäße Verwendung kann die Filtration beschädigen!",
+        "description": "⚠️ ACHTUNG: Unsachgemäße Verwendung kann die Filterung beschädigen!",
         "data": {
-          "enable_backwash_option": "‘Backwash’-Modus aktivieren",
-          "enable_backwash_option_description": "⚠️ Fortgeschritten! Aktiviert die Option ‘backwash’ im Filtermodus. Unsachgemäße Verwendung kann das Filtersystem beschädigen!"
+          "enable_backwash_option": "‘Backwash’-Modus aktivieren"
         }
       }
     },
     "error": {
-      "unlock_advanced_error": "Falscher Code. Bitte versuchen Sie es erneut oder löschen Sie das Feld."
+      "unlock_advanced_error": "Falsches Passwort. Versuchen Sie es erneut oder entfernen Sie das Passwort."
     }
   },
   "entity": {

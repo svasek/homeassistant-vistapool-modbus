@@ -5,43 +5,44 @@
         "title": "Connexion VistaPool",
         "description": "Configurez la connexion à votre contrôleur VistaPool.",
         "data": {
-          "name": "Nom pour identifier ce contrôleur VistaPool (utilisé comme préfixe dans les identifiants d’entités).",
-          "host": "Adresse IP ou nom d’hôte du contrôleur VistaPool.",
-          "port": "Port TCP pour Modbus (par défaut : 502).",
-          "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ?",
-          "slave_id": "Adresse de l’appareil sur le réseau Modbus (par défaut : 1)."
+          "name": "Nom de l'appareil (utilisé comme préfixe d’ID d’entité).",
+          "host": "Adresse IP de la passerelle Modbus",
+          "port": "Port TCP pour Modbus (défaut : 502).",
+          "scan_interval": "Intervalle de mise à jour des données (secondes)",
+          "slave_id": "Adresse de l’appareil Modbus (défaut : 1)."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à l'adresse et au port spécifiés."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Configuration VistaPool",
-        "description": "ATTENTION : La modification des relais autorisés va automatiquement recharger l’intégration ! Les changements prendront effet immédiatement.",
+        "title": "Paramètres VistaPool",
+        "description": "ATTENTION : La modification des relais activés rechargera automatiquement l’intégration ! Les modifications prennent effet immédiatement.",
         "data": {
-          "scan_interval": "À quelle fréquence les données doivent-elles être mises à jour depuis le contrôleur VistaPool ? (en secondes)",
-          "timer_resolution": "Quel doit être le pas pour le réglage des minuteries ? (en minutes)",
-          "use_light": "Activer le relais lumière",
+          "scan_interval": "Intervalle de mise à jour des données (secondes)",
+          "timer_resolution": "Pas de réglage du minuteur (minutes)",
+          "use_light": "Activer le relais Lumière",
           "use_aux1": "Activer le relais Aux1",
           "use_aux2": "Activer le relais Aux2",
           "use_aux3": "Activer le relais Aux3",
           "use_aux4": "Activer le relais Aux4",
-          "unlock_advanced": "Débloquer les options avancées",
-          "enable_backwash_option": "⚠️ Activer le mode ‘Backwash’"
+          "unlock_advanced": "Débloquer les options avancées"
         }
       },
       "advanced": {
         "title": "Paramètres avancés",
         "description": "⚠️ ATTENTION : Une mauvaise utilisation peut endommager la filtration !",
         "data": {
-          "enable_backwash_option": "Activer le mode ‘Backwash’",
-          "enable_backwash_option_description": "⚠️ Avancé ! Active l’option ‘backwash’ dans le mode de filtration. Une mauvaise utilisation peut endommager le filtre !"
+          "enable_backwash_option": "Activer le mode ‘Backwash’"
         }
       }
     },
     "error": {
-      "unlock_advanced_error": "Code incorrect. Veuillez réessayer ou effacer le code."
+      "unlock_advanced_error": "Mot de passe incorrect. Réessayez ou supprimez le mot de passe."
     }
   },
   "entity": {

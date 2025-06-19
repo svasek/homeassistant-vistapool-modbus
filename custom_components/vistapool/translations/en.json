@@ -5,43 +5,44 @@
         "title": "VistaPool Connection",
         "description": "Configure the connection to your VistaPool controller.",
         "data": {
-          "name": "A name to identify this VistaPool controller (used as prefix in entity IDs).",
-          "host": "IP address or hostname of the VistaPool controller.",
+          "name": "Device name (used as entity ID prefix).",
+          "host": "Modbus gateway IP address",
           "port": "TCP port for Modbus (default: 502).",
-          "scan_interval": "How often should data be updated from the VistaPool controller?",
-          "slave_id": "Address of the device on the Modbus network (default: 1)."
+          "scan_interval": "Data update interval (seconds)",
+          "slave_id": "Modbus device address (default: 1)."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to the specified address and port."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "VistaPool SeOptionstup",
-        "description": "WARNING: Changing enabled relays will automatically reload the integration! Changes will take effect immediately.",
+        "title": "VistaPool Settings",
+        "description": "WARNING: Changing enabled relays will automatically reload the integration! Changes take effect immediately.",
         "data": {
-          "scan_interval": "How often should data be updated from the VistaPool controller? (in seconds)",
-          "timer_resolution": "What should be the step for timer settings? (in minutes)",
-          "use_light": "Enable Light relay",
-          "use_aux1": "Enable Aux1 relay",
-          "use_aux2": "Enable Aux2 relay",
-          "use_aux3": "Enable Aux3 relay",
-          "use_aux4": "Enable Aux4 relay",
-          "unlock_advanced": "Unlock advanced options",
-          "enable_backwash_option": "⚠️ Enable ‘Backwash’ mode"
+          "scan_interval": "Data update interval (seconds)",
+          "timer_resolution": "Timer adjustment step (minutes)",
+          "use_light": "Enable Light Relay",
+          "use_aux1": "Enable Aux1 Relay",
+          "use_aux2": "Enable Aux2 Relay",
+          "use_aux3": "Enable Aux3 Relay",
+          "use_aux4": "Enable Aux4 Relay",
+          "unlock_advanced": "Unlock advanced options"
         }
       },
       "advanced": {
-        "title": "Advanced settings",
-        "description": "⚠️ WARNING: Improper use may damage filtration!",
+        "title": "Advanced Settings",
+        "description": "⚠️ WARNING: Incorrect use may damage filtration!",
         "data": {
-          "enable_backwash_option": "Enable ‘Backwash’ mode",
-          "enable_backwash_option_description": "⚠️ Advanced! Enables ‘backwash’ option in filtration mode. Improper use may damage the filter!"
+          "enable_backwash_option": "Enable ‘Backwash’ mode"
         }
       }
     },
     "error": {
-      "unlock_advanced_error": "Incorrect code. Please try again or clear the code."
+      "unlock_advanced_error": "Invalid password. Try again or remove the password."
     }
   },
   "entity": {

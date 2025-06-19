@@ -5,43 +5,44 @@
         "title": "Połączenie VistaPool",
         "description": "Skonfiguruj połączenie z kontrolerem VistaPool.",
         "data": {
-          "name": "Nazwa do identyfikacji tego kontrolera VistaPool (używana jako prefiks w identyfikatorach encji).",
-          "host": "Adres IP lub nazwa hosta kontrolera VistaPool.",
+          "name": "Nazwa urządzenia (używana jako prefiks ID encji).",
+          "host": "Adres IP bramki Modbus",
           "port": "Port TCP dla Modbus (domyślnie: 502).",
-          "scan_interval": "Jak często należy aktualizować dane z kontrolera VistaPool?",
-          "slave_id": "Adres urządzenia w sieci Modbus (domyślnie: 1)."
+          "scan_interval": "Interwał aktualizacji danych (sekundy)",
+          "slave_id": "Adres urządzenia Modbus (domyślnie: 1)."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Nie można połączyć się z podanym adresem i portem."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Ustawienia VistaPool",
-        "description": "UWAGA: Zmiana dozwolonych przekaźników spowoduje automatyczne przeładowanie integracji! Zmiany zostaną zastosowane natychmiast.",
+        "description": "UWAGA: Zmiana dozwolonych przekaźników automatycznie przeładuje integrację! Zmiany są natychmiastowe.",
         "data": {
-          "scan_interval": "Jak często powinny być aktualizowane dane z kontrolera VistaPool? (w sekundach)",
-          "timer_resolution": "Jaki powinien być krok dla ustawień timerów? (w minutach)",
-          "use_light": "Włącz przekaźnik oświetlenia",
+          "scan_interval": "Interwał aktualizacji danych (sekundy)",
+          "timer_resolution": "Krok regulacji timerów (minuty)",
+          "use_light": "Włącz przekaźnik światła",
           "use_aux1": "Włącz przekaźnik Aux1",
           "use_aux2": "Włącz przekaźnik Aux2",
           "use_aux3": "Włącz przekaźnik Aux3",
           "use_aux4": "Włącz przekaźnik Aux4",
-          "unlock_advanced": "Odblokuj opcje zaawansowane",
-          "enable_backwash_option": "⚠️ Włącz tryb ‘Backwash’"
+          "unlock_advanced": "Odblokuj opcje zaawansowane"
         }
       },
       "advanced": {
         "title": "Ustawienia zaawansowane",
-        "description": "⚠️ UWAGA: Nieprawidłowe użycie może uszkodzić filtrację!",
+        "description": "⚠️ UWAGA: Niewłaściwe użycie może uszkodzić filtrację!",
         "data": {
-          "enable_backwash_option": "Włącz tryb ‘Backwash’",
-          "enable_backwash_option_description": "⚠️ Zaawansowane! Umożliwia opcję ‘backwash’ w trybie filtracji. Nieprawidłowe użycie może uszkodzić filtr!"
+          "enable_backwash_option": "Włącz tryb ‘Backwash’"
         }
       }
     },
     "error": {
-      "unlock_advanced_error": "Nieprawidłowy kod. Spróbuj ponownie lub usuń kod."
+      "unlock_advanced_error": "Nieprawidłowe hasło. Spróbuj ponownie lub usuń hasło."
     }
   },
   "entity": {

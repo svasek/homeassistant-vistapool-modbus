@@ -5,13 +5,16 @@
         "title": "Připojení VistaPool",
         "description": "Nakonfigurujte připojení k vašemu řadiči VistaPool.",
         "data": {
-          "name": "Název pro identifikaci tohoto zařízení VistaPool (používá se jako prefix v ID entit).",
-          "host": "IP adresa nebo název hostitele zařízení VistaPool.",
+          "name": "Název zařízení (používá se jako prefix v ID entit).",
+          "host": "IP adresa Modbus brány",
           "port": "TCP port pro Modbus (výchozí: 502).",
-          "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool?",
-          "slave_id": "Adresa zařízení v síti Modbus (výchozí: 1)."
+          "scan_interval": "Interval aktualizace dat (v sekundách)",
+          "slave_id": "Modbus Adresa zařízení (výchozí: 1)."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Nelze se připojit k zadané IP adrese a portu."
     }
   },
   "options": {
@@ -20,23 +23,21 @@
         "title": "Nastavení VistaPool",
         "description": "POZOR: Změna povolených relé vyvolá automaticky reload integrace! Změny se projeví ihned.",
         "data": {
-          "scan_interval": "Jak často by měla být data aktualizována z řadiče VistaPool? (v sekundách)",
-          "timer_resolution": "Jaký má být krok pro nastavení časovačů? (v minutách)",
+          "scan_interval": "Interval aktualizace dat (v sekundách)",
+          "timer_resolution": "Krok pro nastavení časovačů? (v minutách)",
           "use_light": "Povolit relé Osvětlení",
           "use_aux1": "Povolit relé Aux1",
           "use_aux2": "Povolit relé Aux2",
           "use_aux3": "Povolit relé Aux3",
           "use_aux4": "Povolit relé Aux4",
-          "unlock_advanced": "Odemknout pokročilé možnosti",
-          "enable_backwash_option": "⚠️ Povolit režim ‘Backwash’"
+          "unlock_advanced": "Odemknout pokročilé možnosti"
         }
       },
       "advanced": {
         "title": "Pokročilá nastavení",
         "description": "⚠️ POZOR: Nesprávné použití může poškodit filtraci!",
         "data": {
-          "enable_backwash_option": "Povolit režim ‘Backwash’",
-          "enable_backwash_option_description": "⚠️ Pokročilé! Zpřístupní volbu ‘backwash’ v režimu filtrace. Nesprávné použití může poškodit filtraci!"
+          "enable_backwash_option": "Povolit režim ‘Backwash’"
         }
       }
     },

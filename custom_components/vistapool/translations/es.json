@@ -5,43 +5,44 @@
         "title": "Conexión VistaPool",
         "description": "Configura la conexión a tu controlador VistaPool.",
         "data": {
-          "name": "Nombre para identificar este controlador VistaPool (se utiliza como prefijo en los IDs de las entidades).",
-          "host": "Dirección IP o nombre de host del controlador VistaPool.",
-          "port": "Puerto TCP para Modbus (predeterminado: 502).",
-          "scan_interval": "¿Con qué frecuencia se deben actualizar los datos del controlador VistaPool?",
-          "slave_id": "Dirección del dispositivo en la red Modbus (predeterminado: 1)."
+          "name": "Nombre del dispositivo (prefijo en IDs de entidad).",
+          "host": "Dirección IP de la puerta de enlace Modbus",
+          "port": "Puerto TCP para Modbus (por defecto: 502).",
+          "scan_interval": "Intervalo de actualización de datos (segundos)",
+          "slave_id": "Dirección de dispositivo Modbus (por defecto: 1)."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "No se puede conectar a la dirección y puerto especificados."
     }
   },
   "options": {
     "step": {
       "init": {
-        "title": "Configuración de VistaPool",
-        "description": "ATENCIÓN: Cambiar los relés habilitados recargará automáticamente la integración. Los cambios surtirán efecto inmediatamente.",
+        "title": "Configuración VistaPool",
+        "description": "¡ADVERTENCIA! Cambiar los relés habilitados recargará automáticamente la integración. Los cambios se aplican de inmediato.",
         "data": {
-          "scan_interval": "¿Con qué frecuencia deben actualizarse los datos del controlador VistaPool? (en segundos)",
-          "timer_resolution": "¿Cuál debe ser el paso para la configuración de los temporizadores? (en minutos)",
+          "scan_interval": "Intervalo de actualización de datos (segundos)",
+          "timer_resolution": "Paso de ajuste de temporizador (minutos)",
           "use_light": "Activar relé de luz",
           "use_aux1": "Activar relé Aux1",
           "use_aux2": "Activar relé Aux2",
           "use_aux3": "Activar relé Aux3",
           "use_aux4": "Activar relé Aux4",
-          "unlock_advanced": "Desbloquear opciones avanzadas",
-          "enable_backwash_option": "⚠️ Activar el modo ‘Backwash’"
+          "unlock_advanced": "Desbloquear opciones avanzadas"
         }
       },
       "advanced": {
         "title": "Configuraciones avanzadas",
-        "description": "⚠️ ADVERTENCIA: ¡El uso incorrecto puede dañar la filtración!",
+        "description": "⚠️ ¡ADVERTENCIA! El uso incorrecto puede dañar la filtración.",
         "data": {
-          "enable_backwash_option": "Activar el modo ‘Backwash’",
-          "enable_backwash_option_description": "⚠️ ¡Avanzado! Habilita la opción ‘backwash’ en el modo de filtración. ¡El uso inadecuado puede dañar el filtro!"
+          "enable_backwash_option": "Activar modo ‘Backwash’"
         }
       }
     },
     "error": {
-      "unlock_advanced_error": "Código incorrecto. Inténtalo de nuevo o borra el código."
+      "unlock_advanced_error": "Contraseña incorrecta. Inténtalo de nuevo o elimina la contraseña."
     }
   },
   "entity": {
