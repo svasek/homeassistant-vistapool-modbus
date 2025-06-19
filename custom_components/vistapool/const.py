@@ -2,7 +2,7 @@ import json
 import logging
 from pathlib import Path
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
-from homeassistant.components.sensor import SensorDeviceClass
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.components.number import NumberDeviceClass
 
@@ -68,54 +68,54 @@ SENSOR_DEFINITIONS = {
     "MBF_ION_CURRENT": {
         "name": "Ionization Level",
         "unit": "%",
-        "device_class": None,
-        "state_class": None,
+        "device_class": SensorDeviceClass.POWER_FACTOR,
+        "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:atom",
     },
     "MBF_HIDRO_CURRENT": {
         "name": "Hydrolysis Intensity",
         "unit": "%",
-        "device_class": None,
-        "state_class": None,
+        "device_class": SensorDeviceClass.POWER_FACTOR,
+        "state_class": SensorStateClass.MEASUREMENT,
     },
     "MBF_MEASURE_PH": {
         "name": "pH Level",
         "unit": "pH",
-        "device_class": None,
-        "state_class": None,
+        "device_class": SensorDeviceClass.PH,
+        "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:ph",
     },
     "MBF_MEASURE_RX": {
         "name": "Redox Potential",
         "unit": "mV",
-        "device_class": None,
-        "state_class": None,
+        "device_class": SensorDeviceClass.VOLTAGE,
+        "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:gradient-vertical",
     },
     "MBF_MEASURE_CL": {
         "name": "Salt Level",
         "unit": "ppm",
         "device_class": None,
-        "state_class": None,
+        "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:shaker-outline",
     },
     "MBF_MEASURE_CONDUCTIVITY": {
         "name": "Conductivity Level",
         "unit": "%",
-        "device_class": None,
-        "state_class": None,
+        "device_class": SensorDeviceClass.POWER_FACTOR,
+        "state_class": SensorStateClass.MEASUREMENT,
     },
     "MBF_MEASURE_TEMPERATURE": {
         "name": "Water Temperature",
         "unit": "°C",
         "device_class": SensorDeviceClass.TEMPERATURE,
-        "state_class": None,
+        "state_class": SensorStateClass.MEASUREMENT,
     },
     "MBF_HIDRO_VOLTAGE": {
         "name": "Hydrolysis Voltage",
         "unit": "V",
         "device_class": SensorDeviceClass.VOLTAGE,
-        "state_class": None,
+        "state_class": SensorStateClass.MEASUREMENT,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "MBF_PAR_FILT_MODE": {
