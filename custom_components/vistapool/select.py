@@ -22,6 +22,10 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     entry_id = entry.entry_id
     entities = []
 
+    if not coordinator.data:
+        _LOGGER.warning("VistaPool: No data from Modbus, skipping select setup!")
+        return
+
     for key, props in SELECT_DEFINITIONS.items():
         # Skip the selects if they are not detected
         if key == "MBF_PAR_FILTRATION_SPEED" and not bool(

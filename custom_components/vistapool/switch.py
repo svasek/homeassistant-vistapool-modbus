@@ -24,6 +24,10 @@ async def async_setup_entry(
 
     entities = []
 
+    if not coordinator.data:
+        _LOGGER.warning("VistaPool: No data from Modbus, skipping switch setup!")
+        return
+
     for key, props in SWITCH_DEFINITIONS.items():
         # Only create relay switches if enabled in options
         option_key = props.get("option")

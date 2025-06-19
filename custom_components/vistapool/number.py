@@ -20,6 +20,11 @@ async def async_setup_entry(
     entry_id = entry.entry_id
 
     entities = []
+
+    if not coordinator.data:
+        _LOGGER.warning("VistaPool: No data from Modbus, skipping number setup!")
+        return
+
     for key, props in NUMBER_DEFINITIONS.items():
         # Conditionally add heating setpoint only if heating relay is assigned
         if key == "MBF_PAR_HEATING_TEMP":

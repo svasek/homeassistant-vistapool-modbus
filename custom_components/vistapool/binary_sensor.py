@@ -29,6 +29,10 @@ async def async_setup_entry(
     )
     entities = []
 
+    if not coordinator.data:
+        _LOGGER.warning("VistaPool: No data from Modbus, skipping binary_sensor setup!")
+        return
+
     for key, props in BINARY_SENSOR_DEFINITIONS.items():
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):
@@ -42,23 +46,27 @@ async def async_setup_entry(
         if "measurement module detected" in key.lower():
             continue
         # Skip the base pump if the relay is not assigned
-        if key == "pH pump active" and not bool(
-            coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO")
+        if (
+            key == "pH pump active"
+            and coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO") is not True
         ):
             continue
         # Skip the acid pump if the relay is not assigned
-        if key == "pH acid pump active" and not bool(
-            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO")
+        if (
+            key == "pH acid pump active"
+            and coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO") is not True
         ):
             continue
         # Skip chlorine related sensors
-        if key.endswith("Activated by the CL module") and not bool(
-            coordinator.data.get("Chlorine measurement module detected")
+        if (
+            key.endswith("Activated by the CL module")
+            and coordinator.data.get("Chlorine measurement module detected") is not True
         ):
             continue
         # Skip redox related sensors
-        if key.endswith("Activated by the RX module") and not bool(
-            coordinator.data.get("Redox measurement module detected")
+        if (
+            key.endswith("Activated by the RX module")
+            and coordinator.data.get("Redox measurement module detected") is not True
         ):
             continue
 

@@ -49,31 +49,44 @@ async def async_setup_entry(
     coordinator: VistaPoolCoordinator = hass.data[DOMAIN][entry.entry_id]
     entities = []
 
+    if not coordinator.data:
+        _LOGGER.warning("VistaPool: No data from Modbus, skipping sensor setup!")
+        return
+
     # Loop through the defined sensors and create SensorEntity instances
     for key, props in SENSOR_DEFINITIONS.items():
         # Skip the sensors if they are not detected
-        if key == "MBF_MEASURE_PH" and not bool(
-            coordinator.data.get("pH measurement module detected")
+        if (
+            key == "MBF_MEASURE_PH"
+            and coordinator.data.get("pH measurement module detected") is not True
         ):
             continue
-        if key == "MBF_MEASURE_RX" and not bool(
-            coordinator.data.get("Redox measurement module detected")
+        if (
+            key == "MBF_MEASURE_RX"
+            and coordinator.data.get("Redox measurement module detected") is not True
         ):
             continue
-        if key == "MBF_MEASURE_CL" and not bool(
-            coordinator.data.get("Chlorine measurement module detected")
+        if (
+            key == "MBF_MEASURE_CL"
+            and coordinator.data.get("Chlorine measurement module detected") is not True
         ):
             continue
-        if key == "MBF_MEASURE_CONDUCTIVITY" and not bool(
-            coordinator.data.get("Conductivity measurement module detected")
+        if (
+            key == "MBF_MEASURE_CONDUCTIVITY"
+            and coordinator.data.get("Conductivity measurement module detected")
+            is not True
         ):
             continue
         if key == "MBF_ION_CURRENT" and not bool(
             (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
         ):
             continue
-        if key == "FILTRATION_SPEED" and not bool(
-            get_filtration_pump_type(coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0))
+        if (
+            key == "FILTRATION_SPEED"
+            and get_filtration_pump_type(
+                coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
+            )
+            is not True
         ):
             continue
 

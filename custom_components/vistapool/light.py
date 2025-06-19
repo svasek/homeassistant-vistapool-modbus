@@ -23,6 +23,10 @@ async def async_setup_entry(
 
     entities = []
 
+    if not coordinator.data:
+        _LOGGER.warning("VistaPool: No data from Modbus, skipping light setup!")
+        return
+
     for key, props in LIGHT_DEFINITIONS.items():
         # Only create light if enabled in options
         option_key = props.get("option")

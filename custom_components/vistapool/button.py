@@ -21,6 +21,11 @@ async def async_setup_entry(
     entry_id = entry.entry_id
 
     entities = []
+
+    if not coordinator.data:
+        _LOGGER.warning("VistaPool: No data from Modbus, skipping button setup!")
+        return
+
     for key, props in BUTTON_DEFINITIONS.items():
         entities.append(VistaPoolButton(coordinator, entry_id, key, props))
     async_add_entities(entities)
