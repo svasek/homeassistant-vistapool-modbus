@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.5.1...v1.6.0) (2025-06-19)
+
+
+### Features
+
+* **config_flow:** ✨ Added asynchronous host and port validation in the config flow ([de5f0fb](https://github.com/svasek/homeassistant-vistapool-modbus/commit/de5f0fbd6b253539f080799c6b9cb7142ef80083))
+
+
+### Bug Fixes
+
+* **binary_sensor, select, sensor:** 🐛 disable certain entities by default ([be7cca5](https://github.com/svasek/homeassistant-vistapool-modbus/commit/be7cca5895dc35bc98a0050a9ec16e5664d9dc90))
+
 ## [1.5.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.5.0...v1.5.1) (2025-06-18)
 
 
