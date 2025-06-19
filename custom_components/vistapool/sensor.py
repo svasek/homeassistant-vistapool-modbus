@@ -191,6 +191,21 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
     @property
     def native_value(self) -> float | int | str | None:
         """Return the actual sensor value from coordinator data."""
+        # If filtration is not running, some sensors should not return a value
+        # This is to avoid showing stale or irrelevant data when filtration is off
+        # For example, temperature, pH, RX, conductivity, and voltage sensors
+        # These sensors are only relevant when the filtration pump is running
+        if self._key in {
+            "MBF_MEASURE_TEMPERATURE",
+            "MBF_MEASURE_PH",
+            "MBF_MEASURE_RX",
+            "MBF_MEASURE_CONDUCTIVITY",
+            "MBF_HIDRO_VOLTAGE",
+            "FILTRATION_SPEED",
+        }:
+            filtration_state = self.coordinator.data.get("Filtration Pump")
+            if filtration_state is not None and filtration_state is False:
+                return None
         # Polarity sensor created from two binary sensors
         if self._key == "HIDRO_POLARITY":
             pol1 = self.coordinator.data.get("HIDRO in Pol1")
@@ -229,19 +244,4 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
     @property
     def available(self) -> bool:
         """Return True if the sensor should be available (based on filtration state)."""
-        # Sensors that only make sense when filtration is running
-        _flow_dependent_keys = {
-            "MBF_MEASURE_TEMPERATURE",
-            "MBF_MEASURE_PH",
-            "MBF_MEASURE_RX",
-            "MBF_MEASURE_CONDUCTIVITY",
-            "MBF_HIDRO_VOLTAGE",
-            "FILTRATION_SPEED",
-        }
-        if self._key in _flow_dependent_keys:
-            # Check if the filtration pump is running (binary_sensor "Filtration Pump" must be ON)
-            filtration_state = self.coordinator.data.get("Filtration Pump")
-            if filtration_state is not None:
-                return filtration_state is True
-            return False  # unknown state, so not available
         return True
