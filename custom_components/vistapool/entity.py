@@ -10,18 +10,22 @@ from .const import DOMAIN, NAME
 
 
 class VistaPoolEntity(CoordinatorEntity):
+    """Base class for VistaPool entities."""
+
     _attr_has_entity_name = True
 
-    def __init__(self, coordinator, entry_id):
+    def __init__(self, coordinator, entry_id) -> None:
         super().__init__(coordinator)
         self._entry_id = entry_id
 
     @property
-    def translation_key(self):
+    def translation_key(self) -> str | None:
+        """Return the translation key for the entity."""
         return getattr(self, "_attr_translation_key", None)
 
     @property
     def device_info(self) -> dict:
+        """Return device information for the entity."""
         serial_number = modbus_regs_to_hex_string(
             self.coordinator.data.get("MBF_POWER_MODULE_NODEID")
         )
@@ -39,7 +43,10 @@ class VistaPoolEntity(CoordinatorEntity):
     # Generate a unique object ID for the entity to use in Home Assistant
     # This remove the prefix "mbf_" and "par_" from the key and replaces spaces, dashes, and dots with underscores
     @staticmethod
-    def slugify(name):
+    def slugify(name) -> str:
+        """Convert a name to a slug suitable for use as an object ID."""
+        if not name:
+            return ""
         return (
             name.lower()
             .replace("mbf_", "", 1)
@@ -64,7 +71,7 @@ class VistaPoolEntity(CoordinatorEntity):
         )
 
     @staticmethod
-    def decode_modules(model_bitmask):
+    def decode_modules(model_bitmask) -> str:
         """Decode MBF_PAR_MODEL bitmask into a human-readable string."""
         if model_bitmask is None:
             return "Unknown"

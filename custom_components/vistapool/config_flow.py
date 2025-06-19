@@ -18,9 +18,12 @@ async def is_host_port_open(host, port, timeout=3):
 
 
 class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for VistaPool."""
+
     VERSION = 1
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input=None) -> dict | None:
+        """Handle the initial step of the configuration flow."""
         data_schema = vol.Schema(
             {
                 vol.Optional(CONF_NAME, default=DOMAIN.capitalize()): str,

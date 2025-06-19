@@ -11,7 +11,7 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up the VistaPool integration."""
     # Initialize Modbus client and coordinator
     client = VistaPoolModbusClient(entry.data)
@@ -30,7 +30,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a VistaPool config entry."""
     coordinator = hass.data[DOMAIN].get(entry.entry_id)
     if coordinator and getattr(coordinator, "client", None):
@@ -41,11 +41,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return unload_ok
 
 
-async def async_setup(hass, config):
+async def async_setup(hass, config) -> bool:
+    """Set up the VistaPool integration."""
     from .helpers import get_timer_interval, hhmm_to_seconds
 
     # Register the service to set timers
-    async def async_handle_set_timer(call):
+    async def async_handle_set_timer(call) -> None:
+        """Handle the set_timer service call."""
         timer_name = call.data["timer"]
         start = call.data.get("start")
         stop = call.data.get("stop")

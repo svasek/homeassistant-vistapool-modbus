@@ -48,11 +48,14 @@ async def async_setup_entry(
 
 
 class VistaPoolNumber(VistaPoolEntity, NumberEntity):
+    """Representation of a VistaPool number entity."""
+
     _pending_write_task = None
     _pending_value = None
     _debounce_delay = 2.0
 
-    def __init__(self, coordinator, entry_id, key, props):
+    def __init__(self, coordinator, entry_id, key, props) -> None:
+        """Initialize the VistaPool number entity."""
         super().__init__(coordinator, entry_id)
         self._key = key
         self._register = props.get("register", None)
@@ -82,7 +85,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             getattr(self, "has_entity_name", None),
         )
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
+        """Handle entity addition to Home Assistant."""
         await super().async_added_to_hass()
 
         # Read full register map and get the value using string key
@@ -95,7 +99,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
         self.async_write_ha_state()
 
-    async def async_set_native_value(self, value):
+    async def async_set_native_value(self, value: float | int | str) -> None:
+        """Set the native value of the number entity."""
         self._pending_value = value
         if self._pending_write_task is not None and not self._pending_write_task.done():
             self._pending_write_task.cancel()
@@ -104,7 +109,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
-    async def _debounced_write(self):
+    async def _debounced_write(self) -> None:
+        """Debounced write to the Modbus register."""
         try:
             await asyncio.sleep(self._debounce_delay)
             raw = int(self._pending_value * self._scale)
@@ -115,7 +121,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         except asyncio.CancelledError:
             pass
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
+        """Run when the entity is added to hass."""
         _LOGGER.debug(
             "VistaPoolNumber ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
             self.entity_id,
@@ -125,7 +132,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         await super().async_added_to_hass()
 
     @property
-    def suggested_display_precision(self):
+    def suggested_display_precision(self) -> int | None:
+        """Return the suggested display precision for the number value."""
         if self._key == "MBF_PAR_HIDRO":
             return 0
         if self._key == "MBF_PAR_HEATING_TEMP":
@@ -133,12 +141,13 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         return None
 
     @property
-    def icon(self):
+    def icon(self) -> str | None:
         """Return custom icon depending on state."""
         return self._attr_icon or None
 
     @property
-    def native_value(self):
+    def native_value(self) -> float | int | str | None:
+        """Return the actual number value."""
         raw = self.coordinator.data.get(self._key)
         if self.suggested_display_precision == 0 and raw is not None:
             return int(round(raw))
@@ -148,7 +157,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
     # Property to set correct native value for hydrolysis
     @property
-    def native_unit_of_measurement(self):
+    def native_unit_of_measurement(self) -> str | None:
+        """Return the unit of measurement for the number value."""
         if self._key == "MBF_PAR_HIDRO":
             hidro_nom = self.coordinator.data.get("MBF_PAR_HIDRO_NOM")
             if hidro_nom is not None:
@@ -160,7 +170,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
     # Property to set correct native max value for hydrolysis
     @property
-    def native_max_value(self):
+    def native_max_value(self) -> float | None:
+        """Return the maximum value for the number entity."""
         if self._key == "MBF_PAR_HIDRO":
             hidro_nom = self.coordinator.data.get("MBF_PAR_HIDRO_NOM")
             if hidro_nom is not None:

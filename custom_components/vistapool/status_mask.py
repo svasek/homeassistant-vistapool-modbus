@@ -35,6 +35,19 @@ TODO: Check against GPIO configuration
 
 
 def decode_relay_state(value: int) -> dict:
+    """Decode the relay state bits."""
+    # Relay state bits are 16 bits, where each bit represents a relay state
+    # Bit 0: pH Acid Pump
+    # Bit 1: Filtration Pump
+    # Bit 2: Pool Light
+    # Bit 3: AUX1
+    # Bit 4: AUX2
+    # Bit 5: AUX3
+    # Bit 6: AUX4
+    # Bit 8: Filtration low speed
+    # Bit 9: Filtration mid speed
+    # Bit 10: Filtration high speed
+    # Bits 8-10: Filtration current speed (0: off, 1: low, 2: mid, 3: high)
     if value is None:
         return {}
     return {
@@ -53,6 +66,15 @@ def decode_relay_state(value: int) -> dict:
 
 
 def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:
+    """Decode the status bits for pH, Redox, Chlorine, and Conductivity sensors."""
+    # Status bits are 16 bits, where each bit represents a status flag
+    # Bit 0: Flow sensor problem
+    # Bit 10: Module control status
+    # Bit 11: Acid pump active
+    # Bit 12: Pump active
+    # Bit 13: Control module
+    # Bit 14: Measurement active
+    # Bit 15: Measurement module detected
     if status is None:
         return {}
     return {
@@ -67,6 +89,17 @@ def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:
 
 
 def decode_ion_status_bits(status: int) -> dict:
+    """Decode the status bits for ION sensor."""
+    # Status bits are 16 bits, where each bit represents a status flag
+    # Bit 0: ION On Target
+    # Bit 1: ION Low Flow
+    # Bit 2: ION Reserved
+    # Bit 3: ION Program time exceeded
+    # Bit 12: ION in dead time
+    # Bit 13: ION in Pol1
+    # Bit 14: ION in Pol2
+    # Bit 15: ION measurement module detected
+    # Note: ION measurement module is always detected if ION sensor is present
     if status is None:
         return {}
     return {
@@ -81,6 +114,24 @@ def decode_ion_status_bits(status: int) -> dict:
 
 
 def decode_hidro_status_bits(status: int) -> dict:
+    """Decode the status bits for HIDRO sensor."""
+    # Status bits are 16 bits, where each bit represents a status flag
+    # Bit 0: HIDRO On Target
+    # Bit 1: HIDRO Low Flow
+    # Bit 2: HIDRO Reserved
+    # Bit 3: HIDRO Cell Flow FL1 (if present)
+    # Bit 4: HIDRO Cover input active
+    # Bit 5: HIDRO Module active
+    # Bit 6: HIDRO Module regulated
+    # Bit 7: HIDRO Activated by the RX module
+    # Bit 8: HIDRO Chlorine shock mode
+    # Bit 9: HIDRO Chlorine flow indicator FL2 (if present)
+    # Bit 10: HIDRO Activated by the CL module
+    # Bit 12: HIDRO in dead time
+    # Bit 13: HIDRO in Pol1
+    # Bit 14: HIDRO in Pol2
+    # Bit 15: HIDRO measurement module detected
+    # Note: HIDRO measurement module is always detected if HIDRO sensor is present
     if status is None:
         return {}
     return {

@@ -10,12 +10,16 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
-    def __init__(self, config_entry):
+    """Handle options flow for VistaPool integration."""
+
+    def __init__(self, config_entry) -> None:
+        """Initialize the options flow handler."""
         super().__init__()
         self._config_entry = config_entry
         self._base_options = {}
 
-    async def async_step_init(self, user_input=None):
+    async def async_step_init(self, user_input=None) -> dict:
+        """Handle the initial step of the options flow."""
         # Get current options from the config entry
         options = dict(self._config_entry.options)
         already_enabled = options.get("enable_backwash_option", False)
@@ -108,7 +112,8 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             description_placeholders={},
         )
 
-    async def async_step_advanced(self, user_input=None):
+    async def async_step_advanced(self, user_input=None) -> dict:
+        """Handle the advanced options step."""
         options = dict(self._config_entry.options)
         advanced_schema = vol.Schema(
             {

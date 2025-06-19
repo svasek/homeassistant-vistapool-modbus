@@ -27,7 +27,10 @@ async def async_setup_entry(
 
 
 class VistaPoolButton(VistaPoolEntity, ButtonEntity):
-    def __init__(self, coordinator, entry_id, key, props):
+    """Representation of a VistaPool button entity."""
+
+    def __init__(self, coordinator, entry_id, key, props) -> None:
+        """Initialize the VistaPool button entity."""
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -61,7 +64,8 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
             await client.async_write_register(0x0297, 1)
             await self.coordinator.async_request_refresh()
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
+        """Run when the entity is added to hass."""
         _LOGGER.debug(
             "VistaPoolButton ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
             self.entity_id,
@@ -71,5 +75,6 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
         await super().async_added_to_hass()
 
     @property
-    def icon(self):
+    def icon(self) -> str | None:
+        """Return the icon for the button."""
         return self._attr_icon

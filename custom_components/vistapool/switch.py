@@ -36,7 +36,10 @@ async def async_setup_entry(
 
 
 class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
-    def __init__(self, coordinator, entry_id, key, props):
+    """Representation of a VistaPool switch entity."""
+
+    def __init__(self, coordinator, entry_id, key, props) -> None:
+        """Initialize the VistaPool switch entity."""
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -66,7 +69,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             getattr(self, "has_entity_name", None),
         )
 
-    async def async_turn_on(self, **kwargs):
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
         if self._switch_type == "manual_filtration":
             await self.coordinator.client.async_write_register(
@@ -93,7 +96,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
-    async def async_turn_off(self, **kwargs):
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
         if self._switch_type == "manual_filtration":
             await self.coordinator.client.async_write_register(
@@ -119,7 +122,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
         """Handle entity which will be added to hass."""
         _LOGGER.debug(
             "VistaPoolSwitch ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
@@ -130,7 +133,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         await super().async_added_to_hass()
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
+        """Return True if the switch is on."""
         if self._switch_type == "manual_filtration":
             if self.coordinator.data.get("MBF_PAR_FILT_MODE") == 1:
                 return False
@@ -148,6 +152,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     @property
     def available(self) -> bool:
+        """Return True if the switch is available."""
         if self._switch_type == "manual_filtration":
             return self.coordinator.data.get("MBF_PAR_FILT_MODE") != 1
         if self._switch_type == "relay_timer":
@@ -164,7 +169,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         return True
 
     @property
-    def icon(self):
+    def icon(self) -> str | None:
+        """Return the icon to use in the frontend, depending on the state."""
         if self._icon_on and self._icon_off:
             return self._icon_on if self.is_on else self._icon_off
         if self._attr_icon:

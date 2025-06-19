@@ -16,7 +16,8 @@ PERIOD_SECONDS_TO_KEY = {v: k for k, v in PERIOD_MAP.items()}
 MANUAL_FILTRATION_REGISTER = 0x0413
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(hass, entry, async_add_entities) -> None:
+    """Set up VistaPool select entities from a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     entry_id = entry.entry_id
     entities = []
@@ -42,7 +43,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 
 class VistaPoolSelect(VistaPoolEntity, SelectEntity):
-    def __init__(self, coordinator, entry_id, key, props):
+    """Representation of a VistaPool select entity."""
+
+    def __init__(self, coordinator, entry_id, key, props) -> None:
+        """Initialize the VistaPool select entity."""
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -77,7 +81,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             getattr(self, "has_entity_name", None),
         )
 
-    async def async_select_option(self, option: str):
+    async def async_select_option(self, option: str) -> None:
+        """Handle option selection."""
         if self._select_type == "timer_time":
             timer_name, field = self._key.rsplit("_", 1)
             entry_id = (
@@ -247,7 +252,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
+        """Run when the entity is added to hass."""
         _LOGGER.debug(
             "VistaPoolSelect ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
             self.entity_id,
@@ -257,7 +263,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         await super().async_added_to_hass()
 
     @property
-    def options(self):
+    def options(self) -> list[str]:
+        """Return the list of options for the select entity."""
         option_keys = list(self._options_map.keys())
 
         # Hide heating and intelligent if not enabled heating mode
@@ -345,7 +352,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         return [self._options_map[k] for k in option_keys]
 
     @property
-    def current_option(self):
+    def current_option(self) -> str | None:
+        """Return the current option for the select entity."""
         if self._key == "MBF_CELL_BOOST":
             reg_val = self.coordinator.data.get(self._key)
             if reg_val is None:

@@ -367,7 +367,7 @@ BINARY_SENSOR_DEFINITIONS = {
     # },
     "HIDRO Cell Flow FL1": {
         "name": "Hydrolysis Cell Flow FL1",
-        "device_class": BinarySensorDeviceClass.RUNNING,
+        "device_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "HIDRO Cover input active": {
@@ -382,7 +382,7 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     "HIDRO Module regulated": {
         "name": "Hydrolysis Module Regulated",
-        "device_class": BinarySensorDeviceClass.RUNNING,
+        "device_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "HIDRO Activated by the RX module": {
@@ -397,7 +397,7 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     "HIDRO Chlorine flow indicator FL2": {
         "name": "Hydrolysis Chlorine Flow Indicator FL2",
-        "device_class": BinarySensorDeviceClass.RUNNING,
+        "device_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "HIDRO Activated by the CL module": {

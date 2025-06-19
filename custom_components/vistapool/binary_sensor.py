@@ -95,7 +95,8 @@ async def async_setup_entry(
 class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
     """Representation of a VistaPool binary sensor."""
 
-    def __init__(self, coordinator, entry_id, key, props):
+    def __init__(self, coordinator, entry_id, key, props) -> None:
+        """Initialize the binary sensor."""
         super().__init__(coordinator, entry_id)
         self._key = key
         self._bit = None
@@ -145,7 +146,8 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         else:
             bit = self._key.lower()
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
+        """Run when the entity is added to hass."""
         _LOGGER.debug(
             "VistaPoolBinarySensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
             self.entity_id,
@@ -155,7 +157,8 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         await super().async_added_to_hass()
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
+        """Return True if the binary sensor is on."""
         if self._key == "Device Time Out Of Sync":
             return is_device_time_out_of_sync(self.coordinator.data, self.hass)
         parts = self._key.split("_", 1)
@@ -171,11 +174,12 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
             return bool(value)
 
     @property
-    def icon(self):
+    def icon(self) -> str | None:
         """Return custom icon depending on state."""
         return self._icon_on if self.is_on else self._icon_off or None
 
     @property
-    def native_value(self):
+    def native_value(self) -> bool | None:
+        """Return the actual sensor value."""
         # Return the actual sensor value from coordinator data
         return self.coordinator.data.get(self._key)

@@ -35,7 +35,10 @@ async def async_setup_entry(
 
 
 class VistaPoolLight(VistaPoolEntity, LightEntity):
-    def __init__(self, coordinator, entry_id, key, props):
+    """Representation of a VistaPool light entity."""
+
+    def __init__(self, coordinator, entry_id, key, props) -> None:
+        """Initialize the VistaPool light entity."""
         super().__init__(coordinator, entry_id)
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -62,7 +65,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
             getattr(self, "has_entity_name", None),
         )
 
-    async def async_turn_on(self, **kwargs):
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn the light ON."""
         if self._switch_type == "relay_timer":
             client = self.coordinator.client
@@ -80,7 +83,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
-    async def async_turn_off(self, **kwargs):
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn the light OFF."""
         if self._switch_type == "relay_timer":
             client = self.coordinator.client
@@ -95,7 +98,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
+        """Run when the entity is added to hass."""
         _LOGGER.debug(
             "VistaPoolLight ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
             self.entity_id,
@@ -105,7 +109,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         await super().async_added_to_hass()
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
+        """Return True if the light is ON."""
         if self._switch_type == "relay_timer":
             enable_val = self.coordinator.data.get("relay_light_enable", None)
             return enable_val == 3  # ON if ALWAYS ON
@@ -113,13 +118,15 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
     @property
     def available(self) -> bool:
+        """Return True if the light is available."""
         if self._switch_type == "relay_timer":
             mode_val = self.coordinator.data.get("relay_light_enable", None)
             return mode_val in (0, 3, 4)
         return True
 
     @property
-    def icon(self):
+    def icon(self) -> str | None:
+        """Return custom icon depending on state."""
         if self._icon_on and self._icon_off:
             return self._icon_on if self.is_on else self._icon_off
         if self._attr_icon:
@@ -127,11 +134,13 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         return None
 
     @property
-    def supported_color_modes(self):
+    def supported_color_modes(self) -> set[str]:
+        """Return the color modes supported by this light."""
         # For simple on/off light, the correct mode is COLOR_MODE_ONOFF (or ColorMode.ONOFF)
         return {"onoff"}
 
     @property
-    def color_mode(self):
+    def color_mode(self) -> str:
+        """Return the current color mode of the light."""
         # Actual mode is always onoff, as brightness and color are not available
         return "onoff"

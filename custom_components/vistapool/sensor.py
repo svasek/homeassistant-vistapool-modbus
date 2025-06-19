@@ -94,7 +94,10 @@ async def async_setup_entry(
 
 
 class VistaPoolSensor(VistaPoolEntity, SensorEntity):
-    def __init__(self, coordinator, entry_id, key, props):
+    """Representation of a VistaPool sensor."""
+
+    def __init__(self, coordinator, entry_id, key, props) -> None:
+        """Initialize the VistaPool sensor entity."""
         super().__init__(coordinator, entry_id)  # Pass entry_id to the parent class
         self._key = key
         self._attr_suggested_object_id = f"{VistaPoolEntity.slugify(self.coordinator.device_name)}_{VistaPoolEntity.slugify(self._key)}"
@@ -122,7 +125,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             getattr(self, "has_entity_name", None),
         )
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
+        """Run when the entity is added to hass."""
         _LOGGER.debug(
             "VistaPoolSensor ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
             self.entity_id,
@@ -132,7 +136,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         await super().async_added_to_hass()
 
     @property
-    def icon(self):
+    def icon(self) -> str | None:
         """Return custom icon depending on state."""
         if self._key == "MBF_PAR_FILT_MODE":
             raw = self.coordinator.data.get(self._key)
@@ -163,7 +167,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         return self._attr_icon or None
 
     @property
-    def suggested_display_precision(self):
+    def suggested_display_precision(self) -> int | None:
+        """Return the suggested display precision for the sensor value."""
         if self._key == "MBF_HIDRO_CURRENT":
             return 0
         if self._key == "MBF_MEASURE_CONDUCTIVITY":
@@ -171,7 +176,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         return None
 
     @property
-    def native_value(self):
+    def native_value(self) -> float | int | str | None:
+        """Return the actual sensor value from coordinator data."""
         # Polarity sensor created from two binary sensors
         if self._key == "HIDRO_POLARITY":
             pol1 = self.coordinator.data.get("HIDRO in Pol1")
@@ -195,7 +201,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         return self.coordinator.data.get(self._key)
 
     @property
-    def options(self):
+    def options(self) -> list[str] | None:
+        """Return the list of options for the sensor."""
         if self._key == "MBF_PAR_FILT_MODE":
             return list(FILTRATION_MODE_MAP.values())
         if self._key == "FILTRATION_SPEED":

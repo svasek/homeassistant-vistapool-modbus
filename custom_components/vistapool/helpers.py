@@ -11,7 +11,7 @@ and parse version information.
 # This function takes a dictionary of data and returns the device time as a datetime object
 # It extracts the low and high parts of the time from the dictionary, combines them into a single timestamp,
 # and converts it to a datetime object in UTC timezone
-def get_device_time(data, hass=None):
+def get_device_time(data, hass=None) -> datetime.datetime | None:
     """Get device time and convert to datetime object."""
     low = data.get("MBF_PAR_TIME_LOW")
     high = data.get("MBF_PAR_TIME_HIGH")
@@ -31,7 +31,7 @@ def get_device_time(data, hass=None):
 
 # This function prepares the device time for writing to the device
 # It takes the current time in the local timezone and converts it to a format suitable for the device
-def prepare_device_time(hass=None):
+def prepare_device_time(hass=None) -> list[int, int]:
     """
     Prepare device time for writing to the device.
     Returns a list of two integers representing the low and high parts of the time.
@@ -49,7 +49,8 @@ def prepare_device_time(hass=None):
     return [low, high]
 
 
-def parse_version(val):
+def parse_version(val) -> str:
+    """Parse version from integer or string."""
     if isinstance(val, int):
         major = (val >> 8) & 0xFF
         minor = val & 0xFF
@@ -59,7 +60,7 @@ def parse_version(val):
 
 # This function checks if the device time is out of sync with the Home Assistant time
 # It compares the device time with the current time in UTC and returns True if the difference is greater than the threshold
-def is_device_time_out_of_sync(data, hass=None, threshold_seconds=60):
+def is_device_time_out_of_sync(data, hass=None, threshold_seconds=60) -> bool:
     """
     Returns True if device time and HA time differ by more than threshold_seconds.
     """
@@ -71,7 +72,7 @@ def is_device_time_out_of_sync(data, hass=None, threshold_seconds=60):
     return diff > threshold_seconds
 
 
-def modbus_regs_to_ascii(regs):
+def modbus_regs_to_ascii(regs) -> str:
     """Convert list of uint16 Modbus registers to ASCII string (ASCIIZ, max 10 chars)."""
     chars = []
     for reg in regs:
@@ -90,14 +91,14 @@ def modbus_regs_to_ascii(regs):
     return "".join(chars)
 
 
-def modbus_regs_to_hex_string(regs):
+def modbus_regs_to_hex_string(regs) -> str:
     """Return Modbus registers as hex string."""
     if not regs or not isinstance(regs, list):
         return ""
     return "".join(f"{reg:04X}" for reg in regs)
 
 
-def parse_timer_block(regs):
+def parse_timer_block(regs) -> dict:
     """Convert 15 Modbus registers to dict of timer params."""
     # Pads the regs list to length 15 with zeros if needed
     padded = pad_list(regs, 15)
@@ -117,7 +118,7 @@ def parse_timer_block(regs):
     }
 
 
-def build_timer_block(data):
+def build_timer_block(data) -> list[int]:
     """Convert dict of timer params to 15 Modbus registers (all as int, never None)."""
 
     def safe_int(val):
@@ -144,20 +145,20 @@ def build_timer_block(data):
     return regs
 
 
-def hhmm_to_seconds(hhmm):
+def hhmm_to_seconds(hhmm) -> int:
     """Convert HH:MM string to seconds since midnight."""
     h, m = map(int, hhmm.split(":"))
     return h * 3600 + m * 60
 
 
-def seconds_to_hhmm(seconds):
+def seconds_to_hhmm(seconds) -> str:
     """Convert seconds since midnight to HH:MM string."""
     h = seconds // 3600
     m = (seconds % 3600) // 60
     return f"{h:02d}:{m:02d}"
 
 
-def get_timer_interval(start_sec, stop_sec):
+def get_timer_interval(start_sec, stop_sec) -> int:
     """Calculate interval in seconds, handle over-midnight."""
     if stop_sec >= start_sec:
         return stop_sec - start_sec
@@ -166,7 +167,7 @@ def get_timer_interval(start_sec, stop_sec):
         return (86400 - start_sec) + stop_sec
 
 
-def generate_time_options(step_minutes=15):
+def generate_time_options(step_minutes=15) -> list[str]:
     """Generate a list of HH:MM strings for every step_minutes in a day."""
     options = []
     for mins in range(0, 24 * 60, step_minutes):
@@ -176,7 +177,8 @@ def generate_time_options(step_minutes=15):
     return options
 
 
-def get_filtration_speed(data):
+def get_filtration_speed(data) -> int:
+    """Get filtration speed based on relay state and configuration."""
     relay_state = data.get("MBF_RELAY_STATE", 0)
     # Filtration is off if the bit 0x0002 is not set
     if not (relay_state & 0x0002):
@@ -201,11 +203,12 @@ def get_filtration_speed(data):
     return 0
 
 
-def get_filtration_pump_type(par_filtration_conf):
+def get_filtration_pump_type(par_filtration_conf) -> int:
+    """Return the type of filtration pump based on configuration."""
     pump_type = (par_filtration_conf & 0x000F) >> 0
     return pump_type  # 0 = standard, 1/2 = variable speed
 
 
-def pad_list(regs, length, pad_value=0):
+def pad_list(regs, length, pad_value=0) -> list[int]:
     """Return a list padded with pad_value to desired length."""
     return regs + [pad_value] * (length - len(regs))

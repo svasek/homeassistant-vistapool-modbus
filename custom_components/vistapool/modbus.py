@@ -30,7 +30,7 @@ class VistaPoolModbusClient:
         self._client = None  # ← Persistent client instance
         self._client_lock = asyncio.Lock()
 
-    async def get_client(self):
+    async def get_client(self) -> AsyncModbusTcpClient:
         """Get or create a Modbus client connection."""
         async with self._client_lock:
             try:
@@ -48,7 +48,7 @@ class VistaPoolModbusClient:
                 _LOGGER.error(f"Failed to (re)connect Modbus client: {e}")
                 raise  # or return None
 
-    async def close(self):
+    async def close(self) -> None:
         """Close the Modbus client connection."""
         async with self._client_lock:
             client = self._client
@@ -72,12 +72,13 @@ class VistaPoolModbusClient:
                 else:
                     _LOGGER.debug("Modbus client has no callable close() method.")
 
-    async def async_read_all(self):
+    async def async_read_all(self) -> dict:
         result = {}
 
         """WARNING: Device limit for reading registers is 31 at one request !!!"""
 
-        def get_safe(regs, idx):
+        def get_safe(regs, idx) -> int | None:
+            """Safely get a register value or return None if index is out of range."""
             try:
                 return regs[idx]
             except IndexError:
@@ -500,7 +501,9 @@ class VistaPoolModbusClient:
         # _LOGGER.debug("All Results: %s", result)
         return result
 
-    async def async_write_register(self, address: int, value, apply: bool = False):
+    async def async_write_register(
+        self, address: int, value, apply: bool = False
+    ) -> dict | None:
         """
         Write one or more Modbus registers using function 0x10 (Write Multiple Registers).
 
@@ -567,7 +570,8 @@ class VistaPoolModbusClient:
 
     """ Manual controller for AUX relays (1-4) """
 
-    async def async_write_aux_relay(self, relay_index, on):
+    async def async_write_aux_relay(self, relay_index, on) -> dict | None:
+        """Write state of an AUX relay (1-4) using function 0x10 (Write Multiple Registers)."""
         aux_bit = AUX_BITMASKS[relay_index]
         try:
             client = await self.get_client()
@@ -603,7 +607,12 @@ class VistaPoolModbusClient:
             _LOGGER.error("Modbus TCP AUX relay write exception: %s", e)
             return {}
 
-    async def read_all_timers(self, enabled_timers=None):
+    async def read_all_timers(self, enabled_timers=None) -> dict:
+        """Reads all timer blocks from the device.
+        If enabled_timers is provided, only those timers will be read.
+        If enabled_timers is None, all timers will be read.
+        Returns a dictionary with timer names as keys and parsed timer data as values.
+        """
         timers = {}
         client = await self.get_client()
         if client is None or not client.connected:
@@ -630,7 +639,7 @@ class VistaPoolModbusClient:
             await asyncio.sleep(0.05)
         return timers
 
-    async def write_timer(self, block_name, timer_data):
+    async def write_timer(self, block_name, timer_data) -> bool:
         """
         Writes only requested fields to a timer block. Preserves all other fields.
         Only update 'on' and 'interval' (and optionally other editable fields).
