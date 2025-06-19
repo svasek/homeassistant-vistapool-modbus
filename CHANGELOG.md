@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.7.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.6.0...v1.7.0) (2025-06-19)
+
+
+### Features
+
+* **binary_sensor, sensor:** ✨ enhance sensor availability based on filtration state ([188ad35](https://github.com/svasek/homeassistant-vistapool-modbus/commit/188ad3559819c28057013fc2f9f342e27622e522))
+
+
+### Bug Fixes
+
+* **setup:** 🐛 skip setup if no data from Modbus ([c4ca493](https://github.com/svasek/homeassistant-vistapool-modbus/commit/c4ca49357673e71575b3857029fadaefe4fca581))
+
 ## [1.6.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.5.1...v1.6.0) (2025-06-19)
 
 
