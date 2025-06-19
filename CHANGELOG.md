@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.0...v1.7.1) (2025-06-19)
+
+
+### Bug Fixes
+
+* **sensor:** 🐛 prevent stale sensor values when filtration is off ([cddd3d3](https://github.com/svasek/homeassistant-vistapool-modbus/commit/cddd3d3985d83a06d3e83ed061c20b550a1cf60e))
+
 ## [1.7.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.6.0...v1.7.0) (2025-06-19)
 
 
