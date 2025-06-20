@@ -25,6 +25,7 @@
         "data": {
           "scan_interval": "Datenaktualisierungsintervall (Sekunden)",
           "timer_resolution": "Schrittweite für Timer (Minuten)",
+          "measure_when_filtration_off": "Messwerte auch bei ausgeschalteter Filterung erfassen",
           "use_light": "Licht-Relais aktivieren",
           "use_aux1": "Aux1-Relais aktivieren",
           "use_aux2": "Aux2-Relais aktivieren",

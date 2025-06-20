@@ -25,6 +25,7 @@
         "data": {
           "scan_interval": "Data update interval (seconds)",
           "timer_resolution": "Timer adjustment step (minutes)",
+          "measure_when_filtration_off": "Measure values even when filtration is off",
           "use_light": "Enable Light Relay",
           "use_aux1": "Enable Aux1 Relay",
           "use_aux2": "Enable Aux2 Relay",

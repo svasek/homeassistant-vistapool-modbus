@@ -25,6 +25,7 @@
         "data": {
           "scan_interval": "Interwał aktualizacji danych (sekundy)",
           "timer_resolution": "Krok regulacji timerów (minuty)",
+          "measure_when_filtration_off": "Mierz wartości nawet gdy filtracja jest wyłączona",
           "use_light": "Włącz przekaźnik światła",
           "use_aux1": "Włącz przekaźnik Aux1",
           "use_aux2": "Włącz przekaźnik Aux2",

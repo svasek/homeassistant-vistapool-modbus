@@ -38,6 +38,10 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                 default=options.get("timer_resolution", DEFAULT_TIMER_RESOLUTION),
             ): vol.In([1, 5, 10, 15, 30, 60]),
             vol.Optional(
+                "measure_when_filtration_off",
+                default=options.get("measure_when_filtration_off", False),
+            ): bool,
+            vol.Optional(
                 "use_light",
                 default=options.get("use_light", False),
             ): bool,

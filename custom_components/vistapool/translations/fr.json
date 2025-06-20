@@ -25,6 +25,7 @@
         "data": {
           "scan_interval": "Intervalle de mise à jour des données (secondes)",
           "timer_resolution": "Pas de réglage du minuteur (minutes)",
+          "measure_when_filtration_off": "Mesurer les valeurs même lorsque la filtration est arrêtée",
           "use_light": "Activer le relais Lumière",
           "use_aux1": "Activer le relais Aux1",
           "use_aux2": "Activer le relais Aux2",

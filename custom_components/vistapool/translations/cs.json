@@ -25,6 +25,7 @@
         "data": {
           "scan_interval": "Interval aktualizace dat (v sekundách)",
           "timer_resolution": "Krok pro nastavení časovačů? (v minutách)",
+          "measure_when_filtration_off": "Měřit hodnoty i při vypnuté filtraci",
           "use_light": "Povolit relé Osvětlení",
           "use_aux1": "Povolit relé Aux1",
           "use_aux2": "Povolit relé Aux2",

@@ -25,6 +25,7 @@
         "data": {
           "scan_interval": "Intervallo aggiornamento dati (secondi)",
           "timer_resolution": "Passo regolazione timer (minuti)",
+          "measure_when_filtration_off": "Misura i valori anche quando la filtrazione è spenta",
           "use_light": "Abilita relè luce",
           "use_aux1": "Abilita relè Aux1",
           "use_aux2": "Abilita relè Aux2",

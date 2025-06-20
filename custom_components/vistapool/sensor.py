@@ -191,21 +191,31 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
     @property
     def native_value(self) -> float | int | str | None:
         """Return the actual sensor value from coordinator data."""
+
         # If filtration is not running, some sensors should not return a value
         # This is to avoid showing stale or irrelevant data when filtration is off
         # For example, temperature, pH, RX, conductivity, and voltage sensors
         # These sensors are only relevant when the filtration pump is running
-        if self._key in {
-            "MBF_MEASURE_TEMPERATURE",
-            "MBF_MEASURE_PH",
-            "MBF_MEASURE_RX",
-            "MBF_MEASURE_CONDUCTIVITY",
-            "MBF_HIDRO_VOLTAGE",
-            "FILTRATION_SPEED",
-        }:
+        # Anyway, we allow to override this behavior in the options
+        measure_when_off = self.coordinator.config_entry.options.get(
+            "measure_when_filtration_off", False
+        )
+        if (
+            self._key
+            in {
+                "MBF_MEASURE_TEMPERATURE",
+                "MBF_MEASURE_PH",
+                "MBF_MEASURE_RX",
+                "MBF_MEASURE_CONDUCTIVITY",
+                "MBF_HIDRO_VOLTAGE",
+                "FILTRATION_SPEED",
+            }
+            and not measure_when_off
+        ):
             filtration_state = self.coordinator.data.get("Filtration Pump")
             if filtration_state is not None and filtration_state is False:
                 return None
+
         # Polarity sensor created from two binary sensors
         if self._key == "HIDRO_POLARITY":
             pol1 = self.coordinator.data.get("HIDRO in Pol1")
