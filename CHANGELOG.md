@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.4](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.3...v1.7.4) (2025-06-20)
+
+
+### Bug Fixes
+
+* **modbus:** 🩹 improve client closure handling for unstable Modbus connections ([81f33cf](https://github.com/svasek/homeassistant-vistapool-modbus/commit/81f33cf3d21487b2b59890729684798fb51def3e))
+* **sensor:** 🐛 update pH level unit to None for consistency ([3ca6b0b](https://github.com/svasek/homeassistant-vistapool-modbus/commit/3ca6b0b81eb31cdb24c57bd176021024a475e1c6))
+
 ## [1.7.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.2...v1.7.3) (2025-06-20)
 
 
