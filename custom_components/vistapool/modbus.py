@@ -36,10 +36,24 @@ class VistaPoolModbusClient:
             try:
                 if self._client is None or not self._client.connected:
                     if self._client is not None:
-                        try:
-                            await self._client.close()
-                        except Exception as e:
-                            _LOGGER.warning(f"Error closing stale Modbus client: {e}")
+                        close_method = getattr(self._client, "close", None)
+                        if callable(close_method):
+                            result = close_method()
+                            if result is not None and asyncio.iscoroutine(result):
+                                try:
+                                    await result
+                                except Exception as e:
+                                    _LOGGER.warning(
+                                        f"Error closing stale Modbus client: {e}"
+                                    )
+                            else:
+                                _LOGGER.debug(
+                                    f"VistaPool: Modbus close() result is not a coroutine: {type(result)}: {result!r}"
+                                )
+                        else:
+                            _LOGGER.debug(
+                                "VistaPool: Modbus client has no callable close() method."
+                            )
                         self._client = None
                     self._client = AsyncModbusTcpClient(self._host, port=self._port)
                     await self._client.connect()
