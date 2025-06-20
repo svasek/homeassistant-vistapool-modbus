@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.2...v1.7.3) (2025-06-20)
+
+
+### Bug Fixes
+
+* **sensor:** 🩹 add option to measure values when filtration is off ([51fc55f](https://github.com/svasek/homeassistant-vistapool-modbus/commit/51fc55f3aacb43bc068cb32497eaf7530f2cf7eb))
+
 ## [1.7.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.1...v1.7.2) (2025-06-19)
 
 
