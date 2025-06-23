@@ -11,6 +11,17 @@ from .helpers import is_device_time_out_of_sync
 
 _LOGGER = logging.getLogger(__name__)
 
+DISABLED_SUFFIXES = [
+    " measurement active",
+    " pump activee",
+    " Acid Pump",
+    " shock mode",
+    " On Target",
+    " Low Flow",
+    " input active",
+    " indicator FL2",
+]
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -34,7 +45,8 @@ async def async_setup_entry(
         return
 
     for key, props in BINARY_SENSOR_DEFINITIONS.items():
-        option_key = props.get("option")
+        sensor_props = dict(props)
+        option_key = sensor_props.get("option")
         if option_key and not entry.options.get(option_key, False):
             continue
         # Skip sensors that are not detected
@@ -89,12 +101,19 @@ async def async_setup_entry(
         if skip_entity:
             continue  # Skip this entity
 
+        # Check if the entity should be enabled by default
+        # Disable some entities by default based on their key
+        if any(key.lower().endswith(suf) for suf in DISABLED_SUFFIXES):
+            sensor_props["enabled_default"] = False
+        else:
+            sensor_props["enabled_default"] = True
+
         entities.append(
             VistaPoolBinarySensor(
                 coordinator,
                 entry.entry_id,  # Pass entry_id explicitly
                 key,  # Pass key as a positional argument
-                props,
+                sensor_props,
             )
         )
     async_add_entities(entities)
@@ -127,18 +146,7 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         self._icon_on = props.get("icon_on") or None
         self._icon_off = props.get("icon_off") or None
 
-        # Disable some entities by default.
-        if (
-            self._attr_suggested_object_id.endswith("_measurement_active")
-            or self._attr_suggested_object_id.endswith("_pump_active")
-            or self._attr_suggested_object_id.endswith("_acid_pump")
-            or self._attr_suggested_object_id.endswith("_shock_mode")
-            or self._attr_suggested_object_id.endswith("_on_target")
-            or self._attr_suggested_object_id.endswith("_low_flow")
-            or self._attr_suggested_object_id.endswith("_input_active")
-            or self._attr_suggested_object_id.endswith("_indicator_fl2")
-        ):
-            self._attr_entity_registry_enabled_default = False
+        self._attr_entity_registry_enabled_default = props.get("enabled_default", True)
 
         _LOGGER.debug(
             "VistaPoolBinarySensor INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
