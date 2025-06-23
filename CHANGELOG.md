@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.5](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.4...v1.7.5) (2025-06-23)
+
+
+### Bug Fixes
+
+* **binary_sensor:** 🐛 update default enabled state for sensors ([7d81822](https://github.com/svasek/homeassistant-vistapool-modbus/commit/7d818226fd1fa9800aaa9b903788fb0af64f432e))
+
 ## [1.7.4](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.3...v1.7.4) (2025-06-20)
 
 
