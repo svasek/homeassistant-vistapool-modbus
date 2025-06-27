@@ -317,15 +317,15 @@ class VistaPoolModbusClient:
                 # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297]
                 # fmt: off
                 result.update({
-                    "MBF_PAR_VERSION": get_safe(reg03, 0),                # 0x0300*        Software version of the PowerBox
-                    "MBF_PAR_MODEL": get_safe(reg03, 1),                  # 0x0301* mask   System model options
-                    "MBF_PAR_SERNUM": get_safe(reg03, 2),                 # 0x0302*        Serial number of the PowerBox
-                    "MBF_PAR_ION_NOM":  get_safe(reg03, 3),		          # 0x0303*        Ionization maximum production level (DO NOT WRITE!)
+                    "MBF_PAR_VERSION": get_safe(reg03, 0),              # 0x0300*        Software version of the PowerBox
+                    "MBF_PAR_MODEL": get_safe(reg03, 1),                # 0x0301* mask   System model options
+                    "MBF_PAR_SERNUM": get_safe(reg03, 2),               # 0x0302*        Serial number of the PowerBox
+                    "MBF_PAR_ION_NOM":  get_safe(reg03, 3),             # 0x0303*        Ionization maximum production level (DO NOT WRITE!)
                     # 0x0304–0x0305 skipped
-                    "MBF_PAR_HIDRO_NOM":  get_safe(reg03, 6) / 10.0,      # 0x0306*        Hydrolysis maximum production level. (DO NOT WRITE!) If the hydrolysis is set to work in percent mode, this value will be 100. If the hydrolysis module is set to work in g/h production, this module will contain the maximum amount of production in g/h units. (DO NOT WRITE!)
-                    "MBF_PAR_SAL_AMPS":  get_safe(reg03, 10),	          # 0x030A         Current command in regulation for which we are going to measure voltage
-                    "MBF_PAR_SAL_CELLK":  get_safe(reg03, 11),		      # 0x030B         Specifies the relationship between the resistance obtained in the measurement process and its equivalence in g / l (grams per liter)
-                    "MBF_PAR_SAL_TCOMP":  get_safe(reg03, 12),		      # 0x030C         Specifies the deviation in temperature from the conductivity.
+                    "MBF_PAR_HIDRO_NOM":  get_safe(reg03, 6) / 10.0,    # 0x0306*        Hydrolysis maximum production level. (DO NOT WRITE!) If the hydrolysis is set to work in percent mode, this value will be 100. If the hydrolysis module is set to work in g/h production, this module will contain the maximum amount of production in g/h units. (DO NOT WRITE!)
+                    "MBF_PAR_SAL_AMPS":  get_safe(reg03, 10),           # 0x030A         Current command in regulation for which we are going to measure voltage
+                    "MBF_PAR_SAL_CELLK":  get_safe(reg03, 11),          # 0x030B         Specifies the relationship between the resistance obtained in the measurement process and its equivalence in g / l (grams per liter)
+                    "MBF_PAR_SAL_TCOMP":  get_safe(reg03, 12),          # 0x030C         Specifies the deviation in temperature from the conductivity.
                 })
                 # fmt: on
 
