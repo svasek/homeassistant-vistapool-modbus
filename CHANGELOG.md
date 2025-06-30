@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.5...v1.8.0) (2025-06-30)
+
+
+### Features
+
+* **config,options:** ✨ add new options for enabling filtration timers in the configuration ([75a46cb](https://github.com/svasek/homeassistant-vistapool-modbus/commit/75a46cbd824689a9dffbb615c43e667e8e3ee073))
+
 ## [1.7.5](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.4...v1.7.5) (2025-06-23)
 
 
