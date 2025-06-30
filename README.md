@@ -1,15 +1,27 @@
 # VistaPool Modbus Integration for Home Assistant
 
+- Easily connect your Sugar Valley (NeoPool, Hidrolife, Aquascenic, Bionet...) or compatible pool controller to Home Assistant via Modbus TCP.
+- Full local control, real-time sensors, timers, relays, automation support, and more.
+
 [![Release](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/release.yml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/release.yml)
 [![Validate with Hassfest](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hassfest.yml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hassfest.yml)
 [![HACS Action](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/validate-hacs.yaml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/validate-hacs.yaml)
 [![CodeQL](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-Custom integration for connecting Sugar Valley pool controllers and salt chlorinators to Home Assistant via Modbus TCP.
+> **This integration is available via [HACS](https://hacs.xyz/) and is recommended for most users.**
 
-**Supported brands:**  
+**Supported brands / devices:**  
 Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • Station • Brilix (Albixon) • Bayrol • Hay • Hayward • Aquarite • Kripsol KLX • Certikin • Poolstar • GrupAquadirect • Pentair • ProducPool • Pool Technologie
+
+---
+
+## What does this integration do?
+
+- Provides **full local control** of supported pool controllers over Modbus TCP.
+- Adds real-time sensors, numbers, switches, selects, and buttons for all available features.
+- Allows timer/relay/aux configuration, automation and Home Assistant UI integration.
+- Supports multiple pools or hubs, each as a separate integration.
 
 ---
 
@@ -19,12 +31,13 @@ Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • 
 - **Connector:** Standard **2.54 mm** 5-pin PCB female connector
 - **Settings:** 19200 baud, 1 stop bit, no parity
 - **Protocol:** Modbus RTU
-- **For more information, check out our [Modbus Connection Guide](docs/modbus-connection-guide.md)**, which includes images.
+- **See the [Modbus Connection Guide](docs/modbus-connection-guide.md)** for more info and images.
 
 ### Plug Connector
 
 - **RS485 port**: Use the `WIFI` or `EXTERNAL` connector (do **not** use `DISPLAY`, unless the internal LCD is disconnected).
 - **Pinout** (top to bottom):
+
   ```
        ___
     1 |*  |– +12V (from internal power supply)
@@ -33,38 +46,29 @@ Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • 
     4 |*  |– Modbus B-
     5 |*__|– GND
   ```
-- **Settings**: 19200 baud, 1 stop bit, no parity
-- **Protocol**: Modbus RTU
 
-The NeoPool device acts as a Modbus **server** (formerly known as a _slave_), while this integration functions as a Modbus **client** (formerly known as a _master_).  
-Only **one** Modbus client can be connected to a Modbus connector with the same label. It is not possible to operate multiple clients on connectors that share the same name.
-
-Modbus connectors with **different labels** represent completely independent physical Modbus interfaces. Data traffic on one connector is **not visible** on the others.
-
-There is one exception: the **DISPLAY** connector, which is present **twice** and is typically occupied by the built-in LCD.  
-Since only one Modbus client can communicate with a Modbus server at a time, the DISPLAY connector is **not suitable** for this integration if the internal LCD is connected to either of the two DISPLAY ports.
+- **The NeoPool device acts as a Modbus _server_ (slave), this integration is a Modbus _client_ (master).**
+- **Only one Modbus client can be connected to a Modbus connector with the same label**. It is not possible to operate multiple clients on connectors that share the same name.
+- **Modbus connectors with different labels represent independent physical interfaces.** Data traffic on one connector is **not visible** on others.
+- The **DISPLAY** connector is present **twice** and is usually used by the built-in LCD.
+  **Do not use it for this integration if the LCD is connected!**
 
 ---
 
 ## Features
 
-- **Persistent TCP client:**  
-  Only a single, persistent TCP connection is used per configured hub, improving performance and stability.
-- **Multi-hub support**: Add multiple VistaPool devices to Home Assistant, each with a custom name (used as a prefix in entity IDs).
-- **Sensors**:  
-  pH, Redox (ORP), Salt, Conductivity, Water Temperature, Ionization, Hydrolysis Intensity/Voltage, Device Time, Status/Alarm bits
-  - **Filtration speed** _(only if the model has a variable-speed filtration pump)_
-- **Number entities**:  
-  Setpoints for pH, Redox, Chlorine, Temperature, and Hydrolysis production
-- **Switches**:  
-  Manual filtration, auxiliary relays (_Light & AUX1–AUX4_, enable in options), automatic time synchronization to Home Assistant _(default: disabled)_
-- **Select entities**:  
-  Filtration mode (_Manual, Auto, Heating, Smart, Intelligent_), timers for automatic filtration
-  - **Filtration speed control** _(select entity; only if the model has a variable-speed pump)_
-  - **Boost control** _(only if the Hydro/Electrolysis module is detected)_
-- **Buttons**:  
-  Manual sync of device time to Home Assistant time
-  - **Reset Alarm** _(clears error/alarm states)_
+- **Reliable single Modbus TCP connection per device/hub** (improves stability, avoids connection issues).
+- **Multi-hub support**: Add multiple VistaPool devices, each with a custom prefix (used in entity IDs).
+- **Sensors**:
+  pH, Redox (ORP), Salt, Conductivity, Water Temperature, Ionization, Hydrolysis Intensity/Voltage, Device Time, Status/Alarm bits, Filtration speed _(if supported)_.
+- **Numbers**:
+  Setpoints for pH, Redox, Chlorine, Temperature, Hydrolysis production.
+- **Switches**:
+  Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled).
+- **Selects**:
+  Filtration mode (Manual, Auto, Heating, Smart, Intelligent), timers for automatic filtration, filtration speed _(if supported)_, boost control _(if Hydro/Electrolysis module is present)_.
+- **Buttons**:
+  Manual time sync, reset alarm/error states.
 
 ---
 
@@ -74,9 +78,10 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 
 ### [HACS](https://hacs.xyz/) (recommended)
 
-1. Add this repository as a [custom repository](https://hacs.xyz/docs/faq/custom_repositories/) in HACS (you can use the button above).
-2. Install **VistaPool Modbus Integration**.
-3. Restart Home Assistant.
+1. Open **HACS** in Home Assistant.
+2. Go to **Integrations** and search for **VistaPool Modbus Integration** (no need to add a custom repository, this integration is included in the HACS default list).
+3. Install **VistaPool Modbus Integration**.
+4. Restart Home Assistant.
 
 ### Manual
 
@@ -84,96 +89,100 @@ Since only one Modbus client can communicate with a Modbus server at a time, the
 2. Copy the `custom_components/vistapool` folder to your `/config/custom_components` directory.
 3. Restart Home Assistant.
 
-### Add Your Pool to Home Assistant
+## Setup and Configuration
 
-Now you just need to add your pool. You can click the button below:
+After installing the integration via HACS and restarting Home Assistant:
+
+### 1. Add Your Pool to Home Assistant
+
+You can use the button below to start configuration:
 
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=vistapool)
 
-Or you can add it manually:
+Or add manually:
 
-- Navigate to **Devices & Services**.
+- Go to **Settings → Devices & Services**.
 - Click **Add Integration**.
 - Search for and select **VistaPool Modbus Integration**.
 
+### 2. Enter Connection Details
+
+- **Name**: Custom identifier for your pool.  
+  _This will be used as a prefix in all entity IDs, with spaces replaced by underscores and converted to lowercase_  
+  _(e.g., entering “Pool West” becomes `pool_west`, and your entity will be `sensor.pool_west_measure_ph`)_.
+- **Host**: IP address of your Modbus TCP gateway
+- **Port**: _(default: 502)_
+- **Slave ID**: _(default: 1)_
+- **Scan interval**: _(default: 30s)_
+
+### 3. Adjust Integration Options (Optional)
+
+After initial setup, you can fine-tune the integration:
+
+- **Scan interval** (default: 30s)
+- **Timer resolution** (default: 15m)
+- **Enable/disable relays** (Light and AUX1–AUX4 are default: disabled)
+- **Enable/disable filtration timers** (filtration1, filtration2, filtration3)
+- **Unlock advanced features** (see [below](#advanced-options-unlocking-backwash-mode))
+
+Go to **Settings → Devices & Services → VistaPool Modbus Integration → Configure**  
+to adjust options at any time.
+
 ---
-
-## Configuration
-
-1. In Home Assistant, go to **Settings → Devices & Services → Add Integration → VistaPool**.
-2. Enter the connection details:
-   - **Name**: Custom identifier for your pool (used as a prefix in entity IDs, e.g., `pool_west`)
-   - **Host**: IP address of your Modbus TCP gateway
-   - **Port**: _(default: 502)_
-   - **Slave ID**: _(default: 1)_
-   - **Scan interval**: _(default: 30s)_
-
-### Options (after setup)
-
-- **Adjust scan interval** _(default: 30s)_
-- **Adjust timer resolution** in select entities _(default: 15m)_
-- **Enable/disable Relays** Light and Aux1–4 _(default: disabled)_
 
 ### Advanced Options: Unlocking “Backwash” Mode
 
-The “Backwash” filtration mode is hidden in the integration UI by default, as its remote use can be risky and is intended only for advanced users.
+The “Backwash” filtration mode is hidden by default, as its remote use can be risky and is intended only for advanced users.
 
-If you want to make the “Backwash” option available in Home Assistant (for automations or remote control), you must **explicitly unlock it using a secret code in the integration’s options**:
+To enable it:
 
 1. Go to **Settings → Devices & Services → VistaPool Modbus Integration → Configure**.
 2. In the options dialog, find the field **Unlock advanced options**.
 3. Enter the code: `<device_prefix><current_year>`
-   - Example: If your pool’s prefix is `Vistapool` and the year is 2025, enter `vistapool2025`.
-   - The prefix is the same as used in your entity IDs (e.g. `switch.vistapool_light`).
-4. Submit the form.  
-   The advanced settings page will open, allowing you to enable “Backwash” mode.
 
-> **⚠️ Warning:**  
-> Enabling “Backwash” mode exposes the backwash function in the filtration mode select.  
+- Example: If your pool’s prefix is `vistapool` and the year is 2025, enter `vistapool2025`.
+- The prefix is the same as in your entity IDs (e.g., `switch.vistapool_light`).
+
+4. Submit the form. The advanced settings page will open, allowing you to enable “Backwash” mode.
+
+> **⚠️ WARNING:**
+> Enabling “Backwash” exposes this function in filtration mode selection.
 > **Improper use may damage your filtration system! Only activate if you fully understand the risks.**
 
 ---
 
 ## Example Entities
 
-Entities are prefixed by the custom name (e.g. `sensor.pool1_filt_mode`):
+Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_filt_mode`:
 
-- **Sensors**:  
-  `sensor.<name>_measure_ph`, `sensor.<name>_measure_temperature`, `sensor.<name>_filt_mode`,  
+- **Sensors**:
+  `sensor.<name>_measure_ph`, `sensor.<name>_measure_temperature`, `sensor.<name>_filt_mode`,
   `sensor.<name>_filtration_speed` _(if supported)_
-- **Numbers**:  
+- **Numbers**:
   `number.<name>_hidro`, `number.<name>_ph1`,
   `number.<name>_heating_temp` _(if supported)_
-- **Switches**:  
+- **Switches**:
   `switch.<name>_filt_manual_state`, `switch.<name>_time_auto_sync`,
   `switch.<name>_light`, `switch.<name>_aux1`-`switch.<name>_aux4` _(if enabled)_
-- **Selects**:  
+- **Selects**:
   `select.<name>_filt_mode`, `select.<name>_filtration1_start`, `select.<name>_filtration1_stop`,
-  `select.<name>_filtration_speed` _(if supported)_,  
+  `select.<name>_filtration_speed` _(if supported)_,
   `select.<name>_cell_boost` _(if supported)_
-- **Buttons**:  
+- **Buttons**:
   `button.<name>_sync_time`, `button.<name>_escape`
 
 ---
 
 ## Special Notes
 
-- **Timer/relay options:**  
-  Only enabled timers and relays (according to integration options) are queried from the controller and shown in Home Assistant.
-- **Timer resolution:**  
-  You can set the timer period with a finer resolution (in minutes) in the integration options.
-- **Cached values on error:**  
-  Entities keep their last known value in case of temporary Modbus communication problems.
-- **Backwash mode and advanced options:**  
-  See "Advanced Options: Unlocking 'Backwash' Mode" below for details on enabling these features.
-- **Automatic reload:**  
-  Changing integration options will automatically reload the integration to apply the new settings.
-- **Filtration speed sensor and control**:  
-  Only available for variable-speed pump models.
-- **Boost control (select)**:  
-  Only available for models with the Hydro/Electrolysis module detected.
-- **Reset Alarm button**:  
-  Allows remote clearing of error and alarm states from Home Assistant.
+- **Only enabled timers and relays (per Options) are shown in Home Assistant.**
+- **Timer resolution:** Can be set (in minutes) in integration Options.
+- **Entities cache last value** if there is a Modbus communication problem.
+- **Backwash and advanced options:** See above for details.
+- **Reload on options change:** Integration is reloaded automatically on option changes.
+- **Filtration speed sensor/control:** Only available for variable-speed pump models.
+- **Boost control (select):** Only if Hydro/Electrolysis module is present.
+- **Reset Alarm button:** Allows clearing of error and alarm states from HA.
 
 ---
 
@@ -185,5 +194,7 @@ Entities are prefixed by the custom name (e.g. `sensor.pool1_filt_mode`):
 
 ## License
 
-This project is licensed under the [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/),  
+This project is licensed under the [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/),
 the same license used by [Home Assistant](https://www.home-assistant.io/developers/license/).
+
+_This project is not affiliated with or endorsed by Sugar Valley or any other pool controller manufacturer._
