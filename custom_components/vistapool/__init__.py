@@ -2,6 +2,7 @@ import logging
 from homeassistant.helpers import config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
 from .const import DOMAIN, PLATFORMS
 from .modbus import VistaPoolModbusClient
 from .coordinator import VistaPoolCoordinator
@@ -13,6 +14,21 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up the VistaPool integration."""
+
+    # --- MIGRATE CONFIG FLOW DATA TO OPTIONS IF NEEDED ---
+    # Copy all keys except connection settings from data to options
+    connection_keys = [CONF_HOST, CONF_PORT, CONF_NAME, "slave_id"]
+    candidate_keys = [k for k in entry.data if k not in connection_keys]
+    if not entry.options or not any(k in entry.options for k in candidate_keys):
+        new_options = {k: entry.data[k] for k in candidate_keys}
+        if new_options:
+            _LOGGER.debug(
+                "VistaPool: Migrating ALL config entry data (except connection params) to options: %s",
+                new_options,
+            )
+            hass.config_entries.async_update_entry(entry, options=new_options)
+    # --- End migration ---
+
     # Initialize Modbus client and coordinator
     client = VistaPoolModbusClient(entry.data)
     coordinator = VistaPoolCoordinator(hass, client, entry, entry.entry_id)

@@ -9,7 +9,11 @@
           "host": "Indirizzo IP gateway Modbus",
           "port": "Porta TCP per Modbus (predefinito: 502).",
           "scan_interval": "Intervallo aggiornamento dati (secondi)",
-          "slave_id": "Indirizzo dispositivo Modbus (predefinito: 1)."
+          "slave_id": "Indirizzo dispositivo Modbus (predefinito: 1).",
+          "use_filtration1": "Abilita il 1° timer di filtrazione per la modalità automatica",
+          "use_filtration2": "Abilita il 2° timer di filtrazione per la modalità automatica",
+          "use_filtration3": "Abilita il 3° timer di filtrazione per la modalità automatica",
+          "use_light": "Abilita relè luce"
         }
       }
     },
@@ -26,6 +30,9 @@
           "scan_interval": "Intervallo aggiornamento dati (secondi)",
           "timer_resolution": "Passo regolazione timer (minuti)",
           "measure_when_filtration_off": "Misura i valori anche quando la filtrazione è spenta",
+          "use_filtration1": "Abilita il 1° timer di filtrazione per la modalità automatica",
+          "use_filtration2": "Abilita il 2° timer di filtrazione per la modalità automatica",
+          "use_filtration3": "Abilita il 3° timer di filtrazione per la modalità automatica",
           "use_light": "Abilita relè luce",
           "use_aux1": "Abilita relè Aux1",
           "use_aux2": "Abilita relè Aux2",

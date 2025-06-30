@@ -70,12 +70,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._props = props
 
         # Disable some entities by default. Mostly for secondary timers.
-        if (
-            any(self._key.startswith(f"relay_aux{n}b") for n in range(1, 5))
-            or self._key.startswith("filtration2")
-            or self._key.startswith("filtration3")
-            or self._key.startswith("MBF_CELL_BOOST")
-        ):
+        if any(
+            self._key.startswith(f"relay_aux{n}b") for n in range(1, 5)
+        ) or self._key.startswith("MBF_CELL_BOOST"):
             self._attr_entity_registry_enabled_default = False
 
         _LOGGER.debug(

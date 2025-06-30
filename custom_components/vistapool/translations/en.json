@@ -9,7 +9,11 @@
           "host": "Modbus gateway IP address",
           "port": "TCP port for Modbus (default: 502).",
           "scan_interval": "Data update interval (seconds)",
-          "slave_id": "Modbus device address (default: 1)."
+          "slave_id": "Modbus device address (default: 1).",
+          "use_filtration1": "Enable 1st filtration timer for automatic mode",
+          "use_filtration2": "Enable 2nd filtration timer for automatic mode",
+          "use_filtration3": "Enable 3rd filtration timer for automatic mode",
+          "use_light": "Enable Light Relay"
         }
       }
     },
@@ -26,6 +30,9 @@
           "scan_interval": "Data update interval (seconds)",
           "timer_resolution": "Timer adjustment step (minutes)",
           "measure_when_filtration_off": "Measure values even when filtration is off",
+          "use_filtration1": "Enable 1st filtration timer for automatic mode",
+          "use_filtration2": "Enable 2nd filtration timer for automatic mode",
+          "use_filtration3": "Enable 3rd filtration timer for automatic mode",
           "use_light": "Enable Light Relay",
           "use_aux1": "Enable Aux1 Relay",
           "use_aux2": "Enable Aux2 Relay",

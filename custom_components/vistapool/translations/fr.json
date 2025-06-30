@@ -9,7 +9,11 @@
           "host": "Adresse IP de la passerelle Modbus",
           "port": "Port TCP pour Modbus (défaut : 502).",
           "scan_interval": "Intervalle de mise à jour des données (secondes)",
-          "slave_id": "Adresse de l’appareil Modbus (défaut : 1)."
+          "slave_id": "Adresse de l’appareil Modbus (défaut : 1).",
+          "use_filtration1": "Activer le 1er minuteur de filtration pour le mode automatique",
+          "use_filtration2": "Activer le 2ème minuteur de filtration pour le mode automatique",
+          "use_filtration3": "Activer le 3ème minuteur de filtration pour le mode automatique",
+          "use_light": "Activer le relais Lumière"
         }
       }
     },
@@ -26,6 +30,9 @@
           "scan_interval": "Intervalle de mise à jour des données (secondes)",
           "timer_resolution": "Pas de réglage du minuteur (minutes)",
           "measure_when_filtration_off": "Mesurer les valeurs même lorsque la filtration est arrêtée",
+          "use_filtration1": "Activer le 1er minuteur de filtration pour le mode automatique",
+          "use_filtration2": "Activer le 2ème minuteur de filtration pour le mode automatique",
+          "use_filtration3": "Activer le 3ème minuteur de filtration pour le mode automatique",
           "use_light": "Activer le relais Lumière",
           "use_aux1": "Activer le relais Aux1",
           "use_aux2": "Activer le relais Aux2",

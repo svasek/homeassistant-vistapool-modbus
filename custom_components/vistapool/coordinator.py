@@ -37,20 +37,19 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             # _LOGGER.debug("VistaPool raw coordinator data: %s", data)
 
             options = self.entry.options
-            enabled_timers = [
-                key for key in TIMER_BLOCKS if not key.startswith("relay")
-            ]
-            # Check which timers are enabled based on options
-            if options.get("use_light"):
-                enabled_timers.append("relay_light")
-            if options.get("use_aux1"):
-                enabled_timers.extend(["relay_aux1", "relay_aux1b"])
-            if options.get("use_aux2"):
-                enabled_timers.extend(["relay_aux2", "relay_aux2b"])
-            if options.get("use_aux3"):
-                enabled_timers.extend(["relay_aux3", "relay_aux3b"])
-            if options.get("use_aux4"):
-                enabled_timers.extend(["relay_aux4", "relay_aux4b"])
+            enabled_timers = []
+            # Collect enabled timers based on options
+            # This assumes that the options are set correctly in the config entry
+            for key in TIMER_BLOCKS:
+                if key.startswith("relay_aux"):
+                    n = key[len("relay_aux")]
+                    option_key = f"use_aux{n}"
+                elif key == "relay_light":
+                    option_key = "use_light"
+                else:
+                    option_key = f"use_{key}"
+                if options.get(option_key, False):
+                    enabled_timers.append(key)
 
             timers = await self.client.read_all_timers(enabled_timers=enabled_timers)
 

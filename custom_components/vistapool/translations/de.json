@@ -9,7 +9,11 @@
           "host": "IP-Adresse des Modbus-Gateways",
           "port": "TCP-Port für Modbus (Standard: 502).",
           "scan_interval": "Datenaktualisierungsintervall (Sekunden)",
-          "slave_id": "Modbus-Geräteadresse (Standard: 1)."
+          "slave_id": "Modbus-Geräteadresse (Standard: 1).",
+          "use_filtration1": "1. Filter-Timer für Automatikbetrieb aktivieren",
+          "use_filtration2": "2. Filter-Timer für Automatikbetrieb aktivieren",
+          "use_filtration3": "3. Filter-Timer für Automatikbetrieb aktivieren",
+          "use_light": "Licht-Relais aktivieren"
         }
       }
     },
@@ -26,6 +30,9 @@
           "scan_interval": "Datenaktualisierungsintervall (Sekunden)",
           "timer_resolution": "Schrittweite für Timer (Minuten)",
           "measure_when_filtration_off": "Messwerte auch bei ausgeschalteter Filterung erfassen",
+          "use_filtration1": "1. Filter-Timer für Automatikbetrieb aktivieren",
+          "use_filtration2": "2. Filter-Timer für Automatikbetrieb aktivieren",
+          "use_filtration3": "3. Filter-Timer für Automatikbetrieb aktivieren",
           "use_light": "Licht-Relais aktivieren",
           "use_aux1": "Aux1-Relais aktivieren",
           "use_aux2": "Aux2-Relais aktivieren",

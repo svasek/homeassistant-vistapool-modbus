@@ -9,7 +9,11 @@
           "host": "IP adresa Modbus brány",
           "port": "TCP port pro Modbus (výchozí: 502).",
           "scan_interval": "Interval aktualizace dat (v sekundách)",
-          "slave_id": "Modbus Adresa zařízení (výchozí: 1)."
+          "slave_id": "Modbus Adresa zařízení (výchozí: 1).",
+          "use_filtration1": "Povolit 1. časovač filtrace pro automatický režim",
+          "use_filtration2": "Povolit 2. časovač filtrace pro automatický režim",
+          "use_filtration3": "Povolit 3. časovač filtrace pro automatický režim",
+          "use_light": "Povolit relé Osvětlení"
         }
       }
     },
@@ -26,6 +30,9 @@
           "scan_interval": "Interval aktualizace dat (v sekundách)",
           "timer_resolution": "Krok pro nastavení časovačů? (v minutách)",
           "measure_when_filtration_off": "Měřit hodnoty i při vypnuté filtraci",
+          "use_filtration1": "Povolit 1. časovač filtrace pro automatický režim",
+          "use_filtration2": "Povolit 2. časovač filtrace pro automatický režim",
+          "use_filtration3": "Povolit 3. časovač filtrace pro automatický režim",
           "use_light": "Povolit relé Osvětlení",
           "use_aux1": "Povolit relé Aux1",
           "use_aux2": "Povolit relé Aux2",

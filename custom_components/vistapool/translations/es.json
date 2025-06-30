@@ -9,7 +9,11 @@
           "host": "Dirección IP de la puerta de enlace Modbus",
           "port": "Puerto TCP para Modbus (por defecto: 502).",
           "scan_interval": "Intervalo de actualización de datos (segundos)",
-          "slave_id": "Dirección de dispositivo Modbus (por defecto: 1)."
+          "slave_id": "Dirección de dispositivo Modbus (por defecto: 1).",
+          "use_filtration1": "Activar el 1º temporizador de filtración para modo automático",
+          "use_filtration2": "Activar el 2º temporizador de filtración para modo automático",
+          "use_filtration3": "Activar el 3º temporizador de filtración para modo automático",
+          "use_light": "Activar relé de luz"
         }
       }
     },
@@ -26,6 +30,9 @@
           "scan_interval": "Intervalo de actualización de datos (segundos)",
           "timer_resolution": "Paso de ajuste de temporizador (minutos)",
           "measure_when_filtration_off": "Medir valores incluso cuando la filtración está apagada",
+          "use_filtration1": "Activar el 1º temporizador de filtración para modo automático",
+          "use_filtration2": "Activar el 2º temporizador de filtración para modo automático",
+          "use_filtration3": "Activar el 3º temporizador de filtración para modo automático",
           "use_light": "Activar relé de luz",
           "use_aux1": "Activar relé Aux1",
           "use_aux2": "Activar relé Aux2",

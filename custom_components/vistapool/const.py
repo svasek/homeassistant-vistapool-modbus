@@ -535,6 +535,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_filtration1",
     },
     "filtration1_stop": {
         "name": "Filtration Timer 1 Stop",
@@ -542,6 +543,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_filtration1",
     },
     "filtration2_start": {
         "name": "Filtration Timer 2 Start",
@@ -549,6 +551,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_filtration2",
     },
     "filtration2_stop": {
         "name": "Filtration Timer 2 Stop",
@@ -556,6 +559,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_filtration2",
     },
     "filtration3_start": {
         "name": "Filtration Timer 3 Start",
@@ -563,6 +567,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_filtration3",
     },
     "filtration3_stop": {
         "name": "Filtration Timer 3 Stop",
@@ -570,6 +575,7 @@ SELECT_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "select_type": "timer_time",
         "register": None,
+        "option": "use_filtration3",
     },
     "relay_aux1_start": {
         "name": "Relay AUX1 Timer 1 Start",

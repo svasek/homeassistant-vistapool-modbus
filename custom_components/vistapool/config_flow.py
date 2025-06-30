@@ -29,12 +29,27 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Optional(CONF_NAME, default=DOMAIN.capitalize()): str,
                 vol.Required(CONF_HOST): str,
                 vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
-                vol.Optional("scan_interval", default=DEFAULT_SCAN_INTERVAL): int,
+                vol.Optional("slave_id", default=DEFAULT_SLAVE_ID): int,
                 vol.Optional(
                     "scan_interval",
-                    ("scan_interval", DEFAULT_SCAN_INTERVAL),
+                    default=DEFAULT_SCAN_INTERVAL,
                 ): vol.In([5, 10, 15, 20, 30, 45, 60, 120, 180, 300]),
-                vol.Optional("slave_id", default=DEFAULT_SLAVE_ID): int,
+                vol.Optional(
+                    "use_filtration1",
+                    default=True,
+                ): bool,
+                vol.Optional(
+                    "use_filtration2",
+                    default=False,
+                ): bool,
+                vol.Optional(
+                    "use_filtration3",
+                    default=False,
+                ): bool,
+                vol.Optional(
+                    "use_light",
+                    default=False,
+                ): bool,
             }
         )
         errors = {}

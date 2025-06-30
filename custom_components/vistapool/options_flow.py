@@ -42,6 +42,18 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                 default=options.get("measure_when_filtration_off", False),
             ): bool,
             vol.Optional(
+                "use_filtration1",
+                default=options.get("use_filtration1", True),
+            ): bool,
+            vol.Optional(
+                "use_filtration2",
+                default=options.get("use_filtration2", False),
+            ): bool,
+            vol.Optional(
+                "use_filtration3",
+                default=options.get("use_filtration3", False),
+            ): bool,
+            vol.Optional(
                 "use_light",
                 default=options.get("use_light", False),
             ): bool,
@@ -97,7 +109,12 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             result = self.async_create_entry(title="", data=data)
 
             if (
-                prev_options.get("use_light") != user_input.get("use_light")
+                prev_options.get("use_filtration1") != user_input.get("use_filtration1")
+                or prev_options.get("use_filtration2")
+                != user_input.get("use_filtration2")
+                or prev_options.get("use_filtration3")
+                != user_input.get("use_filtration3")
+                or prev_options.get("use_light") != user_input.get("use_light")
                 or prev_options.get("use_aux1") != user_input.get("use_aux1")
                 or prev_options.get("use_aux2") != user_input.get("use_aux2")
                 or prev_options.get("use_aux3") != user_input.get("use_aux3")

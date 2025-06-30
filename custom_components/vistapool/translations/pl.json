@@ -9,7 +9,11 @@
           "host": "Adres IP bramki Modbus",
           "port": "Port TCP dla Modbus (domyślnie: 502).",
           "scan_interval": "Interwał aktualizacji danych (sekundy)",
-          "slave_id": "Adres urządzenia Modbus (domyślnie: 1)."
+          "slave_id": "Adres urządzenia Modbus (domyślnie: 1).",
+          "use_filtration1": "Włącz 1. timer filtracji w trybie automatycznym",
+          "use_filtration2": "Włącz 2. timer filtracji w trybie automatycznym",
+          "use_filtration3": "Włącz 3. timer filtracji w trybie automatycznym",
+          "use_light": "Włącz przekaźnik oświetlenia"
         }
       }
     },
@@ -26,7 +30,10 @@
           "scan_interval": "Interwał aktualizacji danych (sekundy)",
           "timer_resolution": "Krok regulacji timerów (minuty)",
           "measure_when_filtration_off": "Mierz wartości nawet gdy filtracja jest wyłączona",
-          "use_light": "Włącz przekaźnik światła",
+          "use_filtration1": "Włącz 1. timer filtracji w trybie automatycznym",
+          "use_filtration2": "Włącz 2. timer filtracji w trybie automatycznym",
+          "use_filtration3": "Włącz 3. timer filtracji w trybie automatycznym",
+          "use_light": "Włącz przekaźnik oświetlenia",
           "use_aux1": "Włącz przekaźnik Aux1",
           "use_aux2": "Włącz przekaźnik Aux2",
           "use_aux3": "Włącz przekaźnik Aux3",
