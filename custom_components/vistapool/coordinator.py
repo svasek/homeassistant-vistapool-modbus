@@ -2,6 +2,7 @@ import logging
 from datetime import timedelta
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.core import HomeAssistant
+from homeassistant.util import slugify
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.const import CONF_NAME
 
@@ -101,3 +102,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
     @property
     def model(self) -> str:
         return self._model
+
+    @property
+    def device_slug(self):
+        return self.config_entry.unique_id or slugify(self.device_name)

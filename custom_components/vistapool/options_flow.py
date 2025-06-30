@@ -3,6 +3,7 @@ import asyncio
 import voluptuous as vol
 from datetime import date
 from homeassistant import config_entries
+from homeassistant.util import slugify
 from .entity import VistaPoolEntity
 from .const import DEFAULT_SCAN_INTERVAL, DEFAULT_TIMER_RESOLUTION
 
@@ -24,9 +25,10 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
         options = dict(self._config_entry.options)
         already_enabled = options.get("enable_backwash_option", False)
 
-        device_slug = VistaPoolEntity.slugify(self._config_entry.title)
-        current_year = date.today().year
-        expected = f"{device_slug}{current_year}"
+        device_slug = self.config_entry.unique_id or slugify(
+            self.config_entry.data.get("name")
+        )
+        expected = f"{device_slug}{date.today().year}"
 
         schema_dict = {
             vol.Optional(

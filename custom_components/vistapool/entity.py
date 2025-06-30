@@ -5,6 +5,7 @@ It provides common functionality for all entities, including device information,
 """
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import slugify as ha_slugify
 from .helpers import parse_version, modbus_regs_to_hex_string
 from .const import DOMAIN, NAME
 
@@ -47,28 +48,7 @@ class VistaPoolEntity(CoordinatorEntity):
         """Convert a name to a slug suitable for use as an object ID."""
         if not name:
             return ""
-        return (
-            name.lower()
-            .replace("mbf_", "", 1)
-            .replace("par_", "", 1)
-            .replace(" ", "_")
-            .replace("-", "_")
-            .replace(".", "_")
-            .replace(":", "_")
-            .replace(",", "_")
-            .replace("(", "_")
-            .replace(")", "_")
-            .replace("[", "_")
-            .replace("]", "_")
-            .replace("{", "_")
-            .replace("}", "_")
-            .replace("'", "_")
-            .replace('"', "_")
-            .replace("&", "_")
-            .replace("%", "_")
-            .replace("$", "_")
-            .replace("#", "_")
-        )
+        return ha_slugify(name.lower().replace("mbf_", "", 1).replace("par_", "", 1))
 
     @staticmethod
     def decode_modules(model_bitmask) -> str:
