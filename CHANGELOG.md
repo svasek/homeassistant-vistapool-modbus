@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.0...v1.8.1) (2025-06-30)
+
+
+### Bug Fixes
+
+* **entity:** 🐛 update suggested_object_id to use device_slug ([b7c0cd4](https://github.com/svasek/homeassistant-vistapool-modbus/commit/b7c0cd474e7d7ef5567129339afcfe6fa0781607))
+
 ## [1.8.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.7.5...v1.8.0) (2025-06-30)
 
 
