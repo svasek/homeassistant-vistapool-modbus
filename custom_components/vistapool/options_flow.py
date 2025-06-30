@@ -108,18 +108,15 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             prev_options = dict(self._config_entry.options)
             result = self.async_create_entry(title="", data=data)
 
-            if (
-                prev_options.get("use_filtration1") != user_input.get("use_filtration1")
-                or prev_options.get("use_filtration2")
-                != user_input.get("use_filtration2")
-                or prev_options.get("use_filtration3")
-                != user_input.get("use_filtration3")
-                or prev_options.get("use_light") != user_input.get("use_light")
-                or prev_options.get("use_aux1") != user_input.get("use_aux1")
-                or prev_options.get("use_aux2") != user_input.get("use_aux2")
-                or prev_options.get("use_aux3") != user_input.get("use_aux3")
-                or prev_options.get("use_aux4") != user_input.get("use_aux4")
-            ):
+            # Dynamically collect all 'use_*' option keys to compare changes and trigger reload if needed
+            reload_keys = sorted(
+                {
+                    k
+                    for k in list(prev_options) + list(user_input)
+                    if k.startswith("use_")
+                }
+            )
+            if any(prev_options.get(k) != user_input.get(k) for k in reload_keys):
                 self.hass.loop.call_soon(
                     asyncio.create_task,
                     self.hass.config_entries.async_reload(self._config_entry.entry_id),
