@@ -86,6 +86,12 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Handle option selection."""
+        client = getattr(self.coordinator, "client", None)
+        if client is None:
+            _LOGGER.error(
+                "VistaPoolSelect: Modbus client not available for writing registers."
+            )
+            return
         if self._select_type == "timer_time":
             timer_name, field = self._key.rsplit("_", 1)
             entry_id = (
@@ -200,7 +206,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 else:
                     return
 
-                await self.coordinator.client.async_write_register(reg, write_val)
+                await client.async_write_register(reg, write_val)
                 await asyncio.sleep(0.2)
             return
 
@@ -222,9 +228,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 self._attr_mask,
                 self._attr_shift,
             )
-            await self.coordinator.client.async_write_register(
-                self._register, new_val, apply=True
-            )
+            await client.async_write_register(self._register, new_val, apply=True)
             await asyncio.sleep(0.2)
             return
 
@@ -242,12 +246,10 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 current_mode = self.coordinator.data.get(self._key)
                 current_name = self._options_map.get(current_mode)
                 if current_name == "manual" and option != "manual":
-                    await self.coordinator.client.async_write_register(
-                        MANUAL_FILTRATION_REGISTER, 0
-                    )
+                    await client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
                     await asyncio.sleep(0.1)
             # Set the new mode
-            await self.coordinator.client.async_write_register(self._register, value)
+            await client.async_write_register(self._register, value)
             await asyncio.sleep(0.2)
 
         # Run a refresh to update the state

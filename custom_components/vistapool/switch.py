@@ -77,17 +77,20 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
-        if self._switch_type == "manual_filtration":
-            await self.coordinator.client.async_write_register(
-                MANUAL_FILTRATION_REGISTER, 1
+        client = getattr(self.coordinator, "client", None)
+        if client is None:
+            _LOGGER.error(
+                "VistaPoolSwitch: Modbus client not available for writing registers."
             )
+            return
+        if self._switch_type == "manual_filtration":
+            await client.async_write_register(MANUAL_FILTRATION_REGISTER, 1)
         elif self._switch_type == "aux":
             _LOGGER.debug(f"Turning ON {self._key} (relay index {self._relay_index})")
-            await self.coordinator.client.async_write_aux_relay(self._relay_index, True)
+            await client.async_write_aux_relay(self._relay_index, True)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(True)
         elif self._switch_type == "relay_timer":
-            client = self.coordinator.client
             _LOGGER.debug(
                 f"Turning ON relay {self._key}: function_addr=0x{self.function_addr:04X}, timer_block_addr=0x{self.timer_block_addr:04X}"
             )
@@ -104,19 +107,20 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
-        if self._switch_type == "manual_filtration":
-            await self.coordinator.client.async_write_register(
-                MANUAL_FILTRATION_REGISTER, 0
+        client = getattr(self.coordinator, "client", None)
+        if client is None:
+            _LOGGER.error(
+                "VistaPoolSwitch: Modbus client not available for writing registers."
             )
+            return
+        if self._switch_type == "manual_filtration":
+            await client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
         elif self._switch_type == "aux":
             _LOGGER.debug(f"Turning OFF {self._key} (relay index {self._relay_index})")
-            await self.coordinator.client.async_write_aux_relay(
-                self._relay_index, False
-            )
+            await client.async_write_aux_relay(self._relay_index, False)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(False)
         elif self._switch_type == "relay_timer":
-            client = self.coordinator.client
             _LOGGER.debug(
                 f"Turning OFF relay {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}"
             )

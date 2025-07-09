@@ -94,10 +94,16 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
     async def async_added_to_hass(self) -> None:
         """Handle entity addition to Home Assistant."""
+        client = getattr(self.coordinator, "client", None)
+        if client is None:
+            _LOGGER.error(
+                "VistaPoolNumber: Modbus client not available for reading registers."
+            )
+            return
         await super().async_added_to_hass()
 
         # Read full register map and get the value using string key
-        data = await self.coordinator.client.async_read_all()
+        data = await client.async_read_all()
         raw = data.get(self._key)
         if raw is not None:
             self._attr_native_value = round(raw, 2)
@@ -118,12 +124,16 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
     async def _debounced_write(self) -> None:
         """Debounced write to the Modbus register."""
+        client = getattr(self.coordinator, "client", None)
+        if client is None:
+            _LOGGER.error(
+                "VistaPoolNumber: Modbus client not available for writing registers."
+            )
+            return
         try:
             await asyncio.sleep(self._debounce_delay)
             raw = int(self._pending_value * self._scale)
-            await self.coordinator.client.async_write_register(
-                self._register, raw, apply=True
-            )
+            await client.async_write_register(self._register, raw, apply=True)
             await self.coordinator.async_request_refresh()
         except asyncio.CancelledError:
             pass

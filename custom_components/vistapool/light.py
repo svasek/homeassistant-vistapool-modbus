@@ -73,10 +73,15 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the light ON."""
+        client = getattr(self.coordinator, "client", None)
+        if client is None:
+            _LOGGER.error(
+                "VistaPoolLight: Modbus client not available for writing registers."
+            )
+            return
         if self._switch_type == "relay_timer":
-            client = self.coordinator.client
             _LOGGER.debug(
-                f"Turning ON light {self._key}: function_addr=0x{self.function_addr:04X}, timer_block_addr=0x{self.timer_block_addr:04X}"
+                f"Turning ON {self._key}: function_addr=0x{self.function_addr:04X}, timer_block_addr=0x{self.timer_block_addr:04X}"
             )
             await client.async_write_register(
                 self.function_addr, self.function_code
@@ -91,10 +96,15 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the light OFF."""
+        client = getattr(self.coordinator, "client", None)
+        if client is None:
+            _LOGGER.error(
+                "VistaPoolLight: Modbus client not available for writing registers."
+            )
+            return
         if self._switch_type == "relay_timer":
-            client = self.coordinator.client
             _LOGGER.debug(
-                f"Turning OFF light {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}"
+                f"Turning OFF {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}"
             )
             await client.async_write_register(self.timer_block_addr, 4)  # Always OFF
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
