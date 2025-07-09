@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.1...v1.8.2) (2025-07-09)
+
+
+### Bug Fixes
+
+* **light, number, select, switch:** 🐛 handle missing Modbus client ([5e42b0c](https://github.com/svasek/homeassistant-vistapool-modbus/commit/5e42b0cf3ec5e705d940f4e0b23f50a9f151f44a))
+
 ## [1.8.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.0...v1.8.1) (2025-06-30)
 
 
