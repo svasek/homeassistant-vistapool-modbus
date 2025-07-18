@@ -5,9 +5,11 @@ on:
   push:
     paths:
       - "custom_components/vistapool/**"
+      - "tests/**"
   pull_request:
     paths:
       - "custom_components/vistapool/**"
+      - "tests/**"
 
 permissions:
   contents: write
