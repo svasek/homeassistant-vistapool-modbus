@@ -53,6 +53,10 @@ def test_get_filtration_speed():
     assert get_filtration_speed(d) == 1
 
 
+def test_get_filtration_speed_none():
+    assert get_filtration_speed({}) == 0
+
+
 def test_get_filtration_pump_type():
     assert get_filtration_pump_type(0x0001) == 1
 
@@ -84,3 +88,18 @@ def test_parse_version_invalid():
     assert parse_version(None) == "?"
     assert parse_version("not-a-number") == "?"
     assert parse_version(0xFFFF) == "255.255"
+
+
+def test_parse_version_with_zero():
+    assert parse_version(0x0000) == "0.00"
+
+
+def test_modbus_regs_to_ascii_empty():
+    assert modbus_regs_to_ascii([]) == ""
+
+
+def test_build_timer_block_with_missing_keys():
+    # Missing work_time, function, etc.
+    data = {"enable": 1, "on": 0, "off": 0}
+    regs = build_timer_block(data)
+    assert len(regs) == 15

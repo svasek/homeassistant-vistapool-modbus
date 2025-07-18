@@ -13,8 +13,7 @@
 # limitations under the License.
 
 import pytest
-from unittest.mock import MagicMock
-
+from unittest.mock import MagicMock, patch
 from custom_components.vistapool.binary_sensor import VistaPoolBinarySensor
 
 
@@ -23,57 +22,102 @@ def mock_coordinator():
     mock = MagicMock()
     mock.data = {}
     mock.device_slug = "vistapool"
-    # Prepare config_entry exactly as required by the entity
-    config_entry = MagicMock()
-    config_entry.entry_id = "test_entry"
-    config_entry.unique_id = "test_slug"
-    mock.config_entry = config_entry
+    mock.config_entry.entry_id = "test_entry"
     return mock
 
 
-@pytest.fixture
-def sensor_props():
-    return {
-        "device_class": "power",
-        "entity_category": None,
-        "icon_on": "mdi:pump",
-        "icon_off": "mdi:pump-off",
-        "enabled_default": True,
-    }
+def make_props(**kwargs):
+    d = {}
+    d.update(kwargs)
+    return d
 
 
-def test_binary_sensor_state_on_and_icon_on(mock_coordinator, sensor_props):
+def test_is_on_direct_key(mock_coordinator):
+    props = make_props()
     ent = VistaPoolBinarySensor(
-        coordinator=mock_coordinator,
-        entry_id="test_entry",
-        key="is_pump_on",
-        props=sensor_props,
+        mock_coordinator, "test_entry", "pH acid pump active", props
     )
-    ent._attr_suggested_object_id = "vistapool_pump_on"
-    ent.coordinator.data["is_pump_on"] = True
+    mock_coordinator.data = {"pH acid pump active": True}
     assert ent.is_on is True
-    assert ent.icon == "mdi:pump"
-
-
-def test_binary_sensor_state_off_and_icon_off(mock_coordinator, sensor_props):
-    ent = VistaPoolBinarySensor(
-        coordinator=mock_coordinator,
-        entry_id="test_entry",
-        key="is_pump_on",
-        props=sensor_props,
-    )
-    ent._attr_suggested_object_id = "vistapool_pump_on"
-    ent.coordinator.data["is_pump_on"] = False
+    mock_coordinator.data = {"pH acid pump active": False}
     assert ent.is_on is False
+
+
+def test_is_on_device_time_out_of_sync(mock_coordinator):
+    props = make_props()
+    ent = VistaPoolBinarySensor(
+        mock_coordinator, "test_entry", "Device Time Out Of Sync", props
+    )
+    with patch(
+        "custom_components.vistapool.binary_sensor.is_device_time_out_of_sync",
+        return_value=True,
+    ):
+        assert ent.is_on is True
+    with patch(
+        "custom_components.vistapool.binary_sensor.is_device_time_out_of_sync",
+        return_value=False,
+    ):
+        assert ent.is_on is False
+
+
+def test_is_on_measurement_module_filtration_pump_off(mock_coordinator):
+    props = make_props()
+    ent = VistaPoolBinarySensor(
+        mock_coordinator, "test_entry", "pH measurement active", props
+    )
+    mock_coordinator.data = {"Filtration Pump": False, "pH measurement active": True}
+    # Filtration off disables sensor
+    assert ent.is_on is False
+    # If pump is on, returns True
+    mock_coordinator.data = {"Filtration Pump": True, "pH measurement active": True}
+    assert ent.is_on is True
+
+
+def test_is_on_status_dict(mock_coordinator):
+    props = make_props()
+    ent = VistaPoolBinarySensor(
+        mock_coordinator, "test_entry", "MBF_STATUS_pump_on", props
+    )
+    mock_coordinator.data = {"MBF_STATUS": {"pump_on": True, "other": False}}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_STATUS": {"pump_on": False}}
+    assert ent.is_on is False
+    # Status not a dict
+    mock_coordinator.data = {"MBF_STATUS": None}
+    assert ent.is_on is False
+
+
+def test_icon_on_off(mock_coordinator):
+    props = make_props(icon_on="mdi:pump", icon_off="mdi:pump-off")
+    ent = VistaPoolBinarySensor(
+        mock_coordinator, "test_entry", "pH acid pump active", props
+    )
+    mock_coordinator.data = {"pH acid pump active": True}
+    assert ent.icon == "mdi:pump"
+    mock_coordinator.data = {"pH acid pump active": False}
     assert ent.icon == "mdi:pump-off"
 
 
-def test_binary_sensor_missing_key(mock_coordinator, sensor_props):
+def test_native_value(mock_coordinator):
+    props = make_props()
     ent = VistaPoolBinarySensor(
-        coordinator=mock_coordinator,
-        entry_id="test_entry",
-        key="is_nonexistent",
-        props=sensor_props,
+        mock_coordinator, "test_entry", "pH acid pump active", props
     )
-    # If the key is not in the data, it returns False
-    assert ent.is_on is False
+    mock_coordinator.data = {"pH acid pump active": True}
+    assert ent.native_value is True
+    mock_coordinator.data = {}
+    assert ent.native_value is None
+
+
+@pytest.mark.asyncio
+async def test_async_added_to_hass_calls_super(mock_coordinator):
+    props = make_props()
+    ent = VistaPoolBinarySensor(
+        mock_coordinator, "test_entry", "pH acid pump active", props
+    )
+    with patch(
+        "custom_components.vistapool.binary_sensor.VistaPoolEntity.async_added_to_hass",
+        return_value=None,
+    ) as parent:
+        await ent.async_added_to_hass()
+        parent.assert_called_once()
