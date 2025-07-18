@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.2...v1.8.3) (2025-07-18)
+
+
+### Bug Fixes
+
+* **binary_sensor:** 🩹 improve device status handling for binary sensors ([dcd4e36](https://github.com/svasek/homeassistant-vistapool-modbus/commit/dcd4e36a4ecde59ca4bf4947696e258445343c4f))
+* **diagnostics:** 🩹 handle missing coordinator in diagnostics retrieval ([f2c5fab](https://github.com/svasek/homeassistant-vistapool-modbus/commit/f2c5fab5ad8a39be47e7199b979156f44b2c9253))
+* **modbus:** 🩹 improve connection handling and diagnostics ([9fffdb9](https://github.com/svasek/homeassistant-vistapool-modbus/commit/9fffdb9c22b1f0f9ccb7a7a7f0e358a14321d544))
+
 ## [1.8.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.1...v1.8.2) (2025-07-09)
 
 
