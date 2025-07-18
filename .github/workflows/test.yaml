@@ -1,0 +1,50 @@
+name: Unit Tests
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "custom_components/vistapool/**"
+  pull_request:
+    paths:
+      - "custom_components/vistapool/**"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run tests with coverage
+        run: |
+          source .venv/bin/activate
+          export PYTHONPATH=.
+          pytest --cov=custom_components/vistapool --cov-report=xml --maxfail=2 --disable-warnings -v
+
+      - name: Upload coverage to GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false

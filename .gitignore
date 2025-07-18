@@ -3,6 +3,8 @@
 __pycache__
 tmp
 temp
+.coverage
+coverage.xml
 *.log
 *.pyc
 *.pyo
