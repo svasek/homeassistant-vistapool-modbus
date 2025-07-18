@@ -42,7 +42,10 @@ async def async_get_config_entry_diagnostics(
     }
 
     # Coordinator state (contains data, errors, etc.)
-    coordinator = hass.data[DOMAIN][entry.entry_id]
+    coordinator = hass.data[DOMAIN].get(entry.entry_id)
+    if coordinator is None:
+        return diagnostics
+
     diagnostics["coordinator"] = {
         "last_update_success": getattr(coordinator, "last_update_success", None),
         "last_update_time": str(getattr(coordinator, "last_update_time", None)),
