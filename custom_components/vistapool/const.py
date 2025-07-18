@@ -1,3 +1,26 @@
+# Copyright 2025 Miloš Svašek
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#     http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""
+VistaPool Integration for Home Assistant - Constants
+
+This file contains metadata about the integration such as name, version, domain, etc.
+The manifest file is loaded to get the integration name and version
+The integration name and version are used to identify the integration
+and to display information about the integration in Home Assistant
+"""
+
 import json
 import logging
 from pathlib import Path
@@ -6,13 +29,6 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.components.number import NumberDeviceClass
 
-"""
-Load the manifest file
-This file contains metadata about the integration such as name, version, domain, etc.
-The manifest file is loaded to get the integration name and version
-The integration name and version are used to identify the integration
-and to display information about the integration in Home Assistant
-"""
 PLATFORMS = ["sensor", "binary_sensor", "switch", "number", "button", "select", "light"]
 
 manifest_path = Path(__file__).parent / "manifest.json"

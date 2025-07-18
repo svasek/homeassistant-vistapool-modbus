@@ -192,9 +192,14 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
 
 ---
 
+## Disclaimer
+
+This integration is provided "AS IS" and without any warranty or guarantee of any kind.  
+The author takes no responsibility for any damage, loss, or malfunction resulting from the use or misuse of this code. Use at your own risk.
+
 ## License
 
 This project is licensed under the [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/),
 the same license used by [Home Assistant](https://www.home-assistant.io/developers/license/).
 
-_This project is not affiliated with or endorsed by Sugar Valley or any other pool controller manufacturer._
+_This project is not affiliated with or endorsed by any pool controller manufacturer._
