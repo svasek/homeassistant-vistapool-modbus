@@ -65,4 +65,7 @@ async def async_get_config_entry_diagnostics(
             "last_error": str(getattr(client, "last_error", "")),
         }
 
+    if client and hasattr(client, "connection_stats"):
+        diagnostics["connection_stats"] = client.connection_stats
+
     return diagnostics

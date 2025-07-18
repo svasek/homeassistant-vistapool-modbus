@@ -16,7 +16,9 @@
 
 import logging
 import asyncio
+from datetime import datetime, timedelta
 from pymodbus.client import AsyncModbusTcpClient
+from pymodbus.exceptions import ModbusException, ConnectionException
 from .helpers import parse_timer_block, build_timer_block, get_filtration_speed
 from .const import TIMER_BLOCKS
 
@@ -46,63 +48,196 @@ class VistaPoolModbusClient:
         self._client = None  # ← Persistent client instance
         self._client_lock = asyncio.Lock()
 
-    async def get_client(self) -> AsyncModbusTcpClient:
-        """Get or create a Modbus client connection."""
-        async with self._client_lock:
-            try:
-                if self._client is None or not self._client.connected:
-                    if self._client is not None:
-                        close_method = getattr(self._client, "close", None)
-                        if callable(close_method):
-                            result = close_method()
-                            if result is not None and asyncio.iscoroutine(result):
-                                try:
-                                    await result
-                                except Exception as e:
-                                    _LOGGER.warning(
-                                        f"Error closing stale Modbus client: {e}"
-                                    )
-                            else:
-                                _LOGGER.debug(
-                                    f"VistaPool: Modbus close() result is not a coroutine: {type(result)}: {result!r}"
-                                )
-                        else:
-                            _LOGGER.debug(
-                                "VistaPool: Modbus client has no callable close() method."
-                            )
-                        self._client = None
-                    self._client = AsyncModbusTcpClient(self._host, port=self._port)
-                    await self._client.connect()
-                return self._client
-            except Exception as e:
-                _LOGGER.error(f"Failed to (re)connect Modbus client: {e}")
-                raise  # or return None
+        # Connection retry parameters
+        self._connection_attempts = 0
+        self._max_connection_retries = 3
+        self._base_delay = 1.0
+        self._max_delay = 30.0
+        self._backoff_until = None
 
-    async def close(self) -> None:
-        """Close the Modbus client connection."""
+        # Health tracking
+        self._consecutive_errors = 0
+        self._last_successful_operation = None
+        self._total_operations = 0
+        self._successful_operations = 0
+
+    async def get_client(self) -> AsyncModbusTcpClient:
+        """Get or create a Modbus client with retry logic."""
         async with self._client_lock:
-            client = self._client
-            # Reset the client to None to prevent further access
-            self._client = None
-            if client is not None:
-                close_method = getattr(client, "close", None)
+            # Check if we're in backoff period
+            if self._backoff_until and datetime.now() < self._backoff_until:
+                remaining = (self._backoff_until - datetime.now()).total_seconds()
+                raise ConnectionException(
+                    f"Connection in backoff for {remaining:.1f} seconds"
+                )
+
+            # Check existing connection health
+            if self._client and self._client.connected:
+                if await self._is_connection_healthy():
+                    return self._client
+                else:
+                    _LOGGER.debug("Connection appears unhealthy, will reconnect")
+                    await self._safe_close_client()
+                    self._client = None
+
+            # Need new connection
+            return await self._establish_connection_with_retry()
+
+    async def _establish_connection_with_retry(self) -> AsyncModbusTcpClient:
+        """Establish new connection with exponential backoff retry."""
+        last_error = None
+
+        for attempt in range(self._max_connection_retries):
+            try:
+                # Clean up any existing client
+                await self._safe_close_client()
+
+                # Create new client with optimal settings
+                self._client = AsyncModbusTcpClient(
+                    self._host,
+                    port=self._port,
+                    timeout=5,
+                )
+
+                # Attempt connection with timeout
+                _LOGGER.debug(
+                    f"Attempting Modbus connection to {self._host}:{self._port} (attempt {attempt + 1}/{self._max_connection_retries})"
+                )
+
+                connected = await asyncio.wait_for(self._client.connect(), timeout=10)
+
+                if not connected:
+                    raise ConnectionException("Connection returned False")
+
+                # Connection successful!
+                self._connection_attempts = 0
+                self._consecutive_errors = 0
+                self._last_successful_operation = datetime.now()
+                self._backoff_until = None
+
+                _LOGGER.info(
+                    f"Modbus connection established successfully to {self._host}:{self._port}"
+                )
+                return self._client
+
+            except Exception as e:
+                last_error = e
+                self._connection_attempts += 1
+
+                # Calculate exponential backoff delay
+                delay = min(self._base_delay * (2**attempt), self._max_delay)
+
+                _LOGGER.warning(
+                    f"Connection attempt {attempt + 1}/{self._max_connection_retries} failed: {e}"
+                )
+
+                # If not the last attempt, wait before retrying
+                if attempt < self._max_connection_retries - 1:
+                    _LOGGER.debug(f"Waiting {delay:.1f} seconds before retry...")
+                    await asyncio.sleep(delay)
+                    continue
+
+        # All connection attempts failed - set backoff period
+        self._backoff_until = datetime.now() + timedelta(minutes=2)
+
+        _LOGGER.error(
+            f"All {self._max_connection_retries} connection attempts failed. Setting 2-minute backoff period."
+        )
+        raise ConnectionException(
+            f"Failed to establish connection after {self._max_connection_retries} attempts: {last_error}"
+        )
+
+    async def _is_connection_healthy(self) -> bool:
+        """Quick health check for existing connection."""
+        if not self._client or not self._client.connected:
+            return False
+
+        # If we had a recent successful operation, assume connection is healthy
+        if (
+            self._last_successful_operation
+            and datetime.now() - self._last_successful_operation < timedelta(minutes=2)
+        ):
+            return True
+
+        # Perform a lightweight health check
+        try:
+            result = await asyncio.wait_for(
+                self._client.read_holding_registers(
+                    address=0x0000, count=1, slave=self._unit
+                ),
+                timeout=3,
+            )
+
+            is_healthy = not result.isError()
+            if is_healthy:
+                self._last_successful_operation = datetime.now()
+
+            return is_healthy
+
+        except Exception as e:
+            _LOGGER.debug(f"Connection health check failed: {e}")
+            return False
+
+    async def _safe_close_client(self):
+        """Safely close the Modbus client connection."""
+        if self._client is not None:
+            try:
+                close_method = getattr(self._client, "close", None)
                 if callable(close_method):
                     result = close_method()
                     if result is not None and asyncio.iscoroutine(result):
-                        try:
-                            await result
-                        except Exception as e:
-                            _LOGGER.warning(f"Error closing Modbus client: {e}")
-                    elif result is not None:
-                        # If close() returns something else (unexpected), log it
-                        _LOGGER.warning(
-                            f"Modbus client close() returned non-coroutine: {type(result)}: {result!r}"
-                        )
-                    # If result is None, do nothing (no await)
-                else:
-                    _LOGGER.debug("Modbus client has no callable close() method.")
+                        await asyncio.wait_for(result, timeout=5)
+                _LOGGER.debug("Modbus client closed successfully")
+            except Exception as e:
+                _LOGGER.debug(f"Error closing Modbus client: {e}")
+            finally:
+                self._client = None
+
+    async def close(self) -> None:
+        """Close the client and clean up resources."""
+        async with self._client_lock:
+            await self._safe_close_client()
+            # Reset all counters
+            self._connection_attempts = 0
+            self._consecutive_errors = 0
+            self._backoff_until = None
 
     async def async_read_all(self) -> dict:
+        """Read all data with retry logic."""
+        self._total_operations += 1
+        max_retries = 2
+        last_error = None
+
+        for attempt in range(max_retries):
+            try:
+                result = await self._perform_read_all()
+                # Success
+                self._successful_operations += 1
+                self._last_successful_operation = datetime.now()
+                self._consecutive_errors = 0
+                return result
+
+            except Exception as e:
+                last_error = e
+                self._consecutive_errors += 1
+
+                _LOGGER.warning(f"Read attempt {attempt + 1}/{max_retries} failed: {e}")
+
+                # Force reconnection on error
+                async with self._client_lock:
+                    await self._safe_close_client()
+                    self._client = None
+
+                # Wait before retry (except on last attempt)
+                if attempt < max_retries - 1:
+                    await asyncio.sleep(0.5 * (attempt + 1))
+                    continue
+
+        # All retries failed
+        _LOGGER.error(f"All read attempts failed: {last_error}")
+        raise last_error
+
+    async def _perform_read_all(self) -> dict:
         result = {}
 
         """WARNING: Device limit for reading registers is 31 at one request !!!"""
@@ -534,6 +669,21 @@ class VistaPoolModbusClient:
     async def async_write_register(
         self, address: int, value, apply: bool = False
     ) -> dict | None:
+        """Write register with retry."""
+        try:
+            result = await self._perform_write_register(address, value, apply)
+            self._last_successful_operation = datetime.now()
+            return result
+        except Exception as e:
+            self._consecutive_errors += 1
+            async with self._client_lock:
+                await self._safe_close_client()
+                self._client = None
+            raise
+
+    async def _perform_write_register(
+        self, address: int, value, apply: bool = False
+    ) -> dict | None:
         """
         Write one or more Modbus registers using function 0x10 (Write Multiple Registers).
 
@@ -638,6 +788,19 @@ class VistaPoolModbusClient:
             return {}
 
     async def read_all_timers(self, enabled_timers=None) -> dict:
+        """Read timers with retry."""
+        try:
+            result = await self._perform_read_all_timers(enabled_timers)
+            self._last_successful_operation = datetime.now()
+            return result
+        except Exception as e:
+            self._consecutive_errors += 1
+            async with self._client_lock:
+                await self._safe_close_client()
+                self._client = None
+            raise
+
+    async def _perform_read_all_timers(self, enabled_timers=None) -> dict:
         """Reads all timer blocks from the device.
         If enabled_timers is provided, only those timers will be read.
         If enabled_timers is None, all timers will be read.
@@ -670,6 +833,19 @@ class VistaPoolModbusClient:
         return timers
 
     async def write_timer(self, block_name, timer_data) -> bool:
+        """Write register with retry."""
+        try:
+            result = await self._perform_write_timer(block_name, timer_data)
+            self._last_successful_operation = datetime.now()
+            return result
+        except Exception as e:
+            self._consecutive_errors += 1
+            async with self._client_lock:
+                await self._safe_close_client()
+                self._client = None
+            raise
+
+    async def _perform_write_timer(self, block_name, timer_data) -> bool:
         """
         Writes only requested fields to a timer block. Preserves all other fields.
         Only update 'on' and 'interval' (and optionally other editable fields).
@@ -727,3 +903,31 @@ class VistaPoolModbusClient:
         await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
         await asyncio.sleep(0.1)
         return True
+
+    @property
+    def connection_stats(self) -> dict:
+        """Return connection statistics for diagnostics."""
+        return {
+            "host": self._host,
+            "port": self._port,
+            "total_operations": self._total_operations,
+            "successful_operations": self._successful_operations,
+            "consecutive_errors": self._consecutive_errors,
+            "success_rate_percent": (
+                round(self._successful_operations / self._total_operations * 100, 1)
+                if self._total_operations > 0
+                else 0
+            ),
+            "last_successful_operation": (
+                self._last_successful_operation.isoformat()
+                if self._last_successful_operation
+                else None
+            ),
+            "currently_in_backoff": (
+                self._backoff_until is not None and datetime.now() < self._backoff_until
+            ),
+            "backoff_until": (
+                self._backoff_until.isoformat() if self._backoff_until else None
+            ),
+            "connection_attempts": self._connection_attempts,
+        }

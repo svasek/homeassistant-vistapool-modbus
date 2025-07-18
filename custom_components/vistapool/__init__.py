@@ -19,6 +19,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
+from homeassistant.exceptions import ServiceValidationError
 from .const import DOMAIN, PLATFORMS
 from .modbus import VistaPoolModbusClient
 from .coordinator import VistaPoolCoordinator
@@ -53,8 +54,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
 
     # Store the coordinator and client in hass.data for easy access
-    # hass.data.setdefault(DOMAIN, {})
-    # hass.data[DOMAIN][entry.entry_id] = coordinator
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
     # Forward entities setup to Home Assistant
@@ -70,6 +69,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
+        # Cleanup services when last entry is removed
+        if not hass.data[DOMAIN]:
+            hass.services.async_remove(DOMAIN, "set_timer")
     return unload_ok
 
 
@@ -80,37 +82,45 @@ async def async_setup(hass, config) -> bool:
     # Register the service to set timers
     async def async_handle_set_timer(call) -> None:
         """Handle the set_timer service call."""
-        timer_name = call.data["timer"]
-        start = call.data.get("start")
-        stop = call.data.get("stop")
-        enable = call.data.get("enable")
-        entry_id = call.data.get("entry_id")
-        period = call.data.get("period")
-        if not entry_id:
-            # fallback: if entry_id is not provided, use the first entry_id in hass.data[DOMAIN]
-            entry_id = next(iter(hass.data[DOMAIN]), None)
-        if not entry_id:
-            raise ValueError("No entry_id found for VistaPool service call")
-        coordinator = hass.data[DOMAIN][entry_id]
-        # Convert start and stop times to seconds
-        start_sec = hhmm_to_seconds(start) if start else None
-        stop_sec = hhmm_to_seconds(stop) if stop else None
-        interval = get_timer_interval(start_sec, stop_sec) if (start and stop) else None
+        try:
+            timer_name = call.data["timer"]
+            start = call.data.get("start")
+            stop = call.data.get("stop")
+            enable = call.data.get("enable")
+            entry_id = call.data.get("entry_id")
+            period = call.data.get("period")
+            if not entry_id:
+                # fallback: if entry_id is not provided, use the first entry_id in hass.data[DOMAIN]
+                entry_id = next(iter(hass.data[DOMAIN]), None)
+            if not entry_id:
+                raise ValueError("No entry_id found for VistaPool service call")
+            coordinator = hass.data[DOMAIN][entry_id]
+            # Convert start and stop times to seconds
+            start_sec = hhmm_to_seconds(start) if start else None
+            stop_sec = hhmm_to_seconds(stop) if stop else None
+            interval = (
+                get_timer_interval(start_sec, stop_sec) if (start and stop) else None
+            )
 
-        # Prepare the timer data as a dictionary
-        timer_data = {}
-        if start_sec is not None:
-            timer_data["on"] = start_sec
-        if interval is not None:
-            timer_data["interval"] = interval
-        if period is not None:
-            timer_data["period"] = int(period)
-        if enable is not None:
-            timer_data["enable"] = enable
+            # Prepare the timer data as a dictionary
+            timer_data = {}
+            if start_sec is not None:
+                timer_data["on"] = start_sec
+            if interval is not None:
+                timer_data["interval"] = interval
+            if period is not None:
+                timer_data["period"] = int(period)
+            if enable is not None:
+                timer_data["enable"] = enable
 
-        _LOGGER.debug("Setting timer %s with data: %s", timer_name, timer_data)
-        await coordinator.client.write_timer(timer_name, timer_data)
-        await coordinator.async_request_refresh()
+            _LOGGER.debug("Setting timer %s with data: %s", timer_name, timer_data)
+            await coordinator.client.write_timer(timer_name, timer_data)
+            await coordinator.async_request_refresh()
+        except Exception as e:
+            _LOGGER.error(
+                "Failed to set timer %s: %s", call.data.get("timer", "unknown"), e
+            )
+            raise ServiceValidationError(f"Timer setting failed: {e}")
 
     hass.services.async_register(DOMAIN, "set_timer", async_handle_set_timer)
     return True
