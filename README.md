@@ -9,6 +9,9 @@
 [![CodeQL](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+[![Sponsor me](https://img.shields.io/badge/sponsor-❤-brightgreen?style=flat)](https://github.com/sponsors/svasek)
+[![Ko-fi](https://img.shields.io/badge/ko--fi-support-29abe0?style=flat&logo=ko-fi)](https://ko-fi.com/svasek)
+
 > **This integration is available via [HACS](https://hacs.xyz/) and is recommended for most users.**
 
 **Supported brands / devices:**  
@@ -22,6 +25,17 @@ Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • 
 - Adds real-time sensors, numbers, switches, selects, and buttons for all available features.
 - Allows timer/relay/aux configuration, automation and Home Assistant UI integration.
 - Supports multiple pools or hubs, each as a separate integration.
+
+---
+## Support
+
+If you find this integration useful, consider supporting its development:
+
+- ⭐️ Give this repository a star!
+- 🛠️ Contribute code or report issues.
+- 💸 [Become a GitHub Sponsor](https://github.com/sponsors/svasek)
+- ☕ [Support me on Ko-fi](https://ko-fi.com/svasek)
+
 
 ---
 
