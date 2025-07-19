@@ -8,6 +8,7 @@
 [![HACS Action](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/validate-hacs.yaml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/validate-hacs.yaml)
 [![CodeQL](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![codecov](https://codecov.io/github/svasek/homeassistant-vistapool-modbus/graph/badge.svg?token=44MRDJIHJ9)](https://codecov.io/github/svasek/homeassistant-vistapool-modbus)
 
 [![Sponsor me](https://img.shields.io/badge/sponsor-❤-brightgreen?style=flat)](https://github.com/sponsors/svasek)
 [![Ko-fi](https://img.shields.io/badge/ko--fi-support-29abe0?style=flat&logo=ko-fi)](https://ko-fi.com/svasek)
@@ -27,6 +28,7 @@ Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • 
 - Supports multiple pools or hubs, each as a separate integration.
 
 ---
+
 ## Support
 
 If you find this integration useful, consider supporting its development:
@@ -35,7 +37,6 @@ If you find this integration useful, consider supporting its development:
 - 🛠️ Contribute code or report issues.
 - 💸 [Become a GitHub Sponsor](https://github.com/sponsors/svasek)
 - ☕ [Support me on Ko-fi](https://ko-fi.com/svasek)
-
 
 ---
 
