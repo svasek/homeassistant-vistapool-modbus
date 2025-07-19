@@ -97,12 +97,8 @@ async def async_setup_entry(
             (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
         ):
             continue
-        if (
-            key == "FILTRATION_SPEED"
-            and get_filtration_pump_type(
-                coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
-            )
-            is not True
+        if key == "FILTRATION_SPEED" and not get_filtration_pump_type(
+            coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
         ):
             continue
 
@@ -112,7 +108,6 @@ async def async_setup_entry(
             or key == "MBF_PAR_FILT_MODE"
             or key == "MBF_PH_STATUS_ALARM"
             or key == "HIDRO_POLARITY"
-            or key == "MBF_DEVICE_TIME"
         ):
             entities.append(
                 VistaPoolSensor(
@@ -168,24 +163,26 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
 
     @property
     def icon(self) -> str | None:
-        """Return custom icon depending on state."""
+        raw = self.coordinator.data.get(self._key)
+        # Filtration mode icons
         if self._key == "MBF_PAR_FILT_MODE":
-            raw = self.coordinator.data.get(self._key)
-            if FILTRATION_MODE_MAP.get(raw) == "Auto":
+            mode = FILTRATION_MODE_MAP.get(raw)
+            if mode == "auto":
                 return "mdi:water-boiler-auto"
-            elif FILTRATION_MODE_MAP.get(raw) == "Manual":
+            elif mode == "manual":
                 return "mdi:water-boiler-alert"
-            elif FILTRATION_MODE_MAP.get(raw) == "Heating":
+            elif mode == "heating":
                 return "mdi:water-boiler"
-            elif FILTRATION_MODE_MAP.get(raw) == "Smart":
+            elif mode == "smart":
                 return "mdi:water-boiler-check"
-            elif FILTRATION_MODE_MAP.get(raw) == "Intelligent":
+            elif mode == "intelligent":
                 return "mdi:water-boiler-thermometer"
-            elif FILTRATION_MODE_MAP.get(raw) == "Backwash":
+            elif mode == "backwash":
                 return "mdi:water-boiler-off"
+        # PH alarm icons
         if self._key == "MBF_PH_STATUS_ALARM":
-            raw = self.coordinator.data.get(self._key)
-            if PH_STATUS_ALARM_MAP.get(raw) == "No Alarm":
+            status = PH_STATUS_ALARM_MAP.get(raw)
+            if status == "no_alarm":
                 return "mdi:check-circle-outline"
             else:
                 return "mdi:alert"
@@ -252,8 +249,6 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "MBF_PH_STATUS_ALARM":
             raw = self.coordinator.data.get(self._key)
             return PH_STATUS_ALARM_MAP.get(raw)
-        if self._key == "MBF_DEVICE_TIME":
-            return get_device_time(self.coordinator.data, self.hass)
         return self.coordinator.data.get(self._key)
 
     @property
