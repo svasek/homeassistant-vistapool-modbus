@@ -709,7 +709,7 @@ class VistaPoolModbusClient:
             )
             if result.isError():
                 _LOGGER.error("Write failed at 0x%04X: %s", address, result)
-                return
+                return None
             _LOGGER.debug("Wrote register(s) at 0x%04X: %s", address, value)
 
             # Confirm the write
@@ -720,7 +720,7 @@ class VistaPoolModbusClient:
             )
             if confirm.isError():
                 _LOGGER.error("Read failed at 0x%04X: %s", address, confirm)
-                return
+                return None
 
             # If apply is True, save the configuration to EEPROM and execute
             if apply:
@@ -731,7 +731,7 @@ class VistaPoolModbusClient:
 
                 if result.isError():
                     _LOGGER.error("EEPROM save failed (0x02F0): %s", result)
-                    return
+                    return None
                 _LOGGER.debug("EEPROM save triggered (0x02F0)")
 
                 await asyncio.sleep(0.1)
@@ -740,9 +740,18 @@ class VistaPoolModbusClient:
                 )
                 if result.isError():
                     _LOGGER.error("EXEC failed (0x02F5): %s", result)
-                    return
+                    return None
                 _LOGGER.debug("Config EXEC triggered (0x02F5)")
                 await asyncio.sleep(0.1)
+
+            # Return useful dict if everything succeeded
+            return {
+                "address": address,
+                "value": value if len(value) > 1 else value[0],
+                "confirmed": (
+                    confirm.registers if len(value) > 1 else confirm.registers[0]
+                ),
+            }
 
         except Exception as e:
             _LOGGER.error("Modbus TCP write exception: %s", e)
