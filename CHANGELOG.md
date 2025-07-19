@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.8.4](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.3...v1.8.4) (2025-07-19)
+
+
+### Bug Fixes
+
+* **modbus:** 🩹 ensure consistent return values in async_write_register ([bfbe8d1](https://github.com/svasek/homeassistant-vistapool-modbus/commit/bfbe8d1919540c9eedb1e123565dc4c0f612322c))
+* **number:** 🩹 improve logging during entity addition ([08fb3ad](https://github.com/svasek/homeassistant-vistapool-modbus/commit/08fb3ad8afa61521af9344ef5592ee269b515ca6))
+* **sensor:** 🩹 streamline filtration speed checks and icon mapping ([a1be07f](https://github.com/svasek/homeassistant-vistapool-modbus/commit/a1be07f96f6358a3c2ca91e3b851852fedef2d3a))
+
 ## [1.8.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.2...v1.8.3) (2025-07-18)
 
 
