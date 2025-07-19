@@ -13,17 +13,19 @@
 # limitations under the License.
 
 import pytest
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock, AsyncMock, patch
 from custom_components.vistapool.select import (
     VistaPoolSelect,
+    VistaPoolEntity,
     PERIOD_MAP,
     PERIOD_SECONDS_TO_KEY,
+    async_setup_entry,
 )
 
 
 @pytest.fixture
 def mock_coordinator():
-    mock = MagicMock()
+    mock = AsyncMock()
     mock.data = {}
     mock.device_slug = "vistapool"
     config_entry = MagicMock()
@@ -38,6 +40,18 @@ def make_props(**kwargs):
     d = {}
     d.update(kwargs)
     return d
+
+
+@pytest.fixture
+def boost_props():
+    return {
+        "options_map": {
+            0: "inactive",
+            1: "active (redox disabled)",
+            2: "active (redox enabled)",
+        },
+        "icon": "mdi:lightning-bolt",
+    }
 
 
 def test_options_basic_options_map(mock_coordinator):
@@ -274,7 +288,170 @@ async def test_async_select_option_default(mock_coordinator):
     ent.hass = MagicMock()
     ent.coordinator.client = AsyncMock()
     ent.coordinator.data = {"MBF_PAR_FILT_MODE": 1}
-    ent.coordinator.async_request_refresh = AsyncMock()  # Přidat!
-    ent.async_write_ha_state = MagicMock()  # Pokud je v metodě
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = AsyncMock()
     await ent.async_select_option("manual")
     ent.coordinator.client.async_write_register.assert_awaited()
+
+
+def test_select_cell_boost_current_option(mock_coordinator, boost_props):
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_CELL_BOOST", boost_props)
+
+    # case: Inactive
+    mock_coordinator.data["MBF_CELL_BOOST"] = 0
+    assert ent.current_option == "inactive"
+
+    # case: Active (redox disabled)
+    mock_coordinator.data["MBF_CELL_BOOST"] = 0x8000  # bit 0x8000 set
+    assert ent.current_option == "active (redox disabled)"
+
+    # case: Active (redox enabled)
+    mock_coordinator.data["MBF_CELL_BOOST"] = 0x05A0  # 0x0500 | 0x00A0
+    assert ent.current_option == "active (redox enabled)"
+
+    # fallback
+    mock_coordinator.data["MBF_CELL_BOOST"] = 12345  # invalid value
+    assert ent.current_option == "inactive"
+
+
+def test_select_filtration_speed_current_option(mock_coordinator):
+    props = make_props(
+        options_map={0: "low", 1: "mid", 2: "high"}, mask=0x0070, shift=4
+    )
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTRATION_SPEED", props
+    )
+    # mask=0x0070, shift=4; tedy 16 => 1 (mid)
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 16}
+    assert ent.current_option == "mid"
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0}
+    assert ent.current_option == "low"
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 32}
+    assert ent.current_option == "high"
+
+
+@pytest.mark.asyncio
+async def test_select_async_setup_entry_adds_entities(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        # FILTRATION_CONF: 1 → get_filtration_pump_type=True, MBF_CELL_BOOST: model OK
+        data = {
+            "MBF_PAR_FILTRATION_CONF": 1,
+            "MBF_PAR_MODEL": 0x0002,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    # Patch SELECT_DEFINITIONS to make the test predictable
+    from custom_components.vistapool import select as select_module
+
+    select_module.SELECT_DEFINITIONS["MBF_PAR_FILTRATION_SPEED"] = {"option": None}
+    select_module.SELECT_DEFINITIONS["MBF_CELL_BOOST"] = {"option": None}
+
+    # Patch get_filtration_pump_type to always return True
+    monkeypatch.setattr(
+        "custom_components.vistapool.select.get_filtration_pump_type", lambda x: True
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_FILTRATION_SPEED" in keys
+    assert "MBF_CELL_BOOST" in keys
+
+
+@pytest.mark.asyncio
+async def test_select_async_setup_entry_option_disabled(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {"test_option": False}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_FILTRATION_CONF": 1, "MBF_PAR_MODEL": 0x0002}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+    from custom_components.vistapool import select as select_module
+
+    select_module.SELECT_DEFINITIONS["TEST_SELECT"] = {"option": "test_option"}
+    monkeypatch.setattr(
+        "custom_components.vistapool.select.get_filtration_pump_type", lambda x: True
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    # Should not include TEST_SELECT, as option is False
+    assert "TEST_SELECT" not in keys
+
+
+@pytest.mark.asyncio
+async def test_select_async_setup_entry_no_data(caplog):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    async_add_entities.assert_not_called()
+    assert "No data from Modbus" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_async_added_to_hass_calls_super(mock_coordinator):
+    props = make_props()
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    with patch.object(VistaPoolEntity, "async_added_to_hass", AsyncMock()) as sup:
+        await ent.async_added_to_hass()
+        sup.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_async_select_option_stop_field(mock_coordinator):
+    props = make_props(select_type="timer_time")
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "relay_aux1_stop", props)
+    mock_coordinator.data = {
+        "relay_aux1_start": 3600,
+        "relay_aux1_stop": 7200,
+    }
+    mock_coordinator.client = AsyncMock()
+    mock_coordinator.client.async_write_register = AsyncMock(return_value=True)
+    ent.hass = MagicMock()
+    ent.hass.services = AsyncMock()
+    ent.hass.services.async_call = AsyncMock(return_value=None)
+
+    option = "03:00"
+    with patch.object(ent, "async_write_ha_state", lambda: None):
+        await ent.async_select_option(option)
+
+    ent.hass.services.async_call.assert_any_call(
+        "vistapool",
+        "set_timer",
+        {
+            "entry_id": "test_entry",
+            "timer": "relay_aux1",
+            "start": "01:00",
+            "stop": "03:00",
+        },
+    )

@@ -14,7 +14,7 @@
 
 import pytest
 from unittest.mock import MagicMock, AsyncMock, patch
-from custom_components.vistapool.number import VistaPoolNumber
+from custom_components.vistapool.number import VistaPoolNumber, async_setup_entry
 
 
 @pytest.fixture
@@ -137,3 +137,113 @@ async def test_async_added_to_hass_no_client(mock_coordinator):
     ent.async_write_ha_state = MagicMock()
     # Should log error but not crash
     await ent.async_added_to_hass()
+
+
+@pytest.mark.asyncio
+async def test_async_added_to_hass_sets_value_none(mock_coordinator):
+    """Test async_added_to_hass sets native_value to None if key not present."""
+    props = make_props(register=0x0210, scale=1.0)
+    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
+    client = AsyncMock()
+    ent.coordinator.client = client
+    # async_read_all returns a dict, but missing the key
+    client.async_read_all = AsyncMock(return_value={"OTHER_KEY": 42.0})
+    ent.async_write_ha_state = MagicMock()
+    with patch("custom_components.vistapool.number.asyncio.sleep", AsyncMock()):
+        await ent.async_added_to_hass()
+    # _attr_native_value should be None
+    assert ent._attr_native_value is None
+
+
+@pytest.mark.asyncio
+async def test_number_async_setup_entry_adds_entities(monkeypatch):
+    """Test async_setup_entry adds number entities for valid data."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        # Simulate all relays assigned
+        data = {
+            "MBF_PAR_HEATING_GPIO": True,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": True,
+            "MBF_PAR_PH_BASE_RELAY_GPIO": True,
+            "Redox measurement module detected": True,
+            "Chlorine measurement module detected": True,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    # Patch NUMBER_DEFINITIONS for this test
+    from custom_components.vistapool import number as num_module
+
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_HEATING_TEMP"] = {"register": 0x0201}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH1"] = {"register": 0x0202}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH2"] = {"register": 0x0203}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_RX1"] = {"register": 0x0204}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_CL1"] = {"register": 0x0205}
+    num_module.NUMBER_DEFINITIONS["DUMMY"] = {"register": 0x0206}
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    assert any(isinstance(e, VistaPoolNumber) for e in entities)
+    # Should include all keys above
+    keys = [e._key for e in entities]
+    for k in (
+        "MBF_PAR_HEATING_TEMP",
+        "MBF_PAR_PH1",
+        "MBF_PAR_PH2",
+        "MBF_PAR_RX1",
+        "MBF_PAR_CL1",
+        "DUMMY",
+    ):
+        assert k in keys
+
+
+@pytest.mark.asyncio
+async def test_number_async_setup_entry_skips_unassigned(monkeypatch):
+    """Test async_setup_entry skips number entities if required relay is missing."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_HEATING_GPIO": False,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": False,
+            "MBF_PAR_PH_BASE_RELAY_GPIO": False,
+            "Redox measurement module detected": False,
+            "Chlorine measurement module detected": False,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import number as num_module
+
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_HEATING_TEMP"] = {"register": 0x0201}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH1"] = {"register": 0x0202}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH2"] = {"register": 0x0203}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_RX1"] = {"register": 0x0204}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_CL1"] = {"register": 0x0205}
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    # Should not include any filtered-out keys
+    assert "MBF_PAR_HEATING_TEMP" not in keys
+    assert "MBF_PAR_PH1" not in keys
+    assert "MBF_PAR_PH2" not in keys
+    assert "MBF_PAR_RX1" not in keys
+    assert "MBF_PAR_CL1" not in keys

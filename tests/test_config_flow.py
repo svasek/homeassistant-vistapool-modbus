@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from custom_components.vistapool import config_flow
 
@@ -67,3 +67,52 @@ async def test_create_entry_failure():
         assert result["type"] == "form"
         assert "host" in result["errors"]
         assert result["errors"]["host"] == "cannot_connect"
+
+
+def test_async_get_options_flow(monkeypatch):
+    class DummyConfigEntry:
+        pass
+
+    class DummyOptionsFlow:
+        def __init__(self, config_entry):
+            self.called = True
+            self.config_entry = config_entry
+
+    # Patch import ve funkci
+    monkeypatch.setattr(
+        "custom_components.vistapool.options_flow.VistaPoolOptionsFlowHandler",
+        DummyOptionsFlow,
+    )
+    config_entry = DummyConfigEntry()
+    handler = config_flow.VistaPoolConfigFlow.async_get_options_flow(config_entry)
+    assert isinstance(handler, DummyOptionsFlow)
+    assert handler.config_entry is config_entry
+
+
+@pytest.mark.asyncio
+async def test_is_host_port_open_exception():
+    # Monkeypatch asyncio.open_connection to raise
+    async def raise_exc(*args, **kwargs):
+        raise OSError("fail")
+
+    monkeypatch = patch("asyncio.open_connection", raise_exc)
+    with monkeypatch:
+        result = await config_flow.is_host_port_open("127.0.0.1", 9999)
+        assert result is False
+
+
+@pytest.mark.asyncio
+async def test_is_host_port_open_success(monkeypatch):
+    reader = MagicMock()
+    writer = MagicMock()
+    writer.close = MagicMock()
+    writer.wait_closed = AsyncMock()
+
+    async def fake_open_connection(host, port):
+        return reader, writer
+
+    monkeypatch.setattr("asyncio.open_connection", fake_open_connection)
+    result = await config_flow.is_host_port_open("127.0.0.1", 502)
+    writer.close.assert_called_once()
+    writer.wait_closed.assert_awaited_once()
+    assert result is True

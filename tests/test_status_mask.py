@@ -23,7 +23,7 @@ from custom_components.vistapool.status_mask import (
 
 
 def test_decode_notification_mask_basic():
-    # 0x003F = všechny první flags zapnuté
+    # 0x003F = all first flags enabled
     result = decode_notification_mask(0x003F)
     assert result["NOTIF_IO"] is True
     assert result["NOTIF_PAGE"] is False

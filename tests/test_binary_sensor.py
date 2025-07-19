@@ -14,7 +14,10 @@
 
 import pytest
 from unittest.mock import MagicMock, patch
-from custom_components.vistapool.binary_sensor import VistaPoolBinarySensor
+from custom_components.vistapool.binary_sensor import (
+    VistaPoolBinarySensor,
+    async_setup_entry,
+)
 
 
 @pytest.fixture
@@ -30,6 +33,106 @@ def make_props(**kwargs):
     d = {}
     d.update(kwargs)
     return d
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_adds_entities(monkeypatch):
+    """Test async_setup_entry adds the correct entities."""
+
+    # Prepare a fake coordinator with sample data
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,  # All bits set (should allow all modules)
+            "MBF_PAR_PH_BASE_RELAY_GPIO": True,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": True,
+            "Chlorine measurement module detected": True,
+            "Redox measurement module detected": True,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    # Entities should be created and passed to async_add_entities
+    # The number depends on your BINARY_SENSOR_DEFINITIONS (at least 1 expected)
+    assert async_add_entities.call_count == 1
+    entities = async_add_entities.call_args[0][0]
+    assert isinstance(entities, list)
+    # At least one entity, all must be instances of VistaPoolBinarySensor
+    from custom_components.vistapool.binary_sensor import VistaPoolBinarySensor
+
+    assert all(isinstance(e, VistaPoolBinarySensor) for e in entities)
+    # (Optional) Check that entities have correct keys
+    entity_keys = [e._key for e in entities]
+    # Should contain at least one expected sensor (by key from BINARY_SENSOR_DEFINITIONS)
+    # For example, "pH acid pump active"
+    assert any("acid" in k for k in entity_keys)
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_no_data(monkeypatch, caplog):
+    """Test async_setup_entry returns early if coordinator.data is empty."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    with caplog.at_level("WARNING"):
+        await async_setup_entry(hass, entry, async_add_entities)
+        # Should log warning
+        assert "No data from Modbus" in caplog.text
+    # No entities should be added
+    async_add_entities.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_option_disables_sensor(monkeypatch):
+    """Test that sensors with options=False are skipped."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {"sensor_option": False}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_MODEL": 0x0001}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    # Patch BINARY_SENSOR_DEFINITIONS for this test
+    from custom_components.vistapool import binary_sensor as bs_module
+
+    bs_module.BINARY_SENSOR_DEFINITIONS["Some Option Sensor"] = {
+        "option": "sensor_option"
+    }
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    # Should only add sensors without "option" or with option True
+    entities = async_add_entities.call_args[0][0]
+    assert not any(e._key == "Some Option Sensor" for e in entities)
 
 
 def test_is_on_direct_key(mock_coordinator):

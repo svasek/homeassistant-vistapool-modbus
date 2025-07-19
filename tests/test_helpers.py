@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
+import pytest, datetime
 from custom_components.vistapool.helpers import (
     parse_version,
     pad_list,
@@ -24,6 +24,12 @@ from custom_components.vistapool.helpers import (
     seconds_to_hhmm,
     prepare_device_time,
     parse_version,
+    get_device_time,
+    generate_time_options,
+    parse_timer_block,
+    modbus_regs_to_hex_string,
+    is_device_time_out_of_sync,
+    get_timer_interval,
 )
 
 
@@ -48,12 +54,47 @@ def test_build_timer_block():
     assert isinstance(regs, list) and len(regs) == 15
 
 
-def test_get_filtration_speed():
-    d = {"MBF_RELAY_STATE": 0x0022, "MBF_PAR_FILTRATION_CONF": 0x0070}
+def test_get_filtration_speed_low():
+    d = {"MBF_RELAY_STATE": 0x0042, "MBF_PAR_FILTRATION_CONF": 0x0000}
+    # relay_speed == 2 → Mid
+    assert get_filtration_speed(d) == 2
+
+
+def test_get_filtration_speed_high():
+    d = {"MBF_RELAY_STATE": 0x0082, "MBF_PAR_FILTRATION_CONF": 0x0000}
+    # relay_speed == 4 → High
+    assert get_filtration_speed(d) == 3
+
+
+def test_get_filtration_speed_conf_speed_0():
+    d = {"MBF_RELAY_STATE": 0x0002, "MBF_PAR_FILTRATION_CONF": 0x0000}
     assert get_filtration_speed(d) == 1
 
 
+def test_get_filtration_speed_conf_speed_1():
+    d = {"MBF_RELAY_STATE": 0x0002, "MBF_PAR_FILTRATION_CONF": 0x0010}
+    assert get_filtration_speed(d) == 2
+
+
+def test_get_filtration_speed_conf_speed_2():
+    d = {"MBF_RELAY_STATE": 0x0002, "MBF_PAR_FILTRATION_CONF": 0x0020}
+    assert get_filtration_speed(d) == 3
+
+
+def test_get_filtration_speed_relay_speed_1():
+    d = {"MBF_RELAY_STATE": 0x0022, "MBF_PAR_FILTRATION_CONF": 0x0000}
+    # relay_speed == 1, should return 1 (Low)
+    assert get_filtration_speed(d) == 1
+
+
+def test_get_filtration_speed_no_match():
+    d = {"MBF_RELAY_STATE": 0x0002, "MBF_PAR_FILTRATION_CONF": 0x00F0}
+    # relay_speed == 0, conf_speed == 15 (not 0,1,2) → default 0
+    assert get_filtration_speed(d) == 0
+
+
 def test_get_filtration_speed_none():
+    # Empty dict, relay_state=0, should return 0 (filtration is off)
     assert get_filtration_speed({}) == 0
 
 
@@ -103,3 +144,162 @@ def test_build_timer_block_with_missing_keys():
     data = {"enable": 1, "on": 0, "off": 0}
     regs = build_timer_block(data)
     assert len(regs) == 15
+
+
+def test_get_device_time_utc():
+    """Test get_device_time returns correct UTC datetime."""
+    # Example: 0x0001_0002 → timestamp = (high << 16) | low
+    data = {"MBF_PAR_TIME_LOW": 0x5678, "MBF_PAR_TIME_HIGH": 0x1234}
+    ts = (0x1234 << 16) | 0x5678
+    expected = datetime.datetime.fromtimestamp(ts, tz=datetime.timezone.utc)
+    dt = get_device_time(data)
+    assert dt == expected
+
+
+def test_get_device_time_missing_keys():
+    """Test get_device_time returns None if missing data."""
+    assert get_device_time({}) is None
+    assert get_device_time({"MBF_PAR_TIME_LOW": 1}) is None
+    assert get_device_time({"MBF_PAR_TIME_HIGH": 1}) is None
+
+
+def test_get_device_time_epoch_zero():
+    """Test get_device_time returns 1970-01-01T00:00:00Z for zero."""
+    data = {"MBF_PAR_TIME_LOW": 0, "MBF_PAR_TIME_HIGH": 0}
+    dt = get_device_time(data)
+    assert dt == datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+
+
+def test_get_device_time_with_hass(monkeypatch):
+    """Test get_device_time returns UTC even with hass object."""
+
+    # Prepare a dummy hass with config.time_zone
+    class DummyConfig:
+        time_zone = "Europe/Prague"
+
+    class DummyHass:
+        config = DummyConfig()
+
+    # Patch dt_util.get_time_zone to always return UTC for test simplicity
+    import homeassistant.util.dt as dt_util
+
+    monkeypatch.setattr(dt_util, "get_time_zone", lambda tz: datetime.timezone.utc)
+
+    ts = 1234567890
+    data = {"MBF_PAR_TIME_LOW": ts & 0xFFFF, "MBF_PAR_TIME_HIGH": (ts >> 16) & 0xFFFF}
+    dt = get_device_time(data, DummyHass())
+    expected = datetime.datetime.fromtimestamp(ts, tz=datetime.timezone.utc)
+    assert dt == expected
+
+
+def test_generate_time_options_default():
+    """Test generate_time_options produces every 15 min option in a day."""
+    opts = generate_time_options()
+    assert len(opts) == 96  # 24h * 4 per hour
+    assert opts[0] == "00:00"
+    assert opts[-1] == "23:45"
+
+
+def test_generate_time_options_step_30():
+    """Test generate_time_options with 30-minute steps."""
+    opts = generate_time_options(step_minutes=30)
+    assert len(opts) == 48
+    assert opts[0] == "00:00"
+    assert opts[1] == "00:30"
+    assert opts[-1] == "23:30"
+
+
+def test_parse_timer_block_full():
+    """Test parse_timer_block with a full list of 15 registers."""
+    regs = list(range(1, 16))
+    result = parse_timer_block(regs)
+    assert isinstance(result, dict)
+    assert set(result.keys()) == {
+        "enable",
+        "on",
+        "off",
+        "period",
+        "interval",
+        "countdown",
+        "function",
+        "work_time",
+    }
+    # Example: on = u32(regs[1], regs[2]) == (regs[2] << 16) | regs[1]
+    assert result["enable"] == 1
+    assert result["on"] == (3 << 16) | 2
+
+
+def test_parse_timer_block_short():
+    """Test parse_timer_block pads missing registers with zeros."""
+    regs = [1, 2, 3]  # Only first three
+    result = parse_timer_block(regs)
+    assert result["enable"] == 1
+    assert result["on"] == (3 << 16) | 2  # padded msb=3
+    assert result["off"] == 0
+    assert len(result) == 8
+
+
+def test_modbus_regs_to_hex_string_basic():
+    """Test modbus_regs_to_hex_string converts list to hex string."""
+    regs = [0x1234, 0xABCD, 0x0001]
+    hexstr = modbus_regs_to_hex_string(regs)
+    assert hexstr == "1234ABCD0001"
+
+
+def test_modbus_regs_to_hex_string_empty():
+    """Test modbus_regs_to_hex_string handles empty and invalid input."""
+    assert modbus_regs_to_hex_string([]) == ""
+    assert modbus_regs_to_hex_string(None) == ""
+    assert modbus_regs_to_hex_string("notalist") == ""
+
+
+def test_is_device_time_out_of_sync_false(monkeypatch):
+    """Test is_device_time_out_of_sync returns False for small delta."""
+    now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+    data = {
+        "MBF_PAR_TIME_LOW": now & 0xFFFF,
+        "MBF_PAR_TIME_HIGH": (now >> 16) & 0xFFFF,
+    }
+    monkeypatch.setattr(
+        "homeassistant.util.dt.utcnow",
+        lambda: datetime.datetime.fromtimestamp(now, tz=datetime.timezone.utc),
+    )
+    assert is_device_time_out_of_sync(data, None, threshold_seconds=60) is False
+
+
+def test_is_device_time_out_of_sync_true(monkeypatch):
+    """Test is_device_time_out_of_sync returns True for large delta."""
+    # Device time 2 hours behind
+    now = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+    device_time = now - 7200  # 2 hours ago
+    data = {
+        "MBF_PAR_TIME_LOW": device_time & 0xFFFF,
+        "MBF_PAR_TIME_HIGH": (device_time >> 16) & 0xFFFF,
+    }
+    monkeypatch.setattr(
+        "homeassistant.util.dt.utcnow",
+        lambda: datetime.datetime.fromtimestamp(now, tz=datetime.timezone.utc),
+    )
+    assert is_device_time_out_of_sync(data, None, threshold_seconds=60) is True
+
+
+def test_is_device_time_out_of_sync_none():
+    """Test is_device_time_out_of_sync returns False if no device time."""
+    assert is_device_time_out_of_sync({}, None, threshold_seconds=60) is False
+
+
+def test_get_timer_interval_daytime():
+    """Test get_timer_interval with stop >= start."""
+    assert get_timer_interval(3600, 7200) == 3600  # 01:00 - 02:00
+
+
+def test_get_timer_interval_overnight():
+    """Test get_timer_interval with stop < start (over midnight)."""
+    assert get_timer_interval(82800, 3600) == 3600 + (
+        86400 - 82800
+    )  # 23:00 - 01:00 = 2h
+
+
+def test_get_timer_interval_zero():
+    """Test get_timer_interval returns 0 if times are equal."""
+    assert get_timer_interval(5000, 5000) == 0

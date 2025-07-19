@@ -14,11 +14,13 @@
 
 import pytest
 from unittest.mock import MagicMock, patch
+from homeassistant.components.sensor import SensorDeviceClass
 from custom_components.vistapool.sensor import (
     VistaPoolSensor,
     FILTRATION_MODE_MAP,
     PH_STATUS_ALARM_MAP,
     FILTRATION_SPEED_MAP,
+    async_setup_entry,
 )
 
 
@@ -143,3 +145,154 @@ async def test_async_added_to_hass_logs_and_calls_parent(mock_coordinator):
     ) as parent:
         await ent.async_added_to_hass()
         assert parent.called
+
+
+@pytest.mark.asyncio
+async def test_sensor_async_setup_entry_adds_entities(monkeypatch):
+    """Test async_setup_entry adds correct entities based on data."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "MBF_MEASURE_PH": 7.0,
+            "pH measurement module detected": True,
+            "MBF_MEASURE_RX": 500,
+            "Redox measurement module detected": True,
+            "MBF_MEASURE_CL": 2000,
+            "Chlorine measurement module detected": True,
+            "MBF_MEASURE_CONDUCTIVITY": 35.5,
+            "Conductivity measurement module detected": True,
+            "MBF_PAR_MODEL": 0x0001,  # ion allowed
+            "MBF_ION_CURRENT": 60,
+            "MBF_PAR_FILTRATION_CONF": 0x0001,
+            "FILTRATION_SPEED": 1,
+            "MBF_PAR_FILT_MODE": 1,
+            "MBF_PH_STATUS_ALARM": 0,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    # Should add all defined sensors present in data
+    keys = [e._key for e in entities]
+    assert "MBF_MEASURE_PH" in keys
+    assert "MBF_MEASURE_RX" in keys
+    assert "MBF_MEASURE_CL" in keys
+    assert "MBF_MEASURE_CONDUCTIVITY" in keys
+    assert "MBF_ION_CURRENT" in keys
+    assert "FILTRATION_SPEED" in keys
+    assert "MBF_PAR_FILT_MODE" in keys
+    assert "MBF_PH_STATUS_ALARM" in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_async_setup_entry_detected_flags(monkeypatch):
+    """Test async_setup_entry skips entities if 'detected' is missing/False."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "MBF_MEASURE_PH": 7.0,
+            # "pH measurement module detected": False
+            "MBF_MEASURE_RX": 500,
+            "Redox measurement module detected": False,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    # MBF_MEASURE_PH and MBF_MEASURE_RX should be skipped
+    assert "MBF_MEASURE_PH" not in keys
+    assert "MBF_MEASURE_RX" not in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_async_setup_entry_model_mask(monkeypatch):
+    """Test async_setup_entry skips ION sensor if not present in model."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x0000,  # ION not present
+            "MBF_ION_CURRENT": 50,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_ION_CURRENT" not in keys
+
+
+def make_sensor(props, key, data):
+    mock_coord = MagicMock()
+    mock_coord.data = data
+    mock_coord.device_slug = "vistapool"
+    mock_coord.config_entry.entry_id = "test_entry"
+    mock_coord.config_entry.options = {}
+    return VistaPoolSensor(mock_coord, "test_entry", key, props)
+
+
+@pytest.mark.parametrize(
+    "raw,expected_icon",
+    [
+        (1, "mdi:water-boiler-auto"),  # auto
+        (0, "mdi:water-boiler-alert"),  # manual
+        (2, "mdi:water-boiler"),  # heating
+        (3, "mdi:water-boiler-check"),  # smart
+        (4, "mdi:water-boiler-thermometer"),  # intelligent
+        (13, "mdi:water-boiler-off"),  # backwash
+    ],
+)
+def test_icon_filtration_mode(mock_coordinator, raw, expected_icon):
+    props = make_props(device_class="filtration_mode")
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_FILT_MODE": raw}
+    assert ent.icon == expected_icon
+
+
+def test_icon_ph_alarm(mock_coordinator):
+    props = make_props(icon="mdi:alert")
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PH_STATUS_ALARM", props)
+    # No alarm
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 0}
+    assert ent.icon == "mdi:check-circle-outline"
+    # Alarm
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 3}
+    assert ent.icon == "mdi:alert"
+
+
+def test_icon_hidro_current(mock_coordinator):
+    props = make_props(icon="mdi:air-humidifier")
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_HIDRO_CURRENT", props)
+    mock_coordinator.data = {"MBF_HIDRO_CURRENT": True}
+    assert ent.icon == "mdi:air-humidifier"
+    mock_coordinator.data = {"MBF_HIDRO_CURRENT": False}
+    assert ent.icon == "mdi:air-humidifier-off"
+
+
+def test_icon_default_icon():
+    ent = make_sensor({"icon": "mdi:test"}, "MBF_MEASURE_PH", {})
+    assert ent.icon == "mdi:test"
