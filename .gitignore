@@ -5,6 +5,7 @@ tmp
 temp
 .coverage
 coverage.xml
+htmlcov
 *.log
 *.pyc
 *.pyo
