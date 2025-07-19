@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import MagicMock, AsyncMock, Mock, patch
 from custom_components.vistapool.select import (
     VistaPoolSelect,
     VistaPoolEntity,
@@ -289,7 +289,7 @@ async def test_async_select_option_default(mock_coordinator):
     ent.coordinator.client = AsyncMock()
     ent.coordinator.data = {"MBF_PAR_FILT_MODE": 1}
     ent.coordinator.async_request_refresh = AsyncMock()
-    ent.async_write_ha_state = AsyncMock()
+    ent.async_write_ha_state = Mock()
     await ent.async_select_option("manual")
     ent.coordinator.client.async_write_register.assert_awaited()
 
@@ -442,7 +442,7 @@ async def test_async_select_option_stop_field(mock_coordinator):
     ent.hass.services.async_call = AsyncMock(return_value=None)
 
     option = "03:00"
-    with patch.object(ent, "async_write_ha_state", lambda: None):
+    with patch.object(ent, "async_write_ha_state", AsyncMock()):
         await ent.async_select_option(option)
 
     ent.hass.services.async_call.assert_any_call(
