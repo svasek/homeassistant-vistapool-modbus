@@ -109,7 +109,13 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         )
 
     async def async_added_to_hass(self) -> None:
-        """Handle entity addition to Home Assistant."""
+        """Run when the entity is added to hass."""
+        _LOGGER.debug(
+            "VistaPoolNumber ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
+            self.entity_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
+        )
         client = getattr(self.coordinator, "client", None)
         if client is None:
             _LOGGER.error(
@@ -153,16 +159,6 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             await self.coordinator.async_request_refresh()
         except asyncio.CancelledError:
             pass
-
-    async def async_added_to_hass(self) -> None:
-        """Run when the entity is added to hass."""
-        _LOGGER.debug(
-            "VistaPoolNumber ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
-        )
-        await super().async_added_to_hass()
 
     @property
     def suggested_display_precision(self) -> int | None:
