@@ -25,6 +25,8 @@ from homeassistant.const import CONF_NAME
 from .helpers import parse_version, prepare_device_time, is_device_time_out_of_sync
 from .const import DOMAIN, DEFAULT_SCAN_INTERVAL, TIMER_BLOCKS
 
+MAX_SCAN_INTERVAL = timedelta(seconds=180)  # Maximum allowed scan interval (3 minutes)
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -32,13 +34,20 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
     """Coordinator for VistaPool platform."""
 
     def __init__(self, hass: HomeAssistant, client, entry, entry_id: str):
+        # Store normal and maximal intervals
+        self.normal_update_interval = timedelta(
+            seconds=entry.options.get("scan_interval", DEFAULT_SCAN_INTERVAL)
+        )
+        self.max_update_interval = min(
+            self.normal_update_interval * 4, MAX_SCAN_INTERVAL
+        )
+        self._consecutive_errors = 0
+
         super().__init__(
             hass,
             _LOGGER,
             name=f"{DOMAIN} coordinator",
-            update_interval=timedelta(
-                seconds=entry.options.get("scan_interval", DEFAULT_SCAN_INTERVAL)
-            ),
+            update_interval=self.normal_update_interval,
         )
         self.client = client
         self.entry = entry
@@ -49,9 +58,17 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
     async def _async_update_data(self):
         try:
             data = await self.client.async_read_all()
+            self._consecutive_errors = 0
+
+            # Reset interval after success
+            if self.update_interval != self.normal_update_interval:
+                _LOGGER.info(
+                    f"VistaPool: Communication OK, resetting update interval to {self.normal_update_interval.total_seconds()} seconds."
+                )
+                self.update_interval = self.normal_update_interval
+
             self._firmware = parse_version(data.get("MBF_POWER_MODULE_VERSION"))
             self._model = "VistaPool"
-            # _LOGGER.debug("VistaPool raw coordinator data: %s", data)
 
             options = self.entry.options
             enabled_timers = []
@@ -91,7 +108,20 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             return data
 
         except Exception as err:
+            self._consecutive_errors += 1
             _LOGGER.error("Modbus communication error: %s", err)
+
+            # Exponential backoff: double the interval, but never more than max
+            next_interval = self.update_interval * 2
+            if next_interval > self.max_update_interval:
+                next_interval = self.max_update_interval
+            if self.update_interval != next_interval:
+                _LOGGER.warning(
+                    f"VistaPool: Increasing update interval to {int(next_interval.total_seconds())} seconds due to communication errors."
+                )
+                self.update_interval = next_interval
+
+            # Fallback: use cached data if available
             # This allows the integration to continue functioning with cached data
             # if the Modbus communication fails, but only if we have cached data
             # This is useful for scenarios where the device might be temporarily unreachable
