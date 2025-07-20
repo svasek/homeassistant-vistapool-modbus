@@ -23,7 +23,6 @@ from custom_components.vistapool.helpers import (
     hhmm_to_seconds,
     seconds_to_hhmm,
     prepare_device_time,
-    parse_version,
     get_device_time,
     generate_time_options,
     parse_timer_block,

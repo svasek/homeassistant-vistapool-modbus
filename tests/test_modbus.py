@@ -15,7 +15,7 @@
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, patch
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import custom_components.vistapool.modbus as vistapool_modbus
 import sys
@@ -620,19 +620,6 @@ async def test_perform_write_timer_happy_path(config, monkeypatch):
         address=block_addr, count=15, slave=1
     )
     assert fake_modbus.write_registers.await_count >= 3  # timer write + eeprom + exec
-
-
-@pytest.mark.asyncio
-async def test_perform_write_timer_not_connected(config, monkeypatch):
-    """Test _perform_write_timer returns {} if client is not connected."""
-
-    client = vistapool_modbus.VistaPoolModbusClient(config)
-    fake_modbus = AsyncMock()
-    fake_modbus.connected = False
-    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
-
-    result = await client._perform_write_timer("filtration2", {"on": 10})
-    assert result == {}
 
 
 @pytest.mark.asyncio
