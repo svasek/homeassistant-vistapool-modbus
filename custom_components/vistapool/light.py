@@ -19,13 +19,10 @@ import logging
 from homeassistant.components.light import LightEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from .const import DOMAIN, LIGHT_DEFINITIONS
+from .const import DOMAIN, LIGHT_DEFINITIONS, EXEC_REGISTER
 from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)
-
-
-EXEC_REGISTER = 0x02F5
 
 
 async def async_setup_entry(

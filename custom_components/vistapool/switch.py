@@ -19,14 +19,10 @@ import logging
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from .const import DOMAIN, SWITCH_DEFINITIONS
+from .const import DOMAIN, SWITCH_DEFINITIONS, EXEC_REGISTER, MANUAL_FILTRATION_REGISTER
 from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)
-
-
-MANUAL_FILTRATION_REGISTER = 0x0413
-EXEC_REGISTER = 0x02F5
 
 
 async def async_setup_entry(

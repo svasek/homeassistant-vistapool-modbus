@@ -17,7 +17,14 @@
 import logging
 import asyncio
 from homeassistant.components.select import SelectEntity
-from .const import DOMAIN, SELECT_DEFINITIONS, DEFAULT_TIMER_RESOLUTION, PERIOD_MAP
+from .const import (
+    DOMAIN,
+    SELECT_DEFINITIONS,
+    DEFAULT_TIMER_RESOLUTION,
+    PERIOD_MAP,
+    PERIOD_SECONDS_TO_KEY,
+    MANUAL_FILTRATION_REGISTER,
+)
 from .entity import VistaPoolEntity
 from .helpers import (
     seconds_to_hhmm,
@@ -27,9 +34,6 @@ from .helpers import (
 )
 
 _LOGGER = logging.getLogger(__name__)
-
-PERIOD_SECONDS_TO_KEY = {v: k for k, v in PERIOD_MAP.items()}
-MANUAL_FILTRATION_REGISTER = 0x0413
 
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:

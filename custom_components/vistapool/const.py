@@ -52,6 +52,9 @@ DEFAULT_SCAN_INTERVAL = 30  # in seconds
 DEFAULT_PORT = 502
 DEFAULT_SLAVE_ID = 1
 
+MANUAL_FILTRATION_REGISTER = 0x0413
+EXEC_REGISTER = 0x02F5
+
 PERIOD_MAP = {
     "1_day": 86400,
     "2_days": 2 * 86400,
@@ -63,6 +66,8 @@ PERIOD_MAP = {
     "3_weeks": 21 * 86400,
     "4_weeks": 28 * 86400,
 }
+
+PERIOD_SECONDS_TO_KEY = {v: k for k, v in PERIOD_MAP.items()}
 
 """ Read timer blocks (0x0434-0x04E8) in blocks of *15* due to device limits """
 TIMER_BLOCKS = {
