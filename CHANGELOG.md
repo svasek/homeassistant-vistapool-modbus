@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.4...v1.9.0) (2025-07-20)
+
+
+### Features
+
+* **coordinator:** ✨ improve update interval handling and error management ([04b8c49](https://github.com/svasek/homeassistant-vistapool-modbus/commit/04b8c4943308bee1685ef44fd0c1a65c9e904f00))
+* **modbus:** ✨ add diagnostics tracking and error handling metrics ([7c1dfc6](https://github.com/svasek/homeassistant-vistapool-modbus/commit/7c1dfc61e14a56f15f78bbe8759c405e938c4f03))
+
 ## [1.8.4](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.3...v1.8.4) (2025-07-19)
 
 
