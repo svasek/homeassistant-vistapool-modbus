@@ -35,12 +35,13 @@ async def test_async_get_config_entry_diagnostics_filters_sensitive_data():
 
     # Prepare a mock client
     client = MagicMock()
-    client.host = "192.168.1.100"
-    client.port = 8899
-    client.unit_id = 1
-    client.connected = True
-    client.last_error = None
-    client.connection_stats = {"retries": 3}
+    client.connection_stats = {
+        "retries": 3,
+        "host": "192.168.1.100",
+        "port": 8899,
+        "unit_id": 1,
+        "connected": True,
+    }
 
     # Prepare a mock coordinator
     coordinator = MagicMock()
@@ -69,8 +70,6 @@ async def test_async_get_config_entry_diagnostics_filters_sensitive_data():
     assert diagnostics["config_entry"]["entry_id"] == "entry1"
     assert diagnostics["coordinator"]["firmware"] == "1.0"
     assert diagnostics["coordinator"]["model"] == "Vistapool"
-    assert diagnostics["client"]["host"] == "192.168.1.100"
-    assert diagnostics["client"]["connected"] is True
     assert diagnostics["connection_stats"]["retries"] == 3
 
 
@@ -119,4 +118,4 @@ async def test_diagnostics_with_coordinator_with_partial_attributes():
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
     # Ensure diagnostics still contain available attributes
     assert diagnostics["coordinator"]["data"] == {"key": "value"}
-    assert "client" in diagnostics
+    assert "connection_stats" in diagnostics

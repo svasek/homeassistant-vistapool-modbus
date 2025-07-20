@@ -14,8 +14,8 @@
 
 """VistaPool Integration for Home Assistant - Modbus Client"""
 
-import logging
-import asyncio
+import logging, asyncio, time
+from collections import deque
 from datetime import datetime, timedelta
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.exceptions import ModbusException, ConnectionException
@@ -60,6 +60,16 @@ class VistaPoolModbusClient:
         self._last_successful_operation = None
         self._total_operations = 0
         self._successful_operations = 0
+
+        # Diagnostic tracking
+        self._response_times = deque(maxlen=50)  # last 50 response times
+        self._failed_reads = {}  # address -> count
+        self._successful_addresses = deque(maxlen=20)  # last 20 successful addresses
+        self._write_response_times = deque(maxlen=50)
+        self._failed_writes = {}  # address -> count
+        self._successful_writes = deque(maxlen=20)  # (address, timestamp)
+        self._total_writes = 0
+        self._successful_write_ops = 0
 
     async def get_client(self) -> AsyncModbusTcpClient:
         """Get or create a Modbus client with retry logic."""
@@ -250,6 +260,7 @@ class VistaPoolModbusClient:
                 _LOGGER.warning(f"Register at index {idx} is missing in {regs}")
                 return None
 
+        start = time.monotonic()
         try:
             client = await self.get_client()
             if client is None or not client.connected:
@@ -257,6 +268,9 @@ class VistaPoolModbusClient:
                     "Modbus client connection failed to %s:%s",
                     self._host,
                     self._port,
+                )
+                self._failed_reads["connection"] = (
+                    self._failed_reads.get("connection", 0) + 1
                 )
                 return {}
 
@@ -271,10 +285,13 @@ class VistaPoolModbusClient:
                 )
             except Exception as e:
                 _LOGGER.error("Read error 0x0000: %s", e)
+                self._failed_reads["0x0000"] = self._failed_reads.get("0x0000", 0) + 1
                 return {}
             if rr00.isError():
                 _LOGGER.error("Modbus read error from 0x0000: %s", rr00)
+                self._failed_reads["0x0000"] = self._failed_reads.get("0x0000", 0) + 1
             else:
+                self._successful_addresses.append(("0x0000", time.time()))
                 reg00 = rr00.registers
                 _LOGGER.debug("Raw rr00: %s", reg00)
                 if len(reg00) < rr00_count:
@@ -313,10 +330,13 @@ class VistaPoolModbusClient:
                 )
             except Exception as e:
                 _LOGGER.error("Read error 0x0100: %s", e)
+                self._failed_reads["0x0100"] = self._failed_reads.get("0x0100", 0) + 1
                 return {}
             if rr01.isError():
                 _LOGGER.error("Modbus read error from 0x0100: %s", rr01)
+                self._failed_reads["0x0100"] = self._failed_reads.get("0x0100", 0) + 1
             else:
+                self._successful_addresses.append(("0x0100", time.time()))
                 reg01 = rr01.registers
                 _LOGGER.debug("Raw rr01: %s", reg01)
                 if len(reg01) < rr01_count:
@@ -377,10 +397,13 @@ class VistaPoolModbusClient:
                 )
             except Exception as e:
                 _LOGGER.error("Read error 0x0206: %s", e)
+                self._failed_reads["0x0206"] = self._failed_reads.get("0x0206", 0) + 1
                 return {}
             if rr02.isError():
                 _LOGGER.error("Modbus read error from 0x0206: %s", rr02)
+                self._failed_reads["0x0206"] = self._failed_reads.get("0x0206", 0) + 1
             else:
+                self._successful_addresses.append(("0x00206", time.time()))
                 reg02 = rr02.registers
                 _LOGGER.debug("Raw rr02: %s", reg02)
                 if len(reg02) < rr02_count:
@@ -417,10 +440,13 @@ class VistaPoolModbusClient:
                 )
             except Exception as e:
                 _LOGGER.error("Read error 0x0280: %s", e)
+                self._failed_reads["0x0280"] = self._failed_reads.get("0x0280", 0) + 1
                 return {}
             if rr02_hidro.isError():
                 _LOGGER.error("Modbus read error from 0x0280: %s", rr02_hidro)
+                self._failed_reads["0x0280"] = self._failed_reads.get("0x0280", 0) + 1
             else:
+                self._successful_addresses.append(("0x00280", time.time()))
                 reg02_hidro = rr02_hidro.registers
                 _LOGGER.debug("Raw rr02_hidro: %s", reg02_hidro)
                 if len(reg02_hidro) < rr02_hidro_count:
@@ -452,10 +478,13 @@ class VistaPoolModbusClient:
                 )
             except Exception as e:
                 _LOGGER.error("Read error 0x0300: %s", e)
+                self._failed_reads["0x0300"] = self._failed_reads.get("0x0300", 0) + 1
                 return {}
             if rr03.isError():
                 _LOGGER.error("Modbus read error from 0x0300: %s", rr03)
+                self._failed_reads["0x0300"] = self._failed_reads.get("0x0300", 0) + 1
             else:
+                self._successful_addresses.append(("0x00300", time.time()))
                 reg03 = rr03.registers
                 _LOGGER.debug("Raw rr03: %s", reg03)
                 if len(reg03) < rr03_count:
@@ -504,11 +533,18 @@ class VistaPoolModbusClient:
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
                     return {}
                 if rr04.isError():
                     _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr04}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
                     return {}
                 reg04.extend(rr04.registers)
+                self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 _LOGGER.debug(f"Raw rr04 from 0x{address:04X}: {rr04.registers}")
 
             # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -581,10 +617,13 @@ class VistaPoolModbusClient:
                 )
             except Exception as e:
                 _LOGGER.error("Read error 0x0502: %s", e)
+                self._failed_reads["0x0502"] = self._failed_reads.get("0x0502", 0) + 1
                 return {}
             if rr05.isError():
                 _LOGGER.error("Modbus read error from 0x0502: %s", rr05)
+                self._failed_reads["0x0502"] = self._failed_reads.get("0x0502", 0) + 1
             else:
+                self._successful_addresses.append(("0x00502", time.time()))
                 reg05 = rr05.registers
                 _LOGGER.debug("Raw rr05: %s", reg05)
                 if len(reg05) < rr05_count:
@@ -622,10 +661,13 @@ class VistaPoolModbusClient:
                 )
             except Exception as e:
                 _LOGGER.error("Read error 0x0600: %s", e)
+                self._failed_reads["0x0600"] = self._failed_reads.get("0x0600", 0) + 1
                 return {}
             if rr06.isError():
                 _LOGGER.error("Modbus read error from 0x0600: %s", rr06)
+                self._failed_reads["0x0600"] = self._failed_reads.get("0x0600", 0) + 1
             else:
+                self._successful_addresses.append(("0x00600", time.time()))
                 reg06 = rr06.registers
                 _LOGGER.debug("Raw rr06: %s", reg06)
                 if len(reg06) < rr06_count:
@@ -658,7 +700,11 @@ class VistaPoolModbusClient:
 
         except Exception as e:
             _LOGGER.error("Modbus TCP read error: %s", e)
+            self._failed_reads["unknown"] = self._failed_reads.get("unknown", 0) + 1
             return {}
+        finally:
+            end = time.monotonic()
+            self._response_times.append(end - start)
 
         # Add filtration speed and type
         result["FILTRATION_SPEED"] = get_filtration_speed(result)
@@ -681,6 +727,11 @@ class VistaPoolModbusClient:
                 self._client = None
             raise
 
+    def _calculate_avg_response_time(self):
+        if not self._response_times:
+            return None
+        return sum(self._response_times) / len(self._response_times)
+
     async def _perform_write_register(
         self, address: int, value, apply: bool = False
     ) -> dict | None:
@@ -690,9 +741,15 @@ class VistaPoolModbusClient:
         If apply=True, the configuration is saved to EEPROM (0x02F0)
         and executed (0x02F5) after the write.
         """
+        start = time.monotonic()
+        self._total_writes += 1
+
         try:
             client = await self.get_client()
             if client is None or not client.connected:
+                self._failed_writes[f"0x{address:04X}"] = (
+                    self._failed_writes.get(f"0x{address:04X}", 0) + 1
+                )
                 _LOGGER.error(
                     "Modbus client connection failed to %s:%s",
                     self._host,
@@ -705,9 +762,14 @@ class VistaPoolModbusClient:
                 value = [value]
 
             result = await client.write_registers(
-                address=address, values=value, slave=self._unit
+                address=address,
+                values=value if isinstance(value, list) else [value],
+                slave=self._unit,
             )
             if result.isError():
+                self._failed_writes[f"0x{address:04X}"] = (
+                    self._failed_writes.get(f"0x{address:04X}", 0) + 1
+                )
                 _LOGGER.error("Write failed at 0x%04X: %s", address, result)
                 return None
             _LOGGER.debug("Wrote register(s) at 0x%04X: %s", address, value)
@@ -745,6 +807,8 @@ class VistaPoolModbusClient:
                 await asyncio.sleep(0.1)
 
             # Return useful dict if everything succeeded
+            self._successful_write_ops += 1
+            self._successful_writes.append((f"0x{address:04X}", time.time()))
             return {
                 "address": address,
                 "value": value if len(value) > 1 else value[0],
@@ -754,29 +818,39 @@ class VistaPoolModbusClient:
             }
 
         except Exception as e:
+            self._failed_writes[f"0x{address:04X}"] = (
+                self._failed_writes.get(f"0x{address:04X}", 0) + 1
+            )
             _LOGGER.error("Modbus TCP write exception: %s", e)
             return {}
+        finally:
+            end = time.monotonic()
+            self._write_response_times.append(end - start)
 
     """ Manual controller for AUX relays (1-4) """
 
     async def async_write_aux_relay(self, relay_index, on) -> dict | None:
         """Write state of an AUX relay (1-4) using function 0x10 (Write Multiple Registers)."""
         aux_bit = AUX_BITMASKS[relay_index]
+        addr = 0x010E
+        start = time.monotonic()
+        self._total_writes += 1
         try:
             client = await self.get_client()
             if client is None or not client.connected:
+                self._failed_writes[f"0x{addr:04X}"] = (
+                    self._failed_writes.get(f"0x{addr:04X}", 0) + 1
+                )
                 _LOGGER.error(
-                    "Modbus client connection failed to %s:%s",
-                    self._host,
-                    self._port,
+                    f"Modbus client connection failed to {self._host}:{self._port}"
                 )
                 return {}
             # Read current relay state
             current_result = await client.read_input_registers(
-                address=0x010E, count=1, slave=self._unit
+                address=addr, count=1, slave=self._unit
             )
             if current_result.isError():
-                _LOGGER.error("Modbus read error from %s: %s", 0x010E, current_result)
+                _LOGGER.error(f"Modbus read error from 0x{addr:04X}: {current_result}")
                 return
             current = current_result.registers[0]
             # Set or clear the aux bit
@@ -784,17 +858,23 @@ class VistaPoolModbusClient:
                 value = current | aux_bit
             else:
                 value = current & ~aux_bit
-            await client.write_registers(address=0x0289, values=[1], slave=self._unit)
-            await client.write_registers(
-                address=0x010E, values=[value], slave=self._unit
-            )
-            _LOGGER.debug("Wrote relay state at 0x010E: 0x%04X", value)
+            await client.write_registers(address=addr, values=[1], slave=self._unit)
+            await client.write_registers(address=addr, values=[value], slave=self._unit)
+            _LOGGER.debug(f"Wrote relay state at 0x{addr:04X}: 0x{value:04X}")
             await client.write_registers(address=0x0289, values=[0], slave=self._unit)
             await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
+            self._successful_write_ops += 1
+            self._successful_writes.append((f"0x{addr:04X}", time.time()))
 
         except Exception as e:
-            _LOGGER.error("Modbus TCP AUX relay write exception: %s", e)
+            self._failed_writes[f"0x{addr:04X}"] = (
+                self._failed_writes.get(f"0x{addr:04X}", 0) + 1
+            )
+            _LOGGER.error(f"Modbus TCP AUX relay write exception at 0x{addr:04X}: {e}")
             return {}
+        finally:
+            end = time.monotonic()
+            self._write_response_times.append(end - start)
 
     async def read_all_timers(self, enabled_timers=None) -> dict:
         """Read timers with retry."""
@@ -816,8 +896,12 @@ class VistaPoolModbusClient:
         Returns a dictionary with timer names as keys and parsed timer data as values.
         """
         timers = {}
+        start = time.monotonic()
         client = await self.get_client()
         if client is None or not client.connected:
+            self._failed_reads["timers_connection"] = (
+                self._failed_reads.get("timers_connection", 0) + 1
+            )
             _LOGGER.error(
                 "Modbus client connection failed to %s:%s", self._host, self._port
             )
@@ -831,14 +915,24 @@ class VistaPoolModbusClient:
                     address=addr, count=15, slave=self._unit
                 )
             except Exception as e:
+                self._failed_reads[f"0x{addr:04X}"] = (
+                    self._failed_reads.get(f"0x{addr:04X}", 0) + 1
+                )
                 _LOGGER.error(f"Timer block read error at {addr:#04x}: {e}")
                 continue
             if rr.isError():
+                self._failed_reads[f"0x{addr:04X}"] = (
+                    self._failed_reads.get(f"0x{addr:04X}", 0) + 1
+                )
                 _LOGGER.error(f"Modbus read error from 0x{addr:04X}: {rr}")
                 continue
             _LOGGER.debug(f"Raw rr-{name} from 0x{addr:04X}: {rr.registers}")
+            self._successful_addresses.append((f"0x{addr:04X}", time.time()))
             timers[name] = parse_timer_block(rr.registers)
             await asyncio.sleep(0.05)
+
+        end = time.monotonic()
+        self._response_times.append(end - start)
         return timers
 
     async def write_timer(self, block_name, timer_data) -> bool:
@@ -861,57 +955,87 @@ class VistaPoolModbusClient:
         Other values (enable, period, function, ...) are preserved as read.
         """
         addr = TIMER_BLOCKS[block_name]
+        start = time.monotonic()
+        self._total_writes += 1
 
         # 1. Read current timer block from Modbus
         client = await self.get_client()
-        if client is None or not client.connected:
-            _LOGGER.error(
-                "Modbus client connection failed to %s:%s", self._host, self._port
+        try:
+            if client is None or not client.connected:
+                self._failed_writes[f"0x{addr:04X}"] = (
+                    self._failed_writes.get(f"0x{addr:04X}", 0) + 1
+                )
+                _LOGGER.error(
+                    "Modbus client connection failed to %s:%s", self._host, self._port
+                )
+                return False
+            rr = await client.read_holding_registers(
+                address=addr, count=15, slave=self._unit
             )
-            return {}
-        rr = await client.read_holding_registers(
-            address=addr, count=15, slave=self._unit
-        )
-        if rr.isError():
-            _LOGGER.error(
-                f"Could not read timer block at 0x{addr:04X} before write: {rr}"
+            if rr.isError():
+                self._failed_writes[f"0x{addr:04X}"] = (
+                    self._failed_writes.get(f"0x{addr:04X}", 0) + 1
+                )
+                _LOGGER.error(
+                    f"Could not read timer block at 0x{addr:04X} before write: {rr}"
+                )
+                return False
+            current_regs = rr.registers
+            current_data = parse_timer_block(current_regs)
+
+            # 2. Update only requested fields
+            for k, v in timer_data.items():
+                current_data[k] = v
+
+            # 3. Build block for write (preserve other fields)
+            regs = build_timer_block(current_data)
+            for idx, reg in enumerate(regs):
+                if not isinstance(reg, int):
+                    _LOGGER.error(f"Register {idx} is not int: {reg!r}")
+
+            _LOGGER.debug(f"Timer block {block_name} (0x{addr:04X}) to write: {regs}")
+
+            # 4. Write full block back to Modbus
+            if client is None or not client.connected:
+                _LOGGER.error(
+                    "Modbus client connection failed to %s:%s", self._host, self._port
+                )
+                return {}
+            result = await client.write_registers(
+                address=addr, values=regs, slave=self._unit
             )
-            return False
-        current_regs = rr.registers
-        current_data = parse_timer_block(current_regs)
+            if result.isError():
+                self._failed_writes[f"0x{addr:04X}"] = (
+                    self._failed_writes.get(f"0x{addr:04X}", 0) + 1
+                )
+                _LOGGER.error(f"Timer block write error at 0x{addr:04X}: {result}")
+                return False
 
-        # 2. Update only requested fields
-        for k, v in timer_data.items():
-            current_data[k] = v
+            _LOGGER.debug(f"Wrote timer block {block_name} (0x{addr:04X}): {regs}")
+            await asyncio.sleep(0.1)
+            # Write to EEPROM and execute
+            await client.write_registers(address=0x02F0, values=[1], slave=self._unit)
+            await asyncio.sleep(0.1)
+            await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
+            await asyncio.sleep(0.1)
 
-        # 3. Build block for write (preserve other fields)
-        regs = build_timer_block(current_data)
-        for idx, reg in enumerate(regs):
-            if not isinstance(reg, int):
-                _LOGGER.error(f"Register {idx} is not int: {reg!r}")
-
-        _LOGGER.debug(f"Timer block {block_name} (0x{addr:04X}) to write: {regs}")
-
-        # 4. Write full block back to Modbus
-        if client is None or not client.connected:
-            _LOGGER.error(
-                "Modbus client connection failed to %s:%s", self._host, self._port
+            self._successful_write_ops += 1
+            self._successful_writes.append((f"0x{addr:04X}", time.time()))
+            return True
+        except Exception as e:
+            self._failed_writes[f"0x{addr:04X}"] = (
+                self._failed_writes.get(f"0x{addr:04X}", 0) + 1
             )
-            return {}
-        result = await client.write_registers(
-            address=addr, values=regs, slave=self._unit
-        )
-        if result.isError():
-            _LOGGER.error(f"Timer block write error at 0x{addr:04X}: {result}")
-            return False
-        _LOGGER.debug(f"Wrote timer block {block_name} (0x{addr:04X}): {regs}")
-        await asyncio.sleep(0.1)
-        # Write to EEPROM and execute
-        await client.write_registers(address=0x02F0, values=[1], slave=self._unit)
-        await asyncio.sleep(0.1)
-        await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
-        await asyncio.sleep(0.1)
-        return True
+            _LOGGER.error(f"Modbus TCP write timer exception at 0x{addr:04X}: {e}")
+            raise
+        finally:
+            end = time.monotonic()
+            self._write_response_times.append(end - start)
+
+    def _calculate_avg_write_response_time(self):
+        if not self._write_response_times:
+            return None
+        return sum(self._write_response_times) / len(self._write_response_times)
 
     @property
     def connection_stats(self) -> dict:
@@ -919,6 +1043,8 @@ class VistaPoolModbusClient:
         return {
             "host": self._host,
             "port": self._port,
+            "unit_id": self._unit,
+            "connected": getattr(self._client, "connected", False),
             "total_operations": self._total_operations,
             "successful_operations": self._successful_operations,
             "consecutive_errors": self._consecutive_errors,
@@ -939,4 +1065,17 @@ class VistaPoolModbusClient:
                 self._backoff_until.isoformat() if self._backoff_until else None
             ),
             "connection_attempts": self._connection_attempts,
+            "average_response_time": self._calculate_avg_response_time(),
+            "failed_reads_by_address": dict(self._failed_reads),
+            "last_successful_addresses": list(self._successful_addresses),
+            "write_total_operations": self._total_writes,
+            "write_successful_operations": self._successful_write_ops,
+            "write_success_rate_percent": (
+                round(self._successful_write_ops / self._total_writes * 100, 1)
+                if self._total_writes > 0
+                else 0
+            ),
+            "write_average_response_time": self._calculate_avg_write_response_time(),
+            "failed_writes_by_address": dict(self._failed_writes),
+            "last_successful_writes": list(self._successful_writes),
         }

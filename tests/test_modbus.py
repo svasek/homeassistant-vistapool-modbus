@@ -37,6 +37,26 @@ async def test_safe_close_client_with_none(config):
 
 
 @pytest.mark.asyncio
+async def test_close_resets_state_and_closes_client(config):
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    mock_client = AsyncMock()
+    mock_client.connected = True
+    mock_client.close = AsyncMock(return_value=None)
+    client._client = mock_client
+    client._connection_attempts = 42
+    client._consecutive_errors = 7
+    client._backoff_until = datetime.now()
+
+    await client.close()
+
+    mock_client.close.assert_called()
+    assert client._connection_attempts == 0
+    assert client._consecutive_errors == 0
+    assert client._backoff_until is None
+    assert client._client is None
+
+
+@pytest.mark.asyncio
 async def test_establish_connection_with_retry_success(config):
     """Test successful connection establishment with retry."""
     client = vistapool_modbus.VistaPoolModbusClient(config)
@@ -188,6 +208,19 @@ def test_connection_stats_content(config):
     assert isinstance(stats["total_operations"], int)
     assert "success_rate_percent" in stats
 
+    # New metrics checks
+    for key in [
+        "failed_reads_by_address",
+        "last_successful_addresses",
+        "write_total_operations",
+        "write_successful_operations",
+        "write_success_rate_percent",
+        "write_average_response_time",
+        "failed_writes_by_address",
+        "last_successful_writes",
+    ]:
+        assert key in stats
+
 
 @pytest.mark.asyncio
 async def test_perform_read_all_happy_path(config, monkeypatch):
@@ -307,6 +340,94 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
     # Verify that all Modbus calls were made as expected
     assert fake_modbus.read_holding_registers.await_count == 8
     assert fake_modbus.read_input_registers.await_count == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "fail_block,modbus_method,address",
+    [
+        ("rr00", "read_holding_registers", "0x0000"),
+        ("rr01", "read_input_registers", "0x0100"),
+        ("rr02", "read_holding_registers", "0x0206"),
+        ("rr02_hidro", "read_holding_registers", "0x0280"),
+        ("rr03", "read_holding_registers", "0x0300"),
+        ("rr04-1", "read_holding_registers", "0x0408"),
+        ("rr04-2", "read_holding_registers", "0x0427"),
+        ("rr05", "read_holding_registers", "0x0502"),
+        ("rr06", "read_holding_registers", "0x0600"),
+    ],
+)
+async def test_perform_read_all_raises_on_block(
+    config, monkeypatch, fail_block, modbus_method, address
+):
+    """
+    Parametrized test for _perform_read_all that simulates exception or error for any block,
+    and verifies {} returned and proper failed_reads incremented.
+    """
+
+    from custom_components.vistapool.modbus import VistaPoolModbusClient
+
+    client = VistaPoolModbusClient(config)
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    # Helper for Modbus responses
+    class DummyResp:
+        def __init__(self, regs=None, is_error=False):
+            self.registers = regs if regs is not None else [0]
+            self.isError = lambda: is_error
+
+    # Default: all blocks return OK, unless overridden
+    rr_blocks = {
+        "rr00": DummyResp([0] * 15),
+        "rr01": DummyResp([0] * 18),
+        "rr02": DummyResp([0] * 20),
+        "rr02_hidro": DummyResp([0] * 2),
+        "rr03": DummyResp([0] * 13),
+        "rr04-1": DummyResp([0] * 31),
+        "rr04-2": DummyResp([0] * 13),
+        "rr05": DummyResp([0] * 14),
+        "rr06": DummyResp([0] * 13),
+    }
+
+    # For failing block, simulate error or raise
+    if fail_block in ["rr01"]:
+        # For input registers (rr01)
+        setattr(
+            fake_modbus,
+            modbus_method,
+            AsyncMock(side_effect=Exception(f"fail {fail_block}")),
+        )
+    else:
+        # For holding registers (all others)
+        # Build side_effect list in the order they are called in _perform_read_all
+        order = [
+            "rr00",
+            "rr02",
+            "rr02_hidro",
+            "rr03",
+            "rr04-1",
+            "rr04-2",
+            "rr05",
+            "rr06",
+        ]
+        resp_list = []
+        for blk in order:
+            if blk == fail_block:
+                resp_list.append(Exception(f"fail {fail_block}"))
+            else:
+                resp_list.append(rr_blocks[blk])
+        # Assign side_effect
+        fake_modbus.read_holding_registers = AsyncMock(side_effect=resp_list)
+        # rr01 (input) always returns OK in this case
+        fake_modbus.read_input_registers = AsyncMock(return_value=rr_blocks["rr01"])
+
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    # Run test
+    result = await client._perform_read_all()
+    assert result == {}
+    assert client._failed_reads.get(address, 0) == 1
 
 
 @pytest.mark.asyncio
@@ -632,7 +753,7 @@ async def test_perform_write_timer_not_connected(config, monkeypatch):
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
     result = await client._perform_write_timer("filtration2", {"on": 10})
-    assert result == {}
+    assert result is False
 
 
 @pytest.mark.asyncio

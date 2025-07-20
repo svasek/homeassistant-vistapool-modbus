@@ -59,16 +59,9 @@ async def async_get_config_entry_diagnostics(
 
     # Additional client details
     client = getattr(coordinator, "client", None)
-    if client:
-        diagnostics["client"] = {
-            "host": getattr(client, "host", None),
-            "port": getattr(client, "port", None),
-            "unit": getattr(client, "unit_id", None),
-            "connected": getattr(client, "connected", None),
-            "last_error": str(getattr(client, "last_error", "")),
-        }
-
     if client and hasattr(client, "connection_stats"):
         diagnostics["connection_stats"] = client.connection_stats
+
+    diagnostics["last_device_data"] = getattr(coordinator, "data", {})
 
     return diagnostics
