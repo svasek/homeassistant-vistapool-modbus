@@ -344,26 +344,24 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
-    "fail_block,modbus_method,address",
+    "fail_block,modbus_method,address,error_type",
     [
-        ("rr00", "read_holding_registers", "0x0000"),
-        ("rr01", "read_input_registers", "0x0100"),
-        ("rr02", "read_holding_registers", "0x0206"),
-        ("rr02_hidro", "read_holding_registers", "0x0280"),
-        ("rr03", "read_holding_registers", "0x0300"),
-        ("rr04-1", "read_holding_registers", "0x0408"),
-        ("rr04-2", "read_holding_registers", "0x0427"),
-        ("rr05", "read_holding_registers", "0x0502"),
-        ("rr06", "read_holding_registers", "0x0600"),
+        # (block, method, address, error type)
+        ("rr00", "read_holding_registers", "0x0000", "exception"),
+        ("rr01", "read_input_registers", "0x0100", "exception"),
+        ("rr02", "read_holding_registers", "0x0206", "iserror"),
+        ("rr02_hidro", "read_holding_registers", "0x0280", "iserror"),
+        ("rr03", "read_holding_registers", "0x0300", "iserror"),
+        ("rr04-1", "read_holding_registers", "0x0408", "exception"),
+        ("rr04-2", "read_holding_registers", "0x0427", "exception"),
+        ("rr05", "read_holding_registers", "0x0502", "iserror"),
+        ("rr06", "read_holding_registers", "0x0600", "iserror"),
     ],
 )
 async def test_perform_read_all_raises_on_block(
-    config, monkeypatch, fail_block, modbus_method, address
+    config, monkeypatch, fail_block, modbus_method, address, error_type
 ):
-    """
-    Parametrized test for _perform_read_all that simulates exception or error for any block,
-    and verifies {} returned and proper failed_reads incremented.
-    """
+    """Parametrized test: _perform_read_all exception and isError branches for all main blocks."""
 
     from custom_components.vistapool.modbus import VistaPoolModbusClient
 
@@ -371,11 +369,23 @@ async def test_perform_read_all_raises_on_block(
     fake_modbus = AsyncMock()
     fake_modbus.connected = True
 
-    # Helper for Modbus responses
+    # Helper class for Modbus response objects
     class DummyResp:
         def __init__(self, regs=None, is_error=False):
             self.registers = regs if regs is not None else [0]
             self.isError = lambda: is_error
+
+    # Blocks order in _perform_read_all
+    order = [
+        "rr00",
+        "rr02",
+        "rr02_hidro",
+        "rr03",
+        "rr04-1",
+        "rr04-2",
+        "rr05",
+        "rr06",
+    ]
 
     # Default: all blocks return OK, unless overridden
     rr_blocks = {
@@ -390,44 +400,169 @@ async def test_perform_read_all_raises_on_block(
         "rr06": DummyResp([0] * 13),
     }
 
-    # For failing block, simulate error or raise
-    if fail_block in ["rr01"]:
-        # For input registers (rr01)
-        setattr(
-            fake_modbus,
-            modbus_method,
-            AsyncMock(side_effect=Exception(f"fail {fail_block}")),
-        )
-    else:
-        # For holding registers (all others)
-        # Build side_effect list in the order they are called in _perform_read_all
-        order = [
-            "rr00",
-            "rr02",
-            "rr02_hidro",
-            "rr03",
-            "rr04-1",
-            "rr04-2",
-            "rr05",
-            "rr06",
-        ]
+    # Set side effects based on error_type and block
+    if error_type == "exception":
+        if fail_block == "rr01":
+            # For input registers (rr01), raise exception when awaited
+            fake_modbus.read_input_registers = AsyncMock(
+                side_effect=Exception(f"fail {fail_block}")
+            )
+            # All holding register blocks return OK DummyResp
+            fake_modbus.read_holding_registers = AsyncMock(
+                side_effect=[rr_blocks[o] for o in order]
+            )
+        else:
+            # For holding registers, raise exception at the right position
+            resp_list = []
+            for blk in order:
+                if blk == fail_block:
+                    resp_list.append(Exception(f"fail {fail_block}"))
+                else:
+                    resp_list.append(rr_blocks[blk])
+            fake_modbus.read_holding_registers = AsyncMock(side_effect=resp_list)
+            fake_modbus.read_input_registers = AsyncMock(return_value=rr_blocks["rr01"])
+    elif error_type == "iserror":
+        # For isError, return DummyResp with isError=True at the selected block
         resp_list = []
         for blk in order:
             if blk == fail_block:
-                resp_list.append(Exception(f"fail {fail_block}"))
+                resp_list.append(DummyResp(is_error=True))
             else:
                 resp_list.append(rr_blocks[blk])
-        # Assign side_effect
         fake_modbus.read_holding_registers = AsyncMock(side_effect=resp_list)
-        # rr01 (input) always returns OK in this case
         fake_modbus.read_input_registers = AsyncMock(return_value=rr_blocks["rr01"])
 
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
     # Run test
     result = await client._perform_read_all()
-    assert result == {}
+
+    # Check result based on the block that failed
+    if fail_block == "rr02":
+        for key in [
+            "MBF_CELL_RUNTIME_LOW",
+            "MBF_CELL_RUNTIME_HIGH",
+            "MBF_CELL_RUNTIME_PART_LOW",
+            "MBF_CELL_RUNTIME_PART_HIGH",
+            "MBF_CELL_BOOST",
+            "MBF_CELL_RUNTIME_POLA_LOW",
+            "MBF_CELL_RUNTIME_POLA_HIGH",
+            "MBF_CELL_RUNTIME_POLB_LOW",
+            "MBF_CELL_RUNTIME_POLB_HIGH",
+            "MBF_CELL_RUNTIME_POL_CHANGES_LOW",
+            "MBF_CELL_RUNTIME_POL_CHANGES_HIGH",
+        ]:
+            assert key not in result
+    elif fail_block == "rr03":
+        for key in [
+            "MBF_PAR_VERSION",
+            "MBF_PAR_MODEL",
+            "MBF_PAR_SERNUM",
+            "MBF_PAR_ION_NOM",
+            "MBF_PAR_HIDRO_NOM",
+            "MBF_PAR_SAL_AMPS",
+            "MBF_PAR_SAL_CELLK",
+            "MBF_PAR_SAL_TCOMP",
+        ]:
+            assert key not in result
+    elif fail_block == "rr05":
+        for key in [
+            "MBF_PAR_HIDRO",
+            "MBF_PAR_PH1",
+            "MBF_PAR_PH2",
+            "MBF_PAR_RX1",
+            "MBF_PAR_CL1",
+            "MBF_PAR_FILTRATION_CONF",
+        ]:
+            assert key not in result
+    # For fail-fast blocks (rr00, rr01, rr04-1), you may still expect result == {}
+    elif fail_block in ("rr00", "rr01", "rr04-1"):
+        assert result == {}
+
+    # Always check that the error was logged
     assert client._failed_reads.get(address, 0) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "block_label, address",
+    [
+        ("rr00", 0x0000),
+        ("rr01", 0x0100),
+        ("rr02", 0x0206),
+        ("rr02_hidro", 0x0280),
+        ("rr03", 0x0300),
+        ("rr04-1", 0x0408),
+        ("rr04-2", 0x0427),
+        ("rr05", 0x0502),
+        ("rr06", 0x0600),
+    ],
+)
+async def test_perform_read_all_block_exception(
+    config, monkeypatch, block_label, address
+):
+    """
+    Covers all 'except Exception as e' branches in _perform_read_all for each Modbus read block.
+    If any block fails with exception, the whole function returns {} and logs failed_reads.
+    """
+    from custom_components.vistapool.modbus import VistaPoolModbusClient
+
+    client = VistaPoolModbusClient(config)
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    class DummyResp:
+        def __init__(self, regs=None):
+            self.registers = regs if regs is not None else [0]
+            self.isError = lambda: False
+
+    # Prepare response order for all blocks.
+    order = [
+        ("rr00", DummyResp([0] * 15)),
+        ("rr01", DummyResp([0] * 18)),
+        ("rr02", DummyResp([0] * 20)),
+        ("rr02_hidro", DummyResp([0] * 2)),
+        ("rr03", DummyResp([0] * 13)),
+        ("rr04-1", DummyResp([0] * 31)),
+        ("rr04-2", DummyResp([0] * 13)),
+        ("rr05", DummyResp([0] * 14)),
+        ("rr06", DummyResp([0] * 13)),
+    ]
+
+    # Setup side_effect for each Modbus read. Only the target block raises Exception.
+    rh_side_effect = []
+    for label, resp in order:
+        if label == block_label:
+            rh_side_effect.append(Exception(f"Simulated exception at {label}"))
+        else:
+            rh_side_effect.append(resp)
+
+    # holding: rr00, rr02, rr02_hidro, rr03, rr04-1, rr04-2, rr05, rr06 (total 8 calls)
+    # input: rr01 (only one call)
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            rh_side_effect[0],  # rr00
+            rh_side_effect[2],  # rr02
+            rh_side_effect[3],  # rr02_hidro
+            rh_side_effect[4],  # rr03
+            rh_side_effect[5],  # rr04-1
+            rh_side_effect[6],  # rr04-2
+            rh_side_effect[7],  # rr05
+            rh_side_effect[8],  # rr06
+        ]
+    )
+    fake_modbus.read_input_registers = AsyncMock(
+        side_effect=[
+            rh_side_effect[1],  # rr01
+        ]
+    )
+
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all()
+    assert result == {}
+    key = f"0x{address:04X}"
+    assert client._failed_reads.get(key, 0) == 1
 
 
 @pytest.mark.asyncio

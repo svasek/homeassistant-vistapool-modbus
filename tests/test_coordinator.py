@@ -117,3 +117,50 @@ def test_firmware_and_model_property(mock_entry):
     assert coordinator.model == "X"
     coordinator.device_name = "Pool"
     assert coordinator.device_name == "Pool"
+
+
+@pytest.mark.asyncio
+async def test_async_update_data_timer_processing(mock_entry):
+    # Prepare a fake timer block with different value combinations
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(return_value={"MBF_POWER_MODULE_VERSION": 0x1234})
+    # Simulate two timers: one with both 'on' and 'interval', another with 'on' missing
+    client.read_all_timers = AsyncMock(
+        return_value={
+            "filtration1": {
+                "enable": True,
+                "on": 1000,  # e.g. 1000 seconds since midnight
+                "interval": 3600,  # 1 hour
+                "period": 2,
+            },
+            "filtration2": {
+                "enable": False,
+                "on": None,
+                "interval": 1800,  # 30 minutes
+                "period": 1,
+            },
+        }
+    )
+    # Set options so at least one timer will be enabled
+    entry = MagicMock()
+    entry.options = {"use_filtration1": True, "use_filtration2": True}
+    entry.data = {"name": "Test Pool"}
+    entry.entry_id = "test_entry_id"
+    entry.unique_id = "test_slug"
+
+    coordinator = VistaPoolCoordinator(MagicMock(), client, entry, entry.entry_id)
+    data = await coordinator._async_update_data()
+
+    # Check that timer data keys are present and correctly computed
+    assert data["filtration1_enable"] is True
+    assert data["filtration1_start"] == 1000
+    assert data["filtration1_interval"] == 3600
+    assert data["filtration1_period"] == 2
+    # stop = (1000 + 3600) % 86400 = 4600
+    assert data["filtration1_stop"] == 4600
+
+    assert data["filtration2_enable"] is False
+    assert data["filtration2_start"] is None
+    assert data["filtration2_interval"] == 1800
+    assert data["filtration2_period"] == 1
+    assert data["filtration2_stop"] is None
