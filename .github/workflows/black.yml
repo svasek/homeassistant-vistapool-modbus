@@ -5,9 +5,11 @@ on:
   push:
     paths:
       - "custom_components/vistapool/**"
+      - "tests/**"
   pull_request:
     paths:
       - "custom_components/vistapool/**"
+      - "tests/**"
 
 permissions:
   contents: write
@@ -19,8 +21,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        # with:
-        #   token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,35 +28,17 @@ jobs:
           python-version: 3.13
 
       - name: Install Black
-        run: pip install black[colorama]==25.1.0
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade black[colorama]
 
       - name: Run Black
         # Fail on PR, Pass on main
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "On main branch, running Black check (but will not fail if not clean)."
-            black --check custom_components/vistapool || echo "::warning file=Black::Some files would be reformatted"
+            black --check custom_components/vistapool tests || echo "::warning file=Black::Some files would be reformatted"
           else
             echo "On PR or other branch, running Black check (will fail if not clean)."
-            black --check custom_components/vistapool
+            black --check custom_components/vistapool tests
           fi
-
-      # - name: Commit changes (if any)
-      #   run: |
-      #     AUTHOR_NAME=$(git log -1 --pretty=format:'%an')
-      #     AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae')
-      #     git config user.name "$AUTHOR_NAME"
-      #     git config user.email "$AUTHOR_EMAIL"
-      #     if ! git diff --quiet; then
-      #       git add custom_components/vistapool
-      #       git commit -m "style: autoformat Python files with Black"
-      #     else
-      #       echo "No changes to commit"
-      #     fi
-      #     git pull --rebase
-      #     # Push only if HEAD is ahead of remote
-      #     if [ $(git rev-list --left-right --count origin/$(git rev-parse --abbrev-ref HEAD)...HEAD | awk '{print $2}') -gt 0 ]; then
-      #       git push
-      #     else
-      #       echo "Nothing new to push."
-      #     fi
