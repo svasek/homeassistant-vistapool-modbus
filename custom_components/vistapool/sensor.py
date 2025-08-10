@@ -134,7 +134,6 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
 
         self._attr_native_unit_of_measurement = props.get("unit") or None
-        self._attr_unit_of_measurement = props.get("unit") or None
         self._attr_device_class = props.get("device_class") or None
         self._attr_state_class = props.get("state_class") or None
         self._attr_entity_category = props.get("entity_category") or None

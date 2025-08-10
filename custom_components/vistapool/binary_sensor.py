@@ -29,7 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 
 DISABLED_SUFFIXES = [
     " measurement active",
-    " pump activee",
+    " pump active",
     " Acid Pump",
     " shock mode",
     " On Target",
@@ -74,15 +74,13 @@ async def async_setup_entry(
         if "measurement module detected" in key.lower():
             continue
         # Skip the base pump if the relay is not assigned
-        if (
-            key == "pH pump active"
-            and coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO") is not True
+        if key == "pH pump active" and not bool(
+            coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO")
         ):
             continue
         # Skip the acid pump if the relay is not assigned
-        if (
-            key == "pH acid pump active"
-            and coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO") is not True
+        if key == "pH acid pump active" and not bool(
+            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO")
         ):
             continue
         # Skip chlorine related sensors

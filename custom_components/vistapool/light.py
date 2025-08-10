@@ -16,7 +16,7 @@
 
 import asyncio
 import logging
-from homeassistant.components.light import LightEntity
+from homeassistant.components.light import LightEntity, ColorMode
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from .const import DOMAIN, LIGHT_DEFINITIONS, EXEC_REGISTER
@@ -166,10 +166,10 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
     def supported_color_modes(self) -> set[str]:
         """Return the color modes supported by this light."""
         # For simple on/off light, the correct mode is COLOR_MODE_ONOFF (or ColorMode.ONOFF)
-        return {"onoff"}
+        return {ColorMode.ONOFF}
 
     @property
     def color_mode(self) -> str:
         """Return the current color mode of the light."""
         # Actual mode is always onoff, as brightness and color are not available
-        return "onoff"
+        return ColorMode.ONOFF

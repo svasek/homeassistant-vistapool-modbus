@@ -69,7 +69,6 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
         self._switch_type = props.get("switch_type") or None
         self._relay_index = props.get("relay_index") or None
-        self._attr_icon = props.get("icon") or None
         self._attr_entity_category = props.get("entity_category") or None
         self._icon_on = props.get("icon_on")
         self._icon_off = props.get("icon_off")
