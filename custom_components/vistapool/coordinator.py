@@ -48,6 +48,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             _LOGGER,
             name=f"{DOMAIN} coordinator",
             update_interval=self.normal_update_interval,
+            config_entry=entry,
         )
         self.client = client
         self.entry = entry
