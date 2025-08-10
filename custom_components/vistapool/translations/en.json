@@ -397,7 +397,8 @@
           "active": "Active",
           "active_redox": "Active (Redox control)"
         }
-      }
+      },
+      "relay_activation_delay": { "name": "pH pump activation delay (s)" }
     }
   },
   "services": {

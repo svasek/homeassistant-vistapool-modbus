@@ -90,7 +90,7 @@
           "manual": "Manuel",
           "auto": "Automatique",
           "heating": "Chauffage",
-          "smart": "Intelligent",
+          "smart": "Astucieux",
           "intelligent": "Intelligent",
           "backwash": "Contre-lavage"
         }
@@ -397,7 +397,8 @@
           "active": "Actif",
           "active_redox": "Actif (contrôle Redox)"
         }
-      }
+      },
+      "relay_activation_delay": { "name": "Délai d'activation de la pompe pH (s)" }
     }
   },
   "services": {

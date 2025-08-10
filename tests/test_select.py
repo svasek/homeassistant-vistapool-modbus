@@ -455,3 +455,47 @@ async def test_async_select_option_stop_field(mock_coordinator):
             "stop": "03:00",
         },
     )
+
+
+def test_options_ph_pump_delay(mock_coordinator):
+    """Test that the pH pump delay select returns the expected fixed options."""
+    props = make_props()
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_RELAY_ACTIVATION_DELAY", props
+    )
+    mock_coordinator.data = {"MBF_PAR_RELAY_ACTIVATION_DELAY": 20}
+    opts = ent.options
+    assert "10" in opts and "300" in opts
+    # current value should be present even if not in the fixed list
+    mock_coordinator.data["MBF_PAR_RELAY_ACTIVATION_DELAY"] = 25
+    opts = ent.options
+    assert "25" in opts
+
+
+def test_current_option_ph_pump_delay(mock_coordinator):
+    """Test that current_option returns the delay in seconds as string."""
+    props = make_props()
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_RELAY_ACTIVATION_DELAY", props
+    )
+    mock_coordinator.data = {"MBF_PAR_RELAY_ACTIVATION_DELAY": 120}
+    assert ent.current_option == "120"
+    mock_coordinator.data["MBF_PAR_RELAY_ACTIVATION_DELAY"] = None
+    assert ent.current_option is None
+
+
+@pytest.mark.asyncio
+async def test_async_select_option_ph_pump_delay(mock_coordinator):
+    """Test that selecting a delay writes (value - 10) to register 0x0433."""
+    props = make_props()
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_RELAY_ACTIVATION_DELAY", props
+    )
+    mock_coordinator.client = AsyncMock()
+    ent.coordinator.client = mock_coordinator.client
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = Mock()
+
+    # Select 180s -> should write 170 (device internally adds 10s)
+    await ent.async_select_option("180")
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x0433, 170)

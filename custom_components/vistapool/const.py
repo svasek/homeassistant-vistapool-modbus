@@ -889,6 +889,11 @@ SELECT_DEFINITIONS = {
         "select_type": "relay_mode",
         "option": "use_light",
     },
+    "MBF_PAR_RELAY_ACTIVATION_DELAY": {
+        "icon": "mdi:timer-plus-outline",
+        "register": 0x0433,
+        "entity_category": EntityCategory.CONFIG,
+    },
 }
 
 SWITCH_DEFINITIONS = {

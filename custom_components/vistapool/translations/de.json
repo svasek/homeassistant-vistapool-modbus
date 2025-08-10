@@ -397,7 +397,8 @@
           "active": "Aktiv",
           "active_redox": "Aktiv (Redoxsteuerung)"
         }
-      }
+      },
+      "relay_activation_delay": { "name": "pH-Pumpenstartverzögerung (s)" }
     }
   },
   "services": {

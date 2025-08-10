@@ -397,7 +397,8 @@
           "active": "Activo",
           "active_redox": "Activo (control Redox)"
         }
-      }
+      },
+      "relay_activation_delay": { "name": "Retardo de activación de la bomba de pH (s)" }
     }
   },
   "services": {

@@ -44,7 +44,7 @@ class VistaPoolModbusClient:
     def __init__(self, config):
         self._host = config["host"]
         self._port = config.get("port", 502)
-        self._unit = config.get("slave", 1)
+        self._unit = config.get("slave_id", 1)
         self._client = None  # ← Persistent client instance
         self._client_lock = asyncio.Lock()
 
@@ -252,13 +252,16 @@ class VistaPoolModbusClient:
 
         """WARNING: Device limit for reading registers is 31 at one request !!!"""
 
-        def get_safe(regs, idx) -> int | None:
-            """Safely get a register value or return None if index is out of range."""
+        def get_safe(regs, idx, transform=None) -> int | None:
+            """Safely get a register value or return None if missing. Optionally apply a transform."""
             try:
-                return regs[idx]
+                val = regs[idx]
             except IndexError:
                 _LOGGER.warning(f"Register at index {idx} is missing in {regs}")
                 return None
+            if val is None:
+                return None
+            return transform(val) if callable(transform) else val
 
         start = time.monotonic()
         try:
@@ -296,7 +299,7 @@ class VistaPoolModbusClient:
                 _LOGGER.debug("Raw rr00: %s", reg00)
                 if len(reg00) < rr00_count:
                     _LOGGER.warning(
-                        "Expected at least %d registers from 0x0300, got %d",
+                        "Expected at least %d registers from 0x0000, got %d",
                         rr00_count,
                         len(reg00),
                     )
@@ -349,23 +352,23 @@ class VistaPoolModbusClient:
                 # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
                 # fmt: off
                 result.update({
-                    "MBF_ION_CURRENT": get_safe(reg01, 0),                # 0x0100        Ionization level measured
-                    "MBF_HIDRO_CURRENT": get_safe(reg01, 1) / 10.0,       # 0x0101        Hydrolysis intensity level
-                    "MBF_MEASURE_PH": get_safe(reg01, 2) / 100.0,         # 0x0102 ph     pH level measured in 1/100 (700 = 7.00)
-                    "MBF_MEASURE_RX": get_safe(reg01, 3),                 # 0x0103 mV     Redox level measured in mV
-                    "MBF_MEASURE_CL": get_safe(reg01, 4) / 100.0,         # 0x0104 ppm    Chlorine level measured in 1/100 ppm (100 = 1.00 ppm)
-                    "MBF_MEASURE_CONDUCTIVITY": get_safe(reg01, 5),       # 0x0105 %      Conductivity level measured in %
-                    "MBF_MEASURE_TEMPERATURE": get_safe(reg01, 6) / 10.0, # 0x0106 °C     Temperature sensor measured in 1/10° C (100 = 10.0°C)
-                    "MBF_PH_STATUS": get_safe(reg01, 7),                  # 0x0107 mask   Status of the pH-module
-                    "MBF_RX_STATUS": get_safe(reg01, 8),                  # 0x0108 mask   Status of the Rx-module
-                    "MBF_CL_STATUS": get_safe(reg01, 9),                  # 0x0109 mask   Status of the Chlorine-module
-                    "MBF_CD_STATUS": get_safe(reg01, 10),                 # 0x010A mask   Status of the Conductivity-module
-                    "MBF_ION_STATUS": get_safe(reg01, 12),                # 0x010C mask   Status of the Ionization-module
-                    "MBF_HIDRO_STATUS": get_safe(reg01, 13),              # 0x010D mask   Status of the Hydrolysis-module
-                    "MBF_RELAY_STATE": get_safe(reg01, 14),               # 0x010E mask   Status of each configurable relay
-                    "MBF_HIDRO_SWITCH_VALUE": get_safe(reg01, 15),        # 0x010F        INTERNAL - contains the opening of the hydrolysis PWM.
-                    "MBF_NOTIFICATION": get_safe(reg01, 16),              # 0x0110 mask   Bit field that informs whether a property page has changed since the last time it was queried. (see MBMSK_NOTIF_*). This register makes it possible to refresh the content of the registers maintained by a modbus master in an optimized way, without the need to reread all registers periodically, but only those on a page that has been changed.
-                    "MBF_HIDRO_VOLTAGE": get_safe(reg01, 17),             # 0x0111        The voltage applied to the hydrolysis cell. This register, together with that of MBF_HIDRO_CURRENT allows extrapolation of water salinity.
+                    "MBF_ION_CURRENT": get_safe(reg01, 0),                              # 0x0100        Ionization level measured
+                    "MBF_HIDRO_CURRENT": get_safe(reg01, 1, lambda v: v / 10.0),        # 0x0101        Hydrolysis intensity level
+                    "MBF_MEASURE_PH": get_safe(reg01, 2, lambda v: v / 100.0),          # 0x0102 ph     pH level measured in 1/100 (700 = 7.00)
+                    "MBF_MEASURE_RX": get_safe(reg01, 3),                               # 0x0103 mV     Redox level measured in mV
+                    "MBF_MEASURE_CL": get_safe(reg01, 4, lambda v: v / 100.0),          # 0x0104 ppm    Chlorine level measured in 1/100 ppm (100 = 1.00 ppm)
+                    "MBF_MEASURE_CONDUCTIVITY": get_safe(reg01, 5),                     # 0x0105 %      Conductivity level measured in %
+                    "MBF_MEASURE_TEMPERATURE": get_safe(reg01, 6, lambda v: v / 10.0),  # 0x0106 °C     Temperature sensor measured in 1/10° C (100 = 10.0°C)
+                    "MBF_PH_STATUS": get_safe(reg01, 7),                                # 0x0107 mask   Status of the pH-module
+                    "MBF_RX_STATUS": get_safe(reg01, 8),                                # 0x0108 mask   Status of the Rx-module
+                    "MBF_CL_STATUS": get_safe(reg01, 9),                                # 0x0109 mask   Status of the Chlorine-module
+                    "MBF_CD_STATUS": get_safe(reg01, 10),                               # 0x010A mask   Status of the Conductivity-module
+                    "MBF_ION_STATUS": get_safe(reg01, 12),                              # 0x010C mask   Status of the Ionization-module
+                    "MBF_HIDRO_STATUS": get_safe(reg01, 13),                            # 0x010D mask   Status of the Hydrolysis-module
+                    "MBF_RELAY_STATE": get_safe(reg01, 14),                             # 0x010E mask   Status of each configurable relay
+                    "MBF_HIDRO_SWITCH_VALUE": get_safe(reg01, 15),                      # 0x010F        INTERNAL - contains the opening of the hydrolysis PWM.
+                    "MBF_NOTIFICATION": get_safe(reg01, 16),                            # 0x0110 mask   Bit field that informs whether a property page has changed since the last time it was queried. (see MBMSK_NOTIF_*). This register makes it possible to refresh the content of the registers maintained by a modbus master in an optimized way, without the need to reread all registers periodically, but only those on a page that has been changed.
+                    "MBF_HIDRO_VOLTAGE": get_safe(reg01, 17),                           # 0x0111        The voltage applied to the hydrolysis cell. This register, together with that of MBF_HIDRO_CURRENT allows extrapolation of water salinity.
                 })
                 # fmt: on
 
@@ -403,7 +406,7 @@ class VistaPoolModbusClient:
                 _LOGGER.error("Modbus read error from 0x0206: %s", rr02)
                 self._failed_reads["0x0206"] = self._failed_reads.get("0x0206", 0) + 1
             else:
-                self._successful_addresses.append(("0x00206", time.time()))
+                self._successful_addresses.append(("0x0206", time.time()))
                 reg02 = rr02.registers
                 _LOGGER.debug("Raw rr02: %s", reg02)
                 if len(reg02) < rr02_count:
@@ -446,7 +449,7 @@ class VistaPoolModbusClient:
                 _LOGGER.error("Modbus read error from 0x0280: %s", rr02_hidro)
                 self._failed_reads["0x0280"] = self._failed_reads.get("0x0280", 0) + 1
             else:
-                self._successful_addresses.append(("0x00280", time.time()))
+                self._successful_addresses.append(("0x0280", time.time()))
                 reg02_hidro = rr02_hidro.registers
                 _LOGGER.debug("Raw rr02_hidro: %s", reg02_hidro)
                 if len(reg02_hidro) < rr02_hidro_count:
@@ -497,15 +500,15 @@ class VistaPoolModbusClient:
                 # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297]
                 # fmt: off
                 result.update({
-                    "MBF_PAR_VERSION": get_safe(reg03, 0),              # 0x0300*        Software version of the PowerBox
-                    "MBF_PAR_MODEL": get_safe(reg03, 1),                # 0x0301* mask   System model options
-                    "MBF_PAR_SERNUM": get_safe(reg03, 2),               # 0x0302*        Serial number of the PowerBox
-                    "MBF_PAR_ION_NOM":  get_safe(reg03, 3),             # 0x0303*        Ionization maximum production level (DO NOT WRITE!)
+                    "MBF_PAR_VERSION": get_safe(reg03, 0),                          # 0x0300*        Software version of the PowerBox
+                    "MBF_PAR_MODEL": get_safe(reg03, 1),                            # 0x0301* mask   System model options
+                    "MBF_PAR_SERNUM": get_safe(reg03, 2),                           # 0x0302*        Serial number of the PowerBox
+                    "MBF_PAR_ION_NOM":  get_safe(reg03, 3),                         # 0x0303*        Ionization maximum production level (DO NOT WRITE!)
                     # 0x0304–0x0305 skipped
-                    "MBF_PAR_HIDRO_NOM":  get_safe(reg03, 6) / 10.0,    # 0x0306*        Hydrolysis maximum production level. (DO NOT WRITE!) If the hydrolysis is set to work in percent mode, this value will be 100. If the hydrolysis module is set to work in g/h production, this module will contain the maximum amount of production in g/h units. (DO NOT WRITE!)
-                    "MBF_PAR_SAL_AMPS":  get_safe(reg03, 10),           # 0x030A         Current command in regulation for which we are going to measure voltage
-                    "MBF_PAR_SAL_CELLK":  get_safe(reg03, 11),          # 0x030B         Specifies the relationship between the resistance obtained in the measurement process and its equivalence in g / l (grams per liter)
-                    "MBF_PAR_SAL_TCOMP":  get_safe(reg03, 12),          # 0x030C         Specifies the deviation in temperature from the conductivity.
+                    "MBF_PAR_HIDRO_NOM":  get_safe(reg03, 6, lambda v: v / 10.0),   # 0x0306*        Hydrolysis maximum production level. (DO NOT WRITE!) If the hydrolysis is set to work in percent mode, this value will be 100. If the hydrolysis module is set to work in g/h production, this module will contain the maximum amount of production in g/h units. (DO NOT WRITE!)
+                    "MBF_PAR_SAL_AMPS":  get_safe(reg03, 10),                       # 0x030A         Current command in regulation for which we are going to measure voltage
+                    "MBF_PAR_SAL_CELLK":  get_safe(reg03, 11),                      # 0x030B         Specifies the relationship between the resistance obtained in the measurement process and its equivalence in g / l (grams per liter)
+                    "MBF_PAR_SAL_TCOMP":  get_safe(reg03, 12),                      # 0x030C         Specifies the deviation in temperature from the conductivity.
                 })
                 # fmt: on
 
@@ -550,50 +553,50 @@ class VistaPoolModbusClient:
             # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             # fmt: off
             result.update({
-                "MBF_PAR_TIME_LOW": get_safe(reg04, 0),                    # 0x0408*        System timestamp as unix timestamp (32 bit value - low word).
-                "MBF_PAR_TIME_HIGH": get_safe(reg04, 1),                   # 0x0409*        System timestamp as unix timestamp (32 bit value - high word).
-                "MBF_PAR_PH_ACID_RELAY_GPIO": get_safe(reg04, 2),          # 0x040A*        Relay number assigned to the acid pump function (only with pH module).
-                "MBF_PAR_PH_BASE_RELAY_GPIO": get_safe(reg04, 3),          # 0x040B*        Relay number assigned to the base pump function (only with pH module).
-                "MBF_PAR_RX_RELAY_GPIO": get_safe(reg04, 4),               # 0x040C*        Relay number assigned to the Redox level regulation function. If the value is 0, there is no relay assigned, and therefore there is no pump function (ON / OFF should not be displayed)
-                "MBF_PAR_CL_RELAY_GPIO": get_safe(reg04, 5),               # 0x040D*        Relay number assigned to the chlorine pump function (only with free chlorine measuring modules).
-                "MBF_PAR_CD_RELAY_GPIO": get_safe(reg04, 6),               # 0x040E*        Relay number assigned to the conductivity (brine) pump function (only with conductivity measurement modules).
-                "MBF_PAR_TEMPERATURE_ACTIVE": get_safe(reg04, 7),          # 0x040F*        Indicates whether the equipment has a temperature measurement or not.
-                "MBF_PAR_LIGHTING_GPIO": get_safe(reg04, 8),               # 0x0410*        Relay number assigned to the lighting function. 0: inactive.
-                "MBF_PAR_FILT_MODE": get_safe(reg04, 9),                   # 0x0411*        Filtration mode (see MBV_PAR_FILT_*)
-                "MBF_PAR_FILT_GPIO": get_safe(reg04, 10),                  # 0x0412*        Relay selected to perform the filtering function (by default it is relay 2). When this value is at zero, there is no relay assigned and therefore it is understood that the equipment does not control the filtration. In this case, the filter option does not appear in the user menu.
-                "MBF_PAR_FILT_MANUAL_STATE": get_safe(reg04, 11),          # 0x0413         Filtration status in manual mode (on = 1; off = 0)
-                "MBF_PAR_HEATING_MODE": get_safe(reg04, 12),               # 0x0414         Heating mode: 0 = the equipment is not heated. 1 = the equipment is heating.
-                "MBF_PAR_HEATING_GPIO": get_safe(reg04, 13),               # 0x0415         Relay number assigned to perform the heating function (by default it is relay 7). When this value is at zero, there is no relay assigned and therefore it is understood that the equipment does not control the heating. In this case, the filter modes associated with heating will not be displayed.
-                "MBF_PAR_HEATING_TEMP": get_safe(reg04, 14),               # 0x0416         Heating mode: Heating setpoint temperature
-                "MBF_PAR_CLIMA_ONOFF": get_safe(reg04, 15),                # 0x0417         Activation of the climate mode (0 = inactive, 1 = active).
-                "MBF_PAR_SMART_TEMP_HIGH": get_safe(reg04, 16),            # 0x0418         Smart mode: Upper temperature
-                "MBF_PAR_SMART_TEMP_LOW": get_safe(reg04, 17),             # 0x0419         Smart mode: Lower temperature
-                "MBF_PAR_SMART_ANTI_FREEZE": get_safe(reg04, 18),          # 0x041A         Smart mode: Antifreeze mode activated (1) or not (0).
-                "MBF_PAR_SMART_INTERVAL_REDUCTION": get_safe(reg04, 19),   # 0x041B         Smart mode: This register is read-only and reports to the outside what percentage (0 to 100%) is being applied to the nominal filtration time. 100% means that the total programmed time is being filtered.
-                "MBF_PAR_INTELLIGENT_TEMP": get_safe(reg04, 20),           # 0x041C         Intelligent mode: Setpoint temperature
-                "MBF_PAR_INTELLIGENT_FILT_MIN_TIME": get_safe(reg04, 21),  # 0x041D         Intelligent mode: Minimum filtration time in minutes
-                "MBF_PAR_INTELLIGENT_BONUS_TIME": get_safe(reg04, 22),     # 0x041E         Intelligent mode: Bonus time for the current set of intervals
-                "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": get_safe(reg04, 23), # 0x041F       Intelligent mode: Time to next filtration interval. When it reaches 0 an interval is started and the number of seconds is reloaded for the next interval (2x3600)
-                "MBF_PAR_INTELLIGENT_INTERVALS": get_safe(reg04, 24),      # 0x0420         Intelligent mode: Number of started intervals. When it reaches 12 it is reset to 0 and the bonus time is reloaded with the value of MBF_PAR_INTELLIGENT_FILT_MIN_TIME
-                "MBF_PAR_FILTRATION_STATE": get_safe(reg04, 25),           # 0x0421         Filtration state: 0 is off and 1 is on. The filtration state is regulated according to the MBF_PAR_FILT_MANUAL_STATE register if the filtration mode held in register MBF_PAR_FILT_MODE is set to FILT_MODE_MANUAL (0).
-                "MBF_PAR_HEATING_DELAY_TIME": get_safe(reg04, 26),         # 0x0422         Timer in seconds that counts up when the heating is to be enabled. Once this counter reaches 60 seconds, the heating is then enabled. This counter is for internal use only.
-                "MBF_PAR_FILTERING_TIME_LOW": get_safe(reg04, 27),         # 0x0423         Internal timer for the intelligent filtering mode (32-bit value - low word). It counts the filtering time done during a given day. This register is only for internal use and should not be modified by the user.
-                "MBF_PAR_FILTERING_TIME_HIGH": get_safe(reg04, 28),        # 0x0424         Internal timer for the intelligent filtering mode (32-bit value - high word)
-                "MBF_PAR_INTELLIGENT_INTERVAL_TIME_LOW": get_safe(reg04, 29), # 0x0425      Internal timer that counts the filtration interval assigned to the the intelligent mode (32-bit value - low word). This register is only for internal use and should not be modified by the user.
-                "MBF_PAR_INTELLIGENT_INTERVAL_TIME_HIGH": get_safe(reg04, 30), # 0x0426     Internal timer that counts the filtration interval assigned to the the intelligent mode (32-bit value - high word)
-                "MBF_PAR_UV_MODE": get_safe(reg04, 31),                    # 0x0427         UV mode active or not - see MBV_PAR_UV_MODE*. To enable UV support for a given device, add the mask MBMSK_MODEL_UV to the MBF_PAR_MODEL register.
-                "MBF_PAR_UV_HIDE_WARN": get_safe(reg04, 32),               # 0x0428  mask   Suppression for warning messages in the UV mode (see MBMSK_UV_HIDE_WARN_*)
-                "MBF_PAR_UV_RELAY_GPIO": get_safe(reg04, 33),              # 0x0429         Relay number assigned to the UV function.
-                "MBF_PAR_PH_PUMP_REP_TIME_ON": get_safe(reg04, 34),        # 0x042A  mask   Time that the pH pump will be turn on in the repetitive mode (see MBMSK_PH_PUMP_*). Contains a special time format, see desc for MBMSK_PH_PUMP_TIME.
-                "MBF_PAR_PH_PUMP_REP_TIME_OFF": get_safe(reg04, 35),       # 0x042B  mask   Time that the pH pump will be turn off in the repetitive mode. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
-                "MBF_PAR_HIDRO_COVER_ENABLE": get_safe(reg04, 36),         # 0x042C  mask   Options for the hydrolysis/electrolysis module (see MBMSK_HIDRO_*)
-                "MBF_PAR_HIDRO_COVER_REDUCTION": get_safe(reg04, 37),      # 0x042D         Configured levels for the cover reduction and the hydrolysis shutdown temperature options: LSB = Percentage for the cover reduction, MSB = Temperature level for the hydrolysis shutdown (see MBMSK_HIDRO_*)
-                "MBF_PAR_PUMP_RELAY_TIME_OFF": get_safe(reg04, 38),        # 0x042E         Time level in minutes or seconds that the dosing pump must remain off when the temporized pump mode is selected. This time level register applies to all pumps except pH. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
-                "MBF_PAR_PUMP_RELAY_TIME_ON": get_safe(reg04, 39),         # 0x042F         Time level in minutes or seconds that the dosing pump must remain on when the temporized pump mode is selected. This time level register applies to all pumps except pH. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
-                "MBF_PAR_RELAY_PH": get_safe(reg04, 40),                   # 0x0430         Determine what pH regulation configuration the equipment has (see MBV_PAR_RELAY_PH_*)
-                "MBF_PAR_RELAY_MAX_TIME": get_safe(reg04, 41),             # 0x0431         Maximum amount of time in seconds, that a dosing pump can operate before rising an alarm signal. The behavior of the system when the dosing time is exceeded is regulated by the type of action stored in the MBF_PAR_RELAY_MODE register.
-                "MBF_PAR_RELAY_MODE": get_safe(reg04, 42),                 # 0x0432         Behavior of the system when the dosing time is exceeded (see MBMSK_PAR_RELAY_MODE_* and MBV_PAR_RELAY_MODE_*)
-                "MBF_PAR_RELAY_ACTIVATION_DELAY": get_safe(reg04, 43),     # 0x0433         Delay time in seconds for the pH pump when the measured pH value is outside the allowable pH setpoints. The system internally adds an extra time of 10 seconds to the value stored here. The pump starts the dosing operation once the condition of pH out of valid interval is maintained during the time specified in this register.
+                "MBF_PAR_TIME_LOW": get_safe(reg04, 0),                                     # 0x0408*        System timestamp as unix timestamp (32 bit value - low word).
+                "MBF_PAR_TIME_HIGH": get_safe(reg04, 1),                                    # 0x0409*        System timestamp as unix timestamp (32 bit value - high word).
+                "MBF_PAR_PH_ACID_RELAY_GPIO": get_safe(reg04, 2),                           # 0x040A*        Relay number assigned to the acid pump function (only with pH module).
+                "MBF_PAR_PH_BASE_RELAY_GPIO": get_safe(reg04, 3),                           # 0x040B*        Relay number assigned to the base pump function (only with pH module).
+                "MBF_PAR_RX_RELAY_GPIO": get_safe(reg04, 4),                                # 0x040C*        Relay number assigned to the Redox level regulation function. If the value is 0, there is no relay assigned, and therefore there is no pump function (ON / OFF should not be displayed)
+                "MBF_PAR_CL_RELAY_GPIO": get_safe(reg04, 5),                                # 0x040D*        Relay number assigned to the chlorine pump function (only with free chlorine measuring modules).
+                "MBF_PAR_CD_RELAY_GPIO": get_safe(reg04, 6),                                # 0x040E*        Relay number assigned to the conductivity (brine) pump function (only with conductivity measurement modules).
+                "MBF_PAR_TEMPERATURE_ACTIVE": get_safe(reg04, 7),                           # 0x040F*        Indicates whether the equipment has a temperature measurement or not.
+                "MBF_PAR_LIGHTING_GPIO": get_safe(reg04, 8),                                # 0x0410*        Relay number assigned to the lighting function. 0: inactive.
+                "MBF_PAR_FILT_MODE": get_safe(reg04, 9),                                    # 0x0411*        Filtration mode (see MBV_PAR_FILT_*)
+                "MBF_PAR_FILT_GPIO": get_safe(reg04, 10),                                   # 0x0412*        Relay selected to perform the filtering function (by default it is relay 2). When this value is at zero, there is no relay assigned and therefore it is understood that the equipment does not control the filtration. In this case, the filter option does not appear in the user menu.
+                "MBF_PAR_FILT_MANUAL_STATE": get_safe(reg04, 11),                           # 0x0413         Filtration status in manual mode (on = 1; off = 0)
+                "MBF_PAR_HEATING_MODE": get_safe(reg04, 12),                                # 0x0414         Heating mode: 0 = the equipment is not heated. 1 = the equipment is heating.
+                "MBF_PAR_HEATING_GPIO": get_safe(reg04, 13),                                # 0x0415         Relay number assigned to perform the heating function (by default it is relay 7). When this value is at zero, there is no relay assigned and therefore it is understood that the equipment does not control the heating. In this case, the filter modes associated with heating will not be displayed.
+                "MBF_PAR_HEATING_TEMP": get_safe(reg04, 14),                                # 0x0416         Heating mode: Heating setpoint temperature
+                "MBF_PAR_CLIMA_ONOFF": get_safe(reg04, 15),                                 # 0x0417         Activation of the climate mode (0 = inactive, 1 = active).
+                "MBF_PAR_SMART_TEMP_HIGH": get_safe(reg04, 16),                             # 0x0418         Smart mode: Upper temperature
+                "MBF_PAR_SMART_TEMP_LOW": get_safe(reg04, 17),                              # 0x0419         Smart mode: Lower temperature
+                "MBF_PAR_SMART_ANTI_FREEZE": get_safe(reg04, 18),                           # 0x041A         Smart mode: Antifreeze mode activated (1) or not (0).
+                "MBF_PAR_SMART_INTERVAL_REDUCTION": get_safe(reg04, 19),                    # 0x041B         Smart mode: This register is read-only and reports to the outside what percentage (0 to 100%) is being applied to the nominal filtration time. 100% means that the total programmed time is being filtered.
+                "MBF_PAR_INTELLIGENT_TEMP": get_safe(reg04, 20),                            # 0x041C         Intelligent mode: Setpoint temperature
+                "MBF_PAR_INTELLIGENT_FILT_MIN_TIME": get_safe(reg04, 21),                   # 0x041D         Intelligent mode: Minimum filtration time in minutes
+                "MBF_PAR_INTELLIGENT_BONUS_TIME": get_safe(reg04, 22),                      # 0x041E         Intelligent mode: Bonus time for the current set of intervals
+                "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": get_safe(reg04, 23),                # 0x041F       Intelligent mode: Time to next filtration interval. When it reaches 0 an interval is started and the number of seconds is reloaded for the next interval (2x3600)
+                "MBF_PAR_INTELLIGENT_INTERVALS": get_safe(reg04, 24),                       # 0x0420         Intelligent mode: Number of started intervals. When it reaches 12 it is reset to 0 and the bonus time is reloaded with the value of MBF_PAR_INTELLIGENT_FILT_MIN_TIME
+                "MBF_PAR_FILTRATION_STATE": get_safe(reg04, 25),                            # 0x0421         Filtration state: 0 is off and 1 is on. The filtration state is regulated according to the MBF_PAR_FILT_MANUAL_STATE register if the filtration mode held in register MBF_PAR_FILT_MODE is set to FILT_MODE_MANUAL (0).
+                "MBF_PAR_HEATING_DELAY_TIME": get_safe(reg04, 26),                          # 0x0422         Timer in seconds that counts up when the heating is to be enabled. Once this counter reaches 60 seconds, the heating is then enabled. This counter is for internal use only.
+                "MBF_PAR_FILTERING_TIME_LOW": get_safe(reg04, 27),                          # 0x0423         Internal timer for the intelligent filtering mode (32-bit value - low word). It counts the filtering time done during a given day. This register is only for internal use and should not be modified by the user.
+                "MBF_PAR_FILTERING_TIME_HIGH": get_safe(reg04, 28),                         # 0x0424         Internal timer for the intelligent filtering mode (32-bit value - high word)
+                "MBF_PAR_INTELLIGENT_INTERVAL_TIME_LOW": get_safe(reg04, 29),               # 0x0425      Internal timer that counts the filtration interval assigned to the the intelligent mode (32-bit value - low word). This register is only for internal use and should not be modified by the user.
+                "MBF_PAR_INTELLIGENT_INTERVAL_TIME_HIGH": get_safe(reg04, 30),              # 0x0426     Internal timer that counts the filtration interval assigned to the the intelligent mode (32-bit value - high word)
+                "MBF_PAR_UV_MODE": get_safe(reg04, 31),                                     # 0x0427         UV mode active or not - see MBV_PAR_UV_MODE*. To enable UV support for a given device, add the mask MBMSK_MODEL_UV to the MBF_PAR_MODEL register.
+                "MBF_PAR_UV_HIDE_WARN": get_safe(reg04, 32),                                # 0x0428  mask   Suppression for warning messages in the UV mode (see MBMSK_UV_HIDE_WARN_*)
+                "MBF_PAR_UV_RELAY_GPIO": get_safe(reg04, 33),                               # 0x0429         Relay number assigned to the UV function.
+                "MBF_PAR_PH_PUMP_REP_TIME_ON": get_safe(reg04, 34),                         # 0x042A  mask   Time that the pH pump will be turn on in the repetitive mode (see MBMSK_PH_PUMP_*). Contains a special time format, see desc for MBMSK_PH_PUMP_TIME.
+                "MBF_PAR_PH_PUMP_REP_TIME_OFF": get_safe(reg04, 35),                        # 0x042B  mask   Time that the pH pump will be turn off in the repetitive mode. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
+                "MBF_PAR_HIDRO_COVER_ENABLE": get_safe(reg04, 36),                          # 0x042C  mask   Options for the hydrolysis/electrolysis module (see MBMSK_HIDRO_*)
+                "MBF_PAR_HIDRO_COVER_REDUCTION": get_safe(reg04, 37),                       # 0x042D         Configured levels for the cover reduction and the hydrolysis shutdown temperature options: LSB = Percentage for the cover reduction, MSB = Temperature level for the hydrolysis shutdown (see MBMSK_HIDRO_*)
+                "MBF_PAR_PUMP_RELAY_TIME_OFF": get_safe(reg04, 38),                         # 0x042E         Time level in minutes or seconds that the dosing pump must remain off when the temporized pump mode is selected. This time level register applies to all pumps except pH. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
+                "MBF_PAR_PUMP_RELAY_TIME_ON": get_safe(reg04, 39),                          # 0x042F         Time level in minutes or seconds that the dosing pump must remain on when the temporized pump mode is selected. This time level register applies to all pumps except pH. Contains a special time format, see desc for MBMSK_PH_PUMP_TIME, has no upper configuration bit 0x8000
+                "MBF_PAR_RELAY_PH": get_safe(reg04, 40),                                    # 0x0430         Determine what pH regulation configuration the equipment has (see MBV_PAR_RELAY_PH_*)
+                "MBF_PAR_RELAY_MAX_TIME": get_safe(reg04, 41),                              # 0x0431         Maximum amount of time in seconds, that a dosing pump can operate before rising an alarm signal. The behavior of the system when the dosing time is exceeded is regulated by the type of action stored in the MBF_PAR_RELAY_MODE register.
+                "MBF_PAR_RELAY_MODE": get_safe(reg04, 42),                                  # 0x0432         Behavior of the system when the dosing time is exceeded (see MBMSK_PAR_RELAY_MODE_* and MBV_PAR_RELAY_MODE_*)
+                "MBF_PAR_RELAY_ACTIVATION_DELAY": get_safe(reg04, 43, lambda v: v + 10),    # 0x0433         Delay time in seconds for the pH pump when the measured pH value is outside the allowable pH setpoints. The system internally adds an extra time of 10 seconds to the value stored here. The pump starts the dosing operation once the condition of pH out of valid interval is maintained during the time specified in this register.
 
             })
             # fmt: on
@@ -636,15 +639,15 @@ class VistaPoolModbusClient:
                 # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
                 # fmt: off
                 result.update({
-                    "MBF_PAR_HIDRO": get_safe(reg05, 0) / 10.0,       # 0x0502        Hydrolisis target production level. When the hydrolysis production is to be set in percent values, this value will contain the percent of production. If the hydrolysis module is set to work in g/h production, this module will contain the desired amount of production in g/h units. The value adjusted in this register must not exceed the value set in the MBF_PAR_HIDRO_NOM factory register.
-                    "MBF_PAR_PH1": get_safe(reg05, 2) / 100.0,        # 0x0504        Higher limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.5, the numerical content that we must write in this register is 750. This register must be always higher than MBF_PAR_PH2.
-                    "MBF_PAR_PH2": get_safe(reg05, 3) / 100.0,        # 0x0505        Lower limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.0, the numerical content that we must write in this register is 700. This register must be always lower than MBF_PAR_PH1.
+                    "MBF_PAR_HIDRO": get_safe(reg05, 0, lambda v: v / 10.0),    # 0x0502        Hydrolisis target production level. When the hydrolysis production is to be set in percent values, this value will contain the percent of production. If the hydrolysis module is set to work in g/h production, this module will contain the desired amount of production in g/h units. The value adjusted in this register must not exceed the value set in the MBF_PAR_HIDRO_NOM factory register.
+                    "MBF_PAR_PH1": get_safe(reg05, 2, lambda v: v / 100.0),     # 0x0504        Higher limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.5, the numerical content that we must write in this register is 750. This register must be always higher than MBF_PAR_PH2.
+                    "MBF_PAR_PH2": get_safe(reg05, 3, lambda v: v / 100.0),     # 0x0505        Lower limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.0, the numerical content that we must write in this register is 700. This register must be always lower than MBF_PAR_PH1.
                     # 0x0506–0x0507 skipped
-                    "MBF_PAR_RX1": get_safe(reg05, 6),                # 0x0508        Set point for the redox regulation system. This value must be in the range of 0 to 1000.
+                    "MBF_PAR_RX1": get_safe(reg05, 6),                          # 0x0508        Set point for the redox regulation system. This value must be in the range of 0 to 1000.
                     # 0x0509 skipped
-                    "MBF_PAR_CL1": get_safe(reg05, 8) / 100.0,        # 0x050A        Set point for the chlorine regulation system. The value stored in this register is multiplied by 100. This mean that if we want to set a value of 1.5 ppm, we will have to write a numerical value of 150. This value stored in this register must be in the range of 0 to 1000.
+                    "MBF_PAR_CL1": get_safe(reg05, 8, lambda v: v / 100.0),     # 0x050A        Set point for the chlorine regulation system. The value stored in this register is multiplied by 100. This mean that if we want to set a value of 1.5 ppm, we will have to write a numerical value of 150. This value stored in this register must be in the range of 0 to 1000.
                     # 0x050B-0x050E skipped
-                    "MBF_PAR_FILTRATION_CONF": get_safe(reg05, 13),    # 0x050F* mask   ! filtration type and speed, see MBMSK_PAR_FILTRATION_CONF_*
+                    "MBF_PAR_FILTRATION_CONF": get_safe(reg05, 13),             # 0x050F* mask   ! filtration type and speed, see MBMSK_PAR_FILTRATION_CONF_*
                 })
                 # fmt: on
 

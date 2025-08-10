@@ -397,7 +397,8 @@
           "active": "Aktywne",
           "active_redox": "Aktywne (kontrola redoksu)"
         }
-      }
+      },
+      "relay_activation_delay": { "name": "Opóźnienie uruchomienia pompy pH (s)" }
     }
   },
   "services": {

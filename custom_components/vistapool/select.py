@@ -252,6 +252,20 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             await asyncio.sleep(0.2)
             return
 
+        # Special handling: pH pump activation delay uses device-internal +10s offset.
+        if self._key == "MBF_PAR_RELAY_ACTIVATION_DELAY":
+            try:
+                seconds = int(option)
+            except Exception:
+                return
+            # Device adds +10s internally, so write (selected - 10)
+            write_val = max(0, seconds - 10)
+            await client.async_write_register(0x0433, write_val)
+            await asyncio.sleep(0.2)
+            await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
+            return
+
         value = None
         for k, v in self._options_map.items():
             if v == option:
@@ -328,6 +342,14 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             self.coordinator.data.get("Redox measurement module detected")
         ):
             option_keys = [k for k in option_keys if k != 2]
+
+        # Provide static options (seconds) for pH pump activation delay
+        if self._key == "MBF_PAR_RELAY_ACTIVATION_DELAY":
+            opts = ["10", "20", "30", "40", "50", "60", "90", "120", "180", "300"]
+            current = self.coordinator.data.get(self._key)
+            if isinstance(current, int) and str(current) not in opts:
+                return [str(current)] + opts
+            return opts
 
         # Generate options list based on config entry options
         # Also, handle Timer options in cases where doesn't fit the options_map
@@ -419,6 +441,10 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             if value == 2:
                 return "auto_linked"
             return self._options_map.get(value)
+
+        if self._key == "MBF_PAR_RELAY_ACTIVATION_DELAY":
+            value = self.coordinator.data.get(self._key)
+            return str(value) if value is not None else None
 
         value = self.coordinator.data.get(self._key)
         if value is None:

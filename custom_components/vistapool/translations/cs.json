@@ -397,7 +397,8 @@
           "active": "Aktivní",
           "active_redox": "Aktivní (řízeno redoxem)"
         }
-      }
+      },
+      "relay_activation_delay": { "name": "Zpoždění aktivace pH pumpy (s)" }
     }
   },
   "services": {
