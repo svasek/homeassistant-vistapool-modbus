@@ -81,7 +81,7 @@ If you find this integration useful, consider supporting its development:
 - **Switches**:
   Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled).
 - **Selects**:
-  Filtration mode (Manual, Auto, Heating, Smart, Intelligent), timers for automatic filtration, filtration speed _(if supported)_, boost control _(if Hydro/Electrolysis module is present)_.
+  Filtration mode (Manual, Auto, Heating, Smart, Intelligent), timers for automatic filtration, filtration speed _(if supported)_, boost control _(if Hydro/Electrolysis module is present)_, pH pump activation delay.
 - **Buttons**:
   Manual time sync, reset alarm/error states.
 
@@ -182,7 +182,8 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
 - **Selects**:
   `select.<name>_filt_mode`, `select.<name>_filtration1_start`, `select.<name>_filtration1_stop`,
   `select.<name>_filtration_speed` _(if supported)_,
-  `select.<name>_cell_boost` _(if supported)_
+  `select.<name>_cell_boost` _(if supported)_,
+  `select.<name>_relay_activation_delay`
 - **Buttons**:
   `button.<name>_sync_time`, `button.<name>_escape`
 
