@@ -125,12 +125,11 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         await super().async_added_to_hass()
 
         # Read full register map and get the value using string key
-        data = await client.async_read_all()
-        raw = data.get(self._key)
-        if raw is not None:
-            self._attr_native_value = round(raw, 2)
-        else:
-            self._attr_native_value = None
+        # Use coordinator cache instead of hitting Modbus again
+        val = self.coordinator.data.get(self._key)
+        self._attr_native_value = (
+            round(val, 2) if isinstance(val, (int, float)) else None
+        )
 
         self.async_write_ha_state()
 
