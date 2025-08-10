@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.10.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.9.0...v1.10.0) (2025-08-10)
+
+
+### Features
+
+* **select:** ✨ Add pH pump activation delay feature ([a613494](https://github.com/svasek/homeassistant-vistapool-modbus/commit/a613494a0e82e8896945e3db17200e502902bdcd))
+
+
+### Bug Fixes
+
+* 🐛 correct typos, redundancies and formating ([471bb18](https://github.com/svasek/homeassistant-vistapool-modbus/commit/471bb1867ff5f5b550d777242dad360414d7556f))
+* **coordinator:** 🐛 ensure config_entry is passed to DataUpdateCoordinator ([a461cf1](https://github.com/svasek/homeassistant-vistapool-modbus/commit/a461cf18e0d87a9dac2f35c3845b64d7dcc29645))
+* **number:** 🐛 optimize value retrieval using coordinator cache ([46c05de](https://github.com/svasek/homeassistant-vistapool-modbus/commit/46c05de1c3f9139ebf618e6ce736c3bc4488e327))
+
 ## [1.9.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.8.4...v1.9.0) (2025-07-20)
 
 
