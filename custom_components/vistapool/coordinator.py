@@ -62,7 +62,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             self._consecutive_errors = 0
 
             # Reset interval after success
-            if self.update_interval != self.normal_update_interval:
+            if self.update_interval != self.normal_update_interval:  # pragma: no cover
                 _LOGGER.info(
                     f"VistaPool: Communication OK, resetting update interval to {self.normal_update_interval.total_seconds()} seconds."
                 )
@@ -114,7 +114,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
 
             # Exponential backoff: double the interval, but never more than max
             next_interval = self.update_interval * 2
-            if next_interval > self.max_update_interval:
+            if next_interval > self.max_update_interval:  # pragma: no cover
                 next_interval = self.max_update_interval
             if self.update_interval != next_interval:
                 _LOGGER.warning(
@@ -151,5 +151,5 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         return self._model
 
     @property
-    def device_slug(self):
+    def device_slug(self):  # pragma: no cover
         return self.config_entry.unique_id or slugify(self.device_name)

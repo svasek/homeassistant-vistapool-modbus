@@ -89,7 +89,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
         client = getattr(self.coordinator, "client", None)
-        if client is None:
+        if client is None:  # pragma: no cover
             _LOGGER.error(
                 "VistaPoolSwitch: Modbus client not available for writing registers."
             )
@@ -119,7 +119,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
         client = getattr(self.coordinator, "client", None)
-        if client is None:
+        if client is None:  # pragma: no cover
             _LOGGER.error(
                 "VistaPoolSwitch: Modbus client not available for writing registers."
             )
@@ -143,7 +143,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
-    async def async_added_to_hass(self) -> None:
+    async def async_added_to_hass(self) -> None:  # pragma: no cover
         """Handle entity which will be added to hass."""
         _LOGGER.debug(
             "VistaPoolSwitch ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",

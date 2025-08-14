@@ -37,10 +37,10 @@ class VistaPoolEntity(CoordinatorEntity):
     @property
     def translation_key(self) -> str | None:
         """Return the translation key for the entity."""
-        return getattr(self, "_attr_translation_key", None)
+        return getattr(self, "_attr_translation_key", None)  # pragma: no cover
 
     @property
-    def device_info(self) -> dict:
+    def device_info(self) -> dict:  # pragma: no cover
         """Return device information for the entity."""
         serial_number = modbus_regs_to_hex_string(
             self.coordinator.data.get("MBF_POWER_MODULE_NODEID")

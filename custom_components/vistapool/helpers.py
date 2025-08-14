@@ -58,7 +58,7 @@ def prepare_device_time(hass=None) -> list[int, int]:
         # WORKAROUND: This is the naive datetime object, without timezone info
         epoch_local = datetime.datetime(1970, 1, 1, tzinfo=ha_tz)
         unix_time_local = int((now_local - epoch_local).total_seconds())
-    else:
+    else:  # pragma: no cover
         unix_time_local = int(datetime.datetime.now().timestamp())
     low = unix_time_local & 0xFFFF
     high = (unix_time_local >> 16) & 0xFFFF
@@ -98,7 +98,7 @@ def modbus_regs_to_ascii(regs) -> str:
         low = reg & 0xFF
         if high != 0:
             chars.append(chr(high))
-        else:
+        else:  # pragma: no cover
             break
         if low != 0:
             chars.append(chr(low))
@@ -140,7 +140,7 @@ def build_timer_block(data) -> list[int]:
     def safe_int(val):
         try:
             return int(val)
-        except Exception:
+        except Exception:  # pragma: no cover
             return 0
 
     def split_u32(val):

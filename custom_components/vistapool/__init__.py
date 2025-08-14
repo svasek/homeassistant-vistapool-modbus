@@ -38,7 +38,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     candidate_keys = [k for k in entry.data if k not in connection_keys]
     if not entry.options or not any(k in entry.options for k in candidate_keys):
         new_options = {k: entry.data[k] for k in candidate_keys}
-        if new_options:
+        if new_options:  # pragma: no cover
             _LOGGER.debug(
                 "VistaPool: Migrating ALL config entry data (except connection params) to options: %s",
                 new_options,

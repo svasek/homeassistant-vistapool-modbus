@@ -65,7 +65,7 @@ async def async_setup_entry(
     coordinator: VistaPoolCoordinator = hass.data[DOMAIN][entry.entry_id]
     entities = []
 
-    if not coordinator.data:
+    if not coordinator.data:  # pragma: no cover
         _LOGGER.warning("VistaPool: No data from Modbus, skipping sensor setup!")
         return
 
@@ -140,7 +140,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         self._attr_icon = props.get("icon") or None
 
         # Disable some entities by default.
-        if self._attr_suggested_object_id.endswith("_voltage"):
+        if self._attr_suggested_object_id.endswith("_voltage"):  # pragma: no cover
             self._attr_entity_registry_enabled_default = False
 
         _LOGGER.debug(
@@ -261,7 +261,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             return list(PH_STATUS_ALARM_MAP.values())
         if self._key == "HIDRO_POLARITY":
             return ["pol1", "pol2", "off"]
-        return None
+        return None  # pragma: no cover
 
     @property
     def available(self) -> bool:

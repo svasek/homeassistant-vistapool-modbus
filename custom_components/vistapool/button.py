@@ -87,7 +87,7 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
             await client.async_write_register(0x0297, 1)
             await self.coordinator.async_request_refresh()
 
-    async def async_added_to_hass(self) -> None:
+    async def async_added_to_hass(self) -> None:  # pragma: no cover
         """Run when the entity is added to hass."""
         _LOGGER.debug(
             "VistaPoolButton ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",

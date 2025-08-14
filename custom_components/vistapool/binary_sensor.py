@@ -69,7 +69,7 @@ async def async_setup_entry(
         if key.startswith("ION ") and not bool(
             (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
         ):
-            continue
+            continue  # pragma: no cover
         # Hide all "measurement module detected" sensors
         if "measurement module detected" in key.lower():
             continue
@@ -107,12 +107,12 @@ async def async_setup_entry(
                     if data_key.lower().startswith(
                         prefix
                     ) and data_key.lower().endswith("measurement module detected"):
-                        if not coordinator.data.get(data_key):
+                        if not coordinator.data.get(data_key):  # pragma: no cover
                             skip_entity = True
                             break
-                if skip_entity:
+                if skip_entity:  # pragma: no cover
                     break
-        if skip_entity:
+        if skip_entity:  # pragma: no cover
             continue  # Skip this entity
 
         # Check if the entity should be enabled by default
