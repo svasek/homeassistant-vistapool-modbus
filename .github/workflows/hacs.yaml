@@ -1,8 +1,8 @@
-name: HACS Action
+name: HACS
 
 permissions:
   contents: read
-  
+
 on:
   push:
   pull_request:
