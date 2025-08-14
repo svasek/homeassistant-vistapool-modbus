@@ -244,7 +244,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
 
     # Setup values for all reads in the order used in _perform_read_all:
     # rr00 (holding), rr01 (input), rr02 (holding), rr02_hidro (holding),
-    # rr03 (holding), installer blocks (2x holding), rr05 (holding), rr06 (holding)
+    # rr03 (2x holding), rr04 (2x holding), rr05 (holding), rr06 (holding)
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
             DummyResp(
@@ -291,9 +291,8 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
                 ]
             ),  # rr02
             DummyResp([266, 10000]),  # rr02_hidro
-            DummyResp(
-                [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297]
-            ),  # rr03
+            DummyResp(list(range(1, 14))),  # factory block 1 (0x0300, 13)
+            DummyResp(list(range(14, 18))),  # factory block 2 (0x0322, 4)
             DummyResp(list(range(1, 32))),  # installer block 1 (0x0408, 31)
             DummyResp(list(range(32, 45))),  # installer block 2 (0x0427, 13)
             DummyResp([650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]),  # rr05
@@ -342,7 +341,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
     assert "FILTRATION_SPEED" in result
 
     # Verify that all Modbus calls were made as expected
-    assert fake_modbus.read_holding_registers.await_count == 8
+    assert fake_modbus.read_holding_registers.await_count == 9
     assert fake_modbus.read_input_registers.await_count == 1
 
 
@@ -355,7 +354,8 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
         ("rr01", "read_input_registers", "0x0100", "exception"),
         ("rr02", "read_holding_registers", "0x0206", "iserror"),
         ("rr02_hidro", "read_holding_registers", "0x0280", "iserror"),
-        ("rr03", "read_holding_registers", "0x0300", "iserror"),
+        ("rr03-1", "read_holding_registers", "0x0300", "iserror"),
+        ("rr03-2", "read_holding_registers", "0x0322", "iserror"),
         ("rr04-1", "read_holding_registers", "0x0408", "exception"),
         ("rr04-2", "read_holding_registers", "0x0427", "exception"),
         ("rr05", "read_holding_registers", "0x0502", "iserror"),
@@ -384,7 +384,8 @@ async def test_perform_read_all_raises_on_block(
         "rr00",
         "rr02",
         "rr02_hidro",
-        "rr03",
+        "rr03-1",
+        "rr03-2",
         "rr04-1",
         "rr04-2",
         "rr05",
@@ -397,7 +398,8 @@ async def test_perform_read_all_raises_on_block(
         "rr01": DummyResp([0] * 18),
         "rr02": DummyResp([0] * 20),
         "rr02_hidro": DummyResp([0] * 2),
-        "rr03": DummyResp([0] * 13),
+        "rr03-1": DummyResp([0] * 13),
+        "rr03-2": DummyResp([0] * 4),
         "rr04-1": DummyResp([0] * 31),
         "rr04-2": DummyResp([0] * 13),
         "rr05": DummyResp([0] * 14),
@@ -457,18 +459,6 @@ async def test_perform_read_all_raises_on_block(
             "MBF_CELL_RUNTIME_POL_CHANGES_HIGH",
         ]:
             assert key not in result
-    elif fail_block == "rr03":
-        for key in [
-            "MBF_PAR_VERSION",
-            "MBF_PAR_MODEL",
-            "MBF_PAR_SERNUM",
-            "MBF_PAR_ION_NOM",
-            "MBF_PAR_HIDRO_NOM",
-            "MBF_PAR_SAL_AMPS",
-            "MBF_PAR_SAL_CELLK",
-            "MBF_PAR_SAL_TCOMP",
-        ]:
-            assert key not in result
     elif fail_block == "rr05":
         for key in [
             "MBF_PAR_HIDRO",
@@ -480,7 +470,7 @@ async def test_perform_read_all_raises_on_block(
         ]:
             assert key not in result
     # For fail-fast blocks (rr00, rr01, rr04-1), you may still expect result == {}
-    elif fail_block in ("rr00", "rr01", "rr04-1"):
+    elif fail_block in ("rr00", "rr01", "rr03-1", "rr03-2", "rr04-1", "rr04-2"):
         assert result == {}
 
     # Always check that the error was logged
@@ -495,7 +485,8 @@ async def test_perform_read_all_raises_on_block(
         ("rr01", 0x0100),
         ("rr02", 0x0206),
         ("rr02_hidro", 0x0280),
-        ("rr03", 0x0300),
+        ("rr03-1", 0x0300),
+        ("rr03-2", 0x0322),
         ("rr04-1", 0x0408),
         ("rr04-2", 0x0427),
         ("rr05", 0x0502),
@@ -526,7 +517,8 @@ async def test_perform_read_all_block_exception(
         ("rr01", DummyResp([0] * 18)),
         ("rr02", DummyResp([0] * 20)),
         ("rr02_hidro", DummyResp([0] * 2)),
-        ("rr03", DummyResp([0] * 13)),
+        ("rr03-1", DummyResp([0] * 13)),
+        ("rr03-2", DummyResp([0] * 4)),
         ("rr04-1", DummyResp([0] * 31)),
         ("rr04-2", DummyResp([0] * 13)),
         ("rr05", DummyResp([0] * 14)),
@@ -541,18 +533,19 @@ async def test_perform_read_all_block_exception(
         else:
             rh_side_effect.append(resp)
 
-    # holding: rr00, rr02, rr02_hidro, rr03, rr04-1, rr04-2, rr05, rr06 (total 8 calls)
+    # holding: rr00, rr02, rr02_hidro, rr03-01, rr03-02, rr04-1, rr04-2, rr05, rr06 (total 9 calls)
     # input: rr01 (only one call)
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
-            rh_side_effect[0],  # rr00
-            rh_side_effect[2],  # rr02
-            rh_side_effect[3],  # rr02_hidro
-            rh_side_effect[4],  # rr03
-            rh_side_effect[5],  # rr04-1
-            rh_side_effect[6],  # rr04-2
-            rh_side_effect[7],  # rr05
-            rh_side_effect[8],  # rr06
+            rh_side_effect[0],  # rr00 (0x0000)
+            rh_side_effect[2],  # rr02 (0x0206)
+            rh_side_effect[3],  # rr02_hidro (0x0280)
+            rh_side_effect[4],  # rr03-1 (0x0300)
+            rh_side_effect[5],  # rr03-2 (0x0322)
+            rh_side_effect[6],  # rr04-1 (0x0408)
+            rh_side_effect[7],  # rr04-2 (0x0427)
+            rh_side_effect[8],  # rr05 (0x0502)
+            rh_side_effect[9],  # rr06 (0x0600)
         ]
     )
     fake_modbus.read_input_registers = AsyncMock(
@@ -825,6 +818,12 @@ async def test_perform_write_register_apply(config, monkeypatch):
     result = await client._perform_write_register(0x0100, 123, apply=True)
     # Should still succeed, as happy path
     assert result is not None
+    # Check that EEPROM and EXEC writes were triggered
+    addrs = [
+        call.kwargs["address"] for call in fake_modbus.write_registers.await_args_list
+    ]
+    assert 0x02F0 in addrs and 0x02F5 in addrs
+
     # There should be at least 3 write_registers calls (register, EEPROM, EXEC)
     assert fake_modbus.write_registers.await_count >= 3
 
@@ -884,7 +883,7 @@ async def test_perform_write_timer_happy_path(config, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_perform_write_timer_not_connected(config, monkeypatch):
-    """Test _perform_write_timer returns {} if client is not connected."""
+    """Test _perform_write_timer returns False if client is not connected."""
 
     client = vistapool_modbus.VistaPoolModbusClient(config)
     fake_modbus = AsyncMock()
@@ -1004,7 +1003,7 @@ async def test_async_write_aux_relay_on_and_off(config, monkeypatch):
     )
     # write_registers is called for the sequence to update relay state and execute config
     # Order of calls: enable register, relay write, disable, execute
-    assert fake_modbus.write_registers.await_count >= 4  # should be 4 per call
+    assert fake_modbus.write_registers.await_count == 8  # should be 4 per call
 
 
 @pytest.mark.asyncio
@@ -1063,3 +1062,11 @@ async def test_async_write_aux_relay_write_exception(config, monkeypatch):
 
     result = await client.async_write_aux_relay(1, True)
     assert result == {}
+
+
+@pytest.mark.asyncio
+async def test_get_client_respects_backoff(config):
+    c = vistapool_modbus.VistaPoolModbusClient(config)
+    c._backoff_until = datetime.now() + timedelta(seconds=5)
+    with pytest.raises(vistapool_modbus.ConnectionException):
+        await c.get_client()
