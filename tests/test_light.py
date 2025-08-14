@@ -12,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
+import pytest, asyncio
 from unittest.mock import MagicMock, AsyncMock, patch
 from custom_components.vistapool.light import VistaPoolLight, async_setup_entry
+
+
+@pytest.fixture(autouse=True)
+def _fast_sleep(monkeypatch):
+    """Patch asyncio.sleep to a no-op for all tests in this module to speed them up."""
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
 
 
 @pytest.fixture

@@ -12,21 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
-import asyncio
-from unittest.mock import AsyncMock, patch
-from datetime import datetime
-
-import custom_components.vistapool.modbus as vistapool_modbus
-import sys
-import os
+import sys, os
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import pytest, asyncio
+from unittest.mock import AsyncMock, patch
+from datetime import datetime, timedelta
+import custom_components.vistapool.modbus as vistapool_modbus
 
 
 @pytest.fixture
 def config():
-    return {"host": "127.0.0.1", "port": 502, "slave": 1}
+    return {"host": "127.0.0.1", "port": 502, "slave_id": 1}
+
+
+@pytest.fixture(autouse=True)
+def _fast_sleep(monkeypatch):
+    """Patch asyncio.sleep to a no-op for all tests in this module to speed them up."""
+    monkeypatch.setattr(asyncio, "sleep", AsyncMock())
 
 
 @pytest.mark.asyncio
