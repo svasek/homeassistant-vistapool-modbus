@@ -281,205 +281,204 @@ class VistaPoolModbusClient:
             Request MODBUS page of registers starting from 0x0000
             Manages general configuration of the box. This page is reserved for internal purposes
             """
-            try:
-                rr00_count = 15
-                rr00 = await client.read_holding_registers(
-                    address=0x0000, count=rr00_count, slave=self._unit
-                )
-            except Exception as e:
-                _LOGGER.error("Read error 0x0000: %s", e)
-                self._failed_reads["0x0000"] = self._failed_reads.get("0x0000", 0) + 1
-                return {}
-            if rr00.isError():  # pragma: no cover
-                _LOGGER.error("Modbus read error from 0x0000: %s", rr00)
-                self._failed_reads["0x0000"] = self._failed_reads.get("0x0000", 0) + 1
-            else:
-                self._successful_addresses.append(("0x0000", time.time()))
-                reg00 = rr00.registers
-                _LOGGER.debug("Raw rr00: %s", reg00)
-                if len(reg00) < rr00_count:  # pragma: no cover
-                    _LOGGER.warning(
-                        "Expected at least %d registers from 0x0000, got %d",
-                        rr00_count,
-                        len(reg00),
+            rr00_ranges = [
+                (0x0000, 15),  # 0x0000–0x000E
+            ]
+
+            reg00 = []
+            for address, count in rr00_ranges:
+                try:
+                    rr00 = await client.read_holding_registers(
+                        address=address, count=count, slave=self._unit
                     )
-                    return result
-                # Example: [1, 3, 1280, 32768, 88, 47, 16707, 20497, 8248, 12592, 0, 0, 0, 22069, 0]
-                # fmt: off
-                result.update({
-                    "MBF_POWER_MODULE_VERSION": get_safe(reg00, 2),     # 0x0002         ! Power module version (MSB=Major, LSB=Minor)
-                    "MBF_POWER_MODULE_NODEID": reg00[4:10],             # 0x0004         ! Power module Node ID (6 register 0x0004 - 0x0009)
-                    "MBF_POWER_MODULE_REGISTER": get_safe(reg00, 11),   # 0x000C         ! Writing an address in this register causes the power module register address to be read out into MBF_POWER_MODULE_DATA, see MBF_POWER_MODULE_REG_*
-                    "MBF_POWER_MODULE_DATA": get_safe(reg00, 12),       # 0x000D         ! power module data as requested in MBF_POWER_MODULE_REGISTER
-                    "MBF_PH_STATUS_ALARM": get_safe(reg00, 14),         # 0x000F           PH alarm. The possible alarm values are depending on the regulation model
-                    # Prepared for future use:
-                    # "MBF_VOLT_24_36": get_safe(reg00, 0),             # 0x0022*        ! Current 24-36V line in mV
-                    # "MBF_VOLT_12": get_safe(reg00, 0),                # 0x0023*        ! Current 12V line in mV
-                    # "MBF_VOLT_5": get_safe(reg00, 0),                 # 0x006A*        ! 5V line in mV / 0,62069
-                    # "MBF_AMP_4_20_MICRO": get_safe(reg00, 0),         # 0x0072*        ! 2-40mA line in µA * 10 (1=0,01mA)
-                })
-                # fmt: on
+                except Exception as e:
+                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                if rr00.isError():  # pragma: no cover
+                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr00}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                self._successful_addresses.append((f"0x{address:04X}", time.time()))
+                reg00.extend(rr00.registers)
+                _LOGGER.debug(f"Raw rr00 from 0x{address:04X}: {rr00.registers}")
+
+                if len(reg00) < count:  # pragma: no cover
+                    _LOGGER.warning(
+                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg00)}"
+                    )
+
+            # Example: [1, 3, 1280, 32768, 88, 47, 16707, 20497, 8248, 12592, 0, 0, 0, 22069, 0]
+            # fmt: off
+            result.update({
+                "MBF_POWER_MODULE_VERSION": get_safe(reg00, 2),     # 0x0002         ! Power module version (MSB=Major, LSB=Minor)
+                "MBF_POWER_MODULE_NODEID": reg00[4:10],             # 0x0004         ! Power module Node ID (6 register 0x0004 - 0x0009)
+                "MBF_POWER_MODULE_REGISTER": get_safe(reg00, 11),   # 0x000C         ! Writing an address in this register causes the power module register address to be read out into MBF_POWER_MODULE_DATA, see MBF_POWER_MODULE_REG_*
+                "MBF_POWER_MODULE_DATA": get_safe(reg00, 12),       # 0x000D         ! power module data as requested in MBF_POWER_MODULE_REGISTER
+                "MBF_PH_STATUS_ALARM": get_safe(reg00, 14),         # 0x000F           PH alarm. The possible alarm values are depending on the regulation model
+                # Prepared for future use:
+                # "MBF_VOLT_24_36": get_safe(reg00, 0),             # 0x0022*        ! Current 24-36V line in mV
+                # "MBF_VOLT_12": get_safe(reg00, 0),                # 0x0023*        ! Current 12V line in mV
+                # "MBF_VOLT_5": get_safe(reg00, 0),                 # 0x006A*        ! 5V line in mV / 0,62069
+                # "MBF_AMP_4_20_MICRO": get_safe(reg00, 0),         # 0x0072*        ! 2-40mA line in µA * 10 (1=0,01mA)
+            })
+            # fmt: on
 
             """
             Request MEASURE page of registers starting from 0x0100
             Contains the different measurement information including hydrolysis current, pH level, redox level, etc.
             For measurements registers, we have to use function 0x04 (Read Input Registers).
             """
-            await asyncio.sleep(0.05)
-            try:
-                rr01_count = 18
-                rr01 = await client.read_input_registers(
-                    address=0x0100, count=rr01_count, slave=self._unit
-                )
-            except Exception as e:
-                _LOGGER.error("Read error 0x0100: %s", e)
-                self._failed_reads["0x0100"] = self._failed_reads.get("0x0100", 0) + 1
-                return {}
-            if rr01.isError():  # pragma: no cover
-                _LOGGER.error("Modbus read error from 0x0100: %s", rr01)
-                self._failed_reads["0x0100"] = self._failed_reads.get("0x0100", 0) + 1
-            else:
-                self._successful_addresses.append(("0x0100", time.time()))
-                reg01 = rr01.registers
-                _LOGGER.debug("Raw rr01: %s", reg01)
-                if len(reg01) < rr01_count:  # pragma: no cover
-                    _LOGGER.warning(
-                        "Expected at least %d registers from 0x0100, got %d",
-                        rr01_count,
-                        len(reg01),
+
+            rr01_ranges = [
+                (0x0100, 18),  # 0x0100–0x0111
+            ]
+
+            reg01 = []
+            for address, count in rr01_ranges:
+                await asyncio.sleep(0.05)
+                try:
+                    rr01 = await client.read_input_registers(
+                        address=address, count=count, slave=self._unit
                     )
-                    return result
-                # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
-                # fmt: off
-                result.update({
-                    "MBF_ION_CURRENT": get_safe(reg01, 0),                              # 0x0100        Ionization level measured
-                    "MBF_HIDRO_CURRENT": get_safe(reg01, 1, lambda v: v / 10.0),        # 0x0101        Hydrolysis intensity level
-                    "MBF_MEASURE_PH": get_safe(reg01, 2, lambda v: v / 100.0),          # 0x0102 ph     pH level measured in 1/100 (700 = 7.00)
-                    "MBF_MEASURE_RX": get_safe(reg01, 3),                               # 0x0103 mV     Redox level measured in mV
-                    "MBF_MEASURE_CL": get_safe(reg01, 4, lambda v: v / 100.0),          # 0x0104 ppm    Chlorine level measured in 1/100 ppm (100 = 1.00 ppm)
-                    "MBF_MEASURE_CONDUCTIVITY": get_safe(reg01, 5),                     # 0x0105 %      Conductivity level measured in %
-                    "MBF_MEASURE_TEMPERATURE": get_safe(reg01, 6, lambda v: v / 10.0),  # 0x0106 °C     Temperature sensor measured in 1/10° C (100 = 10.0°C)
-                    "MBF_PH_STATUS": get_safe(reg01, 7),                                # 0x0107 mask   Status of the pH-module
-                    "MBF_RX_STATUS": get_safe(reg01, 8),                                # 0x0108 mask   Status of the Rx-module
-                    "MBF_CL_STATUS": get_safe(reg01, 9),                                # 0x0109 mask   Status of the Chlorine-module
-                    "MBF_CD_STATUS": get_safe(reg01, 10),                               # 0x010A mask   Status of the Conductivity-module
-                    "MBF_ION_STATUS": get_safe(reg01, 12),                              # 0x010C mask   Status of the Ionization-module
-                    "MBF_HIDRO_STATUS": get_safe(reg01, 13),                            # 0x010D mask   Status of the Hydrolysis-module
-                    "MBF_RELAY_STATE": get_safe(reg01, 14),                             # 0x010E mask   Status of each configurable relay
-                    "MBF_HIDRO_SWITCH_VALUE": get_safe(reg01, 15),                      # 0x010F        INTERNAL - contains the opening of the hydrolysis PWM.
-                    "MBF_NOTIFICATION": get_safe(reg01, 16),                            # 0x0110 mask   Bit field that informs whether a property page has changed since the last time it was queried. (see MBMSK_NOTIF_*). This register makes it possible to refresh the content of the registers maintained by a modbus master in an optimized way, without the need to reread all registers periodically, but only those on a page that has been changed.
-                    "MBF_HIDRO_VOLTAGE": get_safe(reg01, 17),                           # 0x0111        The voltage applied to the hydrolysis cell. This register, together with that of MBF_HIDRO_CURRENT allows extrapolation of water salinity.
-                })
-                # fmt: on
+                except Exception as e:
+                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                if rr01.isError():  # pragma: no cover
+                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr01}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                self._successful_addresses.append((f"0x{address:04X}", time.time()))
+                reg01.extend(rr01.registers)
+                _LOGGER.debug(f"Raw rr01 from 0x{address:04X}: {rr01.registers}")
+
+                if len(reg01) < count:  # pragma: no cover
+                    _LOGGER.warning(
+                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg01)}"
+                    )
+
+            # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
+            # fmt: off
+            result.update({
+                "MBF_ION_CURRENT": get_safe(reg01, 0),                              # 0x0100        Ionization level measured
+                "MBF_HIDRO_CURRENT": get_safe(reg01, 1, lambda v: v / 10.0),        # 0x0101        Hydrolysis intensity level
+                "MBF_MEASURE_PH": get_safe(reg01, 2, lambda v: v / 100.0),          # 0x0102 ph     pH level measured in 1/100 (700 = 7.00)
+                "MBF_MEASURE_RX": get_safe(reg01, 3),                               # 0x0103 mV     Redox level measured in mV
+                "MBF_MEASURE_CL": get_safe(reg01, 4, lambda v: v / 100.0),          # 0x0104 ppm    Chlorine level measured in 1/100 ppm (100 = 1.00 ppm)
+                "MBF_MEASURE_CONDUCTIVITY": get_safe(reg01, 5),                     # 0x0105 %      Conductivity level measured in %
+                "MBF_MEASURE_TEMPERATURE": get_safe(reg01, 6, lambda v: v / 10.0),  # 0x0106 °C     Temperature sensor measured in 1/10° C (100 = 10.0°C)
+                "MBF_PH_STATUS": get_safe(reg01, 7),                                # 0x0107 mask   Status of the pH-module
+                "MBF_RX_STATUS": get_safe(reg01, 8),                                # 0x0108 mask   Status of the Rx-module
+                "MBF_CL_STATUS": get_safe(reg01, 9),                                # 0x0109 mask   Status of the Chlorine-module
+                "MBF_CD_STATUS": get_safe(reg01, 10),                               # 0x010A mask   Status of the Conductivity-module
+                "MBF_ION_STATUS": get_safe(reg01, 12),                              # 0x010C mask   Status of the Ionization-module
+                "MBF_HIDRO_STATUS": get_safe(reg01, 13),                            # 0x010D mask   Status of the Hydrolysis-module
+                "MBF_RELAY_STATE": get_safe(reg01, 14),                             # 0x010E mask   Status of each configurable relay
+                "MBF_HIDRO_SWITCH_VALUE": get_safe(reg01, 15),                      # 0x010F        INTERNAL - contains the opening of the hydrolysis PWM.
+                "MBF_NOTIFICATION": get_safe(reg01, 16),                            # 0x0110 mask   Bit field that informs whether a property page has changed since the last time it was queried. (see MBMSK_NOTIF_*). This register makes it possible to refresh the content of the registers maintained by a modbus master in an optimized way, without the need to reread all registers periodically, but only those on a page that has been changed.
+                "MBF_HIDRO_VOLTAGE": get_safe(reg01, 17),                           # 0x0111        The voltage applied to the hydrolysis cell. This register, together with that of MBF_HIDRO_CURRENT allows extrapolation of water salinity.
+            })
+            # fmt: on
 
             # After loading reg01, update result with all decodings:
+            # fmt: off
             result.update(
                 {
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 7), "pH"),
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 8), "Redox"),
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 9), "Chlorine"),
-                    **decode_ph_rx_cl_cd_status_bits(
-                        get_safe(reg01, 10), "Conductivity"
-                    ),
+                    **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 10), "Conductivity"),
                     **decode_ion_status_bits(get_safe(reg01, 12)),
                     **decode_hidro_status_bits(get_safe(reg01, 13)),
                     **decode_relay_state(get_safe(reg01, 14)),
                     **decode_notification_mask(get_safe(reg01, 16)),
                 }
             )
+            # fmt: on
 
             """
             Request GLOBAL page of registers starting from 0x0206
             Contains global information, such as the amount of time that each power unit has been working.
             For configuration registers, we have to use function 0x03 (Read Holding Registers)
             """
-            try:
-                rr02_count = 20  # 0x0206 to 0x0219
-                rr02 = await client.read_holding_registers(
-                    address=0x0206, count=rr02_count, slave=self._unit
-                )
-            except Exception as e:
-                _LOGGER.error("Read error 0x0206: %s", e)
-                self._failed_reads["0x0206"] = self._failed_reads.get("0x0206", 0) + 1
-                return {}
-            if rr02.isError():
-                _LOGGER.error("Modbus read error from 0x0206: %s", rr02)
-                self._failed_reads["0x0206"] = self._failed_reads.get("0x0206", 0) + 1
-            else:
-                self._successful_addresses.append(("0x0206", time.time()))
-                reg02 = rr02.registers
-                _LOGGER.debug("Raw rr02: %s", reg02)
-                if len(reg02) < rr02_count:  # pragma: no cover
-                    _LOGGER.warning(
-                        "Expected at least %d registers from 0x0206, got %d",
-                        rr02_count,
-                        len(reg02),
-                    )
-                    return result
-                # Example: [23971, 8, 23971, 8, 26922, 0, 34208, 0, 0, 65426, 0, 0, 0, 0, 64136, 3, 25371, 4, 16, 0]
-                # fmt: off
-                result.update({
-                    "MBF_CELL_RUNTIME_LOW":      get_safe(reg02, 0),            # 0x0206*        ! Cell runtime (32 bit value - low word)
-                    "MBF_CELL_RUNTIME_HIGH":     get_safe(reg02, 1),            # 0x0207*        ! Cell runtime (32 bit value - high word)
-                    "MBF_CELL_RUNTIME_PART_LOW": get_safe(reg02, 2),            # 0x0208*        ! Cell part runtime (32 bit value - low word)
-                    "MBF_CELL_RUNTIME_PART_HIGH":get_safe(reg02, 3),            # 0x0209*        ! Cell part runtime (32 bit value - high word)
-                    # 0x020A–0x020B skipped
-                    "MBF_CELL_BOOST":            get_safe(reg02, 6),            # 0x020C* mask   ! Boost control (see MBMSK_CELL_BOOST_*)
-                    # 0x020D–0x0213 skipped
-                    "MBF_CELL_RUNTIME_POLA_LOW": get_safe(reg02, 14),           # 0x0214*        ! Cell runtime polarity 1 (32 bit value - low word)
-                    "MBF_CELL_RUNTIME_POLA_HIGH":get_safe(reg02, 15),           # 0x0215*        ! Cell runtime polarity 1 (32 bit value - high word)
-                    "MBF_CELL_RUNTIME_POLB_LOW": get_safe(reg02, 16),           # 0x0216*        ! Cell runtime polarity 2 (32 bit value - low word)
-                    "MBF_CELL_RUNTIME_POLB_HIGH":get_safe(reg02, 17),           # 0x0217*        ! Cell runtime polarity 2 (32 bit value - high word)
-                    "MBF_CELL_RUNTIME_POL_CHANGES_LOW": get_safe(reg02, 18),    # 0x0218*        ! Cell runtime polarity change count (32 bit value - low word)
-                    "MBF_CELL_RUNTIME_POL_CHANGES_HIGH":get_safe(reg02, 19),    # 0x0219*        ! Cell runtime polarity change count (32 bit value - high word)
-                })
-                # fmt: on
-            await asyncio.sleep(0.05)
+            # fmt: off
+            rr02_ranges = [
+                (0x0206, 20),  # 0x0206–0x0219
+                (0x0280, 2,),  # 0x0280–0x0281 (hidrolysis module version and connectivity)
+            ]
+            # fmt: on
 
-            try:
-                rr02_hidro_count = 2
-                rr02_hidro = await client.read_holding_registers(
-                    address=0x0280, count=rr02_hidro_count, slave=self._unit
-                )
-            except Exception as e:
-                _LOGGER.error("Read error 0x0280: %s", e)
-                self._failed_reads["0x0280"] = self._failed_reads.get("0x0280", 0) + 1
-                return {}
-            if rr02_hidro.isError():
-                _LOGGER.error("Modbus read error from 0x0280: %s", rr02_hidro)
-                self._failed_reads["0x0280"] = self._failed_reads.get("0x0280", 0) + 1
-            else:
-                self._successful_addresses.append(("0x0280", time.time()))
-                reg02_hidro = rr02_hidro.registers
-                _LOGGER.debug("Raw rr02_hidro: %s", reg02_hidro)
-                if len(reg02_hidro) < rr02_hidro_count:  # pragma: no cover
-                    _LOGGER.warning(
-                        "Expected at least %d registers from 0x0280, got %d",
-                        rr02_hidro_count,
-                        len(reg02_hidro),
+            reg02 = []
+            for address, count in rr02_ranges:
+                await asyncio.sleep(0.05)
+                try:
+                    rr02 = await client.read_holding_registers(
+                        address=address, count=count, slave=self._unit
                     )
-                    return result
-                # Example: [266, 10000]
-                # fmt: off
-                result.update({
-                    "MBF_HIDRO_MODULE_VERSION":      get_safe(reg02_hidro, 0),  # 0x0280         ! Hydrolysis module version
-                    "MBF_HIDRO_MODULE_CONNECTIVITY": get_safe(reg02_hidro, 1),  # 0x0281         ! Hydrolysis module connection quality (in myriad: 0..10000)
-                })
-                # fmt: on
-            await asyncio.sleep(0.05)
+                except Exception as e:
+                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                if rr02.isError():  # pragma: no cover
+                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr02}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                self._successful_addresses.append((f"0x{address:04X}", time.time()))
+                reg02.extend(rr02.registers)
+                _LOGGER.debug(f"Raw rr02 from 0x{address:04X}: {rr02.registers}")
+
+                if len(reg02) < count:  # pragma: no cover
+                    _LOGGER.warning(
+                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg02)}"
+                    )
+
+            # Example: [23971, 8, 23971, 8, 26922, 0, 34208, 0, 0, 65426, 0, 0, 0, 0, 64136, 3, 25371, 4, 16, 0]
+            # fmt: off
+            result.update({
+                "MBF_CELL_RUNTIME_LOW":      get_safe(reg02, 0),            # 0x0206*        ! Cell runtime (32 bit value - low word)
+                "MBF_CELL_RUNTIME_HIGH":     get_safe(reg02, 1),            # 0x0207*        ! Cell runtime (32 bit value - high word)
+                "MBF_CELL_RUNTIME_PART_LOW": get_safe(reg02, 2),            # 0x0208*        ! Cell part runtime (32 bit value - low word)
+                "MBF_CELL_RUNTIME_PART_HIGH":get_safe(reg02, 3),            # 0x0209*        ! Cell part runtime (32 bit value - high word)
+                # 0x020A–0x020B skipped
+                "MBF_CELL_BOOST":            get_safe(reg02, 6),            # 0x020C* mask   ! Boost control (see MBMSK_CELL_BOOST_*)
+                # 0x020D–0x0213 skipped
+                "MBF_CELL_RUNTIME_POLA_LOW": get_safe(reg02, 14),           # 0x0214*        ! Cell runtime polarity 1 (32 bit value - low word)
+                "MBF_CELL_RUNTIME_POLA_HIGH":get_safe(reg02, 15),           # 0x0215*        ! Cell runtime polarity 1 (32 bit value - high word)
+                "MBF_CELL_RUNTIME_POLB_LOW": get_safe(reg02, 16),           # 0x0216*        ! Cell runtime polarity 2 (32 bit value - low word)
+                "MBF_CELL_RUNTIME_POLB_HIGH":get_safe(reg02, 17),           # 0x0217*        ! Cell runtime polarity 2 (32 bit value - high word)
+                "MBF_CELL_RUNTIME_POL_CHANGES_LOW": get_safe(reg02, 18),    # 0x0218*        ! Cell runtime polarity change count (32 bit value - low word)
+                "MBF_CELL_RUNTIME_POL_CHANGES_HIGH":get_safe(reg02, 19),    # 0x0219*        ! Cell runtime polarity change count (32 bit value - high word)
+                # Hydrolysis module data
+                "MBF_HIDRO_MODULE_VERSION":      get_safe(reg02, 20),       # 0x0280         ! Hydrolysis module version
+                "MBF_HIDRO_MODULE_CONNECTIVITY": get_safe(reg02, 21),       # 0x0281         ! Hydrolysis module connection quality (in myriad: 0..10000)
+            })
+            # fmt: on
 
             """
             Request FACTORY page of registers starting from 0x0300
             Contains factory data such as calibration parameters for the different power units.
             For configuration registers, we have to use function 0x03 (Read Holding Registers)
             """
-            factory_register_ranges = [
+            rr03_ranges = [
                 (0x0300, 13),  # 0x0300–0x030C
                 (0x0322, 4),  # 0x0322–0x0325
             ]
 
             reg03 = []
-            for address, count in factory_register_ranges:
+            for address, count in rr03_ranges:
                 await asyncio.sleep(0.05)
                 try:
                     rr03 = await client.read_holding_registers(
@@ -500,6 +499,11 @@ class VistaPoolModbusClient:
                 reg03.extend(rr03.registers)
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 _LOGGER.debug(f"Raw rr03 from 0x{address:04X}: {rr03.registers}")
+
+                if len(reg03) < count:  # pragma: no cover
+                    _LOGGER.warning(
+                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg03)}"
+                    )
 
             # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297, 125, 2, 100, 100]
             # fmt: off
@@ -531,7 +535,7 @@ class VistaPoolModbusClient:
             """
 
             # Read configuration registers (0x0408–0x04E0) in blocks of *31* due to device limits
-            register_ranges = [
+            rr04_ranges = [
                 (0x0408, 31),  # 0x0408–0x0426
                 (0x0427, 13),  # 0x0427–0x0433
                 # TIMER_BLOCKS starts at 0x0434, so we skip 0x0434-0x04E8
@@ -539,7 +543,7 @@ class VistaPoolModbusClient:
             ]
 
             reg04 = []
-            for address, count in register_ranges:
+            for address, count in rr04_ranges:
                 await asyncio.sleep(0.05)
                 try:
                     rr04 = await client.read_holding_registers(
@@ -560,6 +564,11 @@ class VistaPoolModbusClient:
                 reg04.extend(rr04.registers)
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 _LOGGER.debug(f"Raw rr04 from 0x{address:04X}: {rr04.registers}")
+
+                if len(reg04) < count:  # pragma: no cover
+                    _LOGGER.warning(
+                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg04)}"
+                    )
 
             # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
             # fmt: off
@@ -623,94 +632,110 @@ class VistaPoolModbusClient:
             for the ionization and the hydrolysis, or the set points for the pH, redox, or chlorine regulation loops.
             For configuration registers, we have to use function 0x03 (Read Holding Registers)
             """
-            await asyncio.sleep(0.05)
-            try:
-                rr05_count = 14
-                rr05 = await client.read_holding_registers(
-                    address=0x0502, count=rr05_count, slave=self._unit
-                )
-            except Exception as e:
-                _LOGGER.error("Read error 0x0502: %s", e)
-                self._failed_reads["0x0502"] = self._failed_reads.get("0x0502", 0) + 1
-                return {}
-            if rr05.isError():
-                _LOGGER.error("Modbus read error from 0x0502: %s", rr05)
-                self._failed_reads["0x0502"] = self._failed_reads.get("0x0502", 0) + 1
-            else:
-                self._successful_addresses.append(("0x0502", time.time()))
-                reg05 = rr05.registers
-                _LOGGER.debug("Raw rr05: %s", reg05)
-                if len(reg05) < rr05_count:  # pragma: no cover
-                    _LOGGER.warning(
-                        "Expected at least %d registers from 0x0502, got %d",
-                        rr05_count,
-                        len(reg05),
+            rr05_ranges = [
+                (0x0502, 14),  # 0x0502–0x050F
+            ]
+
+            reg05 = []
+            for address, count in rr05_ranges:
+                await asyncio.sleep(0.05)
+                try:
+                    rr05 = await client.read_holding_registers(
+                        address=address, count=count, slave=self._unit
                     )
-                    return result
-                # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
-                # fmt: off
-                result.update({
-                    "MBF_PAR_HIDRO": get_safe(reg05, 0, lambda v: v / 10.0),    # 0x0502        Hydrolisis target production level. When the hydrolysis production is to be set in percent values, this value will contain the percent of production. If the hydrolysis module is set to work in g/h production, this module will contain the desired amount of production in g/h units. The value adjusted in this register must not exceed the value set in the MBF_PAR_HIDRO_NOM factory register.
-                    "MBF_PAR_PH1": get_safe(reg05, 2, lambda v: v / 100.0),     # 0x0504        Higher limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.5, the numerical content that we must write in this register is 750. This register must be always higher than MBF_PAR_PH2.
-                    "MBF_PAR_PH2": get_safe(reg05, 3, lambda v: v / 100.0),     # 0x0505        Lower limit of the pH regulation system. The value set in this register is multiplied by 100. This means that if we want to set a value of 7.0, the numerical content that we must write in this register is 700. This register must be always lower than MBF_PAR_PH1.
-                    # 0x0506–0x0507 skipped
-                    "MBF_PAR_RX1": get_safe(reg05, 6),                          # 0x0508        Set point for the redox regulation system. This value must be in the range of 0 to 1000.
-                    # 0x0509 skipped
-                    "MBF_PAR_CL1": get_safe(reg05, 8, lambda v: v / 100.0),     # 0x050A        Set point for the chlorine regulation system. The value stored in this register is multiplied by 100. This mean that if we want to set a value of 1.5 ppm, we will have to write a numerical value of 150. This value stored in this register must be in the range of 0 to 1000.
-                    # 0x050B-0x050E skipped
-                    "MBF_PAR_FILTRATION_CONF": get_safe(reg05, 13),             # 0x050F* mask   ! filtration type and speed, see MBMSK_PAR_FILTRATION_CONF_*
-                })
-                # fmt: on
+                except Exception as e:
+                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                if rr05.isError():  # pragma: no cover
+                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr05}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                self._successful_addresses.append((f"0x{address:04X}", time.time()))
+                reg05.extend(rr05.registers)
+                _LOGGER.debug(f"Raw rr05 from 0x{address:04X}: {rr05.registers}")
+
+                if len(reg05) < count:  # pragma: no cover
+                    _LOGGER.warning(
+                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg05)}"
+                    )
+
+            # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
+            # fmt: off
+            result.update({
+                "MBF_PAR_HIDRO": get_safe(reg05, 0, lambda v: v / 10.0),    # 0x0502        Hydrolisis target production level
+                "MBF_PAR_PH1": get_safe(reg05, 2, lambda v: v / 100.0),     # 0x0504        Higher limit of the pH regulation system
+                "MBF_PAR_PH2": get_safe(reg05, 3, lambda v: v / 100.0),     # 0x0505        Lower limit of the pH regulation system
+                # 0x0506–0x0507 skipped
+                "MBF_PAR_RX1": get_safe(reg05, 6),                          # 0x0508        Set point for the redox regulation system
+                # 0x0509 skipped
+                "MBF_PAR_CL1": get_safe(reg05, 8, lambda v: v / 100.0),     # 0x050A        Set point for the chlorine regulation system
+                # 0x050B-0x050E skipped
+                "MBF_PAR_FILTRATION_CONF": get_safe(reg05, 13),             # 0x050F* mask   ! filtration type and speed
+            })
+            # fmt: on
 
             """ 
             Request MISC page of registers starting from 0x0600
             Contains the configuration parameters for the screen controllers (language, colours, sound, etc).
             For configuration registers, we have to use function 0x03 (Read Holding Registers)
             """
-            await asyncio.sleep(0.05)
-            try:
-                rr06_count = 13
-                rr06 = await client.read_holding_registers(
-                    address=0x0600, count=rr06_count, slave=self._unit
-                )
-            except Exception as e:
-                _LOGGER.error("Read error 0x0600: %s", e)
-                self._failed_reads["0x0600"] = self._failed_reads.get("0x0600", 0) + 1
-                return {}
-            if rr06.isError():
-                _LOGGER.error("Modbus read error from 0x0600: %s", rr06)
-                self._failed_reads["0x0600"] = self._failed_reads.get("0x0600", 0) + 1
-            else:
-                self._successful_addresses.append(("0x0600", time.time()))
-                reg06 = rr06.registers
-                _LOGGER.debug("Raw rr06: %s", reg06)
-                if len(reg06) < rr06_count:  # pragma: no cover
-                    _LOGGER.warning(
-                        "Expected at least %d registers from 0x0600, got %d",
-                        rr06_count,
-                        len(reg06),
+            rr06_ranges = [
+                (0x0600, 13),  # 0x0600–0x060C
+            ]
+
+            reg06 = []
+            for address, count in rr06_ranges:
+                await asyncio.sleep(0.05)
+                try:
+                    rr06 = await client.read_holding_registers(
+                        address=address, count=count, slave=self._unit
                     )
-                    return result
-                # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0, 0]
-                # fmt: off
-                result.update({
-                    "MBF_PAR_UICFG_MACHINE": get_safe(reg06, 0),                # 0x0600        Machine type (see MBV_PAR_MACH_* and  kNeoPoolMachineNames[])
-                    "MBF_PAR_UICFG_LANGUAGE": get_safe(reg06, 1),               # 0x0601        Selected language (see MBV_PAR_LANG_*)
-                    "MBF_PAR_UICFG_BACKLIGHT": get_safe(reg06, 2),              # 0x0602        Display backlight function (see MBV_PAR_BACKLIGHT_*)
-                    "MBF_PAR_UICFG_SOUND": get_safe(reg06, 3),                  # 0x0603 mask   Audible alerts (see MBMSK_PAR_SOUND_*)
-                    "MBF_PAR_UICFG_PASSWORD": get_safe(reg06, 4),               # 0x0604        System password encoded in BCD
-                    "MBF_PAR_UICFG_VISUAL_OPTIONS": get_safe(reg06, 5),         # 0x0605 mask   Stores the different display options for the user interface menus (bitmask). Some bits allow you to hide options that are normally visible (bits 0 to 3) while other bits allow you to show options that are normally hidden (bits 9 to 15)
-                    "MBF_PAR_UICFG_VISUAL_OPTIONS_EXT": get_safe(reg06, 6),     # 0x0606 mask   This register stores additional display options for the user interface menus (see MBMSK_VOE_*)
-                    "MBF_PAR_UICFG_MACH_VISUAL_STYLE": get_safe(reg06, 7),      # 0x0607 mask   This register is an expansion of register MBF_PAR_UICFG_MACHINE and MBF_PAR_UICFG_VISUAL_OPTIONS. If MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC then the lower part (8 bits LSB) is used to store the type of color selected. Colors and styles correspond to those listed in MBF_PAR_UICFG_MACHINE (see MBV_PAR_MACH_*). The upper part (8-bit MSB) contains extra bits MBMSK_VS_FORCE_UNITS_GRH, MBMSK_VS_FORCE_UNITS_PERCENTAGE and MBMSK_ELECTROLISIS
-                    "MBF_PAR_UICFG_MACH_NAME_BOLD": get_safe(reg06, 8),         # 0x0608         Machine name bold part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x608 to 0x60B) ASCIIZ string with up to 8 characters
-                    "MBF_PAR_UICFG_MACH_NAME_LIGHT": get_safe(reg06, 12),       # 0x060C         Machine name normal intensity part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x060C to 0x060F) ASCIIZ string with up to 8 characters
-                    # Prepared for future use:
-                    # "MBF_PAR_UICFG_MACH_NAME_AUX1": modbus_regs_to_ascii(reg06[16:21]), # 0x0610         Aux1 relay name: 5 register ASCIIZ string with up to 10 characters
-                    # "MBF_PAR_UICFG_MACH_NAME_AUX2": modbus_regs_to_ascii(reg06[21:26]), # 0x0615         Aux2 relay name: 5 register ASCIIZ string with up to 10 characters
-                    # "MBF_PAR_UICFG_MACH_NAME_AUX3": modbus_regs_to_ascii(reg06[26:31]), # 0x061A         Aux3 relay name: 5 register ASCIIZ string with up to 10 characters
-                    # "MBF_PAR_UICFG_MACH_NAME_AUX4": modbus_regs_to_ascii(reg06[31:36]), # 0x061F         Aux4 relay name: 5 register ASCIIZ string with up to 10 characters
-                })
-                # fmt: on
+                except Exception as e:
+                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                if rr06.isError():  # pragma: no cover
+                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr06}")
+                    self._failed_reads[f"0x{address:04X}"] = (
+                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                    )
+                    return {}
+                self._successful_addresses.append((f"0x{address:04X}", time.time()))
+                reg06.extend(rr06.registers)
+                _LOGGER.debug(f"Raw rr06 from 0x{address:04X}: {rr06.registers}")
+
+                if len(reg06) < count:  # pragma: no cover
+                    _LOGGER.warning(
+                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg06)}"
+                    )
+
+            # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0]
+            # fmt: off
+            result.update({
+                "MBF_PAR_UICFG_MACHINE": get_safe(reg06, 0),                # 0x0600        Machine type (see MBV_PAR_MACH_* and  kNeoPoolMachineNames[])
+                "MBF_PAR_UICFG_LANGUAGE": get_safe(reg06, 1),               # 0x0601        Selected language (see MBV_PAR_LANG_*)
+                "MBF_PAR_UICFG_BACKLIGHT": get_safe(reg06, 2),              # 0x0602        Display backlight function (see MBV_PAR_BACKLIGHT_*)
+                "MBF_PAR_UICFG_SOUND": get_safe(reg06, 3),                  # 0x0603 mask   Audible alerts (see MBMSK_PAR_SOUND_*)
+                "MBF_PAR_UICFG_PASSWORD": get_safe(reg06, 4),               # 0x0604        System password encoded in BCD
+                "MBF_PAR_UICFG_VISUAL_OPTIONS": get_safe(reg06, 5),         # 0x0605 mask   Stores the different display options for the user interface menus (bitmask). Some bits allow you to hide options that are normally visible (bits 0 to 3) while other bits allow you to show options that are normally hidden (bits 9 to 15)
+                "MBF_PAR_UICFG_VISUAL_OPTIONS_EXT": get_safe(reg06, 6),     # 0x0606 mask   This register stores additional display options for the user interface menus (see MBMSK_VOE_*)
+                "MBF_PAR_UICFG_MACH_VISUAL_STYLE": get_safe(reg06, 7),      # 0x0607 mask   This register is an expansion of register MBF_PAR_UICFG_MACHINE and MBF_PAR_UICFG_VISUAL_OPTIONS. If MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC then the lower part (8 bits LSB) is used to store the type of color selected. Colors and styles correspond to those listed in MBF_PAR_UICFG_MACHINE (see MBV_PAR_MACH_*). The upper part (8-bit MSB) contains extra bits MBMSK_VS_FORCE_UNITS_GRH, MBMSK_VS_FORCE_UNITS_PERCENTAGE and MBMSK_ELECTROLISIS
+                "MBF_PAR_UICFG_MACH_NAME_BOLD": get_safe(reg06, 8),         # 0x0608         Machine name bold part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x608 to 0x60B) ASCIIZ string with up to 8 characters
+                "MBF_PAR_UICFG_MACH_NAME_LIGHT": get_safe(reg06, 12),       # 0x060C         Machine name normal intensity part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x060C to 0x060F) ASCIIZ string with up to 8 characters
+                # Prepared for future use:
+                # "MBF_PAR_UICFG_MACH_NAME_AUX1": modbus_regs_to_ascii(reg06[16:21]), # 0x0610         Aux1 relay name: 5 register ASCIIZ string with up to 10 characters
+                # "MBF_PAR_UICFG_MACH_NAME_AUX2": modbus_regs_to_ascii(reg06[21:26]), # 0x0615         Aux2 relay name: 5 register ASCIIZ string with up to 10 characters
+                # "MBF_PAR_UICFG_MACH_NAME_AUX3": modbus_regs_to_ascii(reg06[26:31]), # 0x061A         Aux3 relay name: 5 register ASCIIZ string with up to 10 characters
+                # "MBF_PAR_UICFG_MACH_NAME_AUX4": modbus_regs_to_ascii(reg06[31:36]), # 0x061F         Aux4 relay name: 5 register ASCIIZ string with up to 10 characters
+            })
+            # fmt: on
 
         except Exception as e:  # pragma: no cover
             _LOGGER.error("Modbus TCP read error: %s", e)
@@ -784,9 +809,9 @@ class VistaPoolModbusClient:
                 self._failed_writes[f"0x{address:04X}"] = (
                     self._failed_writes.get(f"0x{address:04X}", 0) + 1
                 )
-                _LOGGER.error("Write failed at 0x%04X: %s", address, result)
+                _LOGGER.error(f"Write failed at 0x{address:04X}: {result}")
                 return None
-            _LOGGER.debug("Wrote register(s) at 0x%04X: %s", address, value)
+            _LOGGER.debug(f"Wrote register(s) at 0x{address:04X}: {value}")
 
             # Confirm the write
             await asyncio.sleep(0.05)
@@ -795,7 +820,7 @@ class VistaPoolModbusClient:
                 address=address, count=len(value), slave=self._unit
             )
             if confirm.isError():
-                _LOGGER.error("Read failed at 0x%04X: %s", address, confirm)
+                _LOGGER.error(f"Read failed at 0x{address:04X}: {confirm}")
                 return None
 
             # If apply is True, save the configuration to EEPROM and execute
@@ -806,18 +831,18 @@ class VistaPoolModbusClient:
                 )
 
                 if result.isError():  # pragma: no cover
-                    _LOGGER.error("EEPROM save failed (0x02F0): %s", result)
+                    _LOGGER.error(f"EEPROM save failed (0x02F0): {result}")
                     return None
-                _LOGGER.debug("EEPROM save triggered (0x02F0)")
+                _LOGGER.debug(f"EEPROM save triggered (0x02F0)")
 
                 await asyncio.sleep(0.1)
                 result = await client.write_registers(
                     address=0x02F5, values=[1], slave=self._unit
                 )
                 if result.isError():  # pragma: no cover
-                    _LOGGER.error("EXEC failed (0x02F5): %s", result)
+                    _LOGGER.error(f"EXEC failed (0x02F5): {result}")
                     return None
-                _LOGGER.debug("Config EXEC triggered (0x02F5)")
+                _LOGGER.debug(f"Config EXEC triggered (0x02F5)")
                 await asyncio.sleep(0.1)
 
             # Return useful dict if everything succeeded
@@ -835,7 +860,7 @@ class VistaPoolModbusClient:
             self._failed_writes[f"0x{address:04X}"] = (
                 self._failed_writes.get(f"0x{address:04X}", 0) + 1
             )
-            _LOGGER.error("Modbus TCP write exception: %s", e)
+            _LOGGER.error(f"Modbus TCP write exception: {e}")
             return {}
         finally:
             end = time.monotonic()
