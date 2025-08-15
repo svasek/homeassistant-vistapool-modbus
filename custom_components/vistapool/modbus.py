@@ -873,6 +873,9 @@ class VistaPoolModbusClient:
 
     async def async_write_aux_relay(self, relay_index, on) -> dict | None:
         """Write state of an AUX relay (1-4) using function 0x10 (Write Multiple Registers)."""
+        if relay_index not in AUX_BITMASKS:  # pragma: no cover
+            _LOGGER.error(f"Invalid AUX relay index: {relay_index} (expected 1–4)")
+            return None
         aux_bit = AUX_BITMASKS[relay_index]
         addr = 0x010E
         start = time.monotonic()
