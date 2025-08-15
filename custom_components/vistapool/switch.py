@@ -37,7 +37,7 @@ async def async_setup_entry(
     entities = []
 
     if not coordinator.data:
-        _LOGGER.warning("VistaPool: No data from Modbus, skipping switch setup!")
+        _LOGGER.warning("No data from Modbus, skipping switch setup!")
         return
 
     for key, props in SWITCH_DEFINITIONS.items():
@@ -80,19 +80,14 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         self.function_code = props.get("function_code") or None
 
         _LOGGER.debug(
-            "VistaPoolSwitch INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
-            _LOGGER.error(
-                "VistaPoolSwitch: Modbus client not available for writing registers."
-            )
+            _LOGGER.error("Modbus client not available for writing registers.")
             return
         if self._switch_type == "manual_filtration":
             await client.async_write_register(MANUAL_FILTRATION_REGISTER, 1)
@@ -120,9 +115,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         """Turn the switch OFF."""
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
-            _LOGGER.error(
-                "VistaPoolSwitch: Modbus client not available for writing registers."
-            )
+            _LOGGER.error("Modbus client not available for writing registers.")
             return
         if self._switch_type == "manual_filtration":
             await client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
@@ -146,10 +139,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     async def async_added_to_hass(self) -> None:  # pragma: no cover
         """Handle entity which will be added to hass."""
         _LOGGER.debug(
-            "VistaPoolSwitch ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"ADDED: entity_id={self.entity_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
         await super().async_added_to_hass()
 

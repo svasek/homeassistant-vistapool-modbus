@@ -38,7 +38,7 @@ async def async_setup_entry(
     entities = []
 
     if not coordinator.data:  # pragma: no cover
-        _LOGGER.warning("VistaPool: No data from Modbus, skipping number setup!")
+        _LOGGER.warning("No data from Modbus, skipping number setup!")
         return
 
     for key, props in NUMBER_DEFINITIONS.items():
@@ -102,25 +102,17 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         self._attr_icon = props.get("icon")
 
         _LOGGER.debug(
-            "VistaPoolNumber INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
 
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
         _LOGGER.debug(
-            "VistaPoolNumber ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"ADDED: entity_id={self.entity_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
         client = getattr(self.coordinator, "client", None)
         if client is None:
-            _LOGGER.error(
-                "VistaPoolNumber: Modbus client not available for reading registers."
-            )
+            _LOGGER.error("Modbus client not available for reading registers.")
             return
         await super().async_added_to_hass()
 
@@ -149,9 +141,7 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         """Debounced write to the Modbus register."""
         client = getattr(self.coordinator, "client", None)
         if client is None:
-            _LOGGER.error(
-                "VistaPoolNumber: Modbus client not available for writing registers."
-            )
+            _LOGGER.error("Modbus client not available for writing registers.")
             return
         try:
             await asyncio.sleep(self._debounce_delay)

@@ -64,7 +64,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             # Reset interval after success
             if self.update_interval != self.normal_update_interval:  # pragma: no cover
                 _LOGGER.info(
-                    f"VistaPool: Communication OK, resetting update interval to {self.normal_update_interval.total_seconds()} seconds."
+                    f"Communication OK, resetting update interval to {self.normal_update_interval.total_seconds()} seconds."
                 )
                 self.update_interval = self.normal_update_interval
 
@@ -110,7 +110,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
 
         except Exception as err:
             self._consecutive_errors += 1
-            _LOGGER.error("Modbus communication error: %s", err)
+            _LOGGER.error(f"Modbus communication error: {err}")
 
             # Exponential backoff: double the interval, but never more than max
             next_interval = self.update_interval * 2
@@ -118,7 +118,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 next_interval = self.max_update_interval
             if self.update_interval != next_interval:
                 _LOGGER.warning(
-                    f"VistaPool: Increasing update interval to {int(next_interval.total_seconds())} seconds due to communication errors."
+                    f"Increasing update interval to {int(next_interval.total_seconds())} seconds due to communication errors."
                 )
                 self.update_interval = next_interval
 

@@ -39,7 +39,7 @@ async def async_setup_entry(
     entities = []
 
     if not coordinator.data:
-        _LOGGER.warning("VistaPool: No data from Modbus, skipping button setup!")
+        _LOGGER.warning("No data from Modbus, skipping button setup!")
         return
 
     for key, props in BUTTON_DEFINITIONS.items():
@@ -67,10 +67,7 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
         self._attr_icon = props.get("icon") or "mdi:button-pointer"
 
         _LOGGER.debug(
-            "VistaPoolButton INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
 
     async def async_press(self) -> None:
@@ -90,10 +87,7 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
     async def async_added_to_hass(self) -> None:  # pragma: no cover
         """Run when the entity is added to hass."""
         _LOGGER.debug(
-            "VistaPoolButton ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"ADDED: entity_id={self.entity_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
         await super().async_added_to_hass()
 

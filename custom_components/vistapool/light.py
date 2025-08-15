@@ -37,7 +37,7 @@ async def async_setup_entry(
     entities = []
 
     if not coordinator.data:
-        _LOGGER.warning("VistaPool: No data from Modbus, skipping light setup!")
+        _LOGGER.warning("No data from Modbus, skipping light setup!")
         return
 
     for key, props in LIGHT_DEFINITIONS.items():
@@ -78,19 +78,14 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         self.function_code = props.get("function_code") or None
 
         _LOGGER.debug(
-            "VistaPoolLight INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the light ON."""
         client = getattr(self.coordinator, "client", None)
         if client is None:
-            _LOGGER.error(
-                "VistaPoolLight: Modbus client not available for writing registers."
-            )
+            _LOGGER.error("Modbus client not available for writing registers.")
             return
         if self._switch_type == "relay_timer":
             _LOGGER.debug(
@@ -111,9 +106,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         """Turn the light OFF."""
         client = getattr(self.coordinator, "client", None)
         if client is None:
-            _LOGGER.error(
-                "VistaPoolLight: Modbus client not available for writing registers."
-            )
+            _LOGGER.error("Modbus client not available for writing registers.")
             return
         if self._switch_type == "relay_timer":
             _LOGGER.debug(
@@ -130,10 +123,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
         _LOGGER.debug(
-            "VistaPoolLight ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id,
-            self._attr_translation_key,
-            getattr(self, "has_entity_name", None),
+            f"ADDED: entity_id={self.entity_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
         await super().async_added_to_hass()
 

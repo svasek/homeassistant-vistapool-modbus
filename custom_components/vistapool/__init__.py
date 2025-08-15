@@ -40,8 +40,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         new_options = {k: entry.data[k] for k in candidate_keys}
         if new_options:  # pragma: no cover
             _LOGGER.debug(
-                "VistaPool: Migrating ALL config entry data (except connection params) to options: %s",
-                new_options,
+                f"VistaPool: Migrating ALL config entry data (except connection params) to options: {new_options}"
             )
             hass.config_entries.async_update_entry(entry, options=new_options)
     # --- End migration ---
@@ -113,12 +112,12 @@ async def async_setup(hass, config) -> bool:
             if enable is not None:
                 timer_data["enable"] = enable
 
-            _LOGGER.debug("Setting timer %s with data: %s", timer_name, timer_data)
+            _LOGGER.debug(f"Setting timer {timer_name} with data: {timer_data}")
             await coordinator.client.write_timer(timer_name, timer_data)
             await coordinator.async_request_refresh()
         except Exception as e:
             _LOGGER.error(
-                "Failed to set timer %s: %s", call.data.get("timer", "unknown"), e
+                f"Failed to set timer {call.data.get('timer', 'unknown')}: {e}"
             )
             raise ServiceValidationError(f"Timer setting failed: {e}")
 

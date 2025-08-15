@@ -268,9 +268,7 @@ class VistaPoolModbusClient:
             client = await self.get_client()
             if client is None or not client.connected:  # pragma: no cover
                 _LOGGER.error(
-                    "Modbus client connection failed to %s:%s",
-                    self._host,
-                    self._port,
+                    f"Modbus client connection failed to {self._host}:{self._port}"
                 )
                 self._failed_reads["connection"] = (
                     self._failed_reads.get("connection", 0) + 1
