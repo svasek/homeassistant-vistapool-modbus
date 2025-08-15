@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.10.0...v1.10.1) (2025-08-15)
+
+
+### Bug Fixes
+
+* **modbus:** 🐛 correct register indices for power module data retrieval ([d93b969](https://github.com/svasek/homeassistant-vistapool-modbus/commit/d93b969620664758913afefb5f3ce6b75171917d))
+* **modbus:** 🐛 validate AUX relay index before writing state ([e28d708](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e28d7087110693ea7ec7f8511bbf5d0e6a7568f8))
+
 ## [1.10.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.9.0...v1.10.0) (2025-08-10)
 
 
