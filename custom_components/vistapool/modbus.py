@@ -282,7 +282,10 @@ class VistaPoolModbusClient:
             Manages general configuration of the box. This page is reserved for internal purposes
             """
             rr00_ranges = [
-                (0x0000, 15),  # 0x0000–0x000E
+                (0x0000, 16),  # 0x0000–0x000E
+                # (0x0022, 2),  # 0x0022–0x0024 (24-36V, 12V, 5V lines)
+                # (0x006A, 1),  # 0x006A (5V line)
+                # (0x0072, 1),  # 0x0072 (4-20mA line)
             ]
 
             reg00 = []
@@ -317,14 +320,14 @@ class VistaPoolModbusClient:
             result.update({
                 "MBF_POWER_MODULE_VERSION": get_safe(reg00, 2),     # 0x0002         ! Power module version (MSB=Major, LSB=Minor)
                 "MBF_POWER_MODULE_NODEID": reg00[4:10],             # 0x0004         ! Power module Node ID (6 register 0x0004 - 0x0009)
-                "MBF_POWER_MODULE_REGISTER": get_safe(reg00, 11),   # 0x000C         ! Writing an address in this register causes the power module register address to be read out into MBF_POWER_MODULE_DATA, see MBF_POWER_MODULE_REG_*
-                "MBF_POWER_MODULE_DATA": get_safe(reg00, 12),       # 0x000D         ! power module data as requested in MBF_POWER_MODULE_REGISTER
-                "MBF_PH_STATUS_ALARM": get_safe(reg00, 14),         # 0x000F           PH alarm. The possible alarm values are depending on the regulation model
+                "MBF_POWER_MODULE_REGISTER": get_safe(reg00, 12),   # 0x000C         ! Writing an address in this register causes the power module register address to be read out into MBF_POWER_MODULE_DATA, see MBF_POWER_MODULE_REG_*
+                "MBF_POWER_MODULE_DATA": get_safe(reg00, 13),       # 0x000D         ! power module data as requested in MBF_POWER_MODULE_REGISTER
+                "MBF_PH_STATUS_ALARM": get_safe(reg00, 15),         # 0x000F           PH alarm. The possible alarm values are depending on the regulation model
                 # Prepared for future use:
-                # "MBF_VOLT_24_36": get_safe(reg00, 0),             # 0x0022*        ! Current 24-36V line in mV
-                # "MBF_VOLT_12": get_safe(reg00, 0),                # 0x0023*        ! Current 12V line in mV
-                # "MBF_VOLT_5": get_safe(reg00, 0),                 # 0x006A*        ! 5V line in mV / 0,62069
-                # "MBF_AMP_4_20_MICRO": get_safe(reg00, 0),         # 0x0072*        ! 2-40mA line in µA * 10 (1=0,01mA)
+                # "MBF_VOLT_24_36": get_safe(reg00, 16),            # 0x0022*        ! Current 24-36V line in mV
+                # "MBF_VOLT_12": get_safe(reg00, 17),               # 0x0023*        ! Current 12V line in mV
+                # "MBF_VOLT_5": get_safe(reg00, 18),                # 0x006A*        ! 5V line in mV / 0,62069
+                # "MBF_AMP_4_20_MICRO": get_safe(reg00, 19),        # 0x0072*        ! 2-40mA line in µA * 10 (1=0,01mA)
             })
             # fmt: on
 
