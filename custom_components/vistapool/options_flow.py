@@ -41,7 +41,7 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
         options = dict(self._config_entry.options)
         already_enabled = options.get("enable_backwash_option", False)
 
-        device_slug = self.config_entry.unique_id or slugify(
+        device_slug = self._config_entry.unique_id or slugify(
             self.config_entry.data.get("name")
         )
         expected = f"{device_slug}{date.today().year}"

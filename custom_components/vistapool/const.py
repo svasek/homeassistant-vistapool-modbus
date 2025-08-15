@@ -435,7 +435,7 @@ BINARY_SENSOR_DEFINITIONS = {
 
 NUMBER_DEFINITIONS = {
     "MBF_PAR_HIDRO": {
-        "name": "Hydrolisis target production level",
+        "name": "Hydrolysis target production level",
         "unit": "%",
         "min": 0.0,
         "max": 100.0,

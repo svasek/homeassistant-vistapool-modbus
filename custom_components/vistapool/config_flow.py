@@ -91,6 +91,7 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=data_schema,
         )
 
+    @staticmethod
     def async_get_options_flow(config_entry):
         from .options_flow import VistaPoolOptionsFlowHandler
 
