@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - main
-      - 'release-please--*'
+      - "release-please--*"
 
 permissions:
   contents: write
@@ -17,7 +17,7 @@ jobs:
     name: Release
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Run release-please
         uses: googleapis/release-please-action@v4
