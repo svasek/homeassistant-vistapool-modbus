@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.11.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.10.1...v1.11.0) (2025-09-04)
+
+
+### Features
+
+* **modbus:** ✨ add compatibility helpers for pymodbus addressing ([bc3cfc4](https://github.com/svasek/homeassistant-vistapool-modbus/commit/bc3cfc48dbb99ff32d22ec91044bf69f320950cf))
+
+
+### Bug Fixes
+
+* **modbus:** 🐛 improve error handling by raising ModbusException ([ecc7ab0](https://github.com/svasek/homeassistant-vistapool-modbus/commit/ecc7ab0151cb9130ad3c5a4b5d103bb4028ff6b2))
+
 ## [1.10.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.10.0...v1.10.1) (2025-08-15)
 
 
