@@ -20,6 +20,7 @@ from datetime import datetime, timedelta
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.exceptions import ModbusException, ConnectionException
 from .helpers import parse_timer_block, build_timer_block, get_filtration_speed
+from .modbus_compat import modbus_acall
 from .const import TIMER_BLOCKS
 
 from .status_mask import (
@@ -172,8 +173,11 @@ class VistaPoolModbusClient:
         # Perform a lightweight health check
         try:
             result = await asyncio.wait_for(
-                self._client.read_holding_registers(
-                    address=0x0000, count=1, slave=self._unit
+                modbus_acall(
+                    self._client.read_holding_registers,
+                    self._unit,
+                    address=0x0000,
+                    count=1,
                 ),
                 timeout=3,
             )
@@ -289,8 +293,11 @@ class VistaPoolModbusClient:
             reg00 = []
             for address, count in rr00_ranges:
                 try:
-                    rr00 = await client.read_holding_registers(
-                        address=address, count=count, slave=self._unit
+                    rr00 = await modbus_acall(
+                        client.read_holding_registers,
+                        self._unit,
+                        address=address,
+                        count=count,
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
@@ -343,8 +350,11 @@ class VistaPoolModbusClient:
             for address, count in rr01_ranges:
                 await asyncio.sleep(0.05)
                 try:
-                    rr01 = await client.read_input_registers(
-                        address=address, count=count, slave=self._unit
+                    rr01 = await modbus_acall(
+                        client.read_input_registers,
+                        self._unit,
+                        address=address,
+                        count=count,
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
@@ -422,8 +432,11 @@ class VistaPoolModbusClient:
             for address, count in rr02_ranges:
                 await asyncio.sleep(0.05)
                 try:
-                    rr02 = await client.read_holding_registers(
-                        address=address, count=count, slave=self._unit
+                    rr02 = await modbus_acall(
+                        client.read_holding_registers,
+                        self._unit,
+                        address=address,
+                        count=count,
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
@@ -482,8 +495,11 @@ class VistaPoolModbusClient:
             for address, count in rr03_ranges:
                 await asyncio.sleep(0.05)
                 try:
-                    rr03 = await client.read_holding_registers(
-                        address=address, count=count, slave=self._unit
+                    rr03 = await modbus_acall(
+                        client.read_holding_registers,
+                        self._unit,
+                        address=address,
+                        count=count,
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
@@ -547,8 +563,11 @@ class VistaPoolModbusClient:
             for address, count in rr04_ranges:
                 await asyncio.sleep(0.05)
                 try:
-                    rr04 = await client.read_holding_registers(
-                        address=address, count=count, slave=self._unit
+                    rr04 = await modbus_acall(
+                        client.read_holding_registers,
+                        self._unit,
+                        address=address,
+                        count=count,
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
@@ -641,8 +660,11 @@ class VistaPoolModbusClient:
             for address, count in rr05_ranges:
                 await asyncio.sleep(0.05)
                 try:
-                    rr05 = await client.read_holding_registers(
-                        address=address, count=count, slave=self._unit
+                    rr05 = await modbus_acall(
+                        client.read_holding_registers,
+                        self._unit,
+                        address=address,
+                        count=count,
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
@@ -693,8 +715,11 @@ class VistaPoolModbusClient:
             for address, count in rr06_ranges:
                 await asyncio.sleep(0.05)
                 try:
-                    rr06 = await client.read_holding_registers(
-                        address=address, count=count, slave=self._unit
+                    rr06 = await modbus_acall(
+                        client.read_holding_registers,
+                        self._unit,
+                        address=address,
+                        count=count,
                     )
                 except Exception as e:
                     _LOGGER.error(f"Read error 0x{address:04X}: {e}")
@@ -801,10 +826,11 @@ class VistaPoolModbusClient:
             if not isinstance(value, list):
                 value = [value]
 
-            result = await client.write_registers(
+            result = await modbus_acall(
+                client.write_registers,
+                self._unit,
                 address=address,
                 values=value if isinstance(value, list) else [value],
-                slave=self._unit,
             )
             if result.isError():
                 self._failed_writes[f"0x{address:04X}"] = (
@@ -817,8 +843,11 @@ class VistaPoolModbusClient:
             # Confirm the write
             await asyncio.sleep(0.05)
             # Read back the register to confirm the write
-            confirm = await client.read_holding_registers(
-                address=address, count=len(value), slave=self._unit
+            confirm = await modbus_acall(
+                client.read_holding_registers,
+                self._unit,
+                address=address,
+                count=len(value),
             )
             if confirm.isError():
                 _LOGGER.error(f"Read failed at 0x{address:04X}: {confirm}")
@@ -827,8 +856,8 @@ class VistaPoolModbusClient:
             # If apply is True, save the configuration to EEPROM and execute
             if apply:
                 await asyncio.sleep(0.1)
-                result = await client.write_registers(
-                    address=0x02F0, values=[1], slave=self._unit
+                result = await modbus_acall(
+                    client.write_registers, self._unit, address=0x02F0, values=[1]
                 )
 
                 if result.isError():  # pragma: no cover
@@ -837,8 +866,8 @@ class VistaPoolModbusClient:
                 _LOGGER.debug(f"EEPROM save triggered (0x02F0)")
 
                 await asyncio.sleep(0.1)
-                result = await client.write_registers(
-                    address=0x02F5, values=[1], slave=self._unit
+                result = await modbus_acall(
+                    client.write_registers, self._unit, address=0x02F5, values=[1]
                 )
                 if result.isError():  # pragma: no cover
                     _LOGGER.error(f"EXEC failed (0x02F5): {result}")
@@ -889,8 +918,8 @@ class VistaPoolModbusClient:
                 )
                 return {}
             # Read current relay state
-            current_result = await client.read_input_registers(
-                address=addr, count=1, slave=self._unit
+            current_result = await modbus_acall(
+                client.read_input_registers, self._unit, address=addr, count=1
             )
             if current_result.isError():
                 _LOGGER.error(f"Modbus read error from 0x{addr:04X}: {current_result}")
@@ -901,11 +930,19 @@ class VistaPoolModbusClient:
                 value = current | aux_bit
             else:
                 value = current & ~aux_bit
-            await client.write_registers(address=addr, values=[1], slave=self._unit)
-            await client.write_registers(address=addr, values=[value], slave=self._unit)
+            await modbus_acall(
+                client.write_registers, self._unit, address=addr, values=[1]
+            )
+            await modbus_acall(
+                client.write_registers, self._unit, address=addr, values=[value]
+            )
             _LOGGER.debug(f"Wrote relay state at 0x{addr:04X}: 0x{value:04X}")
-            await client.write_registers(address=0x0289, values=[0], slave=self._unit)
-            await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
+            await modbus_acall(
+                client.write_registers, self._unit, address=0x0289, values=[0]
+            )
+            await modbus_acall(
+                client.write_registers, self._unit, address=0x02F5, values=[1]
+            )
             self._successful_write_ops += 1
             self._successful_writes.append((f"0x{addr:04X}", time.time()))
 
@@ -954,8 +991,8 @@ class VistaPoolModbusClient:
             if enabled_timers is not None and name not in enabled_timers:
                 continue
             try:
-                rr = await client.read_holding_registers(
-                    address=addr, count=15, slave=self._unit
+                rr = await modbus_acall(
+                    client.read_holding_registers, self._unit, address=addr, count=15
                 )
             except Exception as e:
                 self._failed_reads[f"0x{addr:04X}"] = (
@@ -1012,8 +1049,8 @@ class VistaPoolModbusClient:
                     "Modbus client connection failed to %s:%s", self._host, self._port
                 )
                 return False
-            rr = await client.read_holding_registers(
-                address=addr, count=15, slave=self._unit
+            rr = await modbus_acall(
+                client.read_holding_registers, self._unit, address=addr, count=15
             )
             if rr.isError():
                 self._failed_writes[f"0x{addr:04X}"] = (
@@ -1044,8 +1081,8 @@ class VistaPoolModbusClient:
                     "Modbus client connection failed to %s:%s", self._host, self._port
                 )
                 return {}
-            result = await client.write_registers(
-                address=addr, values=regs, slave=self._unit
+            result = await modbus_acall(
+                client.write_registers, self._unit, address=addr, values=regs
             )
             if result.isError():
                 self._failed_writes[f"0x{addr:04X}"] = (
@@ -1057,9 +1094,13 @@ class VistaPoolModbusClient:
             _LOGGER.debug(f"Wrote timer block {block_name} (0x{addr:04X}): {regs}")
             await asyncio.sleep(0.1)
             # Write to EEPROM and execute
-            await client.write_registers(address=0x02F0, values=[1], slave=self._unit)
+            await modbus_acall(
+                client.write_registers, self._unit, address=0x02F0, values=[1]
+            )
             await asyncio.sleep(0.1)
-            await client.write_registers(address=0x02F5, values=[1], slave=self._unit)
+            await modbus_acall(
+                client.write_registers, self._unit, address=0x02F5, values=[1]
+            )
             await asyncio.sleep(0.1)
 
             self._successful_write_ops += 1
