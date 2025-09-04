@@ -271,13 +271,12 @@ class VistaPoolModbusClient:
         try:
             client = await self.get_client()
             if client is None or not client.connected:  # pragma: no cover
-                _LOGGER.error(
-                    f"Modbus client connection failed to {self._host}:{self._port}"
-                )
                 self._failed_reads["connection"] = (
                     self._failed_reads.get("connection", 0) + 1
                 )
-                return {}
+                raise ModbusException(
+                    f"Modbus client connection failed to {self._host}:{self._port}"
+                )
 
             """
             Request MODBUS page of registers starting from 0x0000
@@ -300,17 +299,17 @@ class VistaPoolModbusClient:
                         count=count,
                     )
                 except Exception as e:
-                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
                 if rr00.isError():  # pragma: no cover
-                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr00}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(
+                        f"Modbus read error from 0x{address:04X}: {rr00}"
+                    )
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 reg00.extend(rr00.registers)
                 _LOGGER.debug(f"Raw rr00 from 0x{address:04X}: {rr00.registers}")
@@ -357,17 +356,17 @@ class VistaPoolModbusClient:
                         count=count,
                     )
                 except Exception as e:
-                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
                 if rr01.isError():  # pragma: no cover
-                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr01}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(
+                        f"Modbus read error from 0x{address:04X}: {rr01}"
+                    )
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 reg01.extend(rr01.registers)
                 _LOGGER.debug(f"Raw rr01 from 0x{address:04X}: {rr01.registers}")
@@ -439,17 +438,17 @@ class VistaPoolModbusClient:
                         count=count,
                     )
                 except Exception as e:
-                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(f"Read error 0x{address:04X}: {e}") from e
                 if rr02.isError():  # pragma: no cover
-                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr02}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(
+                        f"Modbus read error from 0x{address:04X}: {rr02}"
+                    )
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 reg02.extend(rr02.registers)
                 _LOGGER.debug(f"Raw rr02 from 0x{address:04X}: {rr02.registers}")
@@ -502,17 +501,17 @@ class VistaPoolModbusClient:
                         count=count,
                     )
                 except Exception as e:
-                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
                 if rr03.isError():
-                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr03}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(
+                        f"Modbus read error from 0x{address:04X}: {rr03}"
+                    )
                 reg03.extend(rr03.registers)
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 _LOGGER.debug(f"Raw rr03 from 0x{address:04X}: {rr03.registers}")
@@ -570,17 +569,17 @@ class VistaPoolModbusClient:
                         count=count,
                     )
                 except Exception as e:
-                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
                 if rr04.isError():  # pragma: no cover
-                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr04}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(
+                        f"Modbus read error from 0x{address:04X}: {rr04}"
+                    )
                 reg04.extend(rr04.registers)
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 _LOGGER.debug(f"Raw rr04 from 0x{address:04X}: {rr04.registers}")
@@ -667,17 +666,17 @@ class VistaPoolModbusClient:
                         count=count,
                     )
                 except Exception as e:
-                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(f"Read error 0x{address:04X}: {e}") from e
                 if rr05.isError():  # pragma: no cover
-                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr05}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(
+                        f"Modbus read error from 0x{address:04X}: {rr05}"
+                    )
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 reg05.extend(rr05.registers)
                 _LOGGER.debug(f"Raw rr05 from 0x{address:04X}: {rr05.registers}")
@@ -722,17 +721,17 @@ class VistaPoolModbusClient:
                         count=count,
                     )
                 except Exception as e:
-                    _LOGGER.error(f"Read error 0x{address:04X}: {e}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(f"Read error 0x{address:04X}: {e}") from e
                 if rr06.isError():  # pragma: no cover
-                    _LOGGER.error(f"Modbus read error from 0x{address:04X}: {rr06}")
                     self._failed_reads[f"0x{address:04X}"] = (
                         self._failed_reads.get(f"0x{address:04X}", 0) + 1
                     )
-                    return {}
+                    raise ModbusException(
+                        f"Modbus read error from 0x{address:04X}: {rr06}"
+                    )
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 reg06.extend(rr06.registers)
                 _LOGGER.debug(f"Raw rr06 from 0x{address:04X}: {rr06.registers}")
@@ -764,9 +763,8 @@ class VistaPoolModbusClient:
             # fmt: on
 
         except Exception as e:  # pragma: no cover
-            _LOGGER.error("Modbus TCP read error: %s", e)
             self._failed_reads["unknown"] = self._failed_reads.get("unknown", 0) + 1
-            return {}
+            raise ModbusException(f"Modbus TCP read error: {e}") from e
         finally:
             end = time.monotonic()
             self._response_times.append(end - start)
@@ -815,12 +813,9 @@ class VistaPoolModbusClient:
                 self._failed_writes[f"0x{address:04X}"] = (
                     self._failed_writes.get(f"0x{address:04X}", 0) + 1
                 )
-                _LOGGER.error(
-                    "Modbus client connection failed to %s:%s",
-                    self._host,
-                    self._port,
+                raise ModbusException(
+                    f"Modbus client connection failed to {self._host}:{self._port}"
                 )
-                return {}
 
             # Ensure value is always a list, even for a single register
             if not isinstance(value, list):
@@ -890,8 +885,9 @@ class VistaPoolModbusClient:
             self._failed_writes[f"0x{address:04X}"] = (
                 self._failed_writes.get(f"0x{address:04X}", 0) + 1
             )
-            _LOGGER.error(f"Modbus TCP write exception: {e}")
-            return {}
+            raise ModbusException(
+                f"Modbus TCP write exception at 0x{address:04X}: {e}"
+            ) from e
         finally:
             end = time.monotonic()
             self._write_response_times.append(end - start)
@@ -913,17 +909,17 @@ class VistaPoolModbusClient:
                 self._failed_writes[f"0x{addr:04X}"] = (
                     self._failed_writes.get(f"0x{addr:04X}", 0) + 1
                 )
-                _LOGGER.error(
+                raise ModbusException(
                     f"Modbus client connection failed to {self._host}:{self._port}"
                 )
-                return {}
             # Read current relay state
             current_result = await modbus_acall(
                 client.read_input_registers, self._unit, address=addr, count=1
             )
             if current_result.isError():
-                _LOGGER.error(f"Modbus read error from 0x{addr:04X}: {current_result}")
-                return
+                raise ModbusException(
+                    f"Modbus read error from 0x{addr:04X}: {current_result}"
+                )
             current = current_result.registers[0]
             # Set or clear the aux bit
             if on:
@@ -950,8 +946,9 @@ class VistaPoolModbusClient:
             self._failed_writes[f"0x{addr:04X}"] = (
                 self._failed_writes.get(f"0x{addr:04X}", 0) + 1
             )
-            _LOGGER.error(f"Modbus TCP AUX relay write exception at 0x{addr:04X}: {e}")
-            return {}
+            raise ModbusException(
+                f"Modbus TCP AUX relay write failed at 0x{addr:04X}: {e}"
+            ) from e
         finally:
             end = time.monotonic()
             self._write_response_times.append(end - start)
@@ -982,10 +979,9 @@ class VistaPoolModbusClient:
             self._failed_reads["timers_connection"] = (
                 self._failed_reads.get("timers_connection", 0) + 1
             )
-            _LOGGER.error(
-                "Modbus client connection failed to %s:%s", self._host, self._port
+            raise ModbusException(
+                f"Modbus client connection failed to {self._host}:{self._port}"
             )
-            return {}
         for name, addr in TIMER_BLOCKS.items():
             # If enabled_timers is provided, limit to those timers only
             if enabled_timers is not None and name not in enabled_timers:

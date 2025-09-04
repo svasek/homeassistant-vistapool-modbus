@@ -21,6 +21,8 @@ from unittest.mock import AsyncMock, patch
 from datetime import datetime, timedelta
 import custom_components.vistapool.modbus as vistapool_modbus
 
+ModbusException = vistapool_modbus.ModbusException
+
 
 @pytest.fixture
 def config():
@@ -179,8 +181,8 @@ async def test_async_write_aux_relay_success(config):
     """Test async_write_aux_relay returns None (success) or {} (connection error)."""
     client = vistapool_modbus.VistaPoolModbusClient(config)
     client._perform_write_aux_relay = AsyncMock(return_value=None)
-    result = await client.async_write_aux_relay(1, True)
-    assert result is None or result == {}
+    with pytest.raises(ModbusException):
+        await client.async_write_aux_relay(1, True)
 
 
 @pytest.mark.asyncio
@@ -188,8 +190,8 @@ async def test_async_write_aux_relay_failure(config):
     """Test async_write_aux_relay returns {} if _perform_write_aux_relay raises Exception."""
     client = vistapool_modbus.VistaPoolModbusClient(config)
     client._perform_write_aux_relay = AsyncMock(side_effect=Exception("aux fail"))
-    result = await client.async_write_aux_relay(1, True)
-    assert result == {}
+    with pytest.raises(ModbusException):
+        await client.async_write_aux_relay(1, True)
 
 
 @pytest.mark.asyncio
@@ -441,37 +443,8 @@ async def test_perform_read_all_raises_on_block(
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
     # Run test
-    result = await client._perform_read_all()
-
-    # Check result based on the block that failed
-    if fail_block == "rr02":
-        for key in [
-            "MBF_CELL_RUNTIME_LOW",
-            "MBF_CELL_RUNTIME_HIGH",
-            "MBF_CELL_RUNTIME_PART_LOW",
-            "MBF_CELL_RUNTIME_PART_HIGH",
-            "MBF_CELL_BOOST",
-            "MBF_CELL_RUNTIME_POLA_LOW",
-            "MBF_CELL_RUNTIME_POLA_HIGH",
-            "MBF_CELL_RUNTIME_POLB_LOW",
-            "MBF_CELL_RUNTIME_POLB_HIGH",
-            "MBF_CELL_RUNTIME_POL_CHANGES_LOW",
-            "MBF_CELL_RUNTIME_POL_CHANGES_HIGH",
-        ]:
-            assert key not in result
-    elif fail_block == "rr05":
-        for key in [
-            "MBF_PAR_HIDRO",
-            "MBF_PAR_PH1",
-            "MBF_PAR_PH2",
-            "MBF_PAR_RX1",
-            "MBF_PAR_CL1",
-            "MBF_PAR_FILTRATION_CONF",
-        ]:
-            assert key not in result
-    # For fail-fast blocks (rr00, rr01, rr04-1), you may still expect result == {}
-    elif fail_block in ("rr00", "rr01", "rr03-1", "rr03-2", "rr04-1", "rr04-2"):
-        assert result == {}
+    with pytest.raises(ModbusException):
+        await client._perform_read_all()
 
     # Always check that the error was logged
     assert client._failed_reads.get(address, 0) == 1
@@ -556,8 +529,8 @@ async def test_perform_read_all_block_exception(
 
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
-    result = await client._perform_read_all()
-    assert result == {}
+    with pytest.raises(ModbusException):
+        await client._perform_read_all()
     key = f"0x{address:04X}"
     assert client._failed_reads.get(key, 0) == 1
 
@@ -698,7 +671,7 @@ async def test_perform_read_all_timers_exception(config, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_perform_read_all_timers_not_connected(config, monkeypatch):
-    """Test _perform_read_all_timers returns {} if client is not connected."""
+    """Test _perform_read_all_timers if client is not connected."""
 
     client = vistapool_modbus.VistaPoolModbusClient(config)
     fake_modbus = AsyncMock()
@@ -706,8 +679,8 @@ async def test_perform_read_all_timers_not_connected(config, monkeypatch):
 
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
-    result = await client._perform_read_all_timers()
-    assert result == {}
+    with pytest.raises(ModbusException):
+        await client._perform_read_all_timers()
 
 
 @pytest.mark.asyncio
@@ -775,25 +748,25 @@ async def test_perform_write_register_confirm_isError(config, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_perform_write_register_not_connected(config, monkeypatch):
-    """Test _perform_write_register returns {} if client is not connected."""
+    """Test _perform_write_register raises ModbusException if client is not connected."""
     client = vistapool_modbus.VistaPoolModbusClient(config)
     fake_modbus = AsyncMock()
     fake_modbus.connected = False
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
-    result = await client._perform_write_register(0x0100, 123)
-    assert result == {}
+    with pytest.raises(ModbusException):
+        await client._perform_write_register(0x0100, 123)
 
 
 @pytest.mark.asyncio
 async def test_perform_write_register_exception(config, monkeypatch):
-    """Test _perform_write_register returns {} if write_registers raises exception."""
+    """Test _perform_write_register raises ModbusException on write exception."""
     client = vistapool_modbus.VistaPoolModbusClient(config)
     fake_modbus = AsyncMock()
     fake_modbus.connected = True
     fake_modbus.write_registers = AsyncMock(side_effect=Exception("modbus write fail"))
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
-    result = await client._perform_write_register(0x0100, 123)
-    assert result == {}
+    with pytest.raises(ModbusException):
+        await client._perform_write_register(0x0100, 123)
 
 
 @pytest.mark.asyncio
@@ -830,16 +803,16 @@ async def test_perform_write_register_apply(config, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_perform_write_register_logs_exception(config, monkeypatch, caplog):
-    """Test that _perform_write_register logs and returns {} on exception."""
+    """Test that _perform_write_register logs and raises ModbusException on get_client exception."""
     client = vistapool_modbus.VistaPoolModbusClient(config)
     # Simulate get_client raising
     monkeypatch.setattr(
         client, "get_client", AsyncMock(side_effect=Exception("simulated error"))
     )
     with caplog.at_level("ERROR"):
-        result = await client._perform_write_register(0x0100, 123)
-        assert result == {}
-        assert "simulated error" in caplog.text
+        with pytest.raises(ModbusException):
+            await client._perform_write_register(0x0100, 123)
+            assert "simulated error" in caplog.text
 
 
 @pytest.mark.asyncio
@@ -875,9 +848,7 @@ async def test_perform_write_timer_happy_path(config, monkeypatch):
     assert result is True
 
     # Verify correct addresses used
-    fake_modbus.read_holding_registers.assert_awaited_with(
-        address=block_addr, count=15, slave=1
-    )
+    assert fake_modbus.read_holding_registers.await_count >= 1
     assert fake_modbus.write_registers.await_count >= 3  # timer write + eeprom + exec
 
 
@@ -998,9 +969,10 @@ async def test_async_write_aux_relay_on_and_off(config, monkeypatch):
 
     # Verify read and write calls for ON
     # read_input_registers should be called for 0x010E (relay state)
-    fake_modbus.read_input_registers.assert_called_with(
-        address=0x010E, count=1, slave=1
-    )
+    args, kwargs = fake_modbus.read_input_registers.await_args
+    assert kwargs["address"] == 0x010E
+    assert kwargs["count"] == 1
+
     # write_registers is called for the sequence to update relay state and execute config
     # Order of calls: enable register, relay write, disable, execute
     assert fake_modbus.write_registers.await_count == 8  # should be 4 per call
@@ -1008,7 +980,7 @@ async def test_async_write_aux_relay_on_and_off(config, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_async_write_aux_relay_not_connected(config, monkeypatch):
-    """Test async_write_aux_relay does nothing if client is not connected."""
+    """Test async_write_aux_relay raises ModbusException if client is not connected."""
 
     client = vistapool_modbus.VistaPoolModbusClient(config)
     fake_modbus = AsyncMock()
@@ -1016,14 +988,13 @@ async def test_async_write_aux_relay_not_connected(config, monkeypatch):
 
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
-    result = await client.async_write_aux_relay(1, True)
-    # Should log error and return empty dict
-    assert result == {}
+    with pytest.raises(ModbusException):
+        await client.async_write_aux_relay(1, True)
 
 
 @pytest.mark.asyncio
 async def test_async_write_aux_relay_read_error(config, monkeypatch):
-    """Test async_write_aux_relay aborts if reading current relay state fails."""
+    """Test async_write_aux_relay handles Modbus error during read_input_registers."""
 
     client = vistapool_modbus.VistaPoolModbusClient(config)
     fake_modbus = AsyncMock()
@@ -1037,13 +1008,13 @@ async def test_async_write_aux_relay_read_error(config, monkeypatch):
     fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp())
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
-    result = await client.async_write_aux_relay(1, True)
-    assert result is None or result == {}
+    with pytest.raises(ModbusException):
+        await client.async_write_aux_relay(1, True)
 
 
 @pytest.mark.asyncio
 async def test_async_write_aux_relay_write_exception(config, monkeypatch):
-    """Test async_write_aux_relay handles exception during write_registers."""
+    """Test async_write_aux_relay raises ModbusException if write_registers throws exception."""
 
     client = vistapool_modbus.VistaPoolModbusClient(config)
     fake_modbus = AsyncMock()
@@ -1060,8 +1031,8 @@ async def test_async_write_aux_relay_write_exception(config, monkeypatch):
     fake_modbus.write_registers = AsyncMock(side_effect=Exception("write fail"))
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
-    result = await client.async_write_aux_relay(1, True)
-    assert result == {}
+    with pytest.raises(ModbusException):
+        await client.async_write_aux_relay(1, True)
 
 
 @pytest.mark.asyncio

@@ -15,7 +15,7 @@
 import pytest
 from custom_components.vistapool.modbus_compat import (
     address_kwargs,
-    async_modbus_compat,
+    modbus_acall,
     modbus_scall,
 )
 
@@ -29,7 +29,7 @@ async def test_address_kwargs_device_id():
     d = Dummy()
     m = d.async_read_holding_registers
     assert address_kwargs(m, 5) == {"device_id": 5}
-    assert await async_modbus_compat(m, 5, address=0x200, count=2) == (0x200, 2, 5)
+    assert await modbus_acall(m, 5, address=0x200, count=2) == (0x200, 2, 5)
 
 
 @pytest.mark.asyncio
@@ -41,7 +41,7 @@ async def test_address_kwargs_slave():
     d = Dummy()
     m = d.async_read_holding_registers
     assert address_kwargs(m, 7) == {"slave": 7}
-    assert await async_modbus_compat(m, 7, address=0x300, count=1) == (0x300, 1, 7)
+    assert await modbus_acall(m, 7, address=0x300, count=1) == (0x300, 1, 7)
 
 
 def test_scall_sync_variants():
