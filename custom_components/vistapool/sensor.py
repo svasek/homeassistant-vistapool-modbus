@@ -22,7 +22,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN, SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
-from .helpers import get_device_time, get_filtration_pump_type
+from .helpers import get_filtration_pump_type
 
 _LOGGER = logging.getLogger(__name__)
 

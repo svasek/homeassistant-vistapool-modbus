@@ -14,7 +14,9 @@
 
 """VistaPool Integration for Home Assistant - Modbus Client"""
 
-import logging, asyncio, time
+import logging
+import asyncio
+import time
 from collections import deque
 from datetime import datetime, timedelta
 from pymodbus.client import AsyncModbusTcpClient
@@ -544,7 +546,7 @@ class VistaPoolModbusClient:
             # fmt: on
 
             """
-            Request INSTALLER page of registers starting from 0x0400 
+            Request INSTALLER page of registers starting from 0x0400
             Contains a set of configuration registers related to the equipment installation,
             such as the relays used for each function, the amount of time that each pump must operate, etc.
             For configuration registers, we have to use function 0x03 (Read Holding Registers)
@@ -645,7 +647,7 @@ class VistaPoolModbusClient:
             #   1: The equipment works with acid pump only
             #   2: The equipment works with base pump only
 
-            """ 
+            """
             Request INSTALLER page of registers starting from 0x0500
             Contains user configuration registers, such as the production level
             for the ionization and the hydrolysis, or the set points for the pH, redox, or chlorine regulation loops.
@@ -701,7 +703,7 @@ class VistaPoolModbusClient:
             })
             # fmt: on
 
-            """ 
+            """
             Request MISC page of registers starting from 0x0600
             Contains the configuration parameters for the screen controllers (language, colours, sound, etc).
             For configuration registers, we have to use function 0x03 (Read Holding Registers)
@@ -783,7 +785,7 @@ class VistaPoolModbusClient:
             result = await self._perform_write_register(address, value, apply)
             self._last_successful_operation = datetime.now()
             return result
-        except Exception as e:
+        except Exception:
             self._consecutive_errors += 1
             async with self._client_lock:
                 await self._safe_close_client()
@@ -858,7 +860,7 @@ class VistaPoolModbusClient:
                 if result.isError():  # pragma: no cover
                     _LOGGER.error(f"EEPROM save failed (0x02F0): {result}")
                     return None
-                _LOGGER.debug(f"EEPROM save triggered (0x02F0)")
+                _LOGGER.debug("EEPROM save triggered (0x02F0)")
 
                 await asyncio.sleep(0.1)
                 result = await modbus_acall(
@@ -867,7 +869,7 @@ class VistaPoolModbusClient:
                 if result.isError():  # pragma: no cover
                     _LOGGER.error(f"EXEC failed (0x02F5): {result}")
                     return None
-                _LOGGER.debug(f"Config EXEC triggered (0x02F5)")
+                _LOGGER.debug("Config EXEC triggered (0x02F5)")
                 await asyncio.sleep(0.1)
 
             # Return useful dict if everything succeeded
@@ -959,7 +961,7 @@ class VistaPoolModbusClient:
             result = await self._perform_read_all_timers(enabled_timers)
             self._last_successful_operation = datetime.now()
             return result
-        except Exception as e:
+        except Exception:
             self._consecutive_errors += 1
             async with self._client_lock:
                 await self._safe_close_client()
@@ -1017,7 +1019,7 @@ class VistaPoolModbusClient:
             result = await self._perform_write_timer(block_name, timer_data)
             self._last_successful_operation = datetime.now()
             return result
-        except Exception as e:
+        except Exception:
             self._consecutive_errors += 1
             async with self._client_lock:
                 await self._safe_close_client()

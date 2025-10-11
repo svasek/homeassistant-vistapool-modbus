@@ -168,13 +168,6 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
             f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
 
-        # Generate unique ID based on the bit name
-        key_parts = self._key.split("_")
-        if len(key_parts) > 1:
-            bit = key_parts[1].lower()
-        else:
-            bit = self._key.lower()
-
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
         _LOGGER.debug(

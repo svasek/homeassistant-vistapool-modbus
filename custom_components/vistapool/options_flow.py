@@ -20,7 +20,6 @@ import voluptuous as vol
 from datetime import date
 from homeassistant import config_entries
 from homeassistant.util import slugify
-from .entity import VistaPoolEntity
 from .const import DEFAULT_SCAN_INTERVAL, DEFAULT_TIMER_RESOLUTION
 
 _LOGGER = logging.getLogger(__name__)
