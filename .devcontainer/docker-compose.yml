@@ -1,0 +1,18 @@
+# This Compose file runs a Home Assistant container and mounts your integration directly.
+# You can edit files in `custom_components/vistapool` and Home Assistant will see them immediately.
+services:
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:latest
+    container_name: homeassistant
+    pull_policy: daily
+    ports:
+      - "8123:8123"
+    environment:
+      - LANG=en_US.UTF-8
+      - TZ=Europe/Prague
+    volumes:
+      # Home Assistant configuration directory (persist across runs)
+      - ${LOCAL_WORKSPACE_FOLDER}/.devcontainer/.ha_config:/config
+      # Mount the repo's component into /config/custom_components/vistapool
+      - ${LOCAL_WORKSPACE_FOLDER}/custom_components/vistapool:/config/custom_components/vistapool:rw
+    restart: unless-stopped

@@ -1,3 +1,5 @@
+.devcontainer/.ha_config/*
+!.devcontainer/.ha_config/configuration-default.yaml
 .venv
 .DS_Store
 .pytest_cache

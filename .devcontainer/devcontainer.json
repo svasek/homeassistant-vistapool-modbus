@@ -1,0 +1,61 @@
+{
+  "name": "Vistapool Integration Dev",
+  "image": "mcr.microsoft.com/devcontainers/python:3.13",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": false
+    }
+  },
+  "runArgs": [
+    "--init",
+    "-v",
+    "/var/run/docker.sock:/var/run/docker.sock"
+  ],
+  "mounts": [
+    "source=devcontainer-pipcache,target=/home/vscode/.cache/pip,type=volume"
+  ],
+  "remoteEnv": {
+    "TZ": "Europe/Prague"
+  },
+  "containerEnv": {
+    "PYTHONPATH": "${containerWorkspaceFolder}",
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt && pip install debugpy homeassistant",
+  "postStartCommand": "bash -lc '.devcontainer/init-ha.sh && docker compose -f .devcontainer/docker-compose.yml up -d'",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-python.black-formatter",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig"
+      ],
+      "settings": {
+        "python.analysis.typeCheckingMode": "basic",
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": ["tests"],
+        "python.formatting.provider": "none",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter"
+        },
+        "editor.formatOnSave": true,
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "remote.otherPortsAttributes": {
+          "onAutoForward": "ignore"
+        },
+        "remote.portsAttributes": {
+          "8123": {
+            "label": "Home Assistant",
+            "onAutoForward": "ignore"
+          }
+        },
+        "task.allowAutomaticTasks": "on"
+      }
+    }
+  }
+}
+

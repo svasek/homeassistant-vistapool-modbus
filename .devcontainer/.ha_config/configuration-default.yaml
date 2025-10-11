@@ -1,0 +1,45 @@
+# Minimal Home Assistant config for Vistapool development
+homeassistant:
+  name: Vistapool Dev
+  time_zone: Europe/Prague
+
+logger:
+  default: info
+  logs:
+    custom_components.vistapool: debug
+    pymodbus: warning
+
+# Example Modbus TCP hub for VistaPool devices
+# modbus:
+#   - name: vistapool_hub
+#     type: tcp
+#     host: 127.0.0.1
+#     port: 8899
+#     delay: 1
+
+# Example integration usage (adjust to your platform entities)
+# vistapool:
+#   hub: vistapool_hub
+#   # Add your integration-specific options here
+
+# Enable the frontend
+frontend:
+
+# Enable API
+api:
+
+panel_custom:
+  - name: panel_integrations
+    sidebar_title: Integrations
+    sidebar_icon: mdi:connection
+    url_path: "config/integrations"
+    module_url: /api/hassio/app/entrypoint.js
+    embed_iframe: true
+    require_admin: true
+  - name: panel_automations
+    sidebar_title: Automations
+    sidebar_icon: mdi:robot
+    url_path: "config/automation"
+    module_url: /api/hassio/app/entrypoint.js
+    embed_iframe: true
+    require_admin: true
