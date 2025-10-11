@@ -18,10 +18,9 @@
     "TZ": "Europe/Prague"
   },
   "containerEnv": {
-    "PYTHONPATH": "${containerWorkspaceFolder}",
     "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
-  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt && pip install debugpy homeassistant",
+  "postCreateCommand": "pip install --upgrade pip && pip install --break-system-packages -r requirements.txt && pip install --break-system-packages debugpy homeassistant",
   "postStartCommand": "bash -lc '.devcontainer/init-ha.sh && docker compose -f .devcontainer/docker-compose.yml up -d'",
   "customizations": {
     "vscode": {
@@ -34,9 +33,14 @@
         "editorconfig.editorconfig"
       ],
       "settings": {
-        "python.analysis.typeCheckingMode": "basic",
+        "python.analysis.typeCheckingMode": "off",
         "python.testing.pytestEnabled": true,
-        "python.testing.pytestArgs": ["tests"],
+        "python.testing.pytestArgs": [
+          "tests",
+          "--cov=custom_components/vistapool",
+          "--cov-report=term-missing",
+          "--disable-warnings"
+        ],
         "python.formatting.provider": "none",
         "[python]": {
           "editor.defaultFormatter": "ms-python.black-formatter"

@@ -13,7 +13,15 @@
       "type": "debugpy",
       "request": "launch",
       "module": "pytest",
-      "args": ["-q"],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      },
+      "args": [
+        "--cov=custom_components/vistapool",
+        "--cov-report=term-missing",
+        "--disable-warnings"
+      ],
       "console": "integratedTerminal",
       "justMyCode": false
     }
