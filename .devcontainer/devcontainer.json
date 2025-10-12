@@ -1,65 +1,94 @@
 {
-  "name": "Vistapool Integration Dev",
-  "image": "mcr.microsoft.com/devcontainers/python:3.13",
-  "features": {
-    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
-      "moby": false
+  // Dev container for developing the Vistapool integration using
+  // thomasloven/hass-custom-devcontainer (runs HA Core inside the container).
+  "name": "Vistapool Dev (hass-custom-devcontainer)",
+
+  // Base image that bootstraps Home Assistant Core and a dev-friendly config.
+  "image": "thomasloven/hass-custom-devcontainer:latest",
+
+  // Prepare /config (skips onboarding, can set up HACS, etc.).
+  // See the image README for additional setup commands.
+  // "postCreateCommand": "bash -lc 'cd /config && container setup'",
+
+    // On container start:
+  // 1) ensure /config exists + seed configuration.yaml if missing
+  // 2) fix ownership so current user can write
+  // 3) try to run 'container' (built-in script). If it fails, fall back to 'python -m homeassistant'
+  // "postCreateCommand": ["bash", "-lc", "sudo chown -R vscode /config && cd /config && container setup || true"],
+  "postCreateCommand": "bash -lc 'mkdir -p /config; if [ ! -f /config/configuration.yaml ] && [ -f ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml ]; then cp ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml /config/configuration.yaml; fi; pip install --upgrade pip && pip install -r requirements.txt; pip install homeassistant; sudo chown -R vscode /config && cd /config && container setup || true; echo Done'",
+  "postStartCommand": "nohup bash -lc 'hass -c /config -v >/tmp/ha.log 2>&1 &'; rm -f nohup.out",
+
+  // Forward the HA HTTP port and open a browser automatically when it appears.
+  "forwardPorts": [8123],
+  "portsAttributes": {
+    "8123": {
+      "label": "Home Assistant",
+      "onAutoForward": "openBrowser",
+      "requireLocalPort": false
     }
   },
-  "runArgs": [
-    "--init",
-    "-v",
-    "/var/run/docker.sock:/var/run/docker.sock"
-  ],
+
+  // Bind-mount your custom component and your configuration.yaml into HA's /config.
+  // Keep configuration-default.yaml in repo; generate configuration.yaml as needed.
   "mounts": [
-    "source=devcontainer-pipcache,target=/home/vscode/.cache/pip,type=volume"
+    // "source=${localWorkspaceFolder}/.devcontainer/.ha_config/configuration.yaml,target=/config/configuration.yaml,type=bind"
+    // Mount the entire dev config folder to /config (must be writable from inside the container)
+    "source=${localWorkspaceFolder}/.devcontainer/.ha_config,target=/config,type=bind",
+    "source=${localWorkspaceFolder}/custom_components/vistapool,target=/config/custom_components/vistapool,type=bind"
   ],
-  "remoteEnv": {
-    "TZ": "Europe/Prague"
-  },
+
+  "remoteUser": "vscode",
+
+  // Optional default credentials used by the image during setup (change if you want).
   "containerEnv": {
-    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+    "HASS_USERNAME": "dev",
+    "HASS_PASSWORD": "dev"
   },
-  "postCreateCommand": "pip install --upgrade pip && pip install --break-system-packages -r requirements.txt && pip install --break-system-packages debugpy homeassistant",
-  "postStartCommand": "bash -lc '.devcontainer/init-ha.sh && docker compose -f .devcontainer/docker-compose.yml up -d'",
+
+  // VS Code recommendations and per-workspace settings.
   "customizations": {
     "vscode": {
       "extensions": [
+        // Python tooling
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "charliermarsh.ruff",
         "ms-python.black-formatter",
+
+        // Optional: Docker tooling (handy for logs/inspecting)
         "ms-azuretools.vscode-docker",
+
+        // Optional: Ruff linter (enable if you use Ruff)
+        // "charliermarsh.ruff",
         "editorconfig.editorconfig"
       ],
       "settings": {
-        "python.analysis.typeCheckingMode": "off",
+        // Let Pylance resolve imports from your component package
+        "python.analysis.extraPaths": [
+          "/home/vscode/.local/lib/python3.13/site-packages",
+          "${workspaceFolder}/custom_components/vistapool"
+        ],
+
+        // Use Black as formatter
+        "python.formatting.provider": "none",
+        "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
+        "editor.formatOnSave": true,
+
+        // Testing: run pytest with the same args you'd run from CLI
         "python.testing.pytestEnabled": true,
         "python.testing.pytestArgs": [
           "tests",
           "--cov=custom_components/vistapool",
+          "--cov-config=${workspaceFolder}/.coveragerc",
           "--cov-report=term-missing",
-          "--disable-warnings"
+          "-q"
         ],
-        "python.formatting.provider": "none",
-        "[python]": {
-          "editor.defaultFormatter": "ms-python.black-formatter"
-        },
-        "editor.formatOnSave": true,
-        "files.insertFinalNewline": true,
-        "files.trimTrailingWhitespace": true,
-        "remote.otherPortsAttributes": {
-          "onAutoForward": "ignore"
-        },
-        "remote.portsAttributes": {
-          "8123": {
-            "label": "Home Assistant",
-            "onAutoForward": "ignore"
-          }
-        },
+
+        // Optional: silence random forwarded ports (keep HA visible)
+        "remote.otherPortsAttributes": { "onAutoForward": "ignore" },
+        
+        // Optional: allow auto tasks (e.g., from Docker extension)
         "task.allowAutomaticTasks": "on"
       }
     }
   }
 }
-

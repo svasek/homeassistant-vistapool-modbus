@@ -1,32 +1,43 @@
-# Minimal Home Assistant config for Vistapool development
+# Minimal Home Assistant config for Vistapool development (Core in devcontainer)
+
 homeassistant:
   name: Vistapool Dev
   time_zone: Europe/Prague
 
+# Enable a sane default set of core integrations (UI, config, etc.).
+default_config:
+
+# Logging: verbose for your custom integration, quieter for noisy deps.
 logger:
   default: info
   logs:
     custom_components.vistapool: debug
     pymodbus: warning
+    homeassistant.components.http: warning
 
-# Example Modbus TCP hub for VistaPool devices
+# Lightweight database settings for development (keeps DB small).
+recorder:
+  db_url: sqlite:////config/home-assistant_v2.db
+  commit_interval: 30
+  auto_purge: true
+  purge_keep_days: 3
+
+# Keep recent history/logbook for debugging, without heavy retention.
+history:
+logbook:
+frontend:
+api:
+
+# Example Modbus TCP hub for Vistapool (adjust host/port as needed).
 # modbus:
 #   - name: vistapool_hub
 #     type: tcp
 #     host: 127.0.0.1
 #     port: 8899
-#     delay: 1
+#     timeout: 5
+#     delays:
+#       between_messages: 10
 
-# Example integration usage (adjust to your platform entities)
-# vistapool:
-#   hub: vistapool_hub
-#   # Add your integration-specific options here
-
-# Enable the frontend
-frontend:
-
-# Enable API
-api:
 
 panel_custom:
   - name: panel_integrations
