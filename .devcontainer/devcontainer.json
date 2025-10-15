@@ -10,7 +10,7 @@
   // See the image README for additional setup commands.
   // "postCreateCommand": "bash -lc 'cd /config && container setup'",
 
-    // On container start:
+  // On container start:
   // 1) ensure /config exists + seed configuration.yaml if missing
   // 2) fix ownership so current user can write
   // 3) try to run 'container' (built-in script). If it fails, fall back to 'python -m homeassistant'
@@ -59,6 +59,7 @@
 
         // Optional: Ruff linter (enable if you use Ruff)
         // "charliermarsh.ruff",
+        "esbenp.prettier-vscode",
         "editorconfig.editorconfig"
       ],
       "settings": {
@@ -85,7 +86,7 @@
 
         // Optional: silence random forwarded ports (keep HA visible)
         "remote.otherPortsAttributes": { "onAutoForward": "ignore" },
-        
+
         // Optional: allow auto tasks (e.g., from Docker extension)
         "task.allowAutomaticTasks": "on"
       }
