@@ -3,6 +3,8 @@
 homeassistant:
   name: Vistapool Dev
   time_zone: Europe/Prague
+  country: CZ
+  language: en
 
 # Enable a sane default set of core integrations (UI, config, etc.).
 default_config:
@@ -37,7 +39,6 @@ api:
 #     timeout: 5
 #     delays:
 #       between_messages: 10
-
 
 panel_custom:
   - name: panel_integrations

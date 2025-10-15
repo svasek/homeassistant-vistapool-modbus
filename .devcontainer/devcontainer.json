@@ -14,8 +14,7 @@
   // 1) ensure /config exists + seed configuration.yaml if missing
   // 2) fix ownership so current user can write
   // 3) try to run 'container' (built-in script). If it fails, fall back to 'python -m homeassistant'
-  // "postCreateCommand": ["bash", "-lc", "sudo chown -R vscode /config && cd /config && container setup || true"],
-  "postCreateCommand": "bash -lc 'mkdir -p /config; if [ ! -f /config/configuration.yaml ] && [ -f ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml ]; then cp ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml /config/configuration.yaml; fi; pip install --upgrade pip && pip install -r requirements.txt; pip install homeassistant; sudo chown -R vscode /config && cd /config && container setup || true; echo Done'",
+  "postCreateCommand": "bash -lc 'mkdir -p /config; if [ ! -f /config/configuration.yaml ] && [ -f ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml ]; then cp ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml /config/configuration.yaml; fi; sudo chown -R vscode /config; pip install --upgrade pip && pip install -r requirements.txt; pip install homeassistant home-assistant-frontend; cd /config && container setup || true; echo Done'",
   "postStartCommand": "nohup bash -lc 'hass -c /config -v >/tmp/ha.log 2>&1 &'; rm -f nohup.out",
 
   // Forward the HA HTTP port and open a browser automatically when it appears.
@@ -31,7 +30,6 @@
   // Bind-mount your custom component and your configuration.yaml into HA's /config.
   // Keep configuration-default.yaml in repo; generate configuration.yaml as needed.
   "mounts": [
-    // "source=${localWorkspaceFolder}/.devcontainer/.ha_config/configuration.yaml,target=/config/configuration.yaml,type=bind"
     // Mount the entire dev config folder to /config (must be writable from inside the container)
     "source=${localWorkspaceFolder}/.devcontainer/.ha_config,target=/config,type=bind",
     "source=${localWorkspaceFolder}/custom_components/vistapool,target=/config/custom_components/vistapool,type=bind"
