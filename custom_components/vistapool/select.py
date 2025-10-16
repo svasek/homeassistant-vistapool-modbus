@@ -107,6 +107,25 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         if client is None:  # pragma: no cover
             _LOGGER.error("Modbus client not available for writing registers.")
             return
+        # Intelligent min filtration time: accept labels (e.g., "6h") or raw minutes (e.g., "360")
+        if self._key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
+            # Map label -> minutes
+            reverse_map = {v: k for k, v in self._options_map.items()}
+            minutes = reverse_map.get(option)
+            if minutes is None:
+                # Try to parse numeric minutes from string
+                try:
+                    if isinstance(option, str) and option.endswith("m"):
+                        minutes = int(option[:-1])
+                    else:
+                        minutes = int(option)  # pragma: no cover
+                except Exception:  # pragma: no cover
+                    return
+            await client.async_write_register(self._register or 0x041D, minutes)
+            await asyncio.sleep(0.2)
+            await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
+            return
         if self._select_type == "timer_time":
             timer_name, field = self._key.rsplit("_", 1)
             entry_id = (
@@ -383,6 +402,15 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 options = ["auto_linked"] + options
             return options
 
+        # Intelligent min filtration time: return labels 2h..12h, but if device holds an unknown minutes value,
+        # prepend the raw number as string like we do for timers.
+        if self._key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
+            options = [self._options_map[k] for k in option_keys]
+            value = self.coordinator.data.get(self._key)
+            if isinstance(value, int) and value not in self._options_map:
+                return [f"{value}m"] + options
+            return options
+
         return [self._options_map[k] for k in option_keys]
 
     @property
@@ -432,6 +460,13 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         if self._key == "MBF_PAR_RELAY_ACTIVATION_DELAY":
             value = self.coordinator.data.get(self._key)
             return str(value) if value is not None else None
+
+        if self._key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
+            value = self.coordinator.data.get(self._key)
+            if value is None:  # pragma: no cover
+                return None
+            # Return mapped label or the raw minutes as string when unknown
+            return self._options_map.get(value, f"{value}m")
 
         value = self.coordinator.data.get(self._key)
         if value is None:  # pragma: no cover

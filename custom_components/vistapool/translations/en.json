@@ -398,7 +398,8 @@
           "active_redox": "Active (Redox control)"
         }
       },
-      "relay_activation_delay": { "name": "pH pump activation delay (s)" }
+      "relay_activation_delay": { "name": "pH pump activation delay (s)" },
+      "intelligent_filt_min_time": { "name": "Intelligent: Minimum Filtration Time" }
     }
   },
   "services": {

@@ -154,7 +154,7 @@
       "ph2": { "name": "pH Minimalgrenze" },
       "rx1": { "name": "Redox-Sollwert" },
       "cl1": { "name": "Chlor-Sollwert" },
-      "heating_temp": { "name": "Temperatur Sollwert" }
+      "heating_temp": { "name": "Gewünschte Temperatur" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manuelle Filtration" },
@@ -398,7 +398,8 @@
           "active_redox": "Aktiv (Redoxsteuerung)"
         }
       },
-      "relay_activation_delay": { "name": "pH-Pumpenstartverzögerung (s)" }
+      "relay_activation_delay": { "name": "pH-Pumpenstartverzögerung (s)" },
+      "intelligent_filt_min_time": { "name": "Intelligent: Minimale Filterzeit" }
     }
   },
   "services": {

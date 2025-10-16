@@ -154,7 +154,7 @@
       "ph2": { "name": "pH min. limit" },
       "rx1": { "name": "Redox (úroveň)" },
       "cl1": { "name": "Setpoint chloru" },
-      "heating_temp": { "name": "Nastavená teplota" }
+      "heating_temp": { "name": "Požadovaná teplota" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
@@ -398,7 +398,8 @@
           "active_redox": "Aktivní (řízeno redoxem)"
         }
       },
-      "relay_activation_delay": { "name": "Zpoždění aktivace pH pumpy (s)" }
+      "relay_activation_delay": { "name": "Zpoždění aktivace pH pumpy (s)" },
+      "intelligent_filt_min_time": { "name": "Inteligentní: Minimální doba filtrace" }
     }
   },
   "services": {

@@ -195,6 +195,51 @@ def test_current_option_default(mock_coordinator):
     assert ent.current_option == "manual"
 
 
+def _intelligent_min_time_props():
+    return {
+        "options_map": {
+            120: "2h",
+            180: "3h",
+            240: "4h",
+            300: "5h",
+            360: "6h",
+            420: "7h",
+            480: "8h",
+            540: "9h",
+            600: "10h",
+            660: "11h",
+            720: "12h",
+        },
+        "register": 0x041D,
+    }
+
+
+def test_options_intelligent_min_time_unknown_value(mock_coordinator):
+    props = _intelligent_min_time_props()
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_INTELLIGENT_FILT_MIN_TIME", props
+    )
+    # Known value → just labels, no numeric prefix
+    mock_coordinator.data = {"MBF_PAR_INTELLIGENT_FILT_MIN_TIME": 360}
+    opts = ent.options
+    assert opts[0] == "2h" and "6h" in opts
+    # Unknown value → prepend numeric string with 'm'
+    mock_coordinator.data = {"MBF_PAR_INTELLIGENT_FILT_MIN_TIME": 365}
+    opts = ent.options
+    assert opts[0] == "365m"
+
+
+def test_current_option_intelligent_min_time(mock_coordinator):
+    props = _intelligent_min_time_props()
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_INTELLIGENT_FILT_MIN_TIME", props
+    )
+    mock_coordinator.data = {"MBF_PAR_INTELLIGENT_FILT_MIN_TIME": 360}
+    assert ent.current_option == "6h"
+    mock_coordinator.data = {"MBF_PAR_INTELLIGENT_FILT_MIN_TIME": 365}
+    assert ent.current_option == "365m"
+
+
 @pytest.mark.asyncio
 async def test_async_select_option_timer_time(mock_coordinator):
     props = make_props(select_type="timer_time")
@@ -298,6 +343,34 @@ async def test_async_select_option_default(mock_coordinator):
     ent.async_write_ha_state = Mock()
     await ent.async_select_option("manual")
     ent.coordinator.client.async_write_register.assert_awaited()
+
+
+@pytest.mark.asyncio
+async def test_async_select_option_intelligent_min_time_label(mock_coordinator):
+    props = _intelligent_min_time_props()
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_INTELLIGENT_FILT_MIN_TIME", props
+    )
+    ent.hass = MagicMock()
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = Mock()
+    await ent.async_select_option("6h")
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x041D, 360)
+
+
+@pytest.mark.asyncio
+async def test_async_select_option_intelligent_min_time_numeric(mock_coordinator):
+    props = _intelligent_min_time_props()
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_INTELLIGENT_FILT_MIN_TIME", props
+    )
+    ent.hass = MagicMock()
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = Mock()
+    await ent.async_select_option("365m")
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x041D, 365)
 
 
 def test_select_cell_boost_current_option(mock_coordinator, boost_props):
