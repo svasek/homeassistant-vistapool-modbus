@@ -13,7 +13,11 @@
 # limitations under the License.
 
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
+from unittest.mock import MagicMock, AsyncMock, patch, call
+from custom_components.vistapool.const import (
+    HEATING_SETPOINT_REGISTER,
+    INTELLIGENT_SETPOINT_REGISTER,
+)
 from custom_components.vistapool.number import VistaPoolNumber, async_setup_entry
 
 
@@ -100,6 +104,53 @@ async def test_async_set_native_value_and_debounce(mock_coordinator):
     # Should have written 13 (6.5*2)
     ent.coordinator.client.async_write_register.assert_awaited_with(
         0x0210, 13, apply=True
+    )
+    ent.coordinator.async_request_refresh.assert_awaited()
+
+
+@pytest.mark.asyncio
+async def test_debounced_write_mirrors_setpoints_from_heating_register(
+    mock_coordinator,
+):
+    """When editing heating setpoint, both HEATING and INTELLIGENT registers must be written."""
+    props = make_props(register=HEATING_SETPOINT_REGISTER, scale=1.0)
+    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_HEATING_TEMP", props)
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    with patch("custom_components.vistapool.number.asyncio.sleep", AsyncMock()):
+        await ent.async_set_native_value(28)
+        await ent._pending_write_task
+    # Expect two ordered writes: first to HEATING, then to INTELLIGENT with apply=True
+    ent.coordinator.client.async_write_register.assert_has_awaits(
+        [
+            call(HEATING_SETPOINT_REGISTER, 28),
+            call(INTELLIGENT_SETPOINT_REGISTER, 28, apply=True),
+        ]
+    )
+    ent.coordinator.async_request_refresh.assert_awaited()
+
+
+@pytest.mark.asyncio
+async def test_debounced_write_mirrors_setpoints_from_intelligent_register(
+    mock_coordinator,
+):
+    """When editing intelligent setpoint, both HEATING and INTELLIGENT registers must be written."""
+    props = make_props(register=INTELLIGENT_SETPOINT_REGISTER, scale=1.0)
+    ent = VistaPoolNumber(
+        mock_coordinator, "test_entry", "MBF_PAR_INTELLIGENT_TEMP", props
+    )
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    with patch("custom_components.vistapool.number.asyncio.sleep", AsyncMock()):
+        await ent.async_set_native_value(26)
+        await ent._pending_write_task
+    ent.coordinator.client.async_write_register.assert_has_awaits(
+        [
+            call(HEATING_SETPOINT_REGISTER, 26),
+            call(INTELLIGENT_SETPOINT_REGISTER, 26, apply=True),
+        ]
     )
     ent.coordinator.async_request_refresh.assert_awaited()
 
