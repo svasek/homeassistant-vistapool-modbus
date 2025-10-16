@@ -4,18 +4,15 @@
   "name": "Vistapool Dev (hass-custom-devcontainer)",
 
   // Base image that bootstraps Home Assistant Core and a dev-friendly config.
-  "image": "thomasloven/hass-custom-devcontainer:latest",
+  // "image": "ghcr.io/home-assistant/home-assistant:stable",
+  "build": {
+    "dockerfile": "Dockerfile.dev",
+    "context": "."
+  },
 
-  // Prepare /config (skips onboarding, can set up HACS, etc.).
-  // See the image README for additional setup commands.
-  // "postCreateCommand": "bash -lc 'cd /config && container setup'",
-
-  // On container start:
-  // 1) ensure /config exists + seed configuration.yaml if missing
-  // 2) fix ownership so current user can write
-  // 3) try to run 'container' (built-in script). If it fails, fall back to 'python -m homeassistant'
-  "postCreateCommand": "bash -lc 'mkdir -p /config; if [ ! -f /config/configuration.yaml ] && [ -f ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml ]; then cp ${containerWorkspaceFolder}/.devcontainer/.ha_config/configuration-default.yaml /config/configuration.yaml; fi; sudo chown -R vscode /config; pip install --upgrade pip && pip install -r requirements.txt; pip install homeassistant home-assistant-frontend; cd /config && container setup || true; echo Done'",
-  "postStartCommand": "nohup bash -lc 'hass -c /config -v >/tmp/ha.log 2>&1 &'; rm -f nohup.out",
+  "postCreateCommand": ".devcontainer/init-ha.sh",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
 
   // Forward the HA HTTP port and open a browser automatically when it appears.
   "forwardPorts": [8123],
@@ -31,17 +28,10 @@
   // Keep configuration-default.yaml in repo; generate configuration.yaml as needed.
   "mounts": [
     // Mount the entire dev config folder to /config (must be writable from inside the container)
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
     "source=${localWorkspaceFolder}/.devcontainer/.ha_config,target=/config,type=bind",
     "source=${localWorkspaceFolder}/custom_components/vistapool,target=/config/custom_components/vistapool,type=bind"
   ],
-
-  "remoteUser": "vscode",
-
-  // Optional default credentials used by the image during setup (change if you want).
-  "containerEnv": {
-    "HASS_USERNAME": "dev",
-    "HASS_PASSWORD": "dev"
-  },
 
   // VS Code recommendations and per-workspace settings.
   "customizations": {
@@ -55,17 +45,22 @@
         // Optional: Docker tooling (handy for logs/inspecting)
         "ms-azuretools.vscode-docker",
 
-        // Optional: Ruff linter (enable if you use Ruff)
+        // Optional: Ruff linter
         // "charliermarsh.ruff",
+
+        // Prettier code formatter
         "esbenp.prettier-vscode",
+
+        // EditorConfig support
         "editorconfig.editorconfig"
       ],
       "settings": {
-        // Let Pylance resolve imports from your component package
-        "python.analysis.extraPaths": [
-          "/home/vscode/.local/lib/python3.13/site-packages",
-          "${workspaceFolder}/custom_components/vistapool"
-        ],
+        "terminal.integrated.shell.linux": "/bin/bash",
+
+        // Let Pylance resolve imports
+        "python.analysis.extraPaths": ["/usr/local/lib/python3.13/site-packages"],
+        "python.analysis.typeCheckingMode": "off",
+        "python.analysis.diagnosticSeverityOverrides": { "reportMissingImports": "none" },
 
         // Use Black as formatter
         "python.formatting.provider": "none",
@@ -74,13 +69,7 @@
 
         // Testing: run pytest with the same args you'd run from CLI
         "python.testing.pytestEnabled": true,
-        "python.testing.pytestArgs": [
-          "tests",
-          "--cov=custom_components/vistapool",
-          "--cov-config=${workspaceFolder}/.coveragerc",
-          "--cov-report=term-missing",
-          "-q"
-        ],
+        "python.testing.pytestArgs": ["tests", "--cov=custom_components/vistapool", "--cov-report=term-missing", "-q"],
 
         // Optional: silence random forwarded ports (keep HA visible)
         "remote.otherPortsAttributes": { "onAutoForward": "ignore" },

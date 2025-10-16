@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "logs:ha",
+      "label": "HomeAssistant",
       "type": "shell",
-      "command": "touch /tmp/ha.log && tail -f /tmp/ha.log",
+      "command": "sleep 3 && hass -v -c /config",
       "isBackground": true,
       "runOptions": { "runOn": "folderOpen" },
       "presentation": { "reveal": "always", "panel": "dedicated", "group": "logs" }
