@@ -164,3 +164,99 @@ async def test_async_update_data_timer_processing(mock_entry):
     assert data["filtration2_interval"] == 1800
     assert data["filtration2_period"] == 1
     assert data["filtration2_stop"] is None
+
+
+@pytest.mark.asyncio
+async def test_setpoint_sync_on_mismatch(mock_entry):
+    client = AsyncMock()
+    # Return differing setpoints to trigger sync
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "MBF_PAR_HEATING_TEMP": 28,
+            "MBF_PAR_INTELLIGENT_TEMP": 26,
+        }
+    )
+    client.read_all_timers = AsyncMock(return_value={})
+    client.async_write_register = AsyncMock()
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Seed previous snapshot so only HEATING changed this cycle
+    coordinator.data = {
+        "MBF_PAR_HEATING_TEMP": 27,
+        "MBF_PAR_INTELLIGENT_TEMP": 26,
+    }
+    data = await coordinator._async_update_data()
+    # Coordinator should sync only the unaffected register (INTELLIGENT) to the new HEATING value
+    assert client.async_write_register.await_count == 1
+    call_args = client.async_write_register.await_args_list[0]
+    # Address and value
+    assert call_args[0][0] == 0x041C  # INTELLIGENT_SETPOINT_REGISTER
+    assert call_args[0][1] == 28
+    # apply should be True for the syncing write
+    assert call_args[1].get("apply", False) is True
+    # Returned data should reflect synced values
+    assert data["MBF_PAR_HEATING_TEMP"] == 28
+    assert data["MBF_PAR_INTELLIGENT_TEMP"] == 28
+
+
+@pytest.mark.asyncio
+async def test_setpoint_sync_on_mismatch_intel_changed(mock_entry):
+    client = AsyncMock()
+    # Return differing setpoints to trigger sync
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "MBF_PAR_HEATING_TEMP": 26,
+            "MBF_PAR_INTELLIGENT_TEMP": 28,
+        }
+    )
+    client.read_all_timers = AsyncMock(return_value={})
+    client.async_write_register = AsyncMock()
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Seed previous snapshot so only INTELLIGENT changed this cycle
+    coordinator.data = {
+        "MBF_PAR_HEATING_TEMP": 26,
+        "MBF_PAR_INTELLIGENT_TEMP": 27,
+    }
+    data = await coordinator._async_update_data()
+    # Coordinator should sync only the unaffected register (HEATING) to the new INTELLIGENT value
+    assert client.async_write_register.await_count == 1
+    call_args = client.async_write_register.await_args_list[0]
+    assert call_args[0][0] == 0x0416  # HEATING_SETPOINT_REGISTER
+    assert call_args[0][1] == 28
+    assert call_args[1].get("apply", False) is True
+    assert data["MBF_PAR_HEATING_TEMP"] == 28
+    assert data["MBF_PAR_INTELLIGENT_TEMP"] == 28
+
+
+@pytest.mark.asyncio
+async def test_setpoint_sync_both_changed_conflict(mock_entry):
+    client = AsyncMock()
+    # Both changed to different values in this cycle
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "MBF_PAR_HEATING_TEMP": 28,
+            "MBF_PAR_INTELLIGENT_TEMP": 26,
+        }
+    )
+    client.read_all_timers = AsyncMock(return_value={})
+    client.async_write_register = AsyncMock()
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Previous snapshot with different values so that both appear changed now
+    coordinator.data = {
+        "MBF_PAR_HEATING_TEMP": 27,
+        "MBF_PAR_INTELLIGENT_TEMP": 27,
+    }
+    data = await coordinator._async_update_data()
+    # No write should occur when both changed differently (to avoid overriding intent)
+    assert client.async_write_register.await_count == 0
+    # Data should remain as read (no forced unification)
+    assert data["MBF_PAR_HEATING_TEMP"] == 28
+    assert data["MBF_PAR_INTELLIGENT_TEMP"] == 26

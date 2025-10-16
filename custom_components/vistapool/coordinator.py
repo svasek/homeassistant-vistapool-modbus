@@ -23,7 +23,13 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.const import CONF_NAME
 
 from .helpers import parse_version, prepare_device_time, is_device_time_out_of_sync
-from .const import DOMAIN, DEFAULT_SCAN_INTERVAL, TIMER_BLOCKS
+from .const import (
+    DOMAIN,
+    DEFAULT_SCAN_INTERVAL,
+    TIMER_BLOCKS,
+    HEATING_SETPOINT_REGISTER,
+    INTELLIGENT_SETPOINT_REGISTER,
+)
 
 MAX_SCAN_INTERVAL = timedelta(seconds=180)  # Maximum allowed scan interval (3 minutes)
 
@@ -106,6 +112,50 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                         0x0408, prepare_device_time(self.hass)
                     )
                     await self.client.async_write_register(0x04F0, 1)
+
+            # Keep heating and intelligent setpoints synchronized based on the last change.
+            # If exactly one changed since the previous snapshot and values differ now,
+            # mirror the changed value into the other register (last-change-wins).
+            try:
+                prev = getattr(self, "data", None)
+                heat = data.get("MBF_PAR_HEATING_TEMP")
+                intel = data.get("MBF_PAR_INTELLIGENT_TEMP")
+                if (
+                    prev is not None
+                    and heat is not None
+                    and intel is not None
+                    and heat != intel
+                ):
+                    h_old = prev.get("MBF_PAR_HEATING_TEMP")
+                    i_old = prev.get("MBF_PAR_INTELLIGENT_TEMP")
+                    heating_changed = h_old is None or heat != h_old
+                    intelligent_changed = i_old is None or intel != i_old
+
+                    if heating_changed ^ intelligent_changed:
+                        winner_val = int(heat if heating_changed else intel)
+                        loser_reg = (
+                            INTELLIGENT_SETPOINT_REGISTER
+                            if heating_changed
+                            else HEATING_SETPOINT_REGISTER
+                        )
+                        await self.client.async_write_register(
+                            loser_reg, winner_val, apply=True
+                        )
+                        # Reflect in returned data so HA shows synced values immediately
+                        data["MBF_PAR_HEATING_TEMP"] = winner_val
+                        data["MBF_PAR_INTELLIGENT_TEMP"] = winner_val
+                        _LOGGER.debug(
+                            "Auto-synced setpoints (last-change-wins) -> heating=%s, intelligent=%s",
+                            data["MBF_PAR_HEATING_TEMP"],
+                            data["MBF_PAR_INTELLIGENT_TEMP"],
+                        )
+                    elif heating_changed and intelligent_changed:
+                        # Both changed this cycle; cannot determine which is newer. Skip.
+                        _LOGGER.debug(
+                            "Both heating and intelligent setpoints changed; skipping auto-sync to avoid overriding user intent."
+                        )
+            except Exception as sync_err:  # pragma: no cover
+                _LOGGER.debug(f"Setpoint auto-sync skipped due to error: {sync_err}")
             return data
 
         except Exception as err:

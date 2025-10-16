@@ -21,7 +21,12 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
-from .const import DOMAIN, NUMBER_DEFINITIONS
+from .const import (
+    DOMAIN,
+    NUMBER_DEFINITIONS,
+    HEATING_SETPOINT_REGISTER,
+    INTELLIGENT_SETPOINT_REGISTER,
+)
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
 
@@ -146,7 +151,19 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         try:
             await asyncio.sleep(self._debounce_delay)
             raw = int(self._pending_value * self._scale)
-            await client.async_write_register(self._register, raw, apply=True)
+            # If user changes heating or intelligent setpoint, mirror the value
+            # to both registers so a single UI control can keep them in sync.
+            if self._register in (
+                HEATING_SETPOINT_REGISTER,
+                INTELLIGENT_SETPOINT_REGISTER,
+            ):
+                # Write both sequentially to ensure both modes share same target
+                await client.async_write_register(HEATING_SETPOINT_REGISTER, raw)
+                await client.async_write_register(
+                    INTELLIGENT_SETPOINT_REGISTER, raw, apply=True
+                )
+            else:
+                await client.async_write_register(self._register, raw, apply=True)
             await self.coordinator.async_request_refresh()
         except asyncio.CancelledError:  # pragma: no cover
             pass
