@@ -92,7 +92,7 @@
           "manual": "Ręczny",
           "auto": "Automatyczny",
           "heating": "Ogrzewanie",
-          "smart": "Inteligentny",
+          "smart": "Smart",
           "intelligent": "Inteligentny",
           "backwash": "Płukanie wsteczne"
         }
@@ -156,12 +156,15 @@
       "ph2": { "name": "Minimalny limit pH" },
       "rx1": { "name": "Docelowa wartość redoks" },
       "cl1": { "name": "Docelowa wartość chloru" },
-      "heating_temp": { "name": "Docelowa wartość temperatury" }
+      "heating_temp": { "name": "Docelowa wartość temperatury" },
+      "smart_temp_high": { "name": "Smart: górna temperatura" },
+      "smart_temp_low": { "name": "Smart: dolna temperatura" }
     },
     "switch": {
       "filt_manual_state": { "name": "Filtracja ręczna" },
       "time_auto_sync": { "name": "Automatyczna synchronizacja czasu" },
       "clima_onoff": { "name": "Tryb klimatu dla ogrzewania" },
+      "smart_anti_freeze": { "name": "Smart: antyzamarzanie" },
       "aux1": { "name": "Przekaźnik pomocniczy Aux1" },
       "aux2": { "name": "Przekaźnik pomocniczy Aux2" },
       "aux3": { "name": "Przekaźnik pomocniczy Aux3" },

@@ -258,6 +258,37 @@ async def test_number_async_setup_entry_adds_entities(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_number_setup_skips_smart_when_no_temp(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_TEMPERATURE_ACTIVE": 0,
+            "MBF_PAR_HEATING_GPIO": True,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import number as num_module
+
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_SMART_TEMP_HIGH"] = {"register": 0x0418}
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_SMART_TEMP_LOW"] = {"register": 0x0419}
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_SMART_TEMP_HIGH" not in keys
+    assert "MBF_PAR_SMART_TEMP_LOW" not in keys
+
+
+@pytest.mark.asyncio
 async def test_number_async_setup_entry_skips_unassigned(monkeypatch):
     """Test async_setup_entry skips number entities if required relay is missing."""
 

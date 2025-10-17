@@ -505,6 +505,30 @@ NUMBER_DEFINITIONS = {
         "device_class": NumberDeviceClass.TEMPERATURE,
         "entity_category": EntityCategory.CONFIG,
     },
+    "MBF_PAR_SMART_TEMP_HIGH": {
+        "name": "Smart Upper Temperature",
+        "unit": "°C",
+        "min": 0.0,
+        "max": 40.0,
+        "step": 1.0,
+        "register": 0x0418,  # MBF_PAR_SMART_TEMP_HIGH
+        "scale": 1.0,
+        "device_class": NumberDeviceClass.TEMPERATURE,
+        "entity_category": EntityCategory.CONFIG,
+        "icon": "mdi:thermometer-chevron-up",
+    },
+    "MBF_PAR_SMART_TEMP_LOW": {
+        "name": "Smart Lower Temperature",
+        "unit": "°C",
+        "min": 0.0,
+        "max": 40.0,
+        "step": 1.0,
+        "register": 0x0419,  # MBF_PAR_SMART_TEMP_LOW
+        "scale": 1.0,
+        "device_class": NumberDeviceClass.TEMPERATURE,
+        "entity_category": EntityCategory.CONFIG,
+        "icon": "mdi:thermometer-chevron-down",
+    },
 }
 
 BUTTON_DEFINITIONS = {
@@ -937,6 +961,14 @@ SWITCH_DEFINITIONS = {
         "function_addr": 0x0417,
         "entity_category": EntityCategory.CONFIG,
         "switch_type": "climate_mode",
+    },
+    "MBF_PAR_SMART_ANTI_FREEZE": {
+        "name": "Smart antifreeze",
+        "icon_on": "mdi:snowflake-melt",
+        "icon_off": "mdi:snowflake-alert",
+        "function_addr": 0x041A,
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "smart_anti_freeze",
     },
     "aux1": {
         "name": "Auxiliary Relay 1",

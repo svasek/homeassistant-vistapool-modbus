@@ -59,7 +59,10 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
                 continue
         # Conditionally add Intelligent min. filtration time only if heating relay is assigned
         if key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
-            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")):
+            if (
+                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
+                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            ):
                 continue
 
         option_key = props.get("option")
@@ -316,13 +319,17 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         """Return the list of options for the select entity."""
         option_keys = list(self._options_map.keys())
 
-        # Hide heating and intelligent if not enabled heating mode
-        if (
-            self._key == "MBF_PAR_FILT_MODE"
-            and self.coordinator.data.get("MBF_PAR_HEATING_MODE") == 0
-        ):
-            # Remove keys for "heating" and "intelligent"
-            option_keys = [k for k in option_keys if k not in (2, 4)]
+        # Hide heating and intelligent if either is not supported:
+        # - requires heating relay assigned (MBF_PAR_HEATING_GPIO)
+        # - requires active temperature sensor (MBF_PAR_TEMPERATURE_ACTIVE != 0)
+        if self._key == "MBF_PAR_FILT_MODE":
+            no_heating_gpio = not bool(
+                self.coordinator.data.get("MBF_PAR_HEATING_GPIO")
+            )
+            temp_inactive = self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            if no_heating_gpio or temp_inactive:
+                # Remove keys for "heating" (2) and "intelligent" (4)
+                option_keys = [k for k in option_keys if k not in (2, 4)]
 
         # Hide smart if temperature sensor is not active
         if (

@@ -130,7 +130,7 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                 {
                     k
                     for k in list(prev_options) + list(user_input)
-                    if k.startswith("use_")
+                    if k.startswith("use_") or k.startswith("dev_overrides")
                 }
             )
             if any(prev_options.get(k) != user_input.get(k) for k in reload_keys):
@@ -173,13 +173,16 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             all_options = {**self._base_options, **user_input}
             result = self.async_create_entry(title="", data=all_options)
 
-            if (
-                prev_options.get("use_light") != all_options.get("use_light")
-                or prev_options.get("use_aux1") != all_options.get("use_aux1")
-                or prev_options.get("use_aux2") != all_options.get("use_aux2")
-                or prev_options.get("use_aux3") != all_options.get("use_aux3")
-                or prev_options.get("use_aux4") != all_options.get("use_aux4")
-            ):
+            # Determine if a reload is needed: mirror logic from init step and include
+            # any changes to 'use_*' toggles or developer override settings.
+            reload_keys = sorted(
+                {
+                    k
+                    for k in set(prev_options) | set(all_options)
+                    if k.startswith("use_") or k.startswith("dev_overrides")
+                }
+            )
+            if any(prev_options.get(k) != all_options.get(k) for k in reload_keys):
                 self.hass.loop.call_soon(
                     asyncio.create_task,
                     self.hass.config_entries.async_reload(self._config_entry.entry_id),

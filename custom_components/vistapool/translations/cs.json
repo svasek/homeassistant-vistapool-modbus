@@ -92,8 +92,8 @@
           "manual": "Ruční",
           "auto": "Automatický",
           "heating": "Ohřev",
-          "smart": "Chytrý režim",
-          "intelligent": "Inteligentní režim",
+          "smart": "Smart",
+          "intelligent": "Inteligentní",
           "backwash": "Zpětný proplach"
         }
       },
@@ -156,12 +156,15 @@
       "ph2": { "name": "pH min. limit" },
       "rx1": { "name": "Redox (úroveň)" },
       "cl1": { "name": "Setpoint chloru" },
-      "heating_temp": { "name": "Požadovaná teplota" }
+      "heating_temp": { "name": "Požadovaná teplota" },
+      "smart_temp_high": { "name": "Smart: horní teplota" },
+      "smart_temp_low": { "name": "Smart: spodní teplota" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
       "clima_onoff": { "name": "Režim klimatizace pro ohřev" },
+      "smart_anti_freeze": { "name": "Smart: protimrazová ochrana" },
       "aux1": { "name": "Pomocné relé Aux1" },
       "aux2": { "name": "Pomocné relé Aux2" },
       "aux3": { "name": "Pomocné relé Aux3" },
@@ -380,8 +383,8 @@
           "manual": "Ruční",
           "auto": "Automatický",
           "heating": "Ohřev",
-          "smart": "Chytrý režim",
-          "intelligent": "Inteligentní režim",
+          "smart": "Smart",
+          "intelligent": "Inteligentní",
           "backwash": "Zpětný proplach"
         }
       },

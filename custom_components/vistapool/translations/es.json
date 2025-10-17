@@ -92,7 +92,7 @@
           "manual": "Manual",
           "auto": "Automático",
           "heating": "Calefacción",
-          "smart": "Inteligente",
+          "smart": "Smart",
           "intelligent": "Inteligente",
           "backwash": "Lavado inverso"
         }
@@ -156,12 +156,15 @@
       "ph2": { "name": "Límite mínimo de pH" },
       "rx1": { "name": "Valor objetivo redox" },
       "cl1": { "name": "Valor objetivo de cloro" },
-      "heating_temp": { "name": "Valor objetivo de temperatura" }
+      "heating_temp": { "name": "Valor objetivo de temperatura" },
+      "smart_temp_high": { "name": "Smart: temperatura superior" },
+      "smart_temp_low": { "name": "Smart: temperatura inferior" }
     },
     "switch": {
       "filt_manual_state": { "name": "Filtración manual" },
       "time_auto_sync": { "name": "Sincronización automática de hora" },
       "clima_onoff": { "name": "Modo clima para calefacción" },
+      "smart_anti_freeze": { "name": "Smart: antiheladas" },
       "aux1": { "name": "Relé Aux1" },
       "aux2": { "name": "Relé Aux2" },
       "aux3": { "name": "Relé Aux3" },

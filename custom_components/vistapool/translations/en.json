@@ -156,12 +156,15 @@
       "ph2": { "name": "pH Min Limit" },
       "rx1": { "name": "Redox Setpoint" },
       "cl1": { "name": "Chlorine Setpoint" },
-      "heating_temp": { "name": "Temperature Setpoint" }
+      "heating_temp": { "name": "Temperature Setpoint" },
+      "smart_temp_high": { "name": "Smart upper temperature" },
+      "smart_temp_low": { "name": "Smart lower temperature" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manual Filtration" },
       "time_auto_sync": { "name": "Time Auto Sync" },
       "clima_onoff": { "name": "Climate mode for heating" },
+      "smart_anti_freeze": { "name": "Smart antifreeze" },
       "aux1": { "name": "Relay Aux1" },
       "aux2": { "name": "Relay Aux2" },
       "aux3": { "name": "Relay Aux3" },

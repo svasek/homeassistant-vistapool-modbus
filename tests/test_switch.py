@@ -156,6 +156,43 @@ async def test_turn_off_climate_mode(mock_coordinator):
     ent.coordinator.client.async_write_register.assert_awaited_with(0x0417, 0)
 
 
+@pytest.mark.asyncio
+async def test_turn_on_smart_anti_freeze(mock_coordinator):
+    props = make_props(switch_type="smart_anti_freeze", function_addr=0x041A)
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_SMART_ANTI_FREEZE", props
+    )
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x041A, 1)
+
+
+@pytest.mark.asyncio
+async def test_turn_off_smart_anti_freeze(mock_coordinator):
+    props = make_props(switch_type="smart_anti_freeze", function_addr=0x041A)
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_SMART_ANTI_FREEZE", props
+    )
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x041A, 0)
+
+
+def test_is_on_smart_anti_freeze(mock_coordinator):
+    props = make_props(switch_type="smart_anti_freeze")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_SMART_ANTI_FREEZE", props
+    )
+    mock_coordinator.data = {"MBF_PAR_SMART_ANTI_FREEZE": 1}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_PAR_SMART_ANTI_FREEZE": 0}
+    assert ent.is_on is False
+
+
 def test_is_on_manual_filtration_on(mock_coordinator):
     props = make_props(switch_type="manual_filtration")
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "foo", props)
@@ -305,6 +342,35 @@ async def test_switch_async_setup_entry_adds_entities(monkeypatch):
     keys = [e._key for e in entities]
     assert "manual" in keys
     assert "aux1" in keys
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_skips_smart_antifreeze_when_no_temp(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_TEMPERATURE_ACTIVE": 0}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import switch as switch_module
+
+    switch_module.SWITCH_DEFINITIONS["MBF_PAR_SMART_ANTI_FREEZE"] = {
+        "switch_type": "smart_anti_freeze",
+        "function_addr": 0x041A,
+    }
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_SMART_ANTI_FREEZE" not in keys
 
 
 @pytest.mark.asyncio

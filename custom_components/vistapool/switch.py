@@ -47,7 +47,14 @@ async def async_setup_entry(
             continue
         # Conditionally add clima mode only if heating relay is assigned
         if key == "MBF_PAR_CLIMA_ONOFF":
-            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")):
+            if (
+                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
+                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            ):
+                continue
+        # Skip smart antifreeze if temperature sensor not active
+        if key == "MBF_PAR_SMART_ANTI_FREEZE":
+            if coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
                 continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))
@@ -114,6 +121,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
                 f"Setting climate mode ON via register 0x{self.function_addr:04X}"
             )
             await client.async_write_register(self.function_addr, 1)
+        elif self._switch_type == "smart_anti_freeze":
+            _LOGGER.debug(
+                f"Setting smart antifreeze ON via register 0x{self.function_addr:04X}"
+            )
+            await client.async_write_register(self.function_addr, 1)
 
         # Run a refresh to update the state
         await asyncio.sleep(1.0)
@@ -142,6 +154,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         elif self._switch_type == "climate_mode":
             _LOGGER.debug(
                 f"Setting climate mode OFF via register 0x{self.function_addr:04X}"
+            )
+            await client.async_write_register(self.function_addr, 0)
+        elif self._switch_type == "smart_anti_freeze":
+            _LOGGER.debug(
+                f"Setting smart antifreeze OFF via register 0x{self.function_addr:04X}"
             )
             await client.async_write_register(self.function_addr, 0)
 
@@ -175,6 +192,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             return enable_val == 3  # ON if ALWAYS ON
         elif self._switch_type == "climate_mode":
             return bool(self.coordinator.data.get("MBF_PAR_CLIMA_ONOFF", 0))
+        elif self._switch_type == "smart_anti_freeze":
+            return bool(self.coordinator.data.get("MBF_PAR_SMART_ANTI_FREEZE", 0))
         return False
 
     @property
