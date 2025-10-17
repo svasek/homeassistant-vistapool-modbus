@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.12.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.11.0...v1.12.0) (2025-10-17)
+
+
+### Features
+
+* ✨ add climate mode switch functionality ([98c2c9c](https://github.com/svasek/homeassistant-vistapool-modbus/commit/98c2c9ce00086d628a35b143bce20b8896463487))
+* ✨ add heating and intelligent setpoint synchronization ([937d414](https://github.com/svasek/homeassistant-vistapool-modbus/commit/937d414555518311dc2425836c776aa0d771df29))
+* ✨ add intelligent minimum filtration time support ([6709354](https://github.com/svasek/homeassistant-vistapool-modbus/commit/67093548bb52ab75bc95d56e5534453611c6f878))
+* ✨ add smart temperature and antifreeze features ([ea923e3](https://github.com/svasek/homeassistant-vistapool-modbus/commit/ea923e3c5cbb3338cefcd0d3b6cf137fe91ef7ed)), closes [#50](https://github.com/svasek/homeassistant-vistapool-modbus/issues/50)
+
 ## [1.11.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.10.1...v1.11.0) (2025-09-04)
 
 
