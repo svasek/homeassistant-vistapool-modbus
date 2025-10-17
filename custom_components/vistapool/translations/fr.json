@@ -45,10 +45,10 @@
         "title": "Paramètres avancés",
         "description": "⚠️ ATTENTION : Une mauvaise utilisation peut endommager la filtration !",
         "data": {
-          "enable_backwash_option": "Activer le mode ‘Backwash’"
-        },
-        "dev_overrides_enabled": "Activer les substitutions développeur",
-        "dev_overrides": "Substitutions développeur (objet JSON \"clé\":valeur)"
+          "enable_backwash_option": "Activer le mode ‘Backwash’",
+          "dev_overrides_enabled": "Activer les substitutions développeur",
+          "dev_overrides": "Substitutions développeur (objet JSON \"clé\":valeur)"
+        }
       }
     },
     "error": {

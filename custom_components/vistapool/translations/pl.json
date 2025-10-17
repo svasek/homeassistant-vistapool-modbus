@@ -45,10 +45,10 @@
         "title": "Ustawienia zaawansowane",
         "description": "⚠️ UWAGA: Niewłaściwe użycie może uszkodzić filtrację!",
         "data": {
-          "enable_backwash_option": "Włącz tryb ‘Backwash’"
-        },
-        "dev_overrides_enabled": "Włącz nadpisania deweloperskie",
-        "dev_overrides": "Nadpisania deweloperskie (obiekt JSON \"klucz\":wartość)"
+          "enable_backwash_option": "Włącz tryb ‘Backwash’",
+          "dev_overrides_enabled": "Włącz nadpisania deweloperskie",
+          "dev_overrides": "Nadpisania deweloperskie (obiekt JSON \"klucz\":wartość)"
+        }
       }
     },
     "error": {

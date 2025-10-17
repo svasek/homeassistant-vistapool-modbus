@@ -45,10 +45,10 @@
         "title": "Impostazioni avanzate",
         "description": "⚠️ ATTENZIONE: Un uso scorretto può danneggiare la filtrazione!",
         "data": {
-          "enable_backwash_option": "Abilita modalità ‘Backwash’"
-        },
-        "dev_overrides_enabled": "Abilita override sviluppatore",
-        "dev_overrides": "Override sviluppatore (oggetto JSON \"chiave\":valore)"
+          "enable_backwash_option": "Abilita modalità ‘Backwash’",
+          "dev_overrides_enabled": "Abilita override sviluppatore",
+          "dev_overrides": "Override sviluppatore (oggetto JSON \"chiave\":valore)"
+        }
       }
     },
     "error": {

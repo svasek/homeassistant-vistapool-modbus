@@ -45,10 +45,10 @@
         "title": "Advanced Settings",
         "description": "⚠️ WARNING: Incorrect use may damage filtration!",
         "data": {
-          "enable_backwash_option": "Enable ‘Backwash’ mode"
-        },
-        "dev_overrides_enabled": "Enable developer overrides",
-        "dev_overrides": "Developer overrides (JSON object of \"key\":value)"
+          "enable_backwash_option": "Enable ‘Backwash’ mode",
+          "dev_overrides_enabled": "Enable developer overrides",
+          "dev_overrides": "Developer overrides (JSON object of \"key\":value)"
+        }
       }
     },
     "error": {

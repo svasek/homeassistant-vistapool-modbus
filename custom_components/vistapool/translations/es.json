@@ -45,10 +45,10 @@
         "title": "Configuraciones avanzadas",
         "description": "⚠️ ¡ADVERTENCIA! El uso incorrecto puede dañar la filtración.",
         "data": {
-          "enable_backwash_option": "Activar modo ‘Backwash’"
-        },
-        "dev_overrides_enabled": "Habilitar sobrescrituras de desarrollador",
-        "dev_overrides": "Sobrescrituras de desarrollador (objeto JSON \"clave\":valor)"
+          "enable_backwash_option": "Activar modo ‘Backwash’",
+          "dev_overrides_enabled": "Habilitar sobrescrituras de desarrollador",
+          "dev_overrides": "Sobrescrituras de desarrollador (objeto JSON \"clave\":valor)"
+        }
       }
     },
     "error": {
