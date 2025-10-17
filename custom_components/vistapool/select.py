@@ -57,6 +57,10 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
             mbf_par_model = coordinator.data.get("MBF_PAR_MODEL", 0)
             if not (mbf_par_model & 0x0002):  # pragma: no cover
                 continue
+        # Conditionally add Intelligent min. filtration time only if heating relay is assigned
+        if key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")):
+                continue
 
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):
