@@ -260,3 +260,59 @@ async def test_setpoint_sync_both_changed_conflict(mock_entry):
     # Data should remain as read (no forced unification)
     assert data["MBF_PAR_HEATING_TEMP"] == 28
     assert data["MBF_PAR_INTELLIGENT_TEMP"] == 26
+
+
+@pytest.mark.asyncio
+async def test_dev_overrides_applied_valid_json(mock_entry):
+    # Enable overrides with valid JSON string
+    entry = MagicMock()
+    entry.options = {
+        "dev_overrides_enabled": True,
+        "dev_overrides": '{"MBF_PAR_CLIMA_ONOFF": 1, "MBF_PAR_MODEL": 1}',
+    }
+    entry.data = {"name": "Test Pool"}
+    entry.entry_id = "entry_id_dev1"
+    entry.unique_id = "test_slug"
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "MBF_PAR_CLIMA_ONOFF": 0,
+        }
+    )
+    client.read_all_timers = AsyncMock(return_value={})
+
+    coordinator = VistaPoolCoordinator(MagicMock(), client, entry, entry.entry_id)
+    data = await coordinator._async_update_data()
+
+    # Overrides should be applied over the base read values
+    assert data["MBF_PAR_CLIMA_ONOFF"] == 1
+    assert data["MBF_PAR_MODEL"] == 1
+
+
+@pytest.mark.asyncio
+async def test_dev_overrides_invalid_json_ignored(mock_entry):
+    entry = MagicMock()
+    entry.options = {
+        "dev_overrides_enabled": True,
+        "dev_overrides": "this-is-not-json",
+    }
+    entry.data = {"name": "Test Pool"}
+    entry.entry_id = "entry_id_dev2"
+    entry.unique_id = "test_slug"
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(return_value={"X": 1})
+    client.read_all_timers = AsyncMock(return_value={})
+
+    with patch("custom_components.vistapool.coordinator._LOGGER") as mock_logger:
+        coordinator = VistaPoolCoordinator(MagicMock(), client, entry, entry.entry_id)
+        data = await coordinator._async_update_data()
+        # Should log a warning about failed overrides but not raise
+        assert mock_logger.warning.called
+
+    # Data remains as originally read (no overrides applied)
+    assert data.get("X") == 1
+    assert "MBF_PAR_CLIMA_ONOFF" not in data
+    assert "MBF_PAR_MODEL" not in data

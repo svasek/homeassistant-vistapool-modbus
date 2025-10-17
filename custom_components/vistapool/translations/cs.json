@@ -45,7 +45,9 @@
         "title": "Pokročilá nastavení",
         "description": "⚠️ POZOR: Nesprávné použití může poškodit filtraci!",
         "data": {
-          "enable_backwash_option": "Povolit režim ‘Backwash’"
+          "enable_backwash_option": "Povolit režim ‘Backwash’",
+          "dev_overrides_enabled": "Povolit vývojářské přepisy hodnot",
+          "dev_overrides": "Vývojářské přepisy (JSON objekt \"klíč\":hodnota)"
         }
       }
     },

@@ -554,7 +554,7 @@ SELECT_DEFINITIONS = {
     },
     "MBF_PAR_INTELLIGENT_FILT_MIN_TIME": {
         "name": "Intelligent Min Filtration Time",
-        "icon": "mdi:clock-loader-10",
+        "icon": "mdi:timer-lock-outline",
         "entity_category": EntityCategory.CONFIG,
         "options_map": {
             120: "2h",

@@ -21,6 +21,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.util import slugify
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.const import CONF_NAME
+import json
 
 from .helpers import parse_version, prepare_device_time, is_device_time_out_of_sync
 from .const import (
@@ -112,6 +113,20 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                         0x0408, prepare_device_time(self.hass)
                     )
                     await self.client.async_write_register(0x04F0, 1)
+
+            # Apply developer overrides (for testing UI visibility without hardware)
+            try:
+                if self.entry.options.get("dev_overrides_enabled", False):
+                    raw = self.entry.options.get("dev_overrides", "{}")
+                    overrides = json.loads(raw) if isinstance(raw, str) else raw
+                    if isinstance(overrides, dict):
+                        for k, v in overrides.items():
+                            data[k] = v
+                        _LOGGER.debug("Applied dev overrides: %s", overrides)
+                    else:  # pragma: no cover
+                        _LOGGER.warning("dev_overrides must be a JSON object (dict)")
+            except Exception as dev_err:  # pragma: no cover
+                _LOGGER.warning("Failed to apply dev_overrides: %s", dev_err)
 
             # Keep heating and intelligent setpoints synchronized based on the last change.
             # If exactly one changed since the previous snapshot and values differ now,

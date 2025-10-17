@@ -156,6 +156,15 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                     "enable_backwash_option",
                     default=options.get("enable_backwash_option", False),
                 ): bool,
+                # Developer helpers (hidden toggles to force coordinator values)
+                vol.Optional(
+                    "dev_overrides_enabled",
+                    default=options.get("dev_overrides_enabled", False),
+                ): bool,
+                vol.Optional(
+                    "dev_overrides",
+                    default=options.get("dev_overrides", "{}"),
+                ): str,
             }
         )
 

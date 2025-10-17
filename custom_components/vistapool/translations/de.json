@@ -46,7 +46,9 @@
         "description": "⚠️ ACHTUNG: Unsachgemäße Verwendung kann die Filterung beschädigen!",
         "data": {
           "enable_backwash_option": "‘Backwash’-Modus aktivieren"
-        }
+        },
+        "dev_overrides_enabled": "Entwickler-Overrides aktivieren",
+        "dev_overrides": "Entwickler-Overrides (JSON Objekt \"Schlüssel\":Wert)"
       }
     },
     "error": {
