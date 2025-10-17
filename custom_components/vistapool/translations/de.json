@@ -159,6 +159,7 @@
     "switch": {
       "filt_manual_state": { "name": "Manuelle Filtration" },
       "time_auto_sync": { "name": "Zeit automatische Synchronisierung" },
+      "clima_onoff": { "name": "Klimamodus für Heizung" },
       "aux1": { "name": "Relais Aux1" },
       "aux2": { "name": "Relais Aux2" },
       "aux3": { "name": "Relais Aux3" },

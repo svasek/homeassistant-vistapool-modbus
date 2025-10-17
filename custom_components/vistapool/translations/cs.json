@@ -159,6 +159,7 @@
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
+      "clima_onoff": { "name": "Režim klimatizace pro ohřev" },
       "aux1": { "name": "Pomocné relé Aux1" },
       "aux2": { "name": "Pomocné relé Aux2" },
       "aux3": { "name": "Pomocné relé Aux3" },

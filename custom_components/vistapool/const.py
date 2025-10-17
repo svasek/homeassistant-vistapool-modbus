@@ -930,6 +930,14 @@ SWITCH_DEFINITIONS = {
         "entity_category": None,
         "switch_type": "manual_filtration",
     },
+    "MBF_PAR_CLIMA_ONOFF": {
+        "name": "Climate mode",
+        "icon_on": "mdi:hvac",
+        "icon_off": "mdi:hvac-off",
+        "function_addr": 0x0417,
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "climate_mode",
+    },
     "aux1": {
         "name": "Auxiliary Relay 1",
         "icon_on": "mdi:electric-switch-closed",

@@ -45,6 +45,10 @@ async def async_setup_entry(
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):
             continue
+        # Conditionally add clima mode only if heating relay is assigned
+        if key == "MBF_PAR_CLIMA_ONOFF":
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")):
+                continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))
 
@@ -105,6 +109,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )  # Set function (if needed)
             await client.async_write_register(self.timer_block_addr, 3)  # Always on
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
+        elif self._switch_type == "climate_mode":
+            _LOGGER.debug(
+                f"Setting climate mode ON via register 0x{self.function_addr:04X}"
+            )
+            await client.async_write_register(self.function_addr, 1)
 
         # Run a refresh to update the state
         await asyncio.sleep(1.0)
@@ -130,6 +139,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )
             await client.async_write_register(self.timer_block_addr, 4)  # Always off
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
+        elif self._switch_type == "climate_mode":
+            _LOGGER.debug(
+                f"Setting climate mode OFF via register 0x{self.function_addr:04X}"
+            )
+            await client.async_write_register(self.function_addr, 0)
 
         # Run a refresh to update the state
         await asyncio.sleep(0.1)
@@ -159,6 +173,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         elif self._switch_type == "relay_timer":
             enable_val = self.coordinator.data.get(f"relay_{self._key}_enable", None)
             return enable_val == 3  # ON if ALWAYS ON
+        elif self._switch_type == "climate_mode":
+            return bool(self.coordinator.data.get("MBF_PAR_CLIMA_ONOFF", 0))
         return False
 
     @property

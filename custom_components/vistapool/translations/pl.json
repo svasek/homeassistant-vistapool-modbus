@@ -159,6 +159,7 @@
     "switch": {
       "filt_manual_state": { "name": "Filtracja ręczna" },
       "time_auto_sync": { "name": "Automatyczna synchronizacja czasu" },
+      "clima_onoff": { "name": "Tryb klimatu dla ogrzewania" },
       "aux1": { "name": "Przekaźnik pomocniczy Aux1" },
       "aux2": { "name": "Przekaźnik pomocniczy Aux2" },
       "aux3": { "name": "Przekaźnik pomocniczy Aux3" },

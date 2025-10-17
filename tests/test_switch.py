@@ -134,6 +134,28 @@ async def test_turn_off_relay_timer(mock_coordinator):
     ent.coordinator.client.async_write_register.assert_any_await(0x02F5, 1)
 
 
+@pytest.mark.asyncio
+async def test_turn_on_climate_mode(mock_coordinator):
+    props = make_props(switch_type="climate_mode", function_addr=0x0417)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "MBF_PAR_CLIMA_ONOFF", props)
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x0417, 1)
+
+
+@pytest.mark.asyncio
+async def test_turn_off_climate_mode(mock_coordinator):
+    props = make_props(switch_type="climate_mode", function_addr=0x0417)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "MBF_PAR_CLIMA_ONOFF", props)
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x0417, 0)
+
+
 def test_is_on_manual_filtration_on(mock_coordinator):
     props = make_props(switch_type="manual_filtration")
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "foo", props)
@@ -191,6 +213,15 @@ def test_is_on_relay_timer(mock_coordinator):
 def test_is_on_unknown_type(mock_coordinator):
     props = make_props(switch_type="unknown")
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "foo", props)
+    assert ent.is_on is False
+
+
+def test_is_on_climate_mode(mock_coordinator):
+    props = make_props(switch_type="climate_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "MBF_PAR_CLIMA_ONOFF", props)
+    mock_coordinator.data = {"MBF_PAR_CLIMA_ONOFF": 1}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_PAR_CLIMA_ONOFF": 0}
     assert ent.is_on is False
 
 
