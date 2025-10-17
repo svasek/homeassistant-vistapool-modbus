@@ -14,6 +14,12 @@
   "workspaceFolder": "/workspace",
   "remoteUser": "vscode",
 
+  // Ensure pipx-installed tools and dev workspace are in PATH and PYTHONPATH.
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin",
+    "PYTHONPATH": "/usr/local/lib/python3.13/site-packages:/home/vscode/.local/lib/python3.13/site-packages:${containerWorkspaceFolder}"
+  },
+
   // Forward the HA HTTP port and open a browser automatically when it appears.
   "forwardPorts": [8123],
   "portsAttributes": {
@@ -58,7 +64,10 @@
         "terminal.integrated.shell.linux": "/bin/bash",
 
         // Let Pylance resolve imports
-        "python.analysis.extraPaths": ["/usr/local/lib/python3.13/site-packages"],
+        "python.analysis.extraPaths": [
+          "/usr/local/lib/python3.13/site-packages",
+          "/home/vscode/.local/lib/python3.13/site-packages/"
+        ],
         "python.analysis.typeCheckingMode": "off",
         "python.analysis.diagnosticSeverityOverrides": { "reportMissingImports": "none" },
 
