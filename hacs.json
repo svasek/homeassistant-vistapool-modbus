@@ -1,5 +1,7 @@
 {
   "name": "VistaPool Modbus Integration",
+  "filename": "vistapool_modbus.zip",
+  "homeassistant": "2025.1.0",
   "render_readme": true,
-  "homeassistant": "2025.1.0"
+  "zip_release": true
 }

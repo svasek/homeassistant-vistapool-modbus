@@ -26,6 +26,22 @@ jobs:
           release-type: simple
           token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
 
+      - name: Create release archive
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          cd custom_components/vistapool
+          zip -r ../../vistapool_modbus.zip . -x "*.pyc" -x "__pycache__/*" -x "tmp/*"
+          cd ../..
+          echo "Created vistapool_modbus.zip"
+          ls -lh vistapool_modbus.zip
+
+      - name: Upload release asset
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
+        run: |
+          gh release upload ${{ steps.release.outputs.tag_name }} vistapool_modbus.zip --clobber
+
       - name: Extract version from CHANGELOG.md
         if: startsWith(github.ref, 'refs/heads/release-please--')
         run: |
