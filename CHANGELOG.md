@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.12.0...v1.12.1) (2025-10-20)
+
+
+### Bug Fixes
+
+* **translations:** 🔧 correct phrasing in Czech and Spanish translations ([6ec1871](https://github.com/svasek/homeassistant-vistapool-modbus/commit/6ec18711532200f69c45e52c8d87334557d181f4))
+
 ## [1.12.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.11.0...v1.12.0) (2025-10-17)
 
 
