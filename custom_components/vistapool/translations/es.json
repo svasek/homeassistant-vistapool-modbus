@@ -405,7 +405,7 @@
         }
       },
       "relay_activation_delay": { "name": "Retardo de activación de la bomba de pH (s)" },
-      "intelligent_filt_min_time": { "name": "inteligente: Tiempo mínimo de filtración" }
+      "intelligent_filt_min_time": { "name": "Inteligente: Tiempo mínimo de filtración" }
     }
   },
   "services": {

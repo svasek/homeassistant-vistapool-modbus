@@ -28,7 +28,7 @@
         "description": "POZOR: Změna povolených relé vyvolá automaticky reload integrace! Změny se projeví ihned.",
         "data": {
           "scan_interval": "Interval aktualizace dat (v sekundách)",
-          "timer_resolution": "Krok pro nastavení časovačů? (v minutách)",
+          "timer_resolution": "Krok pro nastavení časovačů (v minutách)",
           "measure_when_filtration_off": "Měřit hodnoty i při vypnuté filtraci",
           "use_filtration1": "Povolit 1. časovač filtrace pro automatický režim",
           "use_filtration2": "Povolit 2. časovač filtrace pro automatický režim",
@@ -74,7 +74,7 @@
           "ph_low": "pH je moc vysoké",
           "ph_stopped": "pH pumpa zastavena (překročený pracovní čas)",
           "ph_over": "pH je vyšší než nastavená hodnota",
-          "ph_under": "pH je",
+          "ph_under": "pH je nižší než nastavená hodnota",
           "tank_level": "Alarm hladiny nádrže"
         }
       },
