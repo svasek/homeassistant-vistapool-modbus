@@ -249,17 +249,81 @@ async def test_setpoint_sync_both_changed_conflict(mock_entry):
     coordinator = VistaPoolCoordinator(
         MagicMock(), client, mock_entry, mock_entry.entry_id
     )
-    # Previous snapshot with different values so that both appear changed now
+    # Previous snapshot with identical values so that both appear changed now
     coordinator.data = {
         "MBF_PAR_HEATING_TEMP": 27,
         "MBF_PAR_INTELLIGENT_TEMP": 27,
     }
     data = await coordinator._async_update_data()
-    # No write should occur when both changed differently (to avoid overriding intent)
+    # Both changed simultaneously → revert both to previous values
+    # Expect 2 writes: one for heating (apply=False), one for intelligent (apply=True)
+    assert client.async_write_register.await_count == 2
+    # First write: revert heating to 27 (apply=False)
+    client.async_write_register.assert_any_await(0x0416, 27, apply=False)
+    # Second write: revert intelligent to 27 (apply=True)
+    client.async_write_register.assert_any_await(0x041C, 27, apply=True)
+    # Data should be reverted to previous values
+    assert data["MBF_PAR_HEATING_TEMP"] == 27
+    assert data["MBF_PAR_INTELLIGENT_TEMP"] == 27
+
+
+@pytest.mark.asyncio
+async def test_setpoint_sync_both_equal_no_conflict(mock_entry):
+    client = AsyncMock()
+    # Both setpoints are equal, so no conflict even if both changed
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "MBF_PAR_HEATING_TEMP": 29,
+            "MBF_PAR_INTELLIGENT_TEMP": 29,
+        }
+    )
+    client.read_all_timers = AsyncMock(return_value={})
+    client.async_write_register = AsyncMock()
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Previous snapshot with different identical values
+    coordinator.data = {
+        "MBF_PAR_HEATING_TEMP": 27,
+        "MBF_PAR_INTELLIGENT_TEMP": 27,
+    }
+    data = await coordinator._async_update_data()
+    # Both are equal → no conflict, no write needed
     assert client.async_write_register.await_count == 0
-    # Data should remain as read (no forced unification)
-    assert data["MBF_PAR_HEATING_TEMP"] == 28
-    assert data["MBF_PAR_INTELLIGENT_TEMP"] == 26
+    # Data should remain as read (both equal)
+    assert data["MBF_PAR_HEATING_TEMP"] == 29
+    assert data["MBF_PAR_INTELLIGENT_TEMP"] == 29
+
+
+@pytest.mark.asyncio
+async def test_setpoint_sync_initial_mismatch(mock_entry):
+    client = AsyncMock()
+    # Setpoints differ but neither changed (initial state or manual device change)
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "MBF_PAR_HEATING_TEMP": 25,
+            "MBF_PAR_INTELLIGENT_TEMP": 1,
+        }
+    )
+    client.read_all_timers = AsyncMock(return_value={})
+    client.async_write_register = AsyncMock()
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Previous snapshot with same values (neither changed)
+    coordinator.data = {
+        "MBF_PAR_HEATING_TEMP": 25,
+        "MBF_PAR_INTELLIGENT_TEMP": 1,
+    }
+    data = await coordinator._async_update_data()
+    # Initial sync: intelligent should be set to match heating
+    assert client.async_write_register.await_count == 1
+    client.async_write_register.assert_awaited_once_with(0x041C, 25, apply=True)
+    # Data should reflect the sync
+    assert data["MBF_PAR_HEATING_TEMP"] == 25
+    assert data["MBF_PAR_INTELLIGENT_TEMP"] == 25
 
 
 @pytest.mark.asyncio

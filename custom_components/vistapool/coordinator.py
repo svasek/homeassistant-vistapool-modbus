@@ -131,22 +131,20 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             # Keep heating and intelligent setpoints synchronized based on the last change.
             # If exactly one changed since the previous snapshot and values differ now,
             # mirror the changed value into the other register (last-change-wins).
+            # If both changed at once, revert both to previous values to avoid conflicts.
+            # If neither changed but they differ, sync intelligent to heating (initial sync).
             try:
                 prev = getattr(self, "data", None)
                 heat = data.get("MBF_PAR_HEATING_TEMP")
                 intel = data.get("MBF_PAR_INTELLIGENT_TEMP")
-                if (
-                    prev is not None
-                    and heat is not None
-                    and intel is not None
-                    and heat != intel
-                ):
-                    h_old = prev.get("MBF_PAR_HEATING_TEMP")
-                    i_old = prev.get("MBF_PAR_INTELLIGENT_TEMP")
+                if heat is not None and intel is not None and heat != intel:
+                    h_old = prev.get("MBF_PAR_HEATING_TEMP") if prev else None
+                    i_old = prev.get("MBF_PAR_INTELLIGENT_TEMP") if prev else None
                     heating_changed = h_old is None or heat != h_old
                     intelligent_changed = i_old is None or intel != i_old
 
                     if heating_changed ^ intelligent_changed:
+                        # Exactly one changed: sync the other to match (last-change-wins)
                         winner_val = int(heat if heating_changed else intel)
                         loser_reg = (
                             INTELLIGENT_SETPOINT_REGISTER
@@ -165,9 +163,48 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                             data["MBF_PAR_INTELLIGENT_TEMP"],
                         )
                     elif heating_changed and intelligent_changed:
-                        # Both changed this cycle; cannot determine which is newer. Skip.
+                        # Both changed this cycle; revert both to previous values
+                        _LOGGER.warning(
+                            "Both heating and intelligent setpoints changed simultaneously "
+                            "(heating: %s→%s, intelligent: %s→%s). Reverting both to previous values to prevent conflict.",
+                            h_old,
+                            heat,
+                            i_old,
+                            intel,
+                        )
+                        if h_old is not None and i_old is not None:
+                            # Write both back to their old values
+                            await self.client.async_write_register(
+                                HEATING_SETPOINT_REGISTER, int(h_old), apply=False
+                            )
+                            await self.client.async_write_register(
+                                INTELLIGENT_SETPOINT_REGISTER, int(i_old), apply=True
+                            )
+                            # Reflect revert in returned data
+                            data["MBF_PAR_HEATING_TEMP"] = h_old
+                            data["MBF_PAR_INTELLIGENT_TEMP"] = i_old
+                            _LOGGER.debug(
+                                "Reverted setpoints -> heating=%s, intelligent=%s",
+                                data["MBF_PAR_HEATING_TEMP"],
+                                data["MBF_PAR_INTELLIGENT_TEMP"],
+                            )
+                    elif not heating_changed and not intelligent_changed:
+                        # Neither changed but they differ: initial sync (use heating as source)
+                        _LOGGER.info(
+                            "Setpoints differ but neither changed (heating=%s, intelligent=%s). "
+                            "Performing initial sync: setting intelligent to match heating.",
+                            heat,
+                            intel,
+                        )
+                        await self.client.async_write_register(
+                            INTELLIGENT_SETPOINT_REGISTER, int(heat), apply=True
+                        )
+                        # Reflect in returned data
+                        data["MBF_PAR_INTELLIGENT_TEMP"] = heat
                         _LOGGER.debug(
-                            "Both heating and intelligent setpoints changed; skipping auto-sync to avoid overriding user intent."
+                            "Initial sync completed -> heating=%s, intelligent=%s",
+                            data["MBF_PAR_HEATING_TEMP"],
+                            data["MBF_PAR_INTELLIGENT_TEMP"],
                         )
             except Exception as sync_err:  # pragma: no cover
                 _LOGGER.debug(f"Setpoint auto-sync skipped due to error: {sync_err}")
