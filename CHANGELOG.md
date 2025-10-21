@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.13.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.12.1...v1.13.0) (2025-10-21)
+
+
+### Features
+
+* **sensor:** ✨ add intelligent mode intervals sensor ([fa98d8c](https://github.com/svasek/homeassistant-vistapool-modbus/commit/fa98d8c55c783faa92eaa8a82e648015580f87b0))
+* **sensor:** ✨ add intelligent mode next interval sensor ([b73e8c3](https://github.com/svasek/homeassistant-vistapool-modbus/commit/b73e8c3416a91b5f503ba09112a2ef60f6b3a839))
+
+
+### Bug Fixes
+
+* **coordinator:** 🔧 handle simultaneous setpoint changes and initial sync ([79fbbfd](https://github.com/svasek/homeassistant-vistapool-modbus/commit/79fbbfda04baefc9930c7dab279c4c61bc6fecec))
+* **sensor:** 🔧 skip temperature sensor when not detected ([b0cb16a](https://github.com/svasek/homeassistant-vistapool-modbus/commit/b0cb16adb8efbc1d459ea858ff3d24d824901644))
+
 ## [1.12.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.12.0...v1.12.1) (2025-10-20)
 
 
