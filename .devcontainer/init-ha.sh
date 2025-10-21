@@ -25,12 +25,12 @@ else
   echo "[init-ha] configuration.yaml already present; not overwriting"
 fi
 
-# Install Python requirements (if exists)
-if [ -f "${WORKDIR}/requirements.txt" ]; then
-    pip install --root-user-action=ignore -r "${WORKDIR}/requirements.txt"
-    echo "[init-ha] Installed requirements.txt"
+# Install Python development requirements (if exists)
+if [ -f "${WORKDIR}/requirements-dev.txt" ]; then
+    pip install --root-user-action=ignore -r "${WORKDIR}/requirements-dev.txt"
+    echo "[init-ha] Installed requirements-dev.txt"
 else
-    echo "[init-ha] requirements.txt not found; skipping pip install"
+    echo "[init-ha] requirements-dev.txt not found; skipping pip install"
 fi
 
 # Ensure HA config structure (safe; ignore errors)
