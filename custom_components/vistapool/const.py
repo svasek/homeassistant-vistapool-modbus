@@ -177,6 +177,14 @@ SENSOR_DEFINITIONS = {
         "icon": "mdi:counter",
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
+    "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": {
+        "name": "Intelligent Mode Next Interval",
+        "unit": None,
+        "device_class": SensorDeviceClass.TIMESTAMP,
+        "state_class": None,
+        "icon": "mdi:timeline-clock-outline",
+        "entity_category": EntityCategory.DIAGNOSTIC,
+    },
 }
 
 BINARY_SENSOR_DEFINITIONS = {

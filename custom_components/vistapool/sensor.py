@@ -22,7 +22,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN, SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
-from .helpers import get_filtration_pump_type
+from .helpers import get_filtration_pump_type, calculate_next_interval_time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -106,7 +106,10 @@ async def async_setup_entry(
             coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
         ):
             continue
-        if key == "MBF_PAR_INTELLIGENT_INTERVALS":
+        if (
+            key == "MBF_PAR_INTELLIGENT_INTERVALS"
+            or key == "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL"
+        ):
             # Skip if heating GPIO not assigned or temperature inactive
             if (
                 not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
@@ -254,6 +257,10 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "MBF_PH_STATUS_ALARM":
             raw = self.coordinator.data.get(self._key)
             return PH_STATUS_ALARM_MAP.get(raw)
+        if self._key == "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL":
+            # Convert seconds to timestamp using helper function
+            seconds = self.coordinator.data.get(self._key)
+            return calculate_next_interval_time(seconds, self.hass)
         return self.coordinator.data.get(self._key)
 
     @property

@@ -302,3 +302,95 @@ def test_get_timer_interval_overnight():
 def test_get_timer_interval_zero():
     """Test get_timer_interval returns 0 if times are equal."""
     assert get_timer_interval(5000, 5000) == 0
+
+
+def test_calculate_next_interval_time_with_hass():
+    """Test calculate_next_interval_time with hass instance."""
+    from datetime import datetime, timedelta
+    from unittest.mock import MagicMock
+    from zoneinfo import ZoneInfo
+    from custom_components.vistapool.helpers import calculate_next_interval_time
+
+    # Mock hass with Prague timezone
+    mock_hass = MagicMock()
+    mock_hass.config.time_zone = "Europe/Prague"
+
+    # Calculate with 3600 seconds (1 hour)
+    result = calculate_next_interval_time(3600, mock_hass)
+
+    # Should be a datetime object
+    assert isinstance(result, datetime)
+
+    # Should have timezone information
+    assert result.tzinfo is not None
+
+    # Should have seconds set to 0 (rounded to nearest minute)
+    assert result.second == 0
+    assert result.microsecond == 0
+
+    # Should be approximately 1 hour from now (allow 1 minute tolerance)
+    prague_tz = ZoneInfo("Europe/Prague")
+    expected_time = (datetime.now(prague_tz) + timedelta(seconds=3600)).replace(
+        second=0, microsecond=0
+    )
+    time_diff = abs((result - expected_time).total_seconds())
+    assert time_diff < 60, f"Time difference {time_diff} seconds is too large"
+
+
+def test_calculate_next_interval_time_without_hass():
+    """Test calculate_next_interval_time without hass (UTC fallback)."""
+    from datetime import datetime, timedelta, timezone
+    from custom_components.vistapool.helpers import calculate_next_interval_time
+
+    # Calculate with 7200 seconds (2 hours), no hass
+    result = calculate_next_interval_time(7200, None)
+
+    # Should be a datetime object
+    assert isinstance(result, datetime)
+
+    # Should have timezone information (UTC)
+    assert result.tzinfo is not None
+    assert result.tzinfo == timezone.utc
+
+    # Should have seconds set to 0 (rounded to nearest minute)
+    assert result.second == 0
+    assert result.microsecond == 0
+
+    # Should be approximately 2 hours from now in UTC (allow 1 minute tolerance)
+    expected_time = (datetime.now(timezone.utc) + timedelta(seconds=7200)).replace(
+        second=0, microsecond=0
+    )
+    time_diff = abs((result - expected_time).total_seconds())
+    assert time_diff < 60, f"Time difference {time_diff} seconds is too large"
+
+
+def test_calculate_next_interval_time_zero_value():
+    """Test calculate_next_interval_time returns None for zero value."""
+    from custom_components.vistapool.helpers import calculate_next_interval_time
+
+    result = calculate_next_interval_time(0, None)
+    assert result is None
+
+
+def test_calculate_next_interval_time_negative_value():
+    """Test calculate_next_interval_time returns None for negative value."""
+    from custom_components.vistapool.helpers import calculate_next_interval_time
+
+    result = calculate_next_interval_time(-100, None)
+    assert result is None
+
+
+def test_calculate_next_interval_time_none_value():
+    """Test calculate_next_interval_time returns None for None value."""
+    from custom_components.vistapool.helpers import calculate_next_interval_time
+
+    result = calculate_next_interval_time(None, None)
+    assert result is None
+
+
+def test_calculate_next_interval_time_invalid_type():
+    """Test calculate_next_interval_time returns None for invalid type."""
+    from custom_components.vistapool.helpers import calculate_next_interval_time
+
+    result = calculate_next_interval_time("not a number", None)
+    assert result is None

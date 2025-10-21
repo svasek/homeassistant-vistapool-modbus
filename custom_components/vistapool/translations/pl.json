@@ -108,6 +108,9 @@
       },
       "intelligent_intervals": {
         "name": "Tryb inteligentny: liczba interwałów"
+      },
+      "intelligent_tt_next_interval": {
+        "name": "Tryb inteligentny: początek następnego interwału"
       }
     },
     "binary_sensor": {

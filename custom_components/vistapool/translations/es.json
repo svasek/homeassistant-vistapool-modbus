@@ -108,6 +108,9 @@
       },
       "intelligent_intervals": {
         "name": "Modo inteligente: número de intervalos"
+      },
+      "intelligent_tt_next_interval": {
+        "name": "Modo inteligente: inicio del próximo intervalo"
       }
     },
     "binary_sensor": {

@@ -108,6 +108,9 @@
       },
       "intelligent_intervals": {
         "name": "Inteligentní režim: počet intervalů"
+      },
+      "intelligent_tt_next_interval": {
+        "name": "Inteligentní režim: začátek příštího intervalu"
       }
     },
     "binary_sensor": {

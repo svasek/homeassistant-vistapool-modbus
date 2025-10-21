@@ -406,3 +406,86 @@ async def test_sensor_intelligent_intervals_created_with_heating():
     entities = async_add_entities.call_args[0][0]
     keys = [e._key for e in entities]
     assert "MBF_PAR_INTELLIGENT_INTERVALS" in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_intelligent_tt_next_interval_skip_without_heating():
+    """Test that MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL is skipped when heating GPIO not assigned or temperature inactive."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": 7200,
+            "MBF_PAR_HEATING_GPIO": 0,  # No heating GPIO
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" not in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_intelligent_tt_next_interval_created_with_heating():
+    """Test that MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL is created when heating GPIO assigned and temperature active."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": 7200,
+            "MBF_PAR_HEATING_GPIO": 7,  # Heating GPIO assigned
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" in keys
+
+
+def test_sensor_intelligent_tt_next_interval_calls_helper():
+    """Test that MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL sensor calls the helper function."""
+    from unittest.mock import patch
+
+    mock_coordinator = MagicMock()
+    mock_coordinator.data = {"MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": 3600}
+    mock_coordinator.config_entry.options = {}
+    mock_coordinator.config_entry.entry_id = "test_entry"
+    mock_coordinator.device_slug = "vistapool"
+
+    props = {"device_class": "timestamp"}
+    ent = VistaPoolSensor(
+        mock_coordinator, "test_entry", "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL", props
+    )
+
+    mock_hass = MagicMock()
+    ent.hass = mock_hass
+
+    # Patch the helper function to verify it's called correctly
+    with patch(
+        "custom_components.vistapool.sensor.calculate_next_interval_time"
+    ) as mock_calc:
+        _ = ent.native_value
+        # Verify the helper was called with correct arguments
+        mock_calc.assert_called_once_with(3600, mock_hass)

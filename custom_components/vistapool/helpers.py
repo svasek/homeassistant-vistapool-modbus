@@ -88,6 +88,37 @@ def is_device_time_out_of_sync(data, hass=None, threshold_seconds=60) -> bool:
     return diff > threshold_seconds
 
 
+def calculate_next_interval_time(seconds, hass=None) -> datetime.datetime | None:
+    """
+    Calculate the timestamp for the next interval start.
+
+    Args:
+        seconds: Number of seconds until the next interval starts (countdown).
+        hass: Home Assistant instance for timezone info (optional).
+
+    Returns:
+        datetime object representing when the next interval will start,
+        or None if seconds is None, not a number, or <= 0.
+        Time is rounded to the nearest minute (no seconds).
+    """
+    if seconds is None or not isinstance(seconds, (int, float)) or seconds <= 0:
+        return None
+
+    if hass:
+        # Get current time in HA's local timezone
+        ha_tz = dt_util.get_time_zone(hass.config.time_zone)
+        now_local = datetime.datetime.now(ha_tz)
+        # Add seconds using timedelta
+        target_time = now_local + datetime.timedelta(seconds=seconds)
+    else:
+        # Fallback to UTC if hass is not available
+        now_utc = datetime.datetime.now(datetime.timezone.utc)
+        target_time = now_utc + datetime.timedelta(seconds=seconds)
+
+    # Round to nearest minute (set seconds and microseconds to 0)
+    return target_time.replace(second=0, microsecond=0)
+
+
 def modbus_regs_to_ascii(regs) -> str:
     """Convert list of uint16 Modbus registers to ASCII string (ASCIIZ, max 10 chars)."""
     chars = []
