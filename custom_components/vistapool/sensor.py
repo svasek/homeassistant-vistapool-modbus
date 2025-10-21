@@ -106,6 +106,13 @@ async def async_setup_entry(
             coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
         ):
             continue
+        if key == "MBF_PAR_INTELLIGENT_INTERVALS":
+            # Skip if heating GPIO not assigned or temperature inactive
+            if (
+                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
+                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            ):
+                continue
 
         value = coordinator.data.get(key)
         if (

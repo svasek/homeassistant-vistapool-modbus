@@ -105,6 +105,9 @@
           "mid": "Średnia",
           "high": "Wysoka"
         }
+      },
+      "intelligent_intervals": {
+        "name": "Tryb inteligentny: liczba interwałów"
       }
     },
     "binary_sensor": {

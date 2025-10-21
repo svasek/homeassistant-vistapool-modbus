@@ -105,6 +105,9 @@
           "mid": "Moyenne",
           "high": "Haute"
         }
+      },
+      "intelligent_intervals": {
+        "name": "Mode intelligent : nombre d'intervalles"
       }
     },
     "binary_sensor": {

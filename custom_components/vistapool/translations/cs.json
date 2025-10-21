@@ -105,6 +105,9 @@
           "mid": "Střední",
           "high": "Vysoká"
         }
+      },
+      "intelligent_intervals": {
+        "name": "Inteligentní režim: počet intervalů"
       }
     },
     "binary_sensor": {

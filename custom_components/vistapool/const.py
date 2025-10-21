@@ -169,6 +169,14 @@ SENSOR_DEFINITIONS = {
         "state_class": None,
         "icon": "mdi:fan",
     },
+    "MBF_PAR_INTELLIGENT_INTERVALS": {
+        "name": "Intelligent Mode Intervals",
+        "unit": None,
+        "device_class": None,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "icon": "mdi:counter",
+        "entity_category": EntityCategory.DIAGNOSTIC,
+    },
 }
 
 BINARY_SENSOR_DEFINITIONS = {
