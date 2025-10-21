@@ -296,3 +296,57 @@ def test_icon_hidro_current(mock_coordinator):
 def test_icon_default_icon():
     ent = make_sensor({"icon": "mdi:test"}, "MBF_MEASURE_PH", {})
     assert ent.icon == "mdi:test"
+
+
+@pytest.mark.asyncio
+async def test_sensor_temperature_skip_when_inactive():
+    """Test that MBF_MEASURE_TEMPERATURE is skipped when MBF_PAR_TEMPERATURE_ACTIVE is 0."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "MBF_MEASURE_TEMPERATURE": 25.5,
+            "MBF_PAR_TEMPERATURE_ACTIVE": 0,  # Temperature inactive
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_MEASURE_TEMPERATURE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_temperature_created_when_active():
+    """Test that MBF_MEASURE_TEMPERATURE is created when MBF_PAR_TEMPERATURE_ACTIVE is not 0."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "MBF_MEASURE_TEMPERATURE": 25.5,
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,  # Temperature active
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_MEASURE_TEMPERATURE" in keys

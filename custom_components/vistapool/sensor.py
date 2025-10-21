@@ -73,6 +73,11 @@ async def async_setup_entry(
     for key, props in SENSOR_DEFINITIONS.items():
         # Skip the sensors if they are not detected
         if (
+            key == "MBF_MEASURE_TEMPERATURE"
+            and coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+        ):
+            continue
+        if (
             key == "MBF_MEASURE_PH"
             and coordinator.data.get("pH measurement module detected") is not True
         ):
