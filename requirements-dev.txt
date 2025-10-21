@@ -1,3 +1,4 @@
+pymodbus>=3.8.3
 pytest
 pytest-cov
 pytest-asyncio
