@@ -13,6 +13,7 @@
 # limitations under the License.
 
 """Compatibility helpers for pymodbus 3.9.x (slave=) and 3.10+ (device_id=)."""
+
 from __future__ import annotations
 
 from typing import Any, Callable, Awaitable, Dict

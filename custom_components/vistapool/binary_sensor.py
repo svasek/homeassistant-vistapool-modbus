@@ -24,7 +24,6 @@ from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
 from .helpers import is_device_time_out_of_sync
 
-
 _LOGGER = logging.getLogger(__name__)
 
 DISABLED_SUFFIXES = [
