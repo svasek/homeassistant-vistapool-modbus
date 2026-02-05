@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.13.1...v1.13.2) (2026-02-05)
+
+
+### Bug Fixes
+
+* 🐛 remove redundant entity_id assignment in component classes ([1778567](https://github.com/svasek/homeassistant-vistapool-modbus/commit/177856729ee9f74ac9a242c63195051b95a0762c)), closes [#61](https://github.com/svasek/homeassistant-vistapool-modbus/issues/61)
+
 ## [1.13.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.13.0...v1.13.1) (2026-02-05)
 
 
