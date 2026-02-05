@@ -97,7 +97,6 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         self._attr_suggested_object_id = (
             f"{self.coordinator.device_slug}_{VistaPoolEntity.slugify(self._key)}"
         )
-        self.entity_id = f"{self.platform}.{self._attr_suggested_object_id}"
         self._attr_unique_id = (
             f"{self.coordinator.config_entry.entry_id}_{self._key.lower()}"
         )
