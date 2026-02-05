@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.13.0...v1.13.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* **sensor defs:** 🔧 set unit for pH measurement ([#60](https://github.com/svasek/homeassistant-vistapool-modbus/issues/60)) ([6d21ec8](https://github.com/svasek/homeassistant-vistapool-modbus/commit/6d21ec84cb8cb2776e3f526822782b75a0a4d2b8)), closes [#59](https://github.com/svasek/homeassistant-vistapool-modbus/issues/59)
+
 ## [1.13.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.12.1...v1.13.0) (2025-10-21)
 
 
