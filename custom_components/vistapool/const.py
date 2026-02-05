@@ -103,7 +103,7 @@ SENSOR_DEFINITIONS = {
     },
     "MBF_MEASURE_PH": {
         "name": "pH Level",
-        "unit": None,
+        "unit": "pH",
         "device_class": SensorDeviceClass.PH,
         "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:ph",
