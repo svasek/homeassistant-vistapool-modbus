@@ -409,10 +409,9 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    "HIDRO Cover input active": {
-        "name": "Hydrolysis Cover Input Active",
+    "Pool Cover": {
+        "name": "Pool Cover",
         "device_class": BinarySensorDeviceClass.OPENING,
-        "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "HIDRO Module active": {
         "name": "Hydrolysis Module Active",

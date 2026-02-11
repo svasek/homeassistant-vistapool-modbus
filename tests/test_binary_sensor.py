@@ -135,6 +135,60 @@ async def test_async_setup_entry_option_disables_sensor(monkeypatch):
     assert not any(e._key == "Some Option Sensor" for e in entities)
 
 
+@pytest.mark.asyncio
+async def test_async_setup_entry_skips_pool_cover_when_not_enabled(monkeypatch):
+    """Test that Pool Cover sensor is skipped when cover function is not enabled."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x0002,  # Hidro module present
+            "MBF_PAR_HIDRO_COVER_ENABLE": 0x0000,  # Cover function disabled (bit 0 = 0)
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    # Pool Cover should NOT be in entities
+    assert not any(e._key == "Pool Cover" for e in entities)
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_includes_pool_cover_when_enabled(monkeypatch):
+    """Test that Pool Cover sensor is included when cover function is enabled."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x0002,  # Hidro module present
+            "MBF_PAR_HIDRO_COVER_ENABLE": 0x0001,  # Cover function enabled (bit 0 = 1)
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    # Pool Cover SHOULD be in entities
+    assert any(e._key == "Pool Cover" for e in entities)
+
+
 def test_is_on_direct_key(mock_coordinator):
     props = make_props()
     ent = VistaPoolBinarySensor(
@@ -161,6 +215,18 @@ def test_is_on_device_time_out_of_sync(mock_coordinator):
         return_value=False,
     ):
         assert ent.is_on is False
+
+
+def test_is_on_pool_cover_inverted(mock_coordinator):
+    """Test Pool Cover has inverted logic for OPENING device class."""
+    props = make_props()
+    ent = VistaPoolBinarySensor(mock_coordinator, "test_entry", "Pool Cover", props)
+    # Hardware: 1 = cover active (pool covered) -> HA: OFF (closed)
+    mock_coordinator.data = {"Pool Cover": True}
+    assert ent.is_on is False
+    # Hardware: 0 = cover inactive (pool uncovered) -> HA: ON (open)
+    mock_coordinator.data = {"Pool Cover": False}
+    assert ent.is_on is True
 
 
 def test_is_on_measurement_module_filtration_pump_off(mock_coordinator):

@@ -140,7 +140,7 @@
       "hidro_on_target": { "name": "Hydrolýza na cíli" },
       "hidro_low_flow": { "name": "Nízký průtok hydrolýzy" },
       "hidro_cell_flow_fl1": { "name": "Proudění článkem hydrolýzy FL1" },
-      "hidro_cover_input_active": { "name": "Aktivní kryt hydrolýzy" },
+      "pool_cover": { "name": "Zakrytí bazénu" },
       "hidro_module_active": { "name": "Modul hydrolýzy aktivní" },
       "hidro_module_regulated": { "name": "Modul hydrolýzy regulován" },
       "hidro_activated_by_the_rx_module": { "name": "Hydrolýza aktivována RX modulem" },

@@ -140,7 +140,7 @@
       "hidro_on_target": { "name": "Idrolisi a target" },
       "hidro_low_flow": { "name": "Idrolisi a basso flusso" },
       "hidro_cell_flow_fl1": { "name": "Flusso cella idrolisi FL1" },
-      "hidro_cover_input_active": { "name": "Ingresso copertura idrolisi attivo" },
+      "pool_cover": { "name": "Copertura piscina" },
       "hidro_module_active": { "name": "Modulo idrolisi attivo" },
       "hidro_module_regulated": { "name": "Modulo idrolisi regolato" },
       "hidro_activated_by_the_rx_module": { "name": "Idrolisi attivata dal modulo redox" },

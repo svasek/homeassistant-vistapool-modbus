@@ -135,7 +135,7 @@ def decode_hidro_status_bits(status: int) -> dict:
     # Bit 1: HIDRO Low Flow
     # Bit 2: HIDRO Reserved
     # Bit 3: HIDRO Cell Flow FL1 (if present)
-    # Bit 4: HIDRO Cover input active
+    # Bit 4: Pool Cover (cover input active)
     # Bit 5: HIDRO Module active
     # Bit 6: HIDRO Module regulated
     # Bit 7: HIDRO Activated by the RX module
@@ -154,7 +154,7 @@ def decode_hidro_status_bits(status: int) -> dict:
         "HIDRO Low Flow": bool(status & 0x0002),
         "HIDRO Reserved": bool(status & 0x0004),
         "HIDRO Cell Flow FL1": bool(status & 0x0008),  # if present
-        "HIDRO Cover input active": bool(status & 0x0010),
+        "Pool Cover": bool(status & 0x0010),
         "HIDRO Module active": bool(status & 0x0020),
         "HIDRO Module regulated": bool(status & 0x0040),
         "HIDRO Activated by the RX module": bool(status & 0x0080),

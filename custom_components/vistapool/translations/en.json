@@ -140,7 +140,7 @@
       "hidro_on_target": { "name": "Hydrolysis On Target" },
       "hidro_low_flow": { "name": "Hydrolysis Low Flow" },
       "hidro_cell_flow_fl1": { "name": "Hydrolysis Cell Flow FL1" },
-      "hidro_cover_input_active": { "name": "Hydrolysis Cover Input Active" },
+      "pool_cover": { "name": "Pool Cover" },
       "hidro_module_active": { "name": "Hydrolysis Module Active" },
       "hidro_module_regulated": { "name": "Hydrolysis Module Regulated" },
       "hidro_activated_by_the_rx_module": { "name": "Hydrolysis Activated by Redox Module" },
