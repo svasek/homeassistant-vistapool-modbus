@@ -82,7 +82,7 @@ def test_decode_hidro_status_bits_basic():
     assert result["HIDRO On Target"] is True
     assert result["HIDRO Module active"] is True
     assert result["HIDRO in Pol1"] is True
-    assert result["HIDRO Cover input active"] is False
+    assert result["Pool Cover"] is False
 
 
 def test_decode_hidro_status_bits_none():

@@ -140,7 +140,7 @@
       "hidro_on_target": { "name": "Elektroliza na celu" },
       "hidro_low_flow": { "name": "Niski przepływ elektrolizy" },
       "hidro_cell_flow_fl1": { "name": "Przepływ komórki elektrolizy FL1" },
-      "hidro_cover_input_active": { "name": "Aktywne wejście pokrywy elektrolizy" },
+      "pool_cover": { "name": "Pokrywa basenu" },
       "hidro_module_active": { "name": "Moduł elektrolizy aktywny" },
       "hidro_module_regulated": { "name": "Moduł elektrolizy regulowany" },
       "hidro_activated_by_the_rx_module": { "name": "Elektroliza aktywowana przez moduł redoks" },
