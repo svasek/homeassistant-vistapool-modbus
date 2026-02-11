@@ -64,10 +64,40 @@ def test_suggested_display_precision(mock_coordinator):
 def test_native_unit_of_measurement_dynamic(mock_coordinator):
     props = make_props(unit="g/h")
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_HIDRO", props)
-    mock_coordinator.data = {"MBF_PAR_HIDRO_NOM": 100.0}
+
+    # Test percent mode with force percentage bit
+    mock_coordinator.data = {
+        "MBF_PAR_HIDRO_NOM": 100.0,
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x4000,  # Force percentage
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
     assert ent.native_unit_of_measurement == "%"
-    mock_coordinator.data = {"MBF_PAR_HIDRO_NOM": 80.0}
+
+    # Test g/h mode with force g/h bit
+    mock_coordinator.data = {
+        "MBF_PAR_HIDRO_NOM": 80.0,
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x2000,  # Force g/h
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
     assert ent.native_unit_of_measurement == "g/h"
+
+    # Test HIDROLIFE machine (should be g/h)
+    mock_coordinator.data = {
+        "MBF_PAR_HIDRO_NOM": 100.0,
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,
+        "MBF_PAR_UICFG_MACHINE": 1,  # HIDROLIFE
+    }
+    assert ent.native_unit_of_measurement == "g/h"
+
+    # Test default case (should be %)
+    mock_coordinator.data = {
+        "MBF_PAR_HIDRO_NOM": 100.0,
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,
+        "MBF_PAR_UICFG_MACHINE": 2,  # AQUASCENIC
+    }
+    assert ent.native_unit_of_measurement == "%"
+
+    # Test other number entities return their default unit
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
     assert ent.native_unit_of_measurement == "g/h"
 

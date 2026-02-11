@@ -29,6 +29,7 @@ from custom_components.vistapool.helpers import (
     modbus_regs_to_hex_string,
     is_device_time_out_of_sync,
     get_timer_interval,
+    is_hydrolysis_in_percent,
 )
 
 
@@ -394,3 +395,89 @@ def test_calculate_next_interval_time_invalid_type():
 
     result = calculate_next_interval_time("not a number", None)
     assert result is None
+
+
+def test_is_hydrolysis_in_percent_force_percentage_bit():
+    """Test is_hydrolysis_in_percent when MBMSK_VS_FORCE_UNITS_PERCENTAGE bit is set."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x4000,  # bit 14 set
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert is_hydrolysis_in_percent(data) is True
+
+
+def test_is_hydrolysis_in_percent_force_grh_bit():
+    """Test is_hydrolysis_in_percent when MBMSK_VS_FORCE_UNITS_GRH bit is set."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x2000,  # bit 13 set
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert is_hydrolysis_in_percent(data) is False
+
+
+def test_is_hydrolysis_in_percent_both_force_bits():
+    """Test is_hydrolysis_in_percent when both force bits are set (percentage takes precedence)."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x6000,  # both bits 13 and 14 set
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert is_hydrolysis_in_percent(data) is True
+
+
+def test_is_hydrolysis_in_percent_hidrolife():
+    """Test is_hydrolysis_in_percent for HIDROLIFE machine type."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,  # no force bits
+        "MBF_PAR_UICFG_MACHINE": 1,  # HIDROLIFE
+    }
+    assert is_hydrolysis_in_percent(data) is False
+
+
+def test_is_hydrolysis_in_percent_bionet():
+    """Test is_hydrolysis_in_percent for BIONET machine type."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,  # no force bits
+        "MBF_PAR_UICFG_MACHINE": 4,  # BIONET
+    }
+    assert is_hydrolysis_in_percent(data) is False
+
+
+def test_is_hydrolysis_in_percent_generic_with_electrolisis():
+    """Test is_hydrolysis_in_percent for GENERIC machine with ELECTROLISIS bit."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x8000,  # bit 15 (ELECTROLISIS) set
+        "MBF_PAR_UICFG_MACHINE": 9,  # GENERIC
+    }
+    assert is_hydrolysis_in_percent(data) is False
+
+
+def test_is_hydrolysis_in_percent_generic_without_electrolisis():
+    """Test is_hydrolysis_in_percent for GENERIC machine without ELECTROLISIS bit."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,  # no special bits
+        "MBF_PAR_UICFG_MACHINE": 9,  # GENERIC
+    }
+    assert is_hydrolysis_in_percent(data) is True
+
+
+def test_is_hydrolysis_in_percent_default_case():
+    """Test is_hydrolysis_in_percent default case (returns True for other machine types)."""
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,
+        "MBF_PAR_UICFG_MACHINE": 2,  # AQUASCENIC
+    }
+    assert is_hydrolysis_in_percent(data) is True
+
+
+def test_is_hydrolysis_in_percent_empty_data():
+    """Test is_hydrolysis_in_percent with empty data (defaults to True)."""
+    data = {}
+    assert is_hydrolysis_in_percent(data) is True
+
+
+def test_is_hydrolysis_in_percent_missing_visual_style():
+    """Test is_hydrolysis_in_percent with missing visual style (defaults based on machine)."""
+    data = {
+        "MBF_PAR_UICFG_MACHINE": 1,  # HIDROLIFE
+    }
+    assert is_hydrolysis_in_percent(data) is False

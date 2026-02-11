@@ -74,14 +74,73 @@ def test_icon_default(mock_coordinator):
 
 
 def test_suggested_display_precision(mock_coordinator):
+    # Test for MBF_HIDRO_CURRENT with percent mode
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_HIDRO_CURRENT", {})
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x4000,  # Force percentage
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
     assert ent.suggested_display_precision == 0
+
+    # Test for MBF_HIDRO_CURRENT with g/h mode
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x2000,  # Force g/h
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert ent.suggested_display_precision == 1
+
+    # Test for conductivity
     ent = VistaPoolSensor(
         mock_coordinator, "test_entry", "MBF_MEASURE_CONDUCTIVITY", {}
     )
     assert ent.suggested_display_precision == 0
+
+    # Test for other sensors
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", {})
     assert ent.suggested_display_precision is None
+
+
+def test_native_unit_of_measurement_hidro_current(mock_coordinator):
+    """Test native_unit_of_measurement for MBF_HIDRO_CURRENT with different configurations."""
+    ent = VistaPoolSensor(
+        mock_coordinator, "test_entry", "MBF_HIDRO_CURRENT", {"unit": "%"}
+    )
+
+    # Test percent mode
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x4000,  # Force percentage bit
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert ent.native_unit_of_measurement == "%"
+
+    # Test g/h mode
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x2000,  # Force g/h bit
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert ent.native_unit_of_measurement == "g/h"
+
+    # Test HIDROLIFE machine (should be g/h)
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,
+        "MBF_PAR_UICFG_MACHINE": 1,  # HIDROLIFE
+    }
+    assert ent.native_unit_of_measurement == "g/h"
+
+    # Test default case (should be %)
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x0000,
+        "MBF_PAR_UICFG_MACHINE": 2,  # AQUASCENIC
+    }
+    assert ent.native_unit_of_measurement == "%"
+
+
+def test_native_unit_of_measurement_other_sensors(mock_coordinator):
+    """Test that other sensors return their default unit."""
+    props = {"unit": "pH"}
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_MEASURE_PH", props)
+    mock_coordinator.data = {}
+    assert ent.native_unit_of_measurement == "pH"
 
 
 def test_native_value_filtration_pump_off(mock_coordinator):
