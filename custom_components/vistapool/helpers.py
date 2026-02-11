@@ -259,3 +259,49 @@ def get_filtration_pump_type(par_filtration_conf) -> int:
 def pad_list(regs, length, pad_value=0) -> list[int]:
     """Return a list padded with pad_value to desired length."""
     return regs + [pad_value] * (length - len(regs))
+
+
+def is_hydrolysis_in_percent(data: dict) -> bool:
+    """
+    Determine if hydrolysis/electrolysis units are displayed as percentage or g/h.
+
+    Based on Tasmota NeoPoolIsHydrolysisInPercent() logic:
+    1. If MBMSK_VS_FORCE_UNITS_PERCENTAGE bit is set, "%" is displayed
+    2. If MBMSK_VS_FORCE_UNITS_GRH bit is set, "g/h" is displayed
+    3. If neither bit is set:
+       a. If machine is HIDROLIFE or BIONET, then "g/h" is displayed
+       b. If machine is GENERIC and MBMSK_ELECTROLISIS bit is set, "g/h" is displayed
+       c. Otherwise "%" is displayed
+    """
+    # Bit masks for MBF_PAR_UICFG_MACH_VISUAL_STYLE register
+    MBMSK_VS_FORCE_UNITS_GRH = 0x2000  # bit 13
+    MBMSK_VS_FORCE_UNITS_PERCENTAGE = 0x4000  # bit 14
+    MBMSK_ELECTROLISIS = 0x8000  # bit 15
+
+    # Machine type values for MBF_PAR_UICFG_MACHINE register
+    MBV_PAR_MACH_HIDROLIFE = 1
+    MBV_PAR_MACH_BIONET = 4
+    MBV_PAR_MACH_GENERIC = 9
+
+    visual_style = data.get("MBF_PAR_UICFG_MACH_VISUAL_STYLE", 0)
+    machine_type = data.get("MBF_PAR_UICFG_MACHINE", 0)
+
+    # 1. If MBMSK_VS_FORCE_UNITS_PERCENTAGE bit is set, "%" is displayed
+    if visual_style & MBMSK_VS_FORCE_UNITS_PERCENTAGE:
+        return True
+
+    # 2. If MBMSK_VS_FORCE_UNITS_GRH bit is set, "g/h" is displayed
+    if visual_style & MBMSK_VS_FORCE_UNITS_GRH:
+        return False
+
+    # 3. If neither of the above bits is set:
+    # a. If machine is HIDROLIFE or BIONET, then "g/h" is displayed
+    if machine_type in (MBV_PAR_MACH_HIDROLIFE, MBV_PAR_MACH_BIONET):
+        return False
+
+    # b. If machine is GENERIC and MBMSK_ELECTROLISIS bit is set, "g/h" is displayed
+    if machine_type == MBV_PAR_MACH_GENERIC and (visual_style & MBMSK_ELECTROLISIS):
+        return False
+
+    # c. Otherwise "%" is displayed
+    return True

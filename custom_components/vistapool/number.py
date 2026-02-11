@@ -29,6 +29,7 @@ from .const import (
 )
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
+from .helpers import is_hydrolysis_in_percent
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -205,12 +206,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     def native_unit_of_measurement(self) -> str | None:
         """Return the unit of measurement for the number value."""
         if self._key == "MBF_PAR_HIDRO":
-            hidro_nom = self.coordinator.data.get("MBF_PAR_HIDRO_NOM")
-            if hidro_nom is not None:
-                if hidro_nom == 100.0:
-                    return "%"
-                else:
-                    return "g/h"
+            # Dynamically determine unit based on machine configuration using the same logic as Tasmota
+            return "%" if is_hydrolysis_in_percent(self.coordinator.data) else "g/h"
         return self._attr_native_unit_of_measurement
 
     # Property to set correct native max value for hydrolysis
