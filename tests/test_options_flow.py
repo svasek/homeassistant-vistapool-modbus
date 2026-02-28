@@ -18,11 +18,22 @@ from unittest.mock import MagicMock, AsyncMock, patch
 from custom_components.vistapool.options_flow import VistaPoolOptionsFlowHandler
 
 
+def make_flow(mock_config_entry):
+    """Create a VistaPoolOptionsFlowHandler with a properly mocked config_entry."""
+    flow = VistaPoolOptionsFlowHandler()
+    flow.hass = MagicMock()
+    flow.hass.async_create_task = MagicMock()
+    flow.hass.config_entries.async_get_known_entry.return_value = mock_config_entry
+    flow.hass.config_entries.async_reload = MagicMock()
+    flow.handler = "test_entry_id"
+    return flow
+
+
 @pytest.mark.asyncio
 async def test_options_show_form():
     mock_config_entry = MagicMock()
     mock_config_entry.options = {}
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
+    flow = make_flow(mock_config_entry)
     result = await flow.async_step_init(user_input=None)
     assert result["type"] == "form"
     schema = result["data_schema"]
@@ -33,7 +44,7 @@ async def test_options_show_form():
 async def test_options_save_options():
     mock_config_entry = MagicMock()
     mock_config_entry.options = {}
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
+    flow = make_flow(mock_config_entry)
     user_input = {"enable_backwash_option": True, "measure_when_filtration_off": False}
     result = await flow.async_step_init(user_input=user_input)
     assert result["type"] == "create_entry"
@@ -46,7 +57,7 @@ async def test_options_unlock_advanced_correct(monkeypatch):
     mock_config_entry = MagicMock()
     mock_config_entry.options = {}
     mock_config_entry.unique_id = "pool"
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
+    flow = make_flow(mock_config_entry)
 
     with patch("custom_components.vistapool.options_flow.date") as mock_date:
         mock_today = MagicMock()
@@ -65,7 +76,7 @@ async def test_options_unlock_advanced_wrong(monkeypatch, caplog):
     mock_config_entry = MagicMock()
     mock_config_entry.options = {}
     mock_config_entry.unique_id = "pool"
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
+    flow = make_flow(mock_config_entry)
 
     with patch("custom_components.vistapool.options_flow.date") as mock_date:
         mock_date.today.return_value.year = 2025
@@ -83,7 +94,7 @@ async def test_options_already_enabled():
     """Test already_enabled creates entry directly."""
     mock_config_entry = MagicMock()
     mock_config_entry.options = {"enable_backwash_option": True}
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
+    flow = make_flow(mock_config_entry)
     user_input = {"enable_backwash_option": True}
     result = await flow.async_step_init(user_input=user_input)
     assert result["type"] == "create_entry"
@@ -101,17 +112,14 @@ async def test_async_step_advanced(monkeypatch):
         "use_aux3": False,
         "use_aux4": False,
     }
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
-    flow.hass = MagicMock()
-    flow.hass.loop = MagicMock()
-    flow.hass.config_entries.async_reload = MagicMock()
+    flow = make_flow(mock_config_entry)
     flow._base_options = {"use_light": False}
     user_input = {"enable_backwash_option": True, "use_light": True}  # changed value
     result = await flow.async_step_advanced(user_input=user_input)
     assert result["type"] == "create_entry"
     assert result["data"]["enable_backwash_option"] is True
     # Should call reload due to use_light change
-    assert flow.hass.loop.call_soon.called
+    assert flow.hass.async_create_task.called
 
 
 @pytest.mark.asyncio
@@ -119,7 +127,7 @@ async def test_async_step_advanced_show_form():
     """Test async_step_advanced returns a form if user_input is None."""
     mock_config_entry = MagicMock()
     mock_config_entry.options = {}
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
+    flow = make_flow(mock_config_entry)
     result = await flow.async_step_advanced(user_input=None)
     assert result["type"] == "form"
     assert result["step_id"] == "advanced"
@@ -131,16 +139,13 @@ async def test_options_reload_trigger(monkeypatch):
     """Test async_step_init triggers reload when use_* options change."""
     mock_config_entry = MagicMock()
     mock_config_entry.options = {"use_light": False, "use_aux1": False}
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
-    flow.hass = MagicMock()
-    flow.hass.loop = MagicMock()
-    flow.hass.config_entries.async_reload = MagicMock()
+    flow = make_flow(mock_config_entry)
     user_input = {"use_light": True, "use_aux1": False}
     # Patch date so unlock_advanced is not used
     result = await flow.async_step_init(user_input=user_input)
     assert result["type"] == "create_entry"
-    # Should trigger reload (call_soon)
-    assert flow.hass.loop.call_soon.called
+    # Should trigger reload (async_create_task)
+    assert flow.hass.async_create_task.called
 
 
 @pytest.mark.asyncio
@@ -148,7 +153,7 @@ async def test_async_step_init_show_form():
     """Test async_step_init returns form if user_input is None."""
     mock_config_entry = MagicMock()
     mock_config_entry.options = {}
-    flow = VistaPoolOptionsFlowHandler(mock_config_entry)
+    flow = make_flow(mock_config_entry)
     result = await flow.async_step_init(user_input=None)
     assert result["type"] == "form"
     assert result["step_id"] == "init"

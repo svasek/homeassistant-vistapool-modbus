@@ -62,6 +62,8 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         self.entry_id = entry_id
         self.device_name = entry.data.get(CONF_NAME, DOMAIN)
         self.auto_time_sync = self.entry.options.get("auto_time_sync", False)
+        self._firmware = "?"
+        self._model = "Unknown"
 
     async def _async_update_data(self):
         try:

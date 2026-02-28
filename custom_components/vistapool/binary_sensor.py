@@ -29,12 +29,12 @@ _LOGGER = logging.getLogger(__name__)
 DISABLED_SUFFIXES = [
     " measurement active",
     " pump active",
-    " Acid Pump",
+    " acid pump",
     " shock mode",
-    " On Target",
-    " Low Flow",
+    " on target",
+    " low flow",
     " input active",
-    " indicator FL2",
+    " indicator fl2",
 ]
 
 
@@ -116,7 +116,7 @@ async def async_setup_entry(
 
         # Check if the entity should be enabled by default
         # Disable some entities by default based on their key
-        if any(key.lower().endswith(suf) for suf in DISABLED_SUFFIXES):
+        if any(key.lower().endswith(suf.lower()) for suf in DISABLED_SUFFIXES):
             sensor_props["enabled_default"] = False
         else:
             sensor_props["enabled_default"] = True
