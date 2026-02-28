@@ -260,9 +260,9 @@ def make_sensor(props, key, data):
     [
         (1, "mdi:water-boiler-auto"),  # auto
         (0, "mdi:water-boiler-alert"),  # manual
-        (2, "mdi:water-boiler"),  # heating
-        (3, "mdi:water-boiler-check"),  # smart
-        (4, "mdi:water-boiler-thermometer"),  # intelligent
+        (2, "mdi:water-boiler-alert"),  # heating
+        (3, "mdi:water-boiler-auto"),  # smart
+        (4, "mdi:water-boiler-auto"),  # intelligent
         (13, "mdi:water-boiler-off"),  # backwash
     ],
 )
