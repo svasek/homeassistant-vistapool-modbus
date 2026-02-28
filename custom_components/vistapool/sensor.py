@@ -179,11 +179,11 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             elif mode == "manual":
                 return "mdi:water-boiler-alert"
             elif mode == "heating":
-                return "mdi:water-boiler"
+                return "mdi:water-boiler-alert"
             elif mode == "smart":
-                return "mdi:water-boiler-check"
+                return "mdi:water-boiler-auto"
             elif mode == "intelligent":
-                return "mdi:water-boiler-thermometer"
+                return "mdi:water-boiler-auto"
             elif mode == "backwash":
                 return "mdi:water-boiler-off"
         # PH alarm icons
