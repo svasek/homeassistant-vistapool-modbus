@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.14.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.13.2...v1.14.0) (2026-03-01)
+
+
+### Features
+
+* **binary_sensor:** ✨ add Pool Cover sensor ([#65](https://github.com/svasek/homeassistant-vistapool-modbus/issues/65)) ([915e3ca](https://github.com/svasek/homeassistant-vistapool-modbus/commit/915e3caade00bbfc23e5bb88af0eb18297491e51)), closes [#58](https://github.com/svasek/homeassistant-vistapool-modbus/issues/58)
+
+
+### Bug Fixes
+
+* 🐛 code review fixes for HA 2026.2 compatibility ([#69](https://github.com/svasek/homeassistant-vistapool-modbus/issues/69)) ([2491d0f](https://github.com/svasek/homeassistant-vistapool-modbus/commit/2491d0f861befdd16b10474d874479cbcb23b14d))
+* 🐛 correct hydrolysis intensity unit determination logic ([#64](https://github.com/svasek/homeassistant-vistapool-modbus/issues/64)) ([61ba9de](https://github.com/svasek/homeassistant-vistapool-modbus/commit/61ba9de23f0686b0ee5084c2f968f42376014df9))
+* **sensor:** 🔧 update icons for filtration modes ([006ceca](https://github.com/svasek/homeassistant-vistapool-modbus/commit/006ceca98d563ae1a9ae67ea2640d57d65b7bde8))
+
 ## [1.13.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.13.1...v1.13.2) (2026-02-05)
 
 
