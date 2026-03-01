@@ -94,6 +94,11 @@ async def async_setup_entry(
             and coordinator.data.get("Redox measurement module detected") is not True
         ):
             continue
+        # Skip Pool Cover if not enabled in device configuration
+        if key == "Pool Cover" and not bool(
+            (coordinator.data.get("MBF_PAR_HIDRO_COVER_ENABLE") or 0) & 0x0001
+        ):
+            continue
 
         # Check if the entity should be skipped based on the suffixes
         # Hide selected sensors if their 'measurement module detected' status is False.
@@ -178,6 +183,13 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         """Return True if the binary sensor is on."""
         if self._key == "Device Time Out Of Sync":
             return is_device_time_out_of_sync(self.coordinator.data, self.hass)
+
+        # Pool Cover: Invert logic for OPENING device class
+        # Hardware: 1 = cover active (pool covered), 0 = cover inactive (pool uncovered)
+        # HA OPENING: ON = open (uncovered), OFF = closed (covered)
+        if self._key == "Pool Cover":
+            value = self.coordinator.data.get(self._key)
+            return not bool(value)
 
         # Check if the filtration pump is active
         if self._attr_suggested_object_id.endswith(

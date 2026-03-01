@@ -140,7 +140,7 @@
       "hidro_on_target": { "name": "Hydrolyse sur cible" },
       "hidro_low_flow": { "name": "Hydrolyse faible débit" },
       "hidro_cell_flow_fl1": { "name": "Débit cellule hydrolyse FL1" },
-      "hidro_cover_input_active": { "name": "Entrée couverture hydrolyse active" },
+      "pool_cover": { "name": "Volet de piscine" },
       "hidro_module_active": { "name": "Module hydrolyse actif" },
       "hidro_module_regulated": { "name": "Module hydrolyse régulé" },
       "hidro_activated_by_the_rx_module": { "name": "Hydrolyse activée par le module redox" },
