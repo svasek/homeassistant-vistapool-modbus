@@ -22,7 +22,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import DOMAIN, SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
-from .helpers import get_filtration_pump_type, calculate_next_interval_time
+from .helpers import (
+    get_filtration_pump_type,
+    calculate_next_interval_time,
+    is_hydrolysis_in_percent,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -205,10 +209,19 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
     def suggested_display_precision(self) -> int | None:
         """Return the suggested display precision for the sensor value."""
         if self._key == "MBF_HIDRO_CURRENT":
-            return 0
+            # Use 0 decimals for percent mode, 1 decimal for g/h mode
+            return 0 if is_hydrolysis_in_percent(self.coordinator.data) else 1
         if self._key == "MBF_MEASURE_CONDUCTIVITY":
             return 0
         return None
+
+    @property
+    def native_unit_of_measurement(self) -> str | None:
+        """Return the unit of measurement for the sensor value."""
+        if self._key == "MBF_HIDRO_CURRENT":
+            # Dynamically determine unit based on machine configuration
+            return "%" if is_hydrolysis_in_percent(self.coordinator.data) else "g/h"
+        return self._attr_native_unit_of_measurement
 
     @property
     def native_value(self) -> float | int | str | None:
