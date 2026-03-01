@@ -84,10 +84,6 @@ async def async_setup_entry(
 class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     """Representation of a VistaPool number entity."""
 
-    _pending_write_task = None
-    _pending_value = None
-    _debounce_delay = 2.0
-
     def __init__(self, coordinator, entry_id, key, props) -> None:
         """Initialize the VistaPool number entity."""
         super().__init__(coordinator, entry_id)
@@ -112,6 +108,9 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         self._attr_device_class = props.get("device_class") or None
         self._attr_entity_category = props.get("entity_category") or None
         self._attr_icon = props.get("icon")
+        self._pending_write_task = None
+        self._pending_value = None
+        self._debounce_delay = 2.0
 
         _LOGGER.debug(
             f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"

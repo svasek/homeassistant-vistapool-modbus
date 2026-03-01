@@ -47,7 +47,7 @@ def get_device_time(data, hass=None) -> datetime.datetime | None:
 
 # This function prepares the device time for writing to the device
 # It takes the current time in the local timezone and converts it to a format suitable for the device
-def prepare_device_time(hass=None) -> list[int, int]:
+def prepare_device_time(hass=None) -> list[int]:
     """
     Prepare device time for writing to the device.
     Returns a list of two integers representing the low and high parts of the time.

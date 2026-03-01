@@ -15,7 +15,6 @@
 """VistaPool Integration for Home Assistant - Options Flow Module"""
 
 import logging
-import asyncio
 import voluptuous as vol
 from datetime import date
 from homeassistant import config_entries
@@ -28,19 +27,18 @@ _LOGGER = logging.getLogger(__name__)
 class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
     """Handle options flow for VistaPool integration."""
 
-    def __init__(self, config_entry) -> None:
+    def __init__(self, config_entry=None) -> None:
         """Initialize the options flow handler."""
         super().__init__()
-        self._config_entry = config_entry
         self._base_options = {}
 
     async def async_step_init(self, user_input=None) -> dict:
         """Handle the initial step of the options flow."""
         # Get current options from the config entry
-        options = dict(self._config_entry.options)
+        options = dict(self.config_entry.options)
         already_enabled = options.get("enable_backwash_option", False)
 
-        device_slug = self._config_entry.unique_id or slugify(
+        device_slug = self.config_entry.unique_id or slugify(
             self.config_entry.data.get("name")
         )
         expected = f"{device_slug}{date.today().year}"
@@ -122,7 +120,7 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                     )
             data = user_input.copy()
             data.pop("unlock_advanced", None)
-            prev_options = dict(self._config_entry.options)
+            prev_options = dict(self.config_entry.options)
             result = self.async_create_entry(title="", data=data)
 
             # Dynamically collect all 'use_*' option keys to compare changes and trigger reload if needed
@@ -134,9 +132,8 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                 }
             )
             if any(prev_options.get(k) != user_input.get(k) for k in reload_keys):
-                self.hass.loop.call_soon(
-                    asyncio.create_task,
-                    self.hass.config_entries.async_reload(self._config_entry.entry_id),
+                self.hass.async_create_task(
+                    self.hass.config_entries.async_reload(self.config_entry.entry_id)
                 )
 
             return result
@@ -149,7 +146,7 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
 
     async def async_step_advanced(self, user_input=None) -> dict:
         """Handle the advanced options step."""
-        options = dict(self._config_entry.options)
+        options = dict(self.config_entry.options)
         advanced_schema = vol.Schema(
             {
                 vol.Optional(
@@ -169,7 +166,7 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
         )
 
         if user_input is not None:
-            prev_options = dict(self._config_entry.options)
+            prev_options = dict(self.config_entry.options)
             all_options = {**self._base_options, **user_input}
             result = self.async_create_entry(title="", data=all_options)
 
@@ -183,9 +180,8 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                 }
             )
             if any(prev_options.get(k) != all_options.get(k) for k in reload_keys):
-                self.hass.loop.call_soon(
-                    asyncio.create_task,
-                    self.hass.config_entries.async_reload(self._config_entry.entry_id),
+                self.hass.async_create_task(
+                    self.hass.config_entries.async_reload(self.config_entry.entry_id)
                 )
 
             return result
