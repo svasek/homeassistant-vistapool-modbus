@@ -283,8 +283,8 @@ def is_hydrolysis_in_percent(data: dict) -> bool:
     MBV_PAR_MACH_BIONET = 4
     MBV_PAR_MACH_GENERIC = 9
 
-    visual_style = data.get("MBF_PAR_UICFG_MACH_VISUAL_STYLE", 0)
-    machine_type = data.get("MBF_PAR_UICFG_MACHINE", 0)
+    visual_style = int(data.get("MBF_PAR_UICFG_MACH_VISUAL_STYLE") or 0)
+    machine_type = int(data.get("MBF_PAR_UICFG_MACHINE") or 0)
 
     # 1. If MBMSK_VS_FORCE_UNITS_PERCENTAGE bit is set, "%" is displayed
     if visual_style & MBMSK_VS_FORCE_UNITS_PERCENTAGE:

@@ -178,7 +178,8 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     def suggested_display_precision(self) -> int | None:
         """Return the suggested display precision for the number value."""
         if self._key == "MBF_PAR_HIDRO":
-            return 0
+            # 0 decimals in percent mode, 1 decimal in g/h mode
+            return 0 if is_hydrolysis_in_percent(self.coordinator.data) else 1
         if self._key == "MBF_PAR_HEATING_TEMP":
             return 0
         return None
@@ -218,3 +219,11 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             if hidro_nom is not None:
                 return hidro_nom
         return self._attr_native_max_value
+
+    @property
+    def native_step(self) -> float | None:
+        """Return the step value for the number entity."""
+        if self._key == "MBF_PAR_HIDRO":
+            # 1.0 step in percent mode, 0.1 step in g/h mode (matches display precision and register scale)
+            return 1.0 if is_hydrolysis_in_percent(self.coordinator.data) else 0.1
+        return self._attr_native_step

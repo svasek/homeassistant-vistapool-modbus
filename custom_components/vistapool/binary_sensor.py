@@ -189,6 +189,8 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         # HA OPENING: ON = open (uncovered), OFF = closed (covered)
         if self._key == "Pool Cover":
             value = self.coordinator.data.get(self._key)
+            if value is None:
+                return None
             return not bool(value)
 
         # Check if the filtration pump is active
