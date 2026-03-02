@@ -42,7 +42,7 @@ async def test_create_entry_success():
     }
     with patch(
         "custom_components.vistapool.config_flow.is_host_port_open",
-        return_value=True,
+        new=AsyncMock(return_value=True),
     ):
         result = await flow.async_step_user(user_input)
         assert result["type"] == "create_entry"
@@ -64,7 +64,7 @@ async def test_create_entry_with_rtu_framer():
     }
     with patch(
         "custom_components.vistapool.config_flow.is_host_port_open",
-        return_value=True,
+        new=AsyncMock(return_value=True),
     ):
         result = await flow.async_step_user(user_input)
         assert result["type"] == "create_entry"
@@ -82,7 +82,7 @@ async def test_create_entry_failure():
     }
     with patch(
         "custom_components.vistapool.config_flow.is_host_port_open",
-        return_value=False,
+        new=AsyncMock(return_value=False),
     ):
         result = await flow.async_step_user(user_input)
         assert result["type"] == "form"
