@@ -24,10 +24,11 @@ async def test_show_user_form_on_init():
     result = await flow.async_step_user(user_input=None)
     assert result["type"] == "form"
     assert "errors" in result
-    # Check if the form schema contains host, port, slave_id, and name
+    # Check if the form schema contains host, port, slave_id, name and modbus_framer
     schema = result["data_schema"]
     assert "host" in str(schema)
     assert "port" in str(schema)
+    assert "modbus_framer" in str(schema)
 
 
 @pytest.mark.asyncio
@@ -48,6 +49,26 @@ async def test_create_entry_success():
         assert result["title"] == "Test Pool"
         assert result["data"]["host"] == "192.168.1.100"
         assert result["data"]["port"] == 8899
+
+
+@pytest.mark.asyncio
+async def test_create_entry_with_rtu_framer():
+    """Test that modbus_framer='rtu' is accepted and stored in config entry."""
+    flow = config_flow.VistaPoolConfigFlow()
+    user_input = {
+        "host": "192.168.1.100",
+        "port": 502,
+        "slave_id": 1,
+        "name": "Test Pool RTU",
+        "modbus_framer": "rtu",
+    }
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        return_value=True,
+    ):
+        result = await flow.async_step_user(user_input)
+        assert result["type"] == "create_entry"
+        assert result["data"]["modbus_framer"] == "rtu"
 
 
 @pytest.mark.asyncio

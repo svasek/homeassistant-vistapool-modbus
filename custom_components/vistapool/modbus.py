@@ -20,6 +20,7 @@ import time
 from collections import deque
 from datetime import datetime, timedelta
 from pymodbus.client import AsyncModbusTcpClient
+from pymodbus.framer import FramerType
 from pymodbus.exceptions import ModbusException, ConnectionException
 from .helpers import parse_timer_block, build_timer_block, get_filtration_speed
 from .modbus_compat import modbus_acall
@@ -48,6 +49,8 @@ class VistaPoolModbusClient:
         self._host = config["host"]
         self._port = config.get("port", 502)
         self._unit = config.get("slave_id", 1)
+        _framer_str = config.get("modbus_framer", "tcp")
+        self._framer = FramerType.RTU if _framer_str == "rtu" else FramerType.SOCKET
         self._client = None  # ← Persistent client instance
         self._client_lock = asyncio.Lock()
 
@@ -110,6 +113,7 @@ class VistaPoolModbusClient:
                     self._host,
                     port=self._port,
                     timeout=5,
+                    framer=self._framer,
                 )
 
                 # Attempt connection with timeout

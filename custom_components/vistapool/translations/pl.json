@@ -10,6 +10,7 @@
           "port": "Port TCP dla Modbus (domyślnie: 502).",
           "scan_interval": "Interwał aktualizacji danych (sekundy)",
           "slave_id": "Adres urządzenia Modbus (domyślnie: 1).",
+          "modbus_framer": "Ramkowanie protokołu: 'tcp' = Modbus TCP (nagłówek MBAP, dla bramek z konwersją), 'rtu' = RTU przez TCP (dla transparentnych bramek TCP)",
           "use_filtration1": "Włącz 1. timer filtracji w trybie automatycznym",
           "use_filtration2": "Włącz 2. timer filtracji w trybie automatycznym",
           "use_filtration3": "Włącz 3. timer filtracji w trybie automatycznym",

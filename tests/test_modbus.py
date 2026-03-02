@@ -17,9 +17,10 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import pytest, asyncio
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, patch, call
 from datetime import datetime, timedelta
 import custom_components.vistapool.modbus as vistapool_modbus
+from pymodbus.framer import FramerType
 
 ModbusException = vistapool_modbus.ModbusException
 
@@ -60,6 +61,58 @@ async def test_close_resets_state_and_closes_client(config):
     assert client._consecutive_errors == 0
     assert client._backoff_until is None
     assert client._client is None
+
+
+def test_framer_defaults_to_socket(config):
+    """Test that missing modbus_framer defaults to FramerType.SOCKET (Modbus TCP)."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    assert client._framer == FramerType.SOCKET
+
+
+def test_framer_tcp_maps_to_socket():
+    """Test that modbus_framer='tcp' maps to FramerType.SOCKET."""
+    client = vistapool_modbus.VistaPoolModbusClient(
+        {"host": "127.0.0.1", "port": 502, "slave_id": 1, "modbus_framer": "tcp"}
+    )
+    assert client._framer == FramerType.SOCKET
+
+
+def test_framer_rtu_maps_to_rtu():
+    """Test that modbus_framer='rtu' maps to FramerType.RTU."""
+    client = vistapool_modbus.VistaPoolModbusClient(
+        {"host": "127.0.0.1", "port": 502, "slave_id": 1, "modbus_framer": "rtu"}
+    )
+    assert client._framer == FramerType.RTU
+
+
+@pytest.mark.asyncio
+async def test_establish_connection_passes_framer_to_client():
+    """Test that _establish_connection_with_retry passes correct framer to AsyncModbusTcpClient."""
+    for framer_str, expected_framer in [
+        ("tcp", FramerType.SOCKET),
+        ("rtu", FramerType.RTU),
+    ]:
+        client = vistapool_modbus.VistaPoolModbusClient(
+            {
+                "host": "127.0.0.1",
+                "port": 502,
+                "slave_id": 1,
+                "modbus_framer": framer_str,
+            }
+        )
+        with patch.object(vistapool_modbus, "AsyncModbusTcpClient") as MockClient:
+            mock_instance = MockClient.return_value
+            mock_instance.connect = AsyncMock(return_value=True)
+            mock_instance.connected = True
+
+            await client._establish_connection_with_retry()
+
+            MockClient.assert_called_once_with(
+                "127.0.0.1",
+                port=502,
+                timeout=5,
+                framer=expected_framer,
+            )
 
 
 @pytest.mark.asyncio

@@ -10,6 +10,7 @@
           "port": "Puerto TCP para Modbus (por defecto: 502).",
           "scan_interval": "Intervalo de actualización de datos (segundos)",
           "slave_id": "Dirección de dispositivo Modbus (por defecto: 1).",
+          "modbus_framer": "Encuadre de protocolo: 'tcp' = Modbus TCP (cabecera MBAP, para pasarelas con conversión), 'rtu' = RTU sobre TCP (para pasarelas TCP transparentes)",
           "use_filtration1": "Activar el 1º temporizador de filtración para modo automático",
           "use_filtration2": "Activar el 2º temporizador de filtración para modo automático",
           "use_filtration3": "Activar el 3º temporizador de filtración para modo automático",
