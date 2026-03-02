@@ -229,6 +229,16 @@ def test_is_on_pool_cover_inverted(mock_coordinator):
     assert ent.is_on is True
 
 
+def test_is_on_pool_cover_none_value(mock_coordinator):
+    """Test Pool Cover returns None when value is missing (unknown state, not True)."""
+    props = make_props()
+    ent = VistaPoolBinarySensor(mock_coordinator, "test_entry", "Pool Cover", props)
+    mock_coordinator.data = {}  # key absent -> value is None
+    assert ent.is_on is None
+    mock_coordinator.data = {"Pool Cover": None}  # key present but explicitly None
+    assert ent.is_on is None
+
+
 def test_is_on_measurement_module_filtration_pump_off(mock_coordinator):
     props = make_props()
     ent = VistaPoolBinarySensor(

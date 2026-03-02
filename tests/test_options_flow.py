@@ -90,6 +90,67 @@ async def test_options_unlock_advanced_wrong(monkeypatch, caplog):
 
 
 @pytest.mark.asyncio
+async def test_options_unlock_advanced_correct_slug_fallback(monkeypatch):
+    """Test unlock_advanced with unique_id=None falls back to slugified name for password."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {}
+    mock_config_entry.unique_id = None
+    mock_config_entry.data = {"name": "My Pool"}
+    flow = make_flow(mock_config_entry)
+
+    with patch("custom_components.vistapool.options_flow.date") as mock_date:
+        mock_today = MagicMock()
+        mock_today.year = 2025
+        mock_date.today.return_value = mock_today
+        # slugify("My Pool") == "my_pool", so expected password is "my_pool2025"
+        user_input = {"unlock_advanced": "my_pool2025"}
+        flow.async_step_advanced = AsyncMock(return_value="advanced_step_called")
+        result = await flow.async_step_init(user_input=user_input)
+        assert result == "advanced_step_called"
+        flow.async_step_advanced.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_options_unlock_advanced_wrong_slug_fallback(monkeypatch, caplog):
+    """Test unlock_advanced with unique_id=None shows error when password doesn't match slug."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {}
+    mock_config_entry.unique_id = None
+    mock_config_entry.data = {"name": "My Pool"}
+    flow = make_flow(mock_config_entry)
+
+    with patch("custom_components.vistapool.options_flow.date") as mock_date:
+        mock_date.today.return_value.year = 2025
+        user_input = {"unlock_advanced": "wrongpassword"}
+        result = await flow.async_step_init(user_input=user_input)
+        assert result["type"] == "form"
+        assert "unlock_advanced" in result["errors"]
+        assert "Wrong password for the advanced settings!" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_options_unlock_advanced_title_fallback(monkeypatch):
+    """Test unlock_advanced falls back to config_entry.title when unique_id and CONF_NAME are missing."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {}
+    mock_config_entry.unique_id = None
+    mock_config_entry.data = {}  # no CONF_NAME key
+    mock_config_entry.title = "My Pool"
+    flow = make_flow(mock_config_entry)
+
+    with patch("custom_components.vistapool.options_flow.date") as mock_date:
+        mock_today = MagicMock()
+        mock_today.year = 2025
+        mock_date.today.return_value = mock_today
+        # Falls back to slugify("My Pool") == "my_pool"
+        user_input = {"unlock_advanced": "my_pool2025"}
+        flow.async_step_advanced = AsyncMock(return_value="advanced_step_called")
+        result = await flow.async_step_init(user_input=user_input)
+        assert result == "advanced_step_called"
+        flow.async_step_advanced.assert_awaited_once()
+
+
+@pytest.mark.asyncio
 async def test_options_already_enabled():
     """Test already_enabled creates entry directly."""
     mock_config_entry = MagicMock()

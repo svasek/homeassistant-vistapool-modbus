@@ -481,3 +481,20 @@ def test_is_hydrolysis_in_percent_missing_visual_style():
         "MBF_PAR_UICFG_MACHINE": 1,  # HIDROLIFE
     }
     assert is_hydrolysis_in_percent(data) is False
+
+
+def test_is_hydrolysis_in_percent_none_values():
+    """Test is_hydrolysis_in_percent when Modbus populates keys with None (get_safe IndexError)."""
+    # Both keys present but explicitly None — must not raise TypeError
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": None,
+        "MBF_PAR_UICFG_MACHINE": None,
+    }
+    assert is_hydrolysis_in_percent(data) is True  # falls through to default True
+
+    # Only visual_style is None, machine is HIDROLIFE → g/h
+    data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": None,
+        "MBF_PAR_UICFG_MACHINE": 1,  # HIDROLIFE
+    }
+    assert is_hydrolysis_in_percent(data) is False

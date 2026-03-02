@@ -74,9 +74,10 @@ def test_async_get_options_flow(monkeypatch):
         pass
 
     class DummyOptionsFlow:
-        def __init__(self, config_entry):
+        """Mirrors the new OptionsFlow API: no config_entry injected via __init__."""
+
+        def __init__(self):
             self.called = True
-            self.config_entry = config_entry
 
     # Patch import ve funkci
     monkeypatch.setattr(
@@ -86,7 +87,7 @@ def test_async_get_options_flow(monkeypatch):
     config_entry = DummyConfigEntry()
     handler = config_flow.VistaPoolConfigFlow.async_get_options_flow(config_entry)
     assert isinstance(handler, DummyOptionsFlow)
-    assert handler.config_entry is config_entry
+    assert handler.called is True
 
 
 @pytest.mark.asyncio

@@ -54,7 +54,21 @@ def test_native_value_none(mock_coordinator):
 def test_suggested_display_precision(mock_coordinator):
     props = make_props()
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_HIDRO", props)
+
+    # Percent mode -> precision 0
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x4000,  # force percentage bit
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
     assert ent.suggested_display_precision == 0
+
+    # g/h mode -> precision 1
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x2000,  # force g/h bit
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert ent.suggested_display_precision == 1
+
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_HEATING_TEMP", props)
     assert ent.suggested_display_precision == 0
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
@@ -111,7 +125,31 @@ def test_native_max_value_dynamic(mock_coordinator):
     assert ent.native_max_value == 120.0
 
 
-def test_icon(mock_coordinator):
+def test_native_step_dynamic(mock_coordinator):
+    """Test native_step for MBF_PAR_HIDRO is dynamic: 1.0 in % mode, 0.1 in g/h mode."""
+    props = make_props(step=1.0)
+    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_HIDRO", props)
+
+    # Percent mode -> step 1.0
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x4000,  # force percentage bit
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert ent.native_step == 1.0
+
+    # g/h mode -> step 0.1 (matches 1-decimal precision and scale=10.0)
+    mock_coordinator.data = {
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x2000,  # force g/h bit
+        "MBF_PAR_UICFG_MACHINE": 0,
+    }
+    assert ent.native_step == 0.1
+
+    # Other keys return their static step from props
+    ent_ph = VistaPoolNumber(
+        mock_coordinator, "test_entry", "MBF_PAR_PH1", make_props(step=0.1)
+    )
+    assert ent_ph.native_step == 0.1
+
     props = make_props(icon="mdi:beaker")
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
     assert ent.icon == "mdi:beaker"

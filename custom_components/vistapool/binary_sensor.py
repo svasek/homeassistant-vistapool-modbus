@@ -179,7 +179,7 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         await super().async_added_to_hass()
 
     @property
-    def is_on(self) -> bool:
+    def is_on(self) -> bool | None:
         """Return True if the binary sensor is on."""
         if self._key == "Device Time Out Of Sync":
             return is_device_time_out_of_sync(self.coordinator.data, self.hass)
@@ -189,6 +189,8 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         # HA OPENING: ON = open (uncovered), OFF = closed (covered)
         if self._key == "Pool Cover":
             value = self.coordinator.data.get(self._key)
+            if value is None:
+                return None
             return not bool(value)
 
         # Check if the filtration pump is active

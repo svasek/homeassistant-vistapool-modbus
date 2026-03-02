@@ -18,6 +18,7 @@ import logging
 import voluptuous as vol
 from datetime import date
 from homeassistant import config_entries
+from homeassistant.const import CONF_NAME
 from homeassistant.util import slugify
 from .const import DEFAULT_SCAN_INTERVAL, DEFAULT_TIMER_RESOLUTION
 
@@ -27,8 +28,12 @@ _LOGGER = logging.getLogger(__name__)
 class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
     """Handle options flow for VistaPool integration."""
 
-    def __init__(self, config_entry=None) -> None:
-        """Initialize the options flow handler."""
+    def __init__(self) -> None:
+        """Initialize the options flow handler.
+
+        config_entry is not injected here; it is available as the read-only
+        self.config_entry property provided by the OptionsFlow base class.
+        """
         super().__init__()
         self._base_options = {}
 
@@ -39,7 +44,7 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
         already_enabled = options.get("enable_backwash_option", False)
 
         device_slug = self.config_entry.unique_id or slugify(
-            self.config_entry.data.get("name")
+            self.config_entry.data.get(CONF_NAME) or self.config_entry.title
         )
         expected = f"{device_slug}{date.today().year}"
 
