@@ -85,6 +85,26 @@ def test_framer_rtu_maps_to_rtu():
     assert client._framer == FramerType.RTU
 
 
+def test_framer_normalizes_case_and_whitespace():
+    """Test that modbus_framer values are normalized (stripped/lowercased) before mapping."""
+    for value, expected in [("  TCP  ", FramerType.SOCKET), ("  RTU  ", FramerType.RTU), ("TCP", FramerType.SOCKET), ("RTU", FramerType.RTU)]:
+        client = vistapool_modbus.VistaPoolModbusClient(
+            {"host": "127.0.0.1", "port": 502, "slave_id": 1, "modbus_framer": value}
+        )
+        assert client._framer == expected, f"Expected {expected} for input {value!r}"
+
+
+def test_framer_unknown_value_falls_back_to_socket_with_warning(caplog):
+    """Test that an unknown modbus_framer value falls back to FramerType.SOCKET and logs a warning."""
+    import logging
+    with caplog.at_level(logging.WARNING, logger="custom_components.vistapool.modbus"):
+        client = vistapool_modbus.VistaPoolModbusClient(
+            {"host": "127.0.0.1", "port": 502, "slave_id": 1, "modbus_framer": "invalid"}
+        )
+    assert client._framer == FramerType.SOCKET
+    assert "Unknown modbus_framer value 'invalid'" in caplog.text
+
+
 @pytest.mark.asyncio
 async def test_establish_connection_passes_framer_to_client():
     """Test that _establish_connection_with_retry passes correct framer to AsyncModbusTcpClient."""
