@@ -16,6 +16,7 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from custom_components.vistapool import config_flow
+from custom_components.vistapool.const import DEFAULT_PORT
 
 
 @pytest.mark.asyncio
@@ -38,7 +39,7 @@ async def test_create_entry_success():
     flow = config_flow.VistaPoolConfigFlow()
     user_input = {
         "host": "192.168.1.100",
-        "port": 8899,
+        "port": DEFAULT_PORT,
         "slave_id": 1,
         "name": "Test Pool",
     }
@@ -50,7 +51,7 @@ async def test_create_entry_success():
         assert result["type"] == "create_entry"
         assert result["title"] == "Test Pool"
         assert result["data"]["host"] == "192.168.1.100"
-        assert result["data"]["port"] == 8899
+        assert result["data"]["port"] == DEFAULT_PORT
 
 
 @pytest.mark.asyncio
@@ -59,7 +60,7 @@ async def test_create_entry_with_rtu_framer():
     flow = config_flow.VistaPoolConfigFlow()
     user_input = {
         "host": "192.168.1.100",
-        "port": 502,
+        "port": DEFAULT_PORT,
         "slave_id": 1,
         "name": "Test Pool RTU",
         "modbus_framer": "rtu",
@@ -78,7 +79,7 @@ async def test_create_entry_failure():
     flow = config_flow.VistaPoolConfigFlow()
     user_input = {
         "host": "192.168.1.100",
-        "port": 8899,
+        "port": DEFAULT_PORT,
         "slave_id": 1,
         "name": "Test Pool",
     }
@@ -135,7 +136,7 @@ async def test_is_host_port_open_success(monkeypatch):
         return reader, writer
 
     monkeypatch.setattr("asyncio.open_connection", fake_open_connection)
-    result = await config_flow.is_host_port_open("127.0.0.1", 502)
+    result = await config_flow.is_host_port_open("127.0.0.1", DEFAULT_PORT)
     writer.close.assert_called_once()
     writer.wait_closed.assert_awaited_once()
     assert result is True
