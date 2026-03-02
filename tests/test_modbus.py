@@ -17,7 +17,7 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import pytest, asyncio
-from unittest.mock import AsyncMock, patch, call
+from unittest.mock import AsyncMock, patch
 from datetime import datetime, timedelta
 import custom_components.vistapool.modbus as vistapool_modbus
 from pymodbus.framer import FramerType
