@@ -179,7 +179,7 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
         await super().async_added_to_hass()
 
     @property
-    def is_on(self) -> bool:
+    def is_on(self) -> bool | None:
         """Return True if the binary sensor is on."""
         if self._key == "Device Time Out Of Sync":
             return is_device_time_out_of_sync(self.coordinator.data, self.hass)
