@@ -28,6 +28,8 @@ async def test_show_user_form_on_init():
     schema = result["data_schema"]
     assert "host" in str(schema)
     assert "port" in str(schema)
+    assert "slave_id" in str(schema)
+    assert "name" in str(schema)
     assert "modbus_framer" in str(schema)
 
 
