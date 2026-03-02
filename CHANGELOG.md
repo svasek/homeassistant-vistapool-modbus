@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.15.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.14.0...v1.15.0) (2026-03-02)
+
+
+### Features
+
+* ✨ add Modbus framer selection (TCP vs RTU over TCP) ([#70](https://github.com/svasek/homeassistant-vistapool-modbus/issues/70)) ([ed6a845](https://github.com/svasek/homeassistant-vistapool-modbus/commit/ed6a84542dd9be47e94a883ea80159e8dde7e52d))
+
+
+### Bug Fixes
+
+* 🐛 address Copilot code review findings from previous PRs ([#71](https://github.com/svasek/homeassistant-vistapool-modbus/issues/71)) ([4b21c37](https://github.com/svasek/homeassistant-vistapool-modbus/commit/4b21c37dcbcb2b32eb0a9fa12b8bf8d17f562eeb))
+
 ## [1.14.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.13.2...v1.14.0) (2026-03-01)
 
 
