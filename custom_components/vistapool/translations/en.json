@@ -10,6 +10,7 @@
           "port": "TCP port for Modbus (default: 502).",
           "scan_interval": "Data update interval (seconds)",
           "slave_id": "Modbus device address (default: 1).",
+          "modbus_framer": "Protocol framing: 'tcp' = Modbus TCP (MBAP header, for gateways with conversion), 'rtu' = RTU over TCP (for transparent TCP gateways)",
           "use_filtration1": "Enable 1st filtration timer for automatic mode",
           "use_filtration2": "Enable 2nd filtration timer for automatic mode",
           "use_filtration3": "Enable 3rd filtration timer for automatic mode",

@@ -10,6 +10,7 @@
           "port": "TCP port pro Modbus (výchozí: 502).",
           "scan_interval": "Interval aktualizace dat (v sekundách)",
           "slave_id": "Modbus Adresa zařízení (výchozí: 1).",
+          "modbus_framer": "Rámování protokolu: 'tcp' = Modbus TCP (MBAP header, pro TCP brány s konverzí), 'rtu' = RTU přes TCP (pro transparentní TCP brány)",
           "use_filtration1": "Povolit 1. časovač filtrace pro automatický režim",
           "use_filtration2": "Povolit 2. časovač filtrace pro automatický režim",
           "use_filtration3": "Povolit 3. časovač filtrace pro automatický režim",

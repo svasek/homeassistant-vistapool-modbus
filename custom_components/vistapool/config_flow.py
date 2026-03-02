@@ -18,7 +18,13 @@ import asyncio
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
-from .const import DOMAIN, DEFAULT_PORT, DEFAULT_SLAVE_ID, DEFAULT_SCAN_INTERVAL
+from .const import (
+    DOMAIN,
+    DEFAULT_PORT,
+    DEFAULT_SLAVE_ID,
+    DEFAULT_SCAN_INTERVAL,
+    DEFAULT_MODBUS_FRAMER,
+)
 
 
 async def is_host_port_open(host, port, timeout=3):
@@ -46,6 +52,10 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_HOST): str,
                 vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
                 vol.Optional("slave_id", default=DEFAULT_SLAVE_ID): int,
+                vol.Optional(
+                    "modbus_framer",
+                    default=DEFAULT_MODBUS_FRAMER,
+                ): vol.In(["tcp", "rtu"]),
                 vol.Optional(
                     "scan_interval",
                     default=DEFAULT_SCAN_INTERVAL,
