@@ -104,7 +104,6 @@ SENSOR_DEFINITIONS = {
     },
     "MBF_MEASURE_PH": {
         "name": "pH Level",
-        "unit": "pH",
         "device_class": SensorDeviceClass.PH,
         "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:ph",
@@ -466,7 +465,6 @@ NUMBER_DEFINITIONS = {
     },
     "MBF_PAR_PH1": {
         "name": "pH Max Limit",
-        "unit": "pH",
         "min": 5.0,
         "max": 9.0,
         "step": 0.1,
@@ -477,7 +475,6 @@ NUMBER_DEFINITIONS = {
     },
     "MBF_PAR_PH2": {
         "name": "pH Min Limit",
-        "unit": "pH",
         "min": 5.0,
         "max": 9.0,
         "step": 0.1,
