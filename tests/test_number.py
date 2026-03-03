@@ -286,6 +286,7 @@ async def test_number_async_setup_entry_adds_entities(monkeypatch):
         # Simulate all relays assigned
         data = {
             "MBF_PAR_HEATING_GPIO": True,
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
             "MBF_PAR_PH_ACID_RELAY_GPIO": True,
             "MBF_PAR_PH_BASE_RELAY_GPIO": True,
             "Redox measurement module detected": True,

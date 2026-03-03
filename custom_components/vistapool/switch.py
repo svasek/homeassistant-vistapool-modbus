@@ -49,12 +49,23 @@ async def async_setup_entry(
         if key == "MBF_PAR_CLIMA_ONOFF":
             if (
                 not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
             ):
                 continue
         # Skip smart antifreeze if temperature sensor not active
         if key == "MBF_PAR_SMART_ANTI_FREEZE":
-            if coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
+            if coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0:
+                continue
+        # Cover reduction switch only visible when hydrolysis module present
+        if key == "MBF_PAR_HIDRO_COVER_ENABLE":
+            if not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM")):
+                continue
+        # Temperature shutdown switch needs hydrolysis module + active temperature sensor
+        if key == "MBF_PAR_HIDRO_TEMP_SHUTDOWN":
+            if (
+                not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM"))
+                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
+            ):
                 continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))
