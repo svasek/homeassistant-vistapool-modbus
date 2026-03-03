@@ -447,3 +447,86 @@ def test_icon_fallback_attr_icon(mock_coordinator):
     props = make_props(icon="mdi:test")
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "foo", props)
     assert ent.icon == "mdi:test"
+
+
+# --- Bitmask switch tests ---
+
+
+@pytest.mark.asyncio
+async def test_turn_on_bitmask(mock_coordinator):
+    """Turning ON a bitmask switch ORs the mask bit into the current register value."""
+    props = make_props(
+        switch_type="bitmask",
+        function_addr=0x042C,
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_ENABLE", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0002}  # bit1 already set
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    # Expected: 0x0002 | 0x0001 = 0x0003
+    ent.coordinator.client.async_write_register.assert_awaited_with(
+        0x042C, 0x0003, apply=True
+    )
+
+
+@pytest.mark.asyncio
+async def test_turn_off_bitmask(mock_coordinator):
+    """Turning OFF a bitmask switch AND-NOTs the mask bit from the current register value."""
+    props = make_props(
+        switch_type="bitmask",
+        function_addr=0x042C,
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_ENABLE", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0003}  # both bits set
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    # Expected: 0x0003 & ~0x0001 = 0x0002
+    ent.coordinator.client.async_write_register.assert_awaited_with(
+        0x042C, 0x0002, apply=True
+    )
+
+
+def test_is_on_bitmask(mock_coordinator):
+    """is_on returns True when the mask bit is set in the register value."""
+    props = make_props(
+        switch_type="bitmask",
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_ENABLE", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0001}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0002}
+    assert ent.is_on is False
+    mock_coordinator.data = {}  # missing key -> defaults to 0
+    assert ent.is_on is False
+
+
+def test_is_on_bitmask_second_bit(mock_coordinator):
+    """is_on works for bit 1 (temperature shutdown flag)."""
+    props = make_props(
+        switch_type="bitmask",
+        mask_bit=0x0002,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_TEMP_SHUTDOWN", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0003}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0001}
+    assert ent.is_on is False
