@@ -10,6 +10,7 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![codecov](https://codecov.io/github/svasek/homeassistant-vistapool-modbus/graph/badge.svg?token=44MRDJIHJ9)](https://app.codecov.io/github/svasek/homeassistant-vistapool-modbus?displayType=list)
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/svasek/homeassistant-vistapool-modbus/2-getting-started)
 [![Sponsor me](https://img.shields.io/badge/sponsor-❤-brightgreen?style=flat)](https://github.com/sponsors/svasek)
 [![Ko-fi](https://img.shields.io/badge/ko--fi-support-29abe0?style=flat&logo=ko-fi)](https://ko-fi.com/svasek)
 
