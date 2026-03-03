@@ -165,7 +165,9 @@
       "cl1": { "name": "Setpoint chloru" },
       "heating_temp": { "name": "Požadovaná teplota" },
       "smart_temp_high": { "name": "Smart: horní teplota" },
-      "smart_temp_low": { "name": "Smart: spodní teplota" }
+      "smart_temp_low": { "name": "Smart: spodní teplota" },
+      "hidro_cover_reduction": { "name": "Snížení produkce při zakrytí" },
+      "hidro_shutdown_temperature": { "name": "Teplotní práh vyp. elektrolýzy" }
     },
     "switch": {
       "filt_manual_state": { "name": "Manuální filtrace" },
@@ -175,7 +177,9 @@
       "aux1": { "name": "Pomocné relé Aux1" },
       "aux2": { "name": "Pomocné relé Aux2" },
       "aux3": { "name": "Pomocné relé Aux3" },
-      "aux4": { "name": "Pomocné relé Aux4" }
+      "aux4": { "name": "Pomocné relé Aux4" },
+      "hidro_cover_enable": { "name": "Snížení produkce při zakrytí" },
+      "hidro_temp_shutdown": { "name": "Teplotní práh vyp. elektrolýzy" }
     },
     "light": {
       "light": { "name": "Osvětlení bazénu" }

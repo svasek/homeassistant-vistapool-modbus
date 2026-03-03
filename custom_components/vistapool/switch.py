@@ -89,6 +89,10 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         self.function_addr = props.get("function_addr") or None
         self.function_code = props.get("function_code") or None
 
+        # Initialize properties for bitmask switches
+        self._mask_bit = props.get("mask_bit") or None
+        self._data_key = props.get("data_key") or self._key
+
         _LOGGER.debug(
             f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
         )
@@ -125,6 +129,14 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
                 f"Setting smart antifreeze ON via register 0x{self.function_addr:04X}"
             )
             await client.async_write_register(self.function_addr, 1)
+        elif self._switch_type == "bitmask":
+            current = int(self.coordinator.data.get(self._data_key, 0) or 0)
+            new_value = current | self._mask_bit
+            _LOGGER.debug(
+                f"Bitmask ON {self._key}: reg=0x{self.function_addr:04X} "
+                f"mask=0x{self._mask_bit:04X} current={current} new={new_value}"
+            )
+            await client.async_write_register(self.function_addr, new_value, apply=True)
 
         # Run a refresh to update the state
         await asyncio.sleep(1.0)
@@ -160,6 +172,14 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
                 f"Setting smart antifreeze OFF via register 0x{self.function_addr:04X}"
             )
             await client.async_write_register(self.function_addr, 0)
+        elif self._switch_type == "bitmask":
+            current = int(self.coordinator.data.get(self._data_key, 0) or 0)
+            new_value = current & ~self._mask_bit
+            _LOGGER.debug(
+                f"Bitmask OFF {self._key}: reg=0x{self.function_addr:04X} "
+                f"mask=0x{self._mask_bit:04X} current={current} new={new_value}"
+            )
+            await client.async_write_register(self.function_addr, new_value, apply=True)
 
         # Run a refresh to update the state
         await asyncio.sleep(0.1)
@@ -193,6 +213,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             return bool(self.coordinator.data.get("MBF_PAR_CLIMA_ONOFF", 0))
         elif self._switch_type == "smart_anti_freeze":
             return bool(self.coordinator.data.get("MBF_PAR_SMART_ANTI_FREEZE", 0))
+        elif self._switch_type == "bitmask":
+            raw = int(self.coordinator.data.get(self._data_key, 0) or 0)
+            return bool(raw & self._mask_bit)
         return False
 
     @property

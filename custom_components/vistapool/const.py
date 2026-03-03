@@ -545,6 +545,36 @@ NUMBER_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "icon": "mdi:thermometer-chevron-down",
     },
+    "MBF_PAR_HIDRO_COVER_REDUCTION": {
+        "name": "Hydrolysis Cover Reduction Percentage",
+        "unit": "%",
+        "min": 0.0,
+        "max": 100.0,
+        "step": 1.0,
+        "register": 0x042D,  # MBF_PAR_HIDRO_COVER_REDUCTION
+        "data_key": "MBF_PAR_HIDRO_COVER_REDUCTION",  # coordinator data key (combined register)
+        "mask": 0x00FF,
+        "shift": 0,
+        "scale": 1.0,
+        "device_class": None,
+        "entity_category": EntityCategory.CONFIG,
+        "icon": "mdi:pool",
+    },
+    "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE": {
+        "name": "Hydrolysis Shutdown Temperature",
+        "unit": "°C",
+        "min": 1.0,
+        "max": 40.0,
+        "step": 1.0,
+        "register": 0x042D,  # MBF_PAR_HIDRO_COVER_REDUCTION (upper byte)
+        "data_key": "MBF_PAR_HIDRO_COVER_REDUCTION",  # coordinator data key (combined register)
+        "mask": 0xFF00,
+        "shift": 8,
+        "scale": 1.0,
+        "device_class": NumberDeviceClass.TEMPERATURE,
+        "entity_category": EntityCategory.CONFIG,
+        "icon": "mdi:thermometer-alert",
+    },
 }
 
 BUTTON_DEFINITIONS = {
@@ -985,6 +1015,26 @@ SWITCH_DEFINITIONS = {
         "function_addr": 0x041A,
         "entity_category": EntityCategory.CONFIG,
         "switch_type": "smart_anti_freeze",
+    },
+    "MBF_PAR_HIDRO_COVER_ENABLE": {
+        "name": "Hydrolysis Cover Reduction",
+        "icon_on": "mdi:pool",
+        "icon_off": "mdi:pool-thermometer",
+        "function_addr": 0x042C,
+        "mask_bit": 0x0001,
+        "data_key": "MBF_PAR_HIDRO_COVER_ENABLE",
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "bitmask",
+    },
+    "MBF_PAR_HIDRO_TEMP_SHUTDOWN": {
+        "name": "Hydrolysis Temperature Shutdown",
+        "icon_on": "mdi:thermometer-alert",
+        "icon_off": "mdi:thermometer-off",
+        "function_addr": 0x042C,
+        "mask_bit": 0x0002,
+        "data_key": "MBF_PAR_HIDRO_COVER_ENABLE",
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "bitmask",
     },
     "aux1": {
         "name": "Auxiliary Relay 1",

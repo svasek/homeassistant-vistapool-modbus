@@ -165,7 +165,9 @@
       "cl1": { "name": "Docelowa wartość chloru" },
       "heating_temp": { "name": "Docelowa wartość temperatury" },
       "smart_temp_high": { "name": "Smart: górna temperatura" },
-      "smart_temp_low": { "name": "Smart: dolna temperatura" }
+      "smart_temp_low": { "name": "Smart: dolna temperatura" },
+      "hidro_cover_reduction": { "name": "Redukcja produkcji przy przykryciu" },
+      "hidro_shutdown_temperature": { "name": "Próg temp. wyłączenia elektrolizy" }
     },
     "switch": {
       "filt_manual_state": { "name": "Filtracja ręczna" },
@@ -175,7 +177,9 @@
       "aux1": { "name": "Przekaźnik pomocniczy Aux1" },
       "aux2": { "name": "Przekaźnik pomocniczy Aux2" },
       "aux3": { "name": "Przekaźnik pomocniczy Aux3" },
-      "aux4": { "name": "Przekaźnik pomocniczy Aux4" }
+      "aux4": { "name": "Przekaźnik pomocniczy Aux4" },
+      "hidro_cover_enable": { "name": "Redukcja produkcji przy przykryciu" },
+      "hidro_temp_shutdown": { "name": "Próg temp. wyłączenia elektrolizy" }
     },
     "light": {
       "pool_light": { "name": "Oświetlenie basenu" }
