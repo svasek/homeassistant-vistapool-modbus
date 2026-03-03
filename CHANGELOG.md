@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.15.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.15.0...v1.15.1) (2026-03-03)
+
+
+### Bug Fixes
+
+* ⏪ revert invalid 'pH' unit from pH entities ([44027b8](https://github.com/svasek/homeassistant-vistapool-modbus/commit/44027b8aede5f77e4f34a7e16f32a08dcef13ba1)), closes [#60](https://github.com/svasek/homeassistant-vistapool-modbus/issues/60) [#59](https://github.com/svasek/homeassistant-vistapool-modbus/issues/59)
+
 ## [1.15.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.14.0...v1.15.0) (2026-03-02)
 
 
