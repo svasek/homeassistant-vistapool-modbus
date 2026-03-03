@@ -380,3 +380,93 @@ async def test_dev_overrides_invalid_json_ignored(mock_entry):
     assert data.get("X") == 1
     assert "MBF_PAR_CLIMA_ONOFF" not in data
     assert "MBF_PAR_MODEL" not in data
+
+
+# ---------------------------------------------------------------------------
+# Winter mode tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_winter_mode_returns_empty_dict_when_no_cached_data(mock_entry):
+    """Winter mode with no previous data returns empty dict without calling Modbus."""
+    mock_entry.options = {"winter_mode": True}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock()
+    client.read_all_timers = AsyncMock()
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    coordinator.data = None  # no cached data yet
+
+    with patch("custom_components.vistapool.coordinator._LOGGER") as mock_logger:
+        data = await coordinator._async_update_data()
+
+    # Must not touch Modbus at all
+    client.async_read_all.assert_not_called()
+    client.read_all_timers.assert_not_called()
+    assert data == {}
+    assert mock_logger.debug.called
+
+
+@pytest.mark.asyncio
+async def test_winter_mode_returns_frozen_cached_data(mock_entry):
+    """Winter mode with existing cached data returns that data unchanged."""
+    mock_entry.options = {"winter_mode": True}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock()
+    client.read_all_timers = AsyncMock()
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    cached = {"MBF_PAR_FILT_MODE": 1, "MBF_PAR_TEMPERATURE_ACTIVE": 1}
+    coordinator.data = cached
+
+    data = await coordinator._async_update_data()
+
+    client.async_read_all.assert_not_called()
+    assert data is cached  # same object – not a copy, frozen in place
+
+
+@pytest.mark.asyncio
+async def test_winter_mode_disabled_resumes_modbus(mock_entry):
+    """When winter_mode is False the coordinator communicates normally."""
+    mock_entry.options = {"winter_mode": False}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(return_value={"MBF_POWER_MODULE_VERSION": 0x0100})
+    client.read_all_timers = AsyncMock(return_value={})
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+
+    data = await coordinator._async_update_data()
+
+    client.async_read_all.assert_called_once()
+    assert "MBF_POWER_MODULE_VERSION" in data
+
+
+@pytest.mark.asyncio
+async def test_set_winter_mode(mock_entry):
+    """set_winter_mode persists state on the coordinator and calls async_update_entry."""
+    hass = MagicMock()
+    hass.config_entries.async_update_entry = MagicMock()
+    coordinator = VistaPoolCoordinator(
+        hass, MagicMock(), mock_entry, mock_entry.entry_id
+    )
+    assert coordinator.winter_mode is False
+
+    await coordinator.set_winter_mode(True)
+    assert coordinator.winter_mode is True
+    options_saved = hass.config_entries.async_update_entry.call_args[1]["options"]
+    assert options_saved["winter_mode"] is True
+
+    await coordinator.set_winter_mode(False)
+    assert coordinator.winter_mode is False
+    options_saved = hass.config_entries.async_update_entry.call_args[1]["options"]
+    assert options_saved["winter_mode"] is False

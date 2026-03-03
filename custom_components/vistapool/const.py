@@ -955,6 +955,13 @@ SELECT_DEFINITIONS = {
 }
 
 SWITCH_DEFINITIONS = {
+    "WINTER_MODE": {
+        "name": "Winter Mode",
+        "icon_on": "mdi:snowflake",
+        "icon_off": "mdi:weather-sunny",
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "winter_mode",
+    },
     "TIME_AUTO_SYNC": {
         "name": "Automatic Time Sync",
         "icon": "mdi:home-clock-outline",

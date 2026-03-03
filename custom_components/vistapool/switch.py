@@ -106,6 +106,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_aux_relay(self._relay_index, True)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(True)
+        elif self._switch_type == "winter_mode":
+            await self.coordinator.set_winter_mode(True)
         elif self._switch_type == "relay_timer":
             _LOGGER.debug(
                 f"Turning ON relay {self._key}: function_addr=0x{self.function_addr:04X}, timer_block_addr=0x{self.timer_block_addr:04X}"
@@ -144,6 +146,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_aux_relay(self._relay_index, False)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(False)
+        elif self._switch_type == "winter_mode":
+            await self.coordinator.set_winter_mode(False)
         elif self._switch_type == "relay_timer":
             _LOGGER.debug(
                 f"Turning OFF relay {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}"
@@ -184,6 +188,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             return bool(self.coordinator.data.get(self._key, False))
         elif self._switch_type == "auto_time_sync":
             return getattr(self.coordinator, "auto_time_sync", False)
+        elif self._switch_type == "winter_mode":
+            return getattr(self.coordinator, "winter_mode", False)
         elif self._switch_type == "timer_enable":
             return bool(self.coordinator.data.get(self._key, 0))
         elif self._switch_type == "relay_timer":

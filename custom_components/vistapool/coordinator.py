@@ -62,10 +62,16 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         self.entry_id = entry_id
         self.device_name = entry.data.get(CONF_NAME, DOMAIN)
         self.auto_time_sync = self.entry.options.get("auto_time_sync", False)
+        self.winter_mode = self.entry.options.get("winter_mode", False)
         self._firmware = "?"
         self._model = "Unknown"
 
     async def _async_update_data(self):
+        # Winter mode: skip all Modbus communication and return frozen last-known data
+        if self.winter_mode:
+            _LOGGER.debug("Winter mode active – skipping Modbus communication")
+            return self.data if self.data is not None else {}
+
         try:
             data = await self.client.async_read_all()
             self._consecutive_errors = 0
@@ -244,6 +250,12 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         # when fetching data
         options = dict(self.entry.options)
         options["auto_time_sync"] = enabled
+        self.hass.config_entries.async_update_entry(self.entry, options=options)
+
+    async def set_winter_mode(self, enabled: bool):
+        self.winter_mode = enabled
+        options = dict(self.entry.options)
+        options["winter_mode"] = enabled
         self.hass.config_entries.async_update_entry(self.entry, options=options)
 
     @property

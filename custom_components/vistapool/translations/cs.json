@@ -168,6 +168,7 @@
       "smart_temp_low": { "name": "Smart: spodní teplota" }
     },
     "switch": {
+      "winter_mode": { "name": "Zimní režim" },
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
       "clima_onoff": { "name": "Režim klimatizace pro ohřev" },

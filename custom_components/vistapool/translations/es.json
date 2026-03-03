@@ -168,6 +168,7 @@
       "smart_temp_low": { "name": "Smart: temperatura inferior" }
     },
     "switch": {
+      "winter_mode": { "name": "Modo invierno" },
       "filt_manual_state": { "name": "Filtración manual" },
       "time_auto_sync": { "name": "Sincronización automática de hora" },
       "clima_onoff": { "name": "Modo clima para calefacción" },

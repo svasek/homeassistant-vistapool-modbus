@@ -447,3 +447,40 @@ def test_icon_fallback_attr_icon(mock_coordinator):
     props = make_props(icon="mdi:test")
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "foo", props)
     assert ent.icon == "mdi:test"
+
+
+# --- Winter mode switch tests ---
+
+
+@pytest.mark.asyncio
+async def test_turn_on_winter_mode(mock_coordinator):
+    """Turning ON the winter_mode switch calls coordinator.set_winter_mode(True)."""
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    ent.coordinator.set_winter_mode = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.set_winter_mode.assert_awaited_with(True)
+
+
+@pytest.mark.asyncio
+async def test_turn_off_winter_mode(mock_coordinator):
+    """Turning OFF the winter_mode switch calls coordinator.set_winter_mode(False)."""
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    ent.coordinator.set_winter_mode = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    ent.coordinator.set_winter_mode.assert_awaited_with(False)
+
+
+def test_is_on_winter_mode(mock_coordinator):
+    """is_on reflects coordinator.winter_mode attribute."""
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    mock_coordinator.winter_mode = True
+    assert ent.is_on is True
+    mock_coordinator.winter_mode = False
+    assert ent.is_on is False
