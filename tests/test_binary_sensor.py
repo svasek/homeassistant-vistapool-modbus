@@ -80,14 +80,14 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_async_setup_entry_no_data(monkeypatch, caplog):
-    """Test async_setup_entry returns early if coordinator.data is empty."""
+    """Test async_setup_entry returns early if coordinator.data is None."""
 
     class DummyEntry:
         entry_id = "test_entry"
         options = {}
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 

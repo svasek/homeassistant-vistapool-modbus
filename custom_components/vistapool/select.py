@@ -42,7 +42,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     entry_id = entry.entry_id
     entities = []
 
-    if not coordinator.data:
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping select setup!")
         return
 

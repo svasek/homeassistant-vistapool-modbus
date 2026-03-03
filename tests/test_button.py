@@ -98,7 +98,7 @@ async def test_button_async_setup_entry_no_data(monkeypatch, caplog):
         entry_id = "test_entry"
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 

@@ -380,7 +380,7 @@ async def test_switch_async_setup_entry_no_data(caplog):
         options = {}
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 

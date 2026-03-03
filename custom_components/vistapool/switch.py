@@ -36,7 +36,7 @@ async def async_setup_entry(
 
     entities = []
 
-    if not coordinator.data:
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping switch setup!")
         return
 

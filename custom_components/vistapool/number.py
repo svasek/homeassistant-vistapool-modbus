@@ -43,7 +43,7 @@ async def async_setup_entry(
 
     entities = []
 
-    if not coordinator.data:  # pragma: no cover
+    if coordinator.data is None:  # pragma: no cover
         _LOGGER.warning("No data from Modbus, skipping number setup!")
         return
 
