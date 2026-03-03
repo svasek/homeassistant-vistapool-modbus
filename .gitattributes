@@ -1,1 +1,5 @@
+# Normalize line endings to LF for all text files
 * text=auto eol=lf
+
+# Exclude devcontainer scripts from GitHub language statistics
+.devcontainer/** linguist-vendored=true
