@@ -511,3 +511,13 @@ async def test_turn_off_blocked_during_winter_mode(mock_coordinator):
     mock_coordinator.client.async_write_register = AsyncMock()
     await ent.async_turn_off()
     mock_coordinator.client.async_write_register.assert_not_called()
+
+
+def test_available_returns_false_during_winter_mode(mock_coordinator):
+    """available returns False for non-winter_mode switch when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    assert ent.available is False

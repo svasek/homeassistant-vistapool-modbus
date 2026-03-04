@@ -59,9 +59,6 @@ async def test_async_update_data_uses_cached_on_error(mock_entry):
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(
-    reason="Temporarily disabled – offline testing mode active (raise replaced by return)"
-)
 async def test_async_update_data_raises_ConfigEntryNotReady_on_first_error(mock_entry):
     client = AsyncMock()
     client.async_read_all = AsyncMock(side_effect=Exception("fail"))
