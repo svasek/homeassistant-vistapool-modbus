@@ -42,7 +42,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
     entry_id = entry.entry_id
     entities = []
 
-    if not coordinator.data:
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping select setup!")
         return
 
@@ -59,9 +59,8 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
                 continue
         # Conditionally add Intelligent min. filtration time only if heating relay is assigned
         if key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
-            if (
-                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
 
@@ -109,6 +108,11 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Handle option selection."""
+        if self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring select_option for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
             _LOGGER.error("Modbus client not available for writing registers.")
@@ -325,15 +329,16 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             no_heating_gpio = not bool(
                 self.coordinator.data.get("MBF_PAR_HEATING_GPIO")
             )
-            temp_inactive = self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            temp_inactive = not bool(
+                self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+            )
             if no_heating_gpio or temp_inactive:
                 # Remove keys for "heating" (2) and "intelligent" (4)
                 option_keys = [k for k in option_keys if k not in (2, 4)]
 
         # Hide smart if temperature sensor is not active
-        if (
-            self._key == "MBF_PAR_FILT_MODE"
-            and self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+        if self._key == "MBF_PAR_FILT_MODE" and not bool(
+            self.coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
         ):
             # Remove key for "smart"
             option_keys = [k for k in option_keys if k != 3]

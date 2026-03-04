@@ -36,7 +36,7 @@ async def async_setup_entry(
 
     entities = []
 
-    if not coordinator.data:
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping light setup!")
         return
 
@@ -82,6 +82,11 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the light ON."""
+        if self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring turn_on for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:
             _LOGGER.error("Modbus client not available for writing registers.")
@@ -103,6 +108,11 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the light OFF."""
+        if self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring turn_off for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:
             _LOGGER.error("Modbus client not available for writing registers.")
@@ -137,6 +147,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
     @property
     def available(self) -> bool:
         """Return True if the light is available."""
+        if not super().available:
+            return False
         if self._switch_type == "relay_timer":
             mode_val = self.coordinator.data.get("relay_light_enable", None)
             return mode_val in (0, 3, 4)

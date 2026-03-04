@@ -170,6 +170,7 @@
       "hidro_shutdown_temperature": { "name": "Soglia temp. spegnimento idrolisi" }
     },
     "switch": {
+      "winter_mode": { "name": "Modalità invernale" },
       "filt_manual_state": { "name": "Filtrazione manuale" },
       "time_auto_sync": { "name": "Sincronizzazione orario automatica" },
       "clima_onoff": { "name": "Modalità clima per riscaldamento" },

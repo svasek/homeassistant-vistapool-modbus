@@ -22,6 +22,7 @@ def mock_coordinator():
     mock = MagicMock()
     mock.data = {}
     mock.device_slug = "vistapool"
+    mock.winter_mode = False
     mock.client = AsyncMock()
     mock.async_request_refresh = AsyncMock()
     config_entry = MagicMock()
@@ -98,7 +99,7 @@ async def test_button_async_setup_entry_no_data(monkeypatch, caplog):
         entry_id = "test_entry"
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -111,3 +112,23 @@ async def test_button_async_setup_entry_no_data(monkeypatch, caplog):
         await async_setup_entry(hass, entry, async_add_entities)
         assert "No data from Modbus" in caplog.text
     async_add_entities.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_press_blocked_during_winter_mode(mock_coordinator, caplog):
+    """async_press is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = {"name": "Sync Time", "icon": "mdi:clock"}
+    ent = VistaPoolButton(mock_coordinator, "test_entry", "SYNC_TIME", props)
+    with caplog.at_level("WARNING"):
+        await ent.async_press()
+    mock_coordinator.client.async_write_register.assert_not_called()
+    assert "Winter mode is active" in caplog.text
+
+
+def test_available_false_during_winter_mode(mock_coordinator):
+    """VistaPoolButton is unavailable when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = {"name": "Sync Time", "icon": "mdi:clock"}
+    ent = VistaPoolButton(mock_coordinator, "test_entry", "SYNC_TIME", props)
+    assert ent.available is False

@@ -170,6 +170,7 @@
       "hidro_shutdown_temperature": { "name": "Hydrolyse Abschalttemp.-Schwelle" }
     },
     "switch": {
+      "winter_mode": { "name": "Wintermodus" },
       "filt_manual_state": { "name": "Manuelle Filtration" },
       "time_auto_sync": { "name": "Zeit automatische Synchronisierung" },
       "clima_onoff": { "name": "Klimamodus für Heizung" },

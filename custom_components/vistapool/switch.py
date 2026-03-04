@@ -36,7 +36,7 @@ async def async_setup_entry(
 
     entities = []
 
-    if not coordinator.data:
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping switch setup!")
         return
 
@@ -47,25 +47,13 @@ async def async_setup_entry(
             continue
         # Conditionally add clima mode only if heating relay is assigned
         if key == "MBF_PAR_CLIMA_ONOFF":
-            if (
-                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
         # Skip smart antifreeze if temperature sensor not active
         if key == "MBF_PAR_SMART_ANTI_FREEZE":
-            if coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0:
-                continue
-        # Cover reduction switch only visible when hydrolysis module present
-        if key == "MBF_PAR_HIDRO_COVER_ENABLE":
-            if not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM")):
-                continue
-        # Temperature shutdown switch needs hydrolysis module + active temperature sensor
-        if key == "MBF_PAR_HIDRO_TEMP_SHUTDOWN":
-            if (
-                not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
-            ):
+            if not bool(coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
                 continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))
@@ -90,6 +78,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
         self._switch_type = props.get("switch_type") or None
         self._relay_index = props.get("relay_index") or None
+
+        # The winter_mode switch itself must remain available while winter mode is on
+        if self._switch_type == "winter_mode":
+            self._winter_mode_active = False
+
         self._attr_entity_category = props.get("entity_category") or None
         self._icon_on = props.get("icon_on")
         self._icon_off = props.get("icon_off")
@@ -110,6 +103,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
+        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring turn_on for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
             _LOGGER.error("Modbus client not available for writing registers.")
@@ -121,6 +119,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_aux_relay(self._relay_index, True)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(True)
+        elif self._switch_type == "winter_mode":
+            await self.coordinator.set_winter_mode(True)
         elif self._switch_type == "relay_timer":
             _LOGGER.debug(
                 f"Turning ON relay {self._key}: function_addr=0x{self.function_addr:04X}, timer_block_addr=0x{self.timer_block_addr:04X}"
@@ -149,13 +149,19 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )
             await client.async_write_register(self.function_addr, new_value, apply=True)
 
-        # Run a refresh to update the state
-        await asyncio.sleep(1.0)
+        # Run a refresh to update the state; skip delay for non-IO switch types
+        if self._switch_type not in ("auto_time_sync", "winter_mode"):
+            await asyncio.sleep(1.0)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
+        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring turn_off for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
             _LOGGER.error("Modbus client not available for writing registers.")
@@ -167,6 +173,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             await client.async_write_aux_relay(self._relay_index, False)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(False)
+        elif self._switch_type == "winter_mode":
+            await self.coordinator.set_winter_mode(False)
         elif self._switch_type == "relay_timer":
             _LOGGER.debug(
                 f"Turning OFF relay {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}"
@@ -192,8 +200,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )
             await client.async_write_register(self.function_addr, new_value, apply=True)
 
-        # Run a refresh to update the state
-        await asyncio.sleep(0.1)
+        # Run a refresh to update the state; skip delay for non-IO switch types
+        if self._switch_type not in ("auto_time_sync", "winter_mode"):
+            await asyncio.sleep(0.1)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
@@ -215,6 +224,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             return bool(self.coordinator.data.get(self._key, False))
         elif self._switch_type == "auto_time_sync":
             return getattr(self.coordinator, "auto_time_sync", False)
+        elif self._switch_type == "winter_mode":
+            return getattr(self.coordinator, "winter_mode", False)
         elif self._switch_type == "timer_enable":
             return bool(self.coordinator.data.get(self._key, 0))
         elif self._switch_type == "relay_timer":
@@ -232,6 +243,13 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     @property
     def available(self) -> bool:
         """Return True if the switch is available."""
+        # The winter_mode switch must remain operable even when the coordinator
+        # reports a communication failure – that is precisely the scenario where
+        # the user needs to enable winter mode.
+        if self._switch_type == "winter_mode":
+            return True
+        if not super().available:
+            return False
         if self._switch_type == "manual_filtration":
             return self.coordinator.data.get("MBF_PAR_FILT_MODE") != 1
         if self._switch_type == "relay_timer":

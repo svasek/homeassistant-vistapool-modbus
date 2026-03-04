@@ -58,6 +58,23 @@ EXEC_REGISTER = 0x02F5
 HEATING_SETPOINT_REGISTER = 0x0416  # MBF_PAR_HEATING_TEMP
 INTELLIGENT_SETPOINT_REGISTER = 0x041C  # MBF_PAR_INTELLIGENT_TEMP
 
+# Capability keys that drive entity-creation logic in every platform's async_setup_entry.
+# They are snapshotted when winter mode is enabled and persisted in entry.options so that
+# platforms can set up the correct set of entities after a HA restart in winter mode.
+CAPABILITY_KEYS = (
+    "MBF_PAR_MODEL",
+    "MBF_PAR_TEMPERATURE_ACTIVE",
+    "MBF_PAR_FILTRATION_CONF",
+    "MBF_PAR_HEATING_GPIO",
+    "MBF_PAR_HIDRO_COVER_ENABLE",
+    "MBF_PAR_PH_ACID_RELAY_GPIO",
+    "MBF_PAR_PH_BASE_RELAY_GPIO",
+    "pH measurement module detected",
+    "Redox measurement module detected",
+    "Chlorine measurement module detected",
+    "Conductivity measurement module detected",
+)
+
 PERIOD_MAP = {
     "1_day": 86400,
     "2_days": 2 * 86400,
@@ -104,7 +121,6 @@ SENSOR_DEFINITIONS = {
     },
     "MBF_MEASURE_PH": {
         "name": "pH Level",
-        "unit": "pH",
         "device_class": SensorDeviceClass.PH,
         "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:ph",
@@ -466,7 +482,6 @@ NUMBER_DEFINITIONS = {
     },
     "MBF_PAR_PH1": {
         "name": "pH Max Limit",
-        "unit": "pH",
         "min": 5.0,
         "max": 9.0,
         "step": 0.1,
@@ -477,7 +492,6 @@ NUMBER_DEFINITIONS = {
     },
     "MBF_PAR_PH2": {
         "name": "pH Min Limit",
-        "unit": "pH",
         "min": 5.0,
         "max": 9.0,
         "step": 0.1,
@@ -988,6 +1002,13 @@ SELECT_DEFINITIONS = {
 }
 
 SWITCH_DEFINITIONS = {
+    "WINTER_MODE": {
+        "name": "Winter Mode",
+        "icon_on": "mdi:snowflake",
+        "icon_off": "mdi:weather-sunny",
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "winter_mode",
+    },
     "TIME_AUTO_SYNC": {
         "name": "Automatic Time Sync",
         "icon": "mdi:home-clock-outline",

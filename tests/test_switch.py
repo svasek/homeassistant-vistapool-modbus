@@ -29,6 +29,7 @@ def mock_coordinator():
     mock.data = {}
     mock.device_slug = "vistapool"
     mock.config_entry.entry_id = "test_entry"
+    mock.winter_mode = False
     return mock
 
 
@@ -380,7 +381,7 @@ async def test_switch_async_setup_entry_no_data(caplog):
         options = {}
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -530,3 +531,106 @@ def test_is_on_bitmask_second_bit(mock_coordinator):
     assert ent.is_on is True
     mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0001}
     assert ent.is_on is False
+# --- Winter mode switch tests ---
+
+
+@pytest.mark.asyncio
+async def test_turn_on_winter_mode(mock_coordinator):
+    """Turning ON the winter_mode switch calls coordinator.set_winter_mode(True)."""
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    ent.coordinator.set_winter_mode = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.set_winter_mode.assert_awaited_with(True)
+
+
+@pytest.mark.asyncio
+async def test_turn_off_winter_mode(mock_coordinator):
+    """Turning OFF the winter_mode switch calls coordinator.set_winter_mode(False)."""
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    ent.coordinator.set_winter_mode = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    ent.coordinator.set_winter_mode.assert_awaited_with(False)
+
+
+def test_is_on_winter_mode(mock_coordinator):
+    """is_on reflects coordinator.winter_mode attribute."""
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    mock_coordinator.winter_mode = True
+    assert ent.is_on is True
+    mock_coordinator.winter_mode = False
+    assert ent.is_on is False
+
+
+@pytest.mark.asyncio
+async def test_turn_on_blocked_during_winter_mode(mock_coordinator):
+    """Non-winter_mode switch turn_on is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    mock_coordinator.client.async_write_register = AsyncMock()
+    await ent.async_turn_on()
+    mock_coordinator.client.async_write_register.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_turn_off_blocked_during_winter_mode(mock_coordinator):
+    """Non-winter_mode switch turn_off is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    mock_coordinator.client.async_write_register = AsyncMock()
+    await ent.async_turn_off()
+    mock_coordinator.client.async_write_register.assert_not_called()
+
+
+def test_available_returns_false_during_winter_mode(mock_coordinator):
+    """available returns False for non-winter_mode switch when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    assert ent.available is False
+
+
+def test_available_false_on_coordinator_failure(mock_coordinator):
+    """available returns False when coordinator update fails (winter mode off)."""
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = False
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    assert ent.available is False
+
+
+def test_available_winter_mode_switch_during_winter_mode(mock_coordinator):
+    """The winter_mode switch itself stays available while winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    assert ent.available is True
+
+
+def test_available_winter_mode_switch_during_coordinator_failure(mock_coordinator):
+    """The winter_mode switch stays available even when coordinator.last_update_success is False.
+
+    A Modbus gateway disconnection is exactly the scenario the user needs winter mode for,
+    so the switch must remain operable regardless of coordinator health.
+    """
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = False
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    assert ent.available is True

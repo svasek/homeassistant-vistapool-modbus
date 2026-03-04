@@ -380,3 +380,193 @@ async def test_dev_overrides_invalid_json_ignored(mock_entry):
     assert data.get("X") == 1
     assert "MBF_PAR_CLIMA_ONOFF" not in data
     assert "MBF_PAR_MODEL" not in data
+
+
+# ---------------------------------------------------------------------------
+# Winter mode tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_winter_mode_returns_empty_dict_when_no_cached_data(mock_entry):
+    """Winter mode with no data and no saved capabilities returns {} without calling Modbus."""
+    mock_entry.options = {"winter_mode": True}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock()
+    client.read_all_timers = AsyncMock()
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    coordinator.data = None
+
+    with patch("custom_components.vistapool.coordinator._LOGGER") as mock_logger:
+        data = await coordinator._async_update_data()
+
+    client.async_read_all.assert_not_called()
+    assert data == {}
+    assert mock_logger.debug.called
+
+
+@pytest.mark.asyncio
+async def test_winter_mode_returns_frozen_cached_data(mock_entry):
+    """Winter mode with existing cached data returns that data unchanged."""
+    mock_entry.options = {"winter_mode": True}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock()
+    client.read_all_timers = AsyncMock()
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    cached = {"MBF_PAR_FILT_MODE": 1, "MBF_PAR_TEMPERATURE_ACTIVE": 1}
+    coordinator.data = cached
+
+    data = await coordinator._async_update_data()
+
+    client.async_read_all.assert_not_called()
+    assert data is cached  # same object – not a copy, frozen in place
+
+
+@pytest.mark.asyncio
+async def test_winter_mode_disabled_resumes_modbus(mock_entry):
+    """When winter_mode is False the coordinator communicates normally."""
+    mock_entry.options = {"winter_mode": False}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(return_value={"MBF_POWER_MODULE_VERSION": 0x0100})
+    client.read_all_timers = AsyncMock(return_value={})
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+
+    data = await coordinator._async_update_data()
+
+    client.async_read_all.assert_called_once()
+    assert "MBF_POWER_MODULE_VERSION" in data
+
+
+@pytest.mark.asyncio
+async def test_set_winter_mode(mock_entry):
+    """set_winter_mode persists state, clears data on enable, skips clear on disable."""
+    hass = MagicMock()
+    hass.config_entries.async_update_entry = MagicMock()
+    coordinator = VistaPoolCoordinator(
+        hass, MagicMock(), mock_entry, mock_entry.entry_id
+    )
+    coordinator.async_set_updated_data = MagicMock()
+    assert coordinator.winter_mode is False
+
+    # Enable: data is replaced with the capability snapshot immediately
+    coordinator.data = {"MBF_PAR_FILT_MODE": 0}  # no CAPABILITY_KEYS → snapshot is {}
+    await coordinator.set_winter_mode(True)
+    assert coordinator.winter_mode is True
+    options_saved = hass.config_entries.async_update_entry.call_args[1]["options"]
+    assert options_saved["winter_mode"] is True
+    assert "_capabilities" in options_saved
+    assert options_saved["_capabilities"] == {}
+    coordinator.async_set_updated_data.assert_called_once_with({})
+
+    # Disable: no data clear
+    coordinator.async_set_updated_data.reset_mock()
+    await coordinator.set_winter_mode(False)
+    assert coordinator.winter_mode is False
+    options_saved = hass.config_entries.async_update_entry.call_args[1]["options"]
+    assert options_saved["winter_mode"] is False
+    coordinator.async_set_updated_data.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_set_winter_mode_snapshots_capability_keys(mock_entry):
+    """set_winter_mode(True) extracts only CAPABILITY_KEYS from data and persists them."""
+    from custom_components.vistapool.const import CAPABILITY_KEYS
+
+    hass = MagicMock()
+    options_saved = {}
+    hass.config_entries.async_update_entry = MagicMock(
+        side_effect=lambda entry, **kw: options_saved.update(kw.get("options", {}))
+    )
+    coordinator = VistaPoolCoordinator(
+        hass, MagicMock(), mock_entry, mock_entry.entry_id
+    )
+    coordinator.async_set_updated_data = MagicMock()
+
+    # Simulate full coordinator data: capability keys + measurement registers
+    coordinator.data = {
+        "MBF_PAR_MODEL": 3,
+        "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+        "MBF_PAR_HEATING_GPIO": 5,
+        "MBF_MEASURE_TEMPERATURE": 27.5,  # measurement – must NOT be in snapshot
+        "MBF_PAR_FILT_MODE": 2,  # runtime value – must NOT be in snapshot
+    }
+
+    await coordinator.set_winter_mode(True)
+
+    saved_caps = options_saved["_capabilities"]
+    # Capability keys present in data must appear in the snapshot
+    assert saved_caps["MBF_PAR_MODEL"] == 3
+    assert saved_caps["MBF_PAR_TEMPERATURE_ACTIVE"] == 1
+    assert saved_caps["MBF_PAR_HEATING_GPIO"] == 5
+    # All saved keys must be real CAPABILITY_KEYS
+    for key in saved_caps:
+        assert key in CAPABILITY_KEYS
+    # Non-capability measurement values must be excluded
+    assert "MBF_MEASURE_TEMPERATURE" not in saved_caps
+    assert "MBF_PAR_FILT_MODE" not in saved_caps
+    # async_set_updated_data must be called with the capability snapshot (not {})
+    coordinator.async_set_updated_data.assert_called_once_with(saved_caps)
+
+
+@pytest.mark.asyncio
+async def test_winter_mode_restores_capabilities_from_options_on_restart(mock_entry):
+    """After a restart in winter mode, _capability_snapshot is loaded from entry.options."""
+    saved_caps = {"MBF_PAR_MODEL": 3, "MBF_PAR_TEMPERATURE_ACTIVE": 1}
+    mock_entry.options = {"winter_mode": True, "_capabilities": saved_caps}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock()
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Simulate the very first _async_update_data call after restart (data is None)
+    coordinator.data = None
+
+    data = await coordinator._async_update_data()
+
+    client.async_read_all.assert_not_called()
+    assert data == saved_caps
+    assert data["MBF_PAR_MODEL"] == 3
+
+
+@pytest.mark.asyncio
+async def test_async_update_data_updates_capability_snapshot(mock_entry):
+    """A successful Modbus read updates _capability_snapshot with the capability keys."""
+    mock_entry.options = {"winter_mode": False}
+
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x0100,
+            "MBF_PAR_MODEL": 2,
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+            "MBF_MEASURE_TEMPERATURE": 26.0,
+        }
+    )
+    client.read_all_timers = AsyncMock(return_value={})
+
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    assert coordinator._capability_snapshot == {}
+
+    await coordinator._async_update_data()
+
+    assert coordinator._capability_snapshot["MBF_PAR_MODEL"] == 2
+    assert coordinator._capability_snapshot["MBF_PAR_TEMPERATURE_ACTIVE"] == 1
+    # Measurement registers must not be included
+    assert "MBF_MEASURE_TEMPERATURE" not in coordinator._capability_snapshot
+    assert "MBF_POWER_MODULE_VERSION" not in coordinator._capability_snapshot

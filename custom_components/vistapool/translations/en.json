@@ -170,6 +170,7 @@
       "hidro_shutdown_temperature": { "name": "Hydrolysis Shutdown Temp. Threshold" }
     },
     "switch": {
+      "winter_mode": { "name": "Winter Mode" },
       "filt_manual_state": { "name": "Manual Filtration" },
       "time_auto_sync": { "name": "Time Auto Sync" },
       "clima_onoff": { "name": "Climate mode for heating" },

@@ -80,7 +80,7 @@ If you find this integration useful, consider supporting its development:
 - **Numbers**:
   Setpoints for pH, Redox, Chlorine, Temperature, Hydrolysis production.
 - **Switches**:
-  Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled).
+  Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled), **winter mode** (suspends Modbus communication while keeping all entities registered in Home Assistant).
 - **Selects**:
   Filtration mode (Manual, Auto, Heating, Smart, Intelligent), timers for automatic filtration, filtration speed _(if supported)_, boost control _(if Hydro/Electrolysis module is present)_, pH pump activation delay.
 - **Buttons**:
@@ -146,6 +146,21 @@ to adjust options at any time.
 
 ---
 
+### Winter Mode
+
+If your pool controller is **physically disconnected during winter** (e.g. drained and stored), you can enable **Winter Mode** instead of disabling the whole integration.
+
+- Flip the **`switch.<name>_winter_mode`** switch to ON.
+- The integration stops all Modbus polling — no connection attempts, no error logs.
+- All entities remain registered in Home Assistant. Control entities (switches, lights, buttons, numbers, selects) immediately become **unavailable** (greyed-out) and cannot be controlled until winter mode is disabled. Sensors and binary sensors stay available but show **unknown** values.
+- Automations referencing these entities continue to exist without errors.
+- When the pool season starts again, flip the switch back OFF — communication resumes and values update at the next poll cycle.
+
+> The winter mode state is persisted across Home Assistant restarts, so you only need to set it once.
+> Winter mode can also be toggled via automations (e.g. turn on every 1st November, turn off every 1st April).
+
+---
+
 ### Advanced Options: Unlocking “Backwash” Mode
 
 The “Backwash” filtration mode is hidden by default, as its remote use can be risky and is intended only for advanced users.
@@ -178,6 +193,7 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
   `number.<name>_hidro`, `number.<name>_ph1`,
   `number.<name>_heating_temp` _(if supported)_
 - **Switches**:
+  `switch.<name>_winter_mode`,
   `switch.<name>_filt_manual_state`, `switch.<name>_time_auto_sync`,
   `switch.<name>_light`, `switch.<name>_aux1`-`switch.<name>_aux4` _(if enabled)_
 - **Selects**:
@@ -193,6 +209,7 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
 ## Special Notes
 
 - **Only enabled timers and relays (per Options) are shown in Home Assistant.**
+- **Winter Mode:** Suspends all Modbus polling while keeping entities registered in Home Assistant (control entities become unavailable, sensors show unknown values). See [Winter Mode](#winter-mode) above.
 - **Timer resolution:** Can be set (in minutes) in integration Options.
 - **Entities cache last value** if there is a Modbus communication problem.
 - **Backwash and advanced options:** See above for details.

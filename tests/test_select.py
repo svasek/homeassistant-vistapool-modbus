@@ -34,6 +34,7 @@ def mock_coordinator():
     mock = AsyncMock()
     mock.data = {}
     mock.device_slug = "vistapool"
+    mock.winter_mode = False
     config_entry = MagicMock()
     config_entry.entry_id = "test_entry"
     config_entry.unique_id = "test_slug"
@@ -483,7 +484,7 @@ async def test_select_async_setup_entry_no_data(caplog):
         options = {}
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -578,3 +579,23 @@ async def test_async_select_option_ph_pump_delay(mock_coordinator):
     # Select 180s -> should write 170 (device internally adds 10s)
     await ent.async_select_option("180")
     ent.coordinator.client.async_write_register.assert_awaited_with(0x0433, 170)
+
+
+@pytest.mark.asyncio
+async def test_select_option_blocked_during_winter_mode(mock_coordinator, caplog):
+    """async_select_option is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = {"register": 0x0412, "options_map": {1: "Manual", 2: "Auto"}}
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    with caplog.at_level("WARNING"):
+        await ent.async_select_option("Manual")
+    mock_coordinator.client.async_write_register.assert_not_called()
+    assert "Winter mode is active" in caplog.text
+
+
+def test_available_false_during_winter_mode(mock_coordinator):
+    """VistaPoolSelect is unavailable when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = {"register": 0x0412, "options_map": {1: "Manual", 2: "Auto"}}
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    assert ent.available is False

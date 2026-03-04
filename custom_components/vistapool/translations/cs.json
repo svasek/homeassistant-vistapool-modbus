@@ -170,6 +170,7 @@
       "hidro_shutdown_temperature": { "name": "Teplotní práh vyp. elektrolýzy" }
     },
     "switch": {
+      "winter_mode": { "name": "Zimní režim" },
       "filt_manual_state": { "name": "Manuální filtrace" },
       "time_auto_sync": { "name": "Autosynchronizace času" },
       "clima_onoff": { "name": "Režim klimatizace pro ohřev" },
