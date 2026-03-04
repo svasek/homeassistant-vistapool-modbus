@@ -74,6 +74,17 @@ async def async_setup_entry(
         if key == "MBF_PAR_CL1":
             if not bool(coordinator.data.get("Chlorine measurement module detected")):
                 continue
+        # Cover reduction numbers only visible when hydrolysis module present
+        if key == "MBF_PAR_HIDRO_COVER_REDUCTION":
+            if not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM")):
+                continue
+        # Shutdown temperature needs both hydrolysis and temperature sensor
+        if key == "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE":
+            if (
+                not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM"))
+                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
+            ):
+                continue
 
         entities.append(VistaPoolNumber(coordinator, entry_id, key, props))
 
@@ -89,6 +100,10 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         self._key = key
         self._register = props.get("register", None)
         self._scale = props.get("scale", 1.0)
+        # Optional bitmask support for compound registers
+        self._mask: int | None = props.get("mask", None)
+        self._shift: int = props.get("shift", 0)
+        self._data_key: str = props.get("data_key", key)
 
         self._attr_suggested_object_id = (
             f"{self.coordinator.device_slug}_{VistaPoolEntity.slugify(self._key)}"
@@ -128,7 +143,9 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
         # Read full register map and get the value using string key
         # Use coordinator cache instead of hitting Modbus again
-        val = self.coordinator.data.get(self._key)
+        val = self.coordinator.data.get(self._data_key)
+        if val is not None and self._mask is not None:
+            val = (int(val) & self._mask) >> self._shift
         self._attr_native_value = (
             round(val, 2) if isinstance(val, (int, float)) else None
         )
@@ -167,9 +184,14 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
                 )
                 return
             raw = int(self._pending_value * self._scale)
+            if self._mask is not None:
+                # Read-Modify-Write: preserve bits outside our mask
+                current = int(self.coordinator.data.get(self._data_key, 0) or 0)
+                raw = (current & ~self._mask) | ((raw << self._shift) & self._mask)
+                await client.async_write_register(self._register, raw, apply=True)
             # If user changes heating or intelligent setpoint, mirror the value
             # to both registers so a single UI control can keep them in sync.
-            if self._register in (
+            elif self._register in (
                 HEATING_SETPOINT_REGISTER,
                 INTELLIGENT_SETPOINT_REGISTER,
             ):
@@ -202,7 +224,9 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
     @property
     def native_value(self) -> float | int | str | None:
         """Return the actual number value."""
-        raw = self.coordinator.data.get(self._key)
+        raw = self.coordinator.data.get(self._data_key)
+        if raw is not None and self._mask is not None:
+            raw = (int(raw) & self._mask) >> self._shift
         if (
             self.suggested_display_precision == 0 and raw is not None
         ):  # pragma: no cover

@@ -427,6 +427,118 @@ async def test_number_async_setup_entry_skips_unassigned(monkeypatch):
     assert "MBF_PAR_CL1" not in keys
 
 
+# --- Bitmask number tests ---
+
+
+def test_native_value_bitmask_lsb(mock_coordinator):
+    """native_value extracts the lower byte (cover reduction %) via mask=0x00FF, shift=0."""
+    props = make_props(
+        register=0x042D,
+        data_key="MBF_PAR_HIDRO_COVER_REDUCTION",
+        mask=0x00FF,
+        shift=0,
+        scale=1.0,
+    )
+    ent = VistaPoolNumber(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_REDUCTION", props
+    )
+    # Register value: 0x1E28 = upper byte 0x1E (30°C), lower byte 0x28 (40%)
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_REDUCTION": 0x1E28}
+    assert ent.native_value == 40.0
+
+
+def test_native_value_bitmask_msb(mock_coordinator):
+    """native_value extracts the upper byte (shutdown temp) via mask=0xFF00, shift=8."""
+    props = make_props(
+        register=0x042D,
+        data_key="MBF_PAR_HIDRO_COVER_REDUCTION",
+        mask=0xFF00,
+        shift=8,
+        scale=1.0,
+    )
+    ent = VistaPoolNumber(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE", props
+    )
+    # Register value: 0x1E28 = upper byte 0x1E = 30
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_REDUCTION": 0x1E28}
+    assert ent.native_value == 30.0
+
+
+@pytest.mark.asyncio
+async def test_async_added_to_hass_bitmask(mock_coordinator):
+    """async_added_to_hass correctly applies mask/shift to the cached coordinator value."""
+    props = make_props(
+        register=0x042D,
+        data_key="MBF_PAR_HIDRO_COVER_REDUCTION",
+        mask=0x00FF,
+        shift=0,
+        scale=1.0,
+    )
+    ent = VistaPoolNumber(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_REDUCTION", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_REDUCTION": 0x1E28}
+    mock_coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    with patch("custom_components.vistapool.number.asyncio.sleep", AsyncMock()):
+        await ent.async_added_to_hass()
+    assert ent._attr_native_value == 40
+
+
+@pytest.mark.asyncio
+async def test_debounced_write_bitmask_lsb(mock_coordinator):
+    """_debounced_write performs RMW correctly for the lower-byte mask."""
+    props = make_props(
+        register=0x042D,
+        data_key="MBF_PAR_HIDRO_COVER_REDUCTION",
+        mask=0x00FF,
+        shift=0,
+        scale=1.0,
+    )
+    ent = VistaPoolNumber(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_REDUCTION", props
+    )
+    # Current register value has 0x1E in upper byte (30°C shutdown)
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_REDUCTION": 0x1E28}
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    ent._pending_value = 50  # set cover reduction to 50%
+    with patch("custom_components.vistapool.number.asyncio.sleep", AsyncMock()):
+        await ent._debounced_write()
+    # Expected: (0x1E28 & ~0x00FF) | (50 & 0x00FF) = 0x1E00 | 0x0032 = 0x1E32
+    ent.coordinator.client.async_write_register.assert_awaited_with(
+        0x042D, 0x1E32, apply=True
+    )
+
+
+@pytest.mark.asyncio
+async def test_debounced_write_bitmask_msb(mock_coordinator):
+    """_debounced_write performs RMW correctly for the upper-byte mask."""
+    props = make_props(
+        register=0x042D,
+        data_key="MBF_PAR_HIDRO_COVER_REDUCTION",
+        mask=0xFF00,
+        shift=8,
+        scale=1.0,
+    )
+    ent = VistaPoolNumber(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE", props
+    )
+    # Current register value has 0x28 = 40% in lower byte
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_REDUCTION": 0x1E28}
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    ent._pending_value = 25  # set shutdown temperature to 25°C
+    with patch("custom_components.vistapool.number.asyncio.sleep", AsyncMock()):
+        await ent._debounced_write()
+    # Expected: (0x1E28 & ~0xFF00) | ((25 << 8) & 0xFF00) = 0x0028 | 0x1900 = 0x1928
+    ent.coordinator.client.async_write_register.assert_awaited_with(
+        0x042D, 0x1928, apply=True
+    )
+
+
 @pytest.mark.asyncio
 async def test_set_native_value_blocked_during_winter_mode(mock_coordinator, caplog):
     """async_set_native_value is ignored when winter mode is active."""

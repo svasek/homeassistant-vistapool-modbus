@@ -450,6 +450,169 @@ def test_icon_fallback_attr_icon(mock_coordinator):
     assert ent.icon == "mdi:test"
 
 
+@pytest.mark.asyncio
+async def test_switch_setup_skips_hidro_cover_without_hydro_module():
+    """MBF_PAR_HIDRO_COVER_ENABLE is skipped when hydrolysis module is absent."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_HIDRO_NOM": 0}  # hydro module absent (falsy)
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_HIDRO_COVER_ENABLE" not in keys
+    assert "MBF_PAR_HIDRO_TEMP_SHUTDOWN" not in keys
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_creates_hidro_cover_with_hydro_module():
+    """MBF_PAR_HIDRO_COVER_ENABLE is created when hydrolysis module is present."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_HIDRO_NOM": 80,  # hydro module present
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_HIDRO_COVER_ENABLE" in keys
+    assert "MBF_PAR_HIDRO_TEMP_SHUTDOWN" in keys
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_skips_hidro_temp_shutdown_without_temp_sensor():
+    """MBF_PAR_HIDRO_TEMP_SHUTDOWN is skipped when temperature sensor is inactive."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_HIDRO_NOM": 80,  # hydro present
+            "MBF_PAR_TEMPERATURE_ACTIVE": 0,  # but temp sensor inactive
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_HIDRO_COVER_ENABLE" in keys  # cover switch is still shown
+    assert (
+        "MBF_PAR_HIDRO_TEMP_SHUTDOWN" not in keys
+    )  # temp shutdown requires temp sensor
+
+
+# --- Bitmask switch tests ---
+
+
+@pytest.mark.asyncio
+async def test_turn_on_bitmask(mock_coordinator):
+    """Turning ON a bitmask switch ORs the mask bit into the current register value."""
+    props = make_props(
+        switch_type="bitmask",
+        function_addr=0x042C,
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_ENABLE", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0002}  # bit1 already set
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    # Expected: 0x0002 | 0x0001 = 0x0003
+    ent.coordinator.client.async_write_register.assert_awaited_with(
+        0x042C, 0x0003, apply=True
+    )
+
+
+@pytest.mark.asyncio
+async def test_turn_off_bitmask(mock_coordinator):
+    """Turning OFF a bitmask switch AND-NOTs the mask bit from the current register value."""
+    props = make_props(
+        switch_type="bitmask",
+        function_addr=0x042C,
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_ENABLE", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0003}  # both bits set
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    # Expected: 0x0003 & ~0x0001 = 0x0002
+    ent.coordinator.client.async_write_register.assert_awaited_with(
+        0x042C, 0x0002, apply=True
+    )
+
+
+def test_is_on_bitmask(mock_coordinator):
+    """is_on returns True when the mask bit is set in the register value."""
+    props = make_props(
+        switch_type="bitmask",
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_COVER_ENABLE", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0001}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0002}
+    assert ent.is_on is False
+    mock_coordinator.data = {}  # missing key -> defaults to 0
+    assert ent.is_on is False
+
+
+def test_is_on_bitmask_second_bit(mock_coordinator):
+    """is_on works for bit 1 (temperature shutdown flag)."""
+    props = make_props(
+        switch_type="bitmask",
+        mask_bit=0x0002,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_HIDRO_TEMP_SHUTDOWN", props
+    )
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0003}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0001}
+    assert ent.is_on is False
+
+
 # --- Winter mode switch tests ---
 
 

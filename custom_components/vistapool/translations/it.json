@@ -165,7 +165,9 @@
       "cl1": { "name": "Valore cloro target" },
       "heating_temp": { "name": "Valore temperatura target" },
       "smart_temp_high": { "name": "Smart: temperatura superiore" },
-      "smart_temp_low": { "name": "Smart: temperatura inferiore" }
+      "smart_temp_low": { "name": "Smart: temperatura inferiore" },
+      "hidro_cover_reduction": { "name": "Riduzione produzione a copertura" },
+      "hidro_shutdown_temperature": { "name": "Soglia temp. spegnimento idrolisi" }
     },
     "switch": {
       "winter_mode": { "name": "Modalità invernale" },
@@ -176,7 +178,9 @@
       "aux1": { "name": "Relè Aux1" },
       "aux2": { "name": "Relè Aux2" },
       "aux3": { "name": "Relè Aux3" },
-      "aux4": { "name": "Relè Aux4" }
+      "aux4": { "name": "Relè Aux4" },
+      "hidro_cover_enable": { "name": "Abilita riduzione produzione con copertura" },
+      "hidro_temp_shutdown": { "name": "Abilita spegnimento idrolisi per alta temperatura" }
     },
     "light": {
       "light": { "name": "Luce piscina" }

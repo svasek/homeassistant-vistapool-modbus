@@ -165,7 +165,9 @@
       "cl1": { "name": "Chlorine Setpoint" },
       "heating_temp": { "name": "Temperature Setpoint" },
       "smart_temp_high": { "name": "Smart upper temperature" },
-      "smart_temp_low": { "name": "Smart lower temperature" }
+      "smart_temp_low": { "name": "Smart lower temperature" },
+      "hidro_cover_reduction": { "name": "Cover Reduction (when covered)" },
+      "hidro_shutdown_temperature": { "name": "Hydrolysis Shutdown Temp. Threshold" }
     },
     "switch": {
       "winter_mode": { "name": "Winter Mode" },
@@ -176,7 +178,9 @@
       "aux1": { "name": "Relay Aux1" },
       "aux2": { "name": "Relay Aux2" },
       "aux3": { "name": "Relay Aux3" },
-      "aux4": { "name": "Relay Aux4" }
+      "aux4": { "name": "Relay Aux4" },
+      "hidro_cover_enable": { "name": "Enable cover reduction (when covered)" },
+      "hidro_temp_shutdown": { "name": "Enable hydrolysis shutdown on high temperature" }
     },
     "light": {
       "light": { "name": "Pool Light" }
