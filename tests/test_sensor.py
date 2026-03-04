@@ -163,6 +163,9 @@ def test_native_value_special_keys(mock_coordinator):
     assert ent.native_value == "pol2"
     mock_coordinator.data = {"HIDRO in Pol1": False, "HIDRO in Pol2": False}
     assert ent.native_value == "off"
+    # Both keys absent (e.g. winter mode with empty capability snapshot) → unknown
+    mock_coordinator.data = {}
+    assert ent.native_value is None
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", {})
     mock_coordinator.data = {"MBF_PAR_FILT_MODE": 1}
     assert ent.native_value == "auto"

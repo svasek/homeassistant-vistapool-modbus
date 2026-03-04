@@ -248,6 +248,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "HIDRO_POLARITY":
             pol1 = self.coordinator.data.get("HIDRO in Pol1")
             pol2 = self.coordinator.data.get("HIDRO in Pol2")
+            if pol1 is None and pol2 is None:
+                return None
             if pol1:
                 return "pol1"
             elif pol2:
