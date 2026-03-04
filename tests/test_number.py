@@ -429,3 +429,26 @@ def test_available_true_when_not_winter_mode(mock_coordinator):
     props = make_props(register=0x0260, min_value=6.8, max_value=8.2, step=0.1)
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
     assert ent.available is True
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_no_data(caplog):
+    """Test async_setup_entry logs warning and adds no entities when data is None."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = None
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    with caplog.at_level("WARNING"):
+        await async_setup_entry(hass, entry, async_add_entities)
+        assert "No data from Modbus" in caplog.text
+    async_add_entities.assert_not_called()

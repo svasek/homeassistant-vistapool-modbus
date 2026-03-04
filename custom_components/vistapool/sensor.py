@@ -69,7 +69,7 @@ async def async_setup_entry(
     coordinator: VistaPoolCoordinator = hass.data[DOMAIN][entry.entry_id]
     entities = []
 
-    if not coordinator.data:  # pragma: no cover
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping sensor setup!")
         return
 

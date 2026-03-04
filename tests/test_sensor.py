@@ -559,3 +559,26 @@ def test_sensor_intelligent_tt_next_interval_calls_helper():
         _ = ent.native_value
         # Verify the helper was called with correct arguments
         mock_calc.assert_called_once_with(3600, mock_hass)
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_no_data(caplog):
+    """Test async_setup_entry logs warning and adds no entities when data is None."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = None
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    with caplog.at_level("WARNING"):
+        await async_setup_entry(hass, entry, async_add_entities)
+        assert "No data from Modbus" in caplog.text
+    async_add_entities.assert_not_called()
