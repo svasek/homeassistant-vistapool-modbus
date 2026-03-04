@@ -78,9 +78,9 @@ If you find this integration useful, consider supporting its development:
 - **Sensors**:
   pH, Redox (ORP), Salt, Conductivity, Water Temperature, Ionization, Hydrolysis Intensity/Voltage, Device Time, Status/Alarm bits, Filtration speed _(if supported)_.
 - **Numbers**:
-  Setpoints for pH, Redox, Chlorine, Temperature, Hydrolysis production.
+  Setpoints for pH, Redox, Chlorine, Temperature, Hydrolysis production, Hydrolysis cover reduction % _(if hydrolysis module present)_, Hydrolysis shutdown temperature threshold _(if hydrolysis module + temperature sensor present)_.
 - **Switches**:
-  Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled), **winter mode** (suspends Modbus communication while keeping all entities registered in Home Assistant).
+  Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled), **winter mode** (suspends Modbus communication while keeping all entities registered in Home Assistant), Hydrolysis cover reduction enable _(if hydrolysis module present)_, Hydrolysis temperature shutdown enable _(if hydrolysis module + temperature sensor present)_.
 - **Selects**:
   Filtration mode (Manual, Auto, Heating, Smart, Intelligent), timers for automatic filtration, filtration speed _(if supported)_, boost control _(if Hydro/Electrolysis module is present)_, pH pump activation delay.
 - **Buttons**:
@@ -191,11 +191,13 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
   `sensor.<name>_filtration_speed` _(if supported)_
 - **Numbers**:
   `number.<name>_hidro`, `number.<name>_ph1`,
-  `number.<name>_heating_temp` _(if supported)_
+  `number.<name>_heating_temp` _(if supported)_,
+  `number.<name>_hidro_cover_reduction`, `number.<name>_hidro_shutdown_temperature` _(if supported)_
 - **Switches**:
   `switch.<name>_winter_mode`,
   `switch.<name>_filt_manual_state`, `switch.<name>_time_auto_sync`,
-  `switch.<name>_light`, `switch.<name>_aux1`-`switch.<name>_aux4` _(if enabled)_
+  `switch.<name>_light`, `switch.<name>_aux1`-`switch.<name>_aux4` _(if enabled)_,
+  `switch.<name>_hidro_cover_enable`, `switch.<name>_hidro_temp_shutdown` _(if supported)_
 - **Selects**:
   `select.<name>_filt_mode`, `select.<name>_filtration1_start`, `select.<name>_filtration1_stop`,
   `select.<name>_filtration_speed` _(if supported)_,
