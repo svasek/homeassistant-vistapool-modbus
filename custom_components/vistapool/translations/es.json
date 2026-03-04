@@ -179,8 +179,8 @@
       "aux2": { "name": "Relé Aux2" },
       "aux3": { "name": "Relé Aux3" },
       "aux4": { "name": "Relé Aux4" },
-      "hidro_cover_enable": { "name": "Reducción producción con cubierta" },
-      "hidro_temp_shutdown": { "name": "Umbral temp. apagado hidrólisis" }
+      "hidro_cover_enable": { "name": "Habilitar reducción con cubierta" },
+      "hidro_temp_shutdown": { "name": "Habilitar apagado por temperatura" }
     },
     "light": {
       "pool_light": { "name": "Luz de la piscina" }

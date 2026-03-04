@@ -179,8 +179,8 @@
       "aux2": { "name": "Pomocné relé Aux2" },
       "aux3": { "name": "Pomocné relé Aux3" },
       "aux4": { "name": "Pomocné relé Aux4" },
-      "hidro_cover_enable": { "name": "Snížení produkce při zakrytí" },
-      "hidro_temp_shutdown": { "name": "Teplotní práh vyp. elektrolýzy" }
+      "hidro_cover_enable": { "name": "Povolit snížení produkce při zakrytí" },
+      "hidro_temp_shutdown": { "name": "Povolit vypnutí elektrolýzy podle teploty" }
     },
     "light": {
       "light": { "name": "Osvětlení bazénu" }
