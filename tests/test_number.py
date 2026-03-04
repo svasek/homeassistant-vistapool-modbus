@@ -234,6 +234,32 @@ async def test_debounced_write_no_client(mock_coordinator):
 
 
 @pytest.mark.asyncio
+async def test_debounced_write_cancelled_when_winter_mode_enabled_during_delay(
+    mock_coordinator, caplog
+):
+    """_debounced_write is aborted if winter mode is enabled during the debounce delay."""
+    props = make_props(register=0x0260, scale=100.0)
+    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
+    ent._pending_value = 7.2
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+
+    async def enable_winter_mode_during_sleep(_delay):
+        """Simulate winter mode being enabled while the debounce timer is running."""
+        mock_coordinator.winter_mode = True
+
+    with patch(
+        "custom_components.vistapool.number.asyncio.sleep",
+        side_effect=enable_winter_mode_during_sleep,
+    ):
+        with caplog.at_level("WARNING"):
+            await ent._debounced_write()
+
+    ent.coordinator.client.async_write_register.assert_not_called()
+    assert "debounced write cancelled" in caplog.text
+
+
+@pytest.mark.asyncio
 async def test_async_added_to_hass_sets_value(mock_coordinator):
     props = make_props(register=0x0210, scale=1.0)
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)

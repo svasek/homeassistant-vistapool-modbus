@@ -160,6 +160,12 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             return
         try:
             await asyncio.sleep(self._debounce_delay)
+            if self.coordinator.winter_mode:
+                _LOGGER.warning(
+                    "Winter mode is active — debounced write cancelled for %s",
+                    self._key,
+                )
+                return
             raw = int(self._pending_value * self._scale)
             # If user changes heating or intelligent setpoint, mirror the value
             # to both registers so a single UI control can keep them in sync.
