@@ -50,13 +50,12 @@ async def async_setup_entry(
     for key, props in NUMBER_DEFINITIONS.items():
         # Skip smart temperature numbers if no temperature sensor is active
         if key in ("MBF_PAR_SMART_TEMP_HIGH", "MBF_PAR_SMART_TEMP_LOW"):
-            if coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
+            if not bool(coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
                 continue
         # Conditionally add heating setpoint only if heating relay is assigned
         if key == "MBF_PAR_HEATING_TEMP":
-            if (
-                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
         # Conditionally add pH high limit only if acid pump relay is assigned

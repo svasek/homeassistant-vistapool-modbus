@@ -76,9 +76,8 @@ async def async_setup_entry(
     # Loop through the defined sensors and create SensorEntity instances
     for key, props in SENSOR_DEFINITIONS.items():
         # Skip the sensors if they are not detected
-        if (
-            key == "MBF_MEASURE_TEMPERATURE"
-            and coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+        if key == "MBF_MEASURE_TEMPERATURE" and not bool(
+            coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
         ):
             continue
         if (
@@ -115,9 +114,8 @@ async def async_setup_entry(
             or key == "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL"
         ):
             # Skip if heating GPIO not assigned or temperature inactive
-            if (
-                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
 

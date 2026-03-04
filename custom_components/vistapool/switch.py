@@ -47,14 +47,13 @@ async def async_setup_entry(
             continue
         # Conditionally add clima mode only if heating relay is assigned
         if key == "MBF_PAR_CLIMA_ONOFF":
-            if (
-                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
         # Skip smart antifreeze if temperature sensor not active
         if key == "MBF_PAR_SMART_ANTI_FREEZE":
-            if coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
+            if not bool(coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
                 continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))
