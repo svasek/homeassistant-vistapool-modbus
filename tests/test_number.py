@@ -537,6 +537,8 @@ async def test_debounced_write_bitmask_msb(mock_coordinator):
     ent.coordinator.client.async_write_register.assert_awaited_with(
         0x042D, 0x1928, apply=True
     )
+
+
 @pytest.mark.asyncio
 async def test_set_native_value_blocked_during_winter_mode(mock_coordinator, caplog):
     """async_set_native_value is ignored when winter mode is active."""

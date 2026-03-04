@@ -531,6 +531,8 @@ def test_is_on_bitmask_second_bit(mock_coordinator):
     assert ent.is_on is True
     mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0x0001}
     assert ent.is_on is False
+
+
 # --- Winter mode switch tests ---
 
 
