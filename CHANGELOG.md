@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.17.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.16.0...v1.17.0) (2026-03-04)
+
+
+### Features
+
+* ✨ Hydrolysis cover reduction & temperature shutdown controls ([#73](https://github.com/svasek/homeassistant-vistapool-modbus/issues/73)) ([00dfa9c](https://github.com/svasek/homeassistant-vistapool-modbus/commit/00dfa9cffac90822703f76abd493dcc852127b71))
+
+
+### Bug Fixes
+
+* 🐛 handle case where both HIDRO keys are absent ([8aaf09d](https://github.com/svasek/homeassistant-vistapool-modbus/commit/8aaf09d8826a38264cc21c15635c2727e51ff2aa))
+
 ## [1.16.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.15.1...v1.16.0) (2026-03-04)
 
 
