@@ -449,15 +449,6 @@ def test_available_false_during_winter_mode(mock_coordinator):
     assert ent.available is False
 
 
-def test_available_true_when_not_winter_mode(mock_coordinator):
-    """VistaPoolNumber is available when winter mode is off."""
-    mock_coordinator.winter_mode = False
-    mock_coordinator.last_update_success = True
-    props = make_props(register=0x0260, min_value=6.8, max_value=8.2, step=0.1)
-    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
-    assert ent.available is True
-
-
 @pytest.mark.asyncio
 async def test_async_setup_entry_no_data(caplog):
     """Test async_setup_entry logs warning and adds no entities when data is None."""

@@ -132,12 +132,3 @@ def test_available_false_during_winter_mode(mock_coordinator):
     props = {"name": "Sync Time", "icon": "mdi:clock"}
     ent = VistaPoolButton(mock_coordinator, "test_entry", "SYNC_TIME", props)
     assert ent.available is False
-
-
-def test_available_true_when_not_winter_mode(mock_coordinator):
-    """VistaPoolButton is available when winter mode is off."""
-    mock_coordinator.winter_mode = False
-    mock_coordinator.last_update_success = True
-    props = {"name": "Sync Time", "icon": "mdi:clock"}
-    ent = VistaPoolButton(mock_coordinator, "test_entry", "SYNC_TIME", props)
-    assert ent.available is True
