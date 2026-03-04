@@ -198,6 +198,8 @@ def test_is_on_direct_key(mock_coordinator):
     assert ent.is_on is True
     mock_coordinator.data = {"pH acid pump active": False}
     assert ent.is_on is False
+    mock_coordinator.data = {}  # key absent → missing data → unknown
+    assert ent.is_on is None
 
 
 def test_is_on_device_time_out_of_sync(mock_coordinator):
@@ -209,12 +211,17 @@ def test_is_on_device_time_out_of_sync(mock_coordinator):
         "custom_components.vistapool.binary_sensor.is_device_time_out_of_sync",
         return_value=True,
     ):
+        mock_coordinator.data = {"MBF_PAR_TIME_LOW": 1}
         assert ent.is_on is True
     with patch(
         "custom_components.vistapool.binary_sensor.is_device_time_out_of_sync",
         return_value=False,
     ):
+        mock_coordinator.data = {"MBF_PAR_TIME_LOW": 1}
         assert ent.is_on is False
+    # No time data in snapshot → unknown, not False
+    mock_coordinator.data = {}
+    assert ent.is_on is None
 
 
 def test_is_on_pool_cover_inverted(mock_coordinator):
@@ -261,9 +268,12 @@ def test_is_on_status_dict(mock_coordinator):
     assert ent.is_on is True
     mock_coordinator.data = {"MBF_STATUS": {"pump_on": False}}
     assert ent.is_on is False
-    # Status not a dict
+    # Flag absent from dict → unknown
+    mock_coordinator.data = {"MBF_STATUS": {}}
+    assert ent.is_on is None
+    # Status not a dict → unknown
     mock_coordinator.data = {"MBF_STATUS": None}
-    assert ent.is_on is False
+    assert ent.is_on is None
 
 
 def test_icon_on_off(mock_coordinator):

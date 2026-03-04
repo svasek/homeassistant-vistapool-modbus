@@ -119,18 +119,11 @@ async def async_setup_entry(
             ):
                 continue
 
-        value = coordinator.data.get(key)
-        if (
-            isinstance(value, (int, float))
-            or key == "MBF_PAR_FILT_MODE"
-            or key == "MBF_PH_STATUS_ALARM"
-            or key == "HIDRO_POLARITY"
-        ):
-            entities.append(
-                VistaPoolSensor(
-                    coordinator, entry.entry_id, key, props  # Pass entry_id explicitly
-                )
+        entities.append(
+            VistaPoolSensor(
+                coordinator, entry.entry_id, key, props  # Pass entry_id explicitly
             )
+        )
     async_add_entities(entities)
 
 

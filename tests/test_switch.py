@@ -540,3 +540,16 @@ def test_available_winter_mode_switch_during_winter_mode(mock_coordinator):
     props = make_props(switch_type="winter_mode")
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
     assert ent.available is True
+
+
+def test_available_winter_mode_switch_during_coordinator_failure(mock_coordinator):
+    """The winter_mode switch stays available even when coordinator.last_update_success is False.
+
+    A Modbus gateway disconnection is exactly the scenario the user needs winter mode for,
+    so the switch must remain operable regardless of coordinator health.
+    """
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = False
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    assert ent.available is True

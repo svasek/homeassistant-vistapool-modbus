@@ -220,6 +220,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     @property
     def available(self) -> bool:
         """Return True if the switch is available."""
+        # The winter_mode switch must remain operable even when the coordinator
+        # reports a communication failure – that is precisely the scenario where
+        # the user needs to enable winter mode.
+        if self._switch_type == "winter_mode":
+            return True
         if not super().available:
             return False
         if self._switch_type == "manual_filtration":

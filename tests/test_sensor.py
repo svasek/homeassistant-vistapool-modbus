@@ -260,6 +260,10 @@ async def test_sensor_async_setup_entry_adds_entities(monkeypatch):
     assert "FILTRATION_SPEED" in keys
     assert "MBF_PAR_FILT_MODE" in keys
     assert "MBF_PH_STATUS_ALARM" in keys
+    # These sensors have no capability gate — always created
+    assert "MBF_HIDRO_CURRENT" in keys
+    assert "MBF_HIDRO_VOLTAGE" in keys
+    assert "HIDRO_POLARITY" in keys
 
 
 @pytest.mark.asyncio
@@ -582,3 +586,59 @@ async def test_async_setup_entry_no_data(caplog):
         await async_setup_entry(hass, entry, async_add_entities)
         assert "No data from Modbus" in caplog.text
     async_add_entities.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_sensor_setup_with_capability_snapshot_only():
+    """After a HA restart in winter mode coordinator.data holds only capability keys.
+
+    All sensors that survive capability gating must still be registered so the
+    entity registry stays consistent.  Measurement values are None (shown as
+    unknown in HA) until winter mode is disabled.
+    """
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        # Simulates the capability snapshot stored by set_winter_mode(True)
+        data = {
+            "MBF_PAR_MODEL": 0x0001,  # ion bit set
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+            "MBF_PAR_FILTRATION_CONF": 0x0001,  # variable-speed pump
+            "MBF_PAR_HEATING_GPIO": 5,
+            "pH measurement module detected": True,
+            "Redox measurement module detected": True,
+            "Chlorine measurement module detected": True,
+            "Conductivity measurement module detected": True,
+            # No measurement values – as returned after a restart in winter mode
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+
+    # Measurement sensors guarded by capability flags must still be registered
+    assert "MBF_MEASURE_PH" in keys
+    assert "MBF_MEASURE_RX" in keys
+    assert "MBF_MEASURE_CL" in keys
+    assert "MBF_MEASURE_CONDUCTIVITY" in keys
+    assert "MBF_MEASURE_TEMPERATURE" in keys
+    assert "MBF_ION_CURRENT" in keys
+    assert "FILTRATION_SPEED" in keys
+    assert "MBF_PAR_INTELLIGENT_INTERVALS" in keys
+    assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" in keys
+    # Unconditional sensors
+    assert "MBF_HIDRO_CURRENT" in keys
+    assert "MBF_HIDRO_VOLTAGE" in keys
+    assert "MBF_PAR_FILT_MODE" in keys
+    assert "MBF_PH_STATUS_ALARM" in keys
+    assert "HIDRO_POLARITY" in keys
