@@ -109,6 +109,11 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Handle option selection."""
+        if self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring select_option for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
             _LOGGER.error("Modbus client not available for writing registers.")

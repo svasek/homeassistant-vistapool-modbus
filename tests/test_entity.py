@@ -14,6 +14,7 @@
 
 import pytest
 
+from unittest.mock import MagicMock
 from custom_components.vistapool.entity import VistaPoolEntity
 
 
@@ -63,3 +64,29 @@ def test_decode_modules(bitmask, expected):
 def test_slugify(input_name, expected):
     """Test slugify generates expected slugs."""
     assert VistaPoolEntity.slugify(input_name) == expected
+
+
+def _make_entity(winter_mode: bool, switch_type: str | None = None) -> VistaPoolEntity:
+    """Create a minimal VistaPoolEntity with a mocked coordinator."""
+    coordinator = MagicMock()
+    coordinator.winter_mode = winter_mode
+    entity = VistaPoolEntity.__new__(VistaPoolEntity)
+    entity.coordinator = coordinator
+    if switch_type is not None:
+        entity._switch_type = switch_type
+    return entity
+
+
+def test_available_normal_mode():
+    """Entity is available when winter mode is off."""
+    assert _make_entity(winter_mode=False).available is True
+
+
+def test_available_winter_mode_blocks_regular_entity():
+    """Regular entity is unavailable when winter mode is active."""
+    assert _make_entity(winter_mode=True).available is False
+
+
+def test_available_winter_mode_switch_stays_available():
+    """The winter_mode switch itself remains available during winter mode."""
+    assert _make_entity(winter_mode=True, switch_type="winter_mode").available is True

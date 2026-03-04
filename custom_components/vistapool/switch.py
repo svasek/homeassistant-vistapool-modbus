@@ -95,6 +95,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
+        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring turn_on for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
             _LOGGER.error("Modbus client not available for writing registers.")
@@ -128,13 +133,19 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )
             await client.async_write_register(self.function_addr, 1)
 
-        # Run a refresh to update the state
-        await asyncio.sleep(1.0)
+        # Run a refresh to update the state; skip delay for non-IO switch types
+        if self._switch_type not in ("auto_time_sync", "winter_mode"):
+            await asyncio.sleep(1.0)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
+        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring turn_off for %s", self._key
+            )
+            return
         client = getattr(self.coordinator, "client", None)
         if client is None:  # pragma: no cover
             _LOGGER.error("Modbus client not available for writing registers.")
@@ -165,8 +176,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )
             await client.async_write_register(self.function_addr, 0)
 
-        # Run a refresh to update the state
-        await asyncio.sleep(0.1)
+        # Run a refresh to update the state; skip delay for non-IO switch types
+        if self._switch_type not in ("auto_time_sync", "winter_mode"):
+            await asyncio.sleep(0.1)
         await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
@@ -204,6 +216,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     @property
     def available(self) -> bool:
         """Return True if the switch is available."""
+        if not super().available:
+            return False
         if self._switch_type == "manual_filtration":
             return self.coordinator.data.get("MBF_PAR_FILT_MODE") != 1
         if self._switch_type == "relay_timer":

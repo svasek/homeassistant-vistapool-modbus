@@ -80,3 +80,17 @@ class VistaPoolEntity(CoordinatorEntity):
         if model_bitmask & 0x0008:
             modules.append("Salinity")
         return ", ".join(modules) if modules else "None"
+
+    @property
+    def available(self) -> bool:
+        """Return False for all entities when winter mode is active.
+
+        The winter_mode switch itself remains always available so the user
+        can turn it back off.
+        """
+        if (
+            getattr(self.coordinator, "winter_mode", False)
+            and getattr(self, "_switch_type", None) != "winter_mode"
+        ):
+            return False
+        return True

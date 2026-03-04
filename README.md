@@ -152,12 +152,12 @@ If your pool controller is **physically disconnected during winter** (e.g. drain
 
 - Flip the **`switch.<name>_winter_mode`** switch to ON.
 - The integration stops all Modbus polling — no connection attempts, no error logs.
-- All entities remain registered in Home Assistant and keep showing their **last known values**.
+- All entities remain registered in Home Assistant and immediately switch to **unknown** values. They appear greyed-out and cannot be controlled until winter mode is disabled.
 - Automations referencing these entities continue to exist without errors.
-- When the pool season starts again, flip the switch back OFF — communication resumes immediately.
+- When the pool season starts again, flip the switch back OFF — communication resumes and values update at the next poll cycle.
 
 > The winter mode state is persisted across Home Assistant restarts, so you only need to set it once.
-> It can also be toggled via automations (e.g. turn on every 1st November, turn off every 1st April).
+> Winter mode can also be toggled via automations (e.g. turn on every 1st November, turn off every 1st April).
 
 ---
 
@@ -209,7 +209,7 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
 ## Special Notes
 
 - **Only enabled timers and relays (per Options) are shown in Home Assistant.**
-- **Winter Mode:** Suspends all Modbus polling while keeping entities registered with their last known values. See [Winter Mode](#winter-mode) above.
+- **Winter Mode:** Suspends all Modbus polling while keeping entities registered in Home Assistant (values show as unknown until winter mode is disabled). See [Winter Mode](#winter-mode) above.
 - **Timer resolution:** Can be set (in minutes) in integration Options.
 - **Entities cache last value** if there is a Modbus communication problem.
 - **Backwash and advanced options:** See above for details.

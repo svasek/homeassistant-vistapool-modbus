@@ -71,6 +71,9 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
 
     async def async_press(self) -> None:
         """Perform button action depending on key."""
+        if self.coordinator.winter_mode:
+            _LOGGER.warning("Winter mode is active — ignoring press for %s", self._key)
+            return
         if self._key == "SYNC_TIME":
             client = self.coordinator.client
             _LOGGER.debug("Syncing time with device...")

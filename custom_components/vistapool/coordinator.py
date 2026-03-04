@@ -67,7 +67,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         self._model = "Unknown"
 
     async def _async_update_data(self):
-        # Winter mode: skip all Modbus communication and return frozen last-known data
+        # Winter mode: skip all Modbus communication; entities remain but show unknown values
         if self.winter_mode:
             _LOGGER.debug("Winter mode active – skipping Modbus communication")
             return self.data if self.data is not None else {}
@@ -257,6 +257,8 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         options = dict(self.entry.options)
         options["winter_mode"] = enabled
         self.hass.config_entries.async_update_entry(self.entry, options=options)
+        if enabled:
+            self.async_set_updated_data({})
 
     @property
     def firmware(self) -> str:

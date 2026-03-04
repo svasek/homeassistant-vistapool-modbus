@@ -138,6 +138,11 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float | int | str) -> None:
         """Set the native value of the number entity."""
+        if self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring set_native_value for %s", self._key
+            )
+            return
         self._pending_value = value
         if (
             self._pending_write_task is not None and not self._pending_write_task.done()

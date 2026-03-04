@@ -29,6 +29,7 @@ def mock_coordinator():
     mock.data = {}
     mock.device_slug = "vistapool"
     mock.config_entry.entry_id = "test_entry"
+    mock.winter_mode = False
     return mock
 
 
@@ -484,3 +485,29 @@ def test_is_on_winter_mode(mock_coordinator):
     assert ent.is_on is True
     mock_coordinator.winter_mode = False
     assert ent.is_on is False
+
+
+@pytest.mark.asyncio
+async def test_turn_on_blocked_during_winter_mode(mock_coordinator):
+    """Non-winter_mode switch turn_on is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    mock_coordinator.client.async_write_register = AsyncMock()
+    await ent.async_turn_on()
+    mock_coordinator.client.async_write_register.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_turn_off_blocked_during_winter_mode(mock_coordinator):
+    """Non-winter_mode switch turn_off is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    mock_coordinator.client.async_write_register = AsyncMock()
+    await ent.async_turn_off()
+    mock_coordinator.client.async_write_register.assert_not_called()
