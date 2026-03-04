@@ -300,3 +300,14 @@ async def test_async_added_to_hass_calls_super(mock_coordinator):
     ) as parent:
         await ent.async_added_to_hass()
         parent.assert_called_once()
+
+
+def test_available_during_winter_mode(mock_coordinator):
+    """Binary sensors stay available during winter mode (they show unknown values)."""
+    mock_coordinator.winter_mode = True
+    mock_coordinator.last_update_success = True
+    props = make_props()
+    ent = VistaPoolBinarySensor(
+        mock_coordinator, "test_entry", "pH acid pump active", props
+    )
+    assert ent.available is True

@@ -147,6 +147,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
     @property
     def available(self) -> bool:
         """Return True if the light is available."""
+        if not super().available:
+            return False
         if self._switch_type == "relay_timer":
             mode_val = self.coordinator.data.get("relay_light_enable", None)
             return mode_val in (0, 3, 4)

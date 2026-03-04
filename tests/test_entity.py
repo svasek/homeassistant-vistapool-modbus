@@ -66,10 +66,13 @@ def test_slugify(input_name, expected):
     assert VistaPoolEntity.slugify(input_name) == expected
 
 
-def _make_entity(winter_mode: bool, switch_type: str | None = None) -> VistaPoolEntity:
+def _make_entity(
+    winter_mode: bool, switch_type: str | None = None, last_update_success: bool = True
+) -> VistaPoolEntity:
     """Create a minimal VistaPoolEntity with a mocked coordinator."""
     coordinator = MagicMock()
     coordinator.winter_mode = winter_mode
+    coordinator.last_update_success = last_update_success
     entity = VistaPoolEntity.__new__(VistaPoolEntity)
     entity.coordinator = coordinator
     if switch_type is not None:
@@ -78,15 +81,22 @@ def _make_entity(winter_mode: bool, switch_type: str | None = None) -> VistaPool
 
 
 def test_available_normal_mode():
-    """Entity is available when winter mode is off."""
+    """Entity is available when winter mode is off and coordinator is healthy."""
     assert _make_entity(winter_mode=False).available is True
 
 
-def test_available_winter_mode_blocks_regular_entity():
-    """Regular entity is unavailable when winter mode is active."""
+def test_available_coordinator_failure():
+    """Entity is unavailable when coordinator update fails (last_update_success=False)."""
+    assert _make_entity(winter_mode=False, last_update_success=False).available is False
+
+
+def test_available_winter_mode_active():
+    """Entity with _winter_mode_active=True (default) is unavailable during winter mode."""
     assert _make_entity(winter_mode=True).available is False
 
 
-def test_available_winter_mode_switch_stays_available():
-    """The winter_mode switch itself remains available during winter mode."""
-    assert _make_entity(winter_mode=True, switch_type="winter_mode").available is True
+def test_available_unaffected_by_winter_mode():
+    """Entity with _winter_mode_active=False stays available even during winter mode."""
+    entity = _make_entity(winter_mode=True)
+    entity._winter_mode_active = False
+    assert entity.available is True

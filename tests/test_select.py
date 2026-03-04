@@ -591,3 +591,20 @@ async def test_select_option_blocked_during_winter_mode(mock_coordinator, caplog
         await ent.async_select_option("Manual")
     mock_coordinator.client.async_write_register.assert_not_called()
     assert "Winter mode is active" in caplog.text
+
+
+def test_available_false_during_winter_mode(mock_coordinator):
+    """VistaPoolSelect is unavailable when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = {"register": 0x0412, "options_map": {1: "Manual", 2: "Auto"}}
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    assert ent.available is False
+
+
+def test_available_true_when_not_winter_mode(mock_coordinator):
+    """VistaPoolSelect is available when winter mode is off."""
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = True
+    props = {"register": 0x0412, "options_map": {1: "Manual", 2: "Auto"}}
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    assert ent.available is True

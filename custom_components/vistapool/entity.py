@@ -29,10 +29,18 @@ class VistaPoolEntity(CoordinatorEntity):
     """Base class for VistaPool entities."""
 
     _attr_has_entity_name = True
+    _winter_mode_active: bool = True
 
     def __init__(self, coordinator, entry_id) -> None:
         super().__init__(coordinator)
         self._entry_id = entry_id
+
+    @property
+    def available(self) -> bool:
+        """Return False for control entities while winter mode is active."""
+        if self._winter_mode_active and getattr(self.coordinator, "winter_mode", False):
+            return False
+        return super().available
 
     @property
     def translation_key(self) -> str | None:
@@ -80,17 +88,3 @@ class VistaPoolEntity(CoordinatorEntity):
         if model_bitmask & 0x0008:
             modules.append("Salinity")
         return ", ".join(modules) if modules else "None"
-
-    @property
-    def available(self) -> bool:
-        """Return False for all entities when winter mode is active.
-
-        The winter_mode switch itself remains always available so the user
-        can turn it back off.
-        """
-        if (
-            getattr(self.coordinator, "winter_mode", False)
-            and getattr(self, "_switch_type", None) != "winter_mode"
-        ):
-            return False
-        return True

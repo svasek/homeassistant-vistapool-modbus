@@ -80,7 +80,7 @@ If you find this integration useful, consider supporting its development:
 - **Numbers**:
   Setpoints for pH, Redox, Chlorine, Temperature, Hydrolysis production.
 - **Switches**:
-  Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled), **winter mode** (suspends Modbus communication while keeping all entities available).
+  Manual filtration, relays (_Light & AUX1–AUX4_, can be enabled in Options), automatic time sync to Home Assistant (default: disabled), **winter mode** (suspends Modbus communication while keeping all entities registered in Home Assistant).
 - **Selects**:
   Filtration mode (Manual, Auto, Heating, Smart, Intelligent), timers for automatic filtration, filtration speed _(if supported)_, boost control _(if Hydro/Electrolysis module is present)_, pH pump activation delay.
 - **Buttons**:
@@ -152,7 +152,7 @@ If your pool controller is **physically disconnected during winter** (e.g. drain
 
 - Flip the **`switch.<name>_winter_mode`** switch to ON.
 - The integration stops all Modbus polling — no connection attempts, no error logs.
-- All entities remain registered in Home Assistant and immediately switch to **unknown** values. They appear greyed-out and cannot be controlled until winter mode is disabled.
+- All entities remain registered in Home Assistant. Control entities (switches, lights, buttons, numbers, selects) immediately become **unavailable** (greyed-out) and cannot be controlled until winter mode is disabled. Sensors and binary sensors stay available but show **unknown** values.
 - Automations referencing these entities continue to exist without errors.
 - When the pool season starts again, flip the switch back OFF — communication resumes and values update at the next poll cycle.
 
@@ -209,7 +209,7 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
 ## Special Notes
 
 - **Only enabled timers and relays (per Options) are shown in Home Assistant.**
-- **Winter Mode:** Suspends all Modbus polling while keeping entities registered in Home Assistant (values show as unknown until winter mode is disabled). See [Winter Mode](#winter-mode) above.
+- **Winter Mode:** Suspends all Modbus polling while keeping entities registered in Home Assistant (control entities become unavailable, sensors show unknown values). See [Winter Mode](#winter-mode) above.
 - **Timer resolution:** Can be set (in minutes) in integration Options.
 - **Entities cache last value** if there is a Modbus communication problem.
 - **Backwash and advanced options:** See above for details.

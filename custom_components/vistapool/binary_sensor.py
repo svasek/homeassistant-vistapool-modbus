@@ -140,6 +140,8 @@ async def async_setup_entry(
 class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
     """Representation of a VistaPool binary sensor."""
 
+    _winter_mode_active = False  # binary sensors stay available during winter mode
+
     def __init__(self, coordinator, entry_id, key, props) -> None:
         """Initialize the binary sensor."""
         super().__init__(coordinator, entry_id)

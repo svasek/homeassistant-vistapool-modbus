@@ -79,6 +79,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
         self._switch_type = props.get("switch_type") or None
         self._relay_index = props.get("relay_index") or None
+
+        # The winter_mode switch itself must remain available while winter mode is on
+        if self._switch_type == "winter_mode":
+            self._winter_mode_active = False
+
         self._attr_entity_category = props.get("entity_category") or None
         self._icon_on = props.get("icon_on")
         self._icon_off = props.get("icon_off")

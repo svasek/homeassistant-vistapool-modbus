@@ -124,3 +124,20 @@ async def test_press_blocked_during_winter_mode(mock_coordinator, caplog):
         await ent.async_press()
     mock_coordinator.client.async_write_register.assert_not_called()
     assert "Winter mode is active" in caplog.text
+
+
+def test_available_false_during_winter_mode(mock_coordinator):
+    """VistaPoolButton is unavailable when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = {"name": "Sync Time", "icon": "mdi:clock"}
+    ent = VistaPoolButton(mock_coordinator, "test_entry", "SYNC_TIME", props)
+    assert ent.available is False
+
+
+def test_available_true_when_not_winter_mode(mock_coordinator):
+    """VistaPoolButton is available when winter mode is off."""
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = True
+    props = {"name": "Sync Time", "icon": "mdi:clock"}
+    ent = VistaPoolButton(mock_coordinator, "test_entry", "SYNC_TIME", props)
+    assert ent.available is True

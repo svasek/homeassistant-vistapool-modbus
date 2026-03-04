@@ -139,6 +139,8 @@ async def async_setup_entry(
 class VistaPoolSensor(VistaPoolEntity, SensorEntity):
     """Representation of a VistaPool sensor."""
 
+    _winter_mode_active = False  # sensors stay available during winter mode
+
     def __init__(self, coordinator, entry_id, key, props) -> None:
         """Initialize the VistaPool sensor entity."""
         super().__init__(coordinator, entry_id)  # Pass entry_id to the parent class
@@ -287,8 +289,3 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "HIDRO_POLARITY":
             return ["pol1", "pol2", "off"]
         return None  # pragma: no cover
-
-    @property
-    def available(self) -> bool:
-        """Return True if the sensor should be available (based on filtration state)."""
-        return True

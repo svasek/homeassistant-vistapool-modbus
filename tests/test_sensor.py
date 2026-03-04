@@ -191,9 +191,20 @@ def test_options_property(mock_coordinator):
     assert ent.options == ["pol1", "pol2", "off"]
 
 
-def test_available_always_true(mock_coordinator):
+def test_available_during_winter_mode(mock_coordinator):
+    """Sensors stay available during winter mode (they show unknown values)."""
+    mock_coordinator.winter_mode = True
+    mock_coordinator.last_update_success = True
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_MEASURE_PH", {})
     assert ent.available is True
+
+
+def test_available_false_on_coordinator_failure(mock_coordinator):
+    """Sensors are unavailable when coordinator update fails."""
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = False
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_MEASURE_PH", {})
+    assert ent.available is False
 
 
 @pytest.mark.asyncio

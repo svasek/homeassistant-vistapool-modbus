@@ -521,3 +521,22 @@ def test_available_returns_false_during_winter_mode(mock_coordinator):
         mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
     )
     assert ent.available is False
+
+
+def test_available_false_on_coordinator_failure(mock_coordinator):
+    """available returns False when coordinator update fails (winter mode off)."""
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = False
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(
+        mock_coordinator, "test_entry", "MBF_PAR_FILT_MANUAL_STATE", props
+    )
+    assert ent.available is False
+
+
+def test_available_winter_mode_switch_during_winter_mode(mock_coordinator):
+    """The winter_mode switch itself stays available while winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(switch_type="winter_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
+    assert ent.available is True
