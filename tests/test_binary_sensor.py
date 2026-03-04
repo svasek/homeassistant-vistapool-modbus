@@ -80,14 +80,14 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_async_setup_entry_no_data(monkeypatch, caplog):
-    """Test async_setup_entry returns early if coordinator.data is empty."""
+    """Test async_setup_entry returns early if coordinator.data is None."""
 
     class DummyEntry:
         entry_id = "test_entry"
         options = {}
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -198,6 +198,8 @@ def test_is_on_direct_key(mock_coordinator):
     assert ent.is_on is True
     mock_coordinator.data = {"pH acid pump active": False}
     assert ent.is_on is False
+    mock_coordinator.data = {}  # key absent → missing data → unknown
+    assert ent.is_on is None
 
 
 def test_is_on_device_time_out_of_sync(mock_coordinator):
@@ -209,12 +211,17 @@ def test_is_on_device_time_out_of_sync(mock_coordinator):
         "custom_components.vistapool.binary_sensor.is_device_time_out_of_sync",
         return_value=True,
     ):
+        mock_coordinator.data = {"MBF_PAR_TIME_LOW": 1}
         assert ent.is_on is True
     with patch(
         "custom_components.vistapool.binary_sensor.is_device_time_out_of_sync",
         return_value=False,
     ):
+        mock_coordinator.data = {"MBF_PAR_TIME_LOW": 1}
         assert ent.is_on is False
+    # No time data in snapshot → unknown, not False
+    mock_coordinator.data = {}
+    assert ent.is_on is None
 
 
 def test_is_on_pool_cover_inverted(mock_coordinator):
@@ -261,9 +268,12 @@ def test_is_on_status_dict(mock_coordinator):
     assert ent.is_on is True
     mock_coordinator.data = {"MBF_STATUS": {"pump_on": False}}
     assert ent.is_on is False
-    # Status not a dict
+    # Flag absent from dict → unknown
+    mock_coordinator.data = {"MBF_STATUS": {}}
+    assert ent.is_on is None
+    # Status not a dict → unknown
     mock_coordinator.data = {"MBF_STATUS": None}
-    assert ent.is_on is False
+    assert ent.is_on is None
 
 
 def test_icon_on_off(mock_coordinator):
@@ -300,3 +310,14 @@ async def test_async_added_to_hass_calls_super(mock_coordinator):
     ) as parent:
         await ent.async_added_to_hass()
         parent.assert_called_once()
+
+
+def test_available_during_winter_mode(mock_coordinator):
+    """Binary sensors stay available during winter mode (they show unknown values)."""
+    mock_coordinator.winter_mode = True
+    mock_coordinator.last_update_success = True
+    props = make_props()
+    ent = VistaPoolBinarySensor(
+        mock_coordinator, "test_entry", "pH acid pump active", props
+    )
+    assert ent.available is True

@@ -55,7 +55,7 @@ async def async_setup_entry(
     )
     entities = []
 
-    if not coordinator.data:
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping binary_sensor setup!")
         return
 
@@ -140,6 +140,8 @@ async def async_setup_entry(
 class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
     """Representation of a VistaPool binary sensor."""
 
+    _winter_mode_active = False  # binary sensors stay available during winter mode
+
     def __init__(self, coordinator, entry_id, key, props) -> None:
         """Initialize the binary sensor."""
         super().__init__(coordinator, entry_id)
@@ -182,6 +184,8 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
     def is_on(self) -> bool | None:
         """Return True if the binary sensor is on."""
         if self._key == "Device Time Out Of Sync":
+            if self.coordinator.data.get("MBF_PAR_TIME_LOW") is None:
+                return None
             return is_device_time_out_of_sync(self.coordinator.data, self.hass)
 
         # Pool Cover: Invert logic for OPENING device class
@@ -205,12 +209,12 @@ class VistaPoolBinarySensor(VistaPoolEntity, BinarySensorEntity):
             base, flag = self._key.split("_STATUS_", 1)
             status = self.coordinator.data.get(f"{base}_STATUS", {})
             if isinstance(status, dict):
-                return status.get(flag.lower(), False)
+                return status.get(flag.lower())
             else:
-                return False
+                return None
         else:
             value = self.coordinator.data.get(self._key)
-            return bool(value)
+            return None if value is None else bool(value)
 
     @property
     def icon(self) -> str | None:

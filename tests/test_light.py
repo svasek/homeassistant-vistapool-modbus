@@ -28,6 +28,7 @@ def mock_coordinator():
     mock = MagicMock()
     mock.data = {}
     mock.device_slug = "vistapool"
+    mock.winter_mode = False
     mock.client = AsyncMock()
     mock.async_request_refresh = AsyncMock()
     config_entry = MagicMock()
@@ -166,7 +167,7 @@ async def test_light_async_setup_entry_no_data(caplog):
         options = {}
 
     class DummyCoordinator:
-        data = {}
+        data = None
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -273,3 +274,44 @@ async def test_light_async_turn_off_no_client(mock_coordinator, light_props, cap
     with caplog.at_level("ERROR"):
         await ent.async_turn_off()
         assert "Modbus client not available" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_turn_on_blocked_during_winter_mode(
+    mock_coordinator, light_props, caplog
+):
+    """async_turn_on is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    ent = VistaPoolLight(mock_coordinator, "test_entry", "light", light_props)
+    with caplog.at_level("WARNING"):
+        await ent.async_turn_on()
+    mock_coordinator.client.async_write_register.assert_not_called()
+    assert "Winter mode is active" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_turn_off_blocked_during_winter_mode(
+    mock_coordinator, light_props, caplog
+):
+    """async_turn_off is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    ent = VistaPoolLight(mock_coordinator, "test_entry", "light", light_props)
+    with caplog.at_level("WARNING"):
+        await ent.async_turn_off()
+    mock_coordinator.client.async_write_register.assert_not_called()
+    assert "Winter mode is active" in caplog.text
+
+
+def test_available_false_during_winter_mode(mock_coordinator, light_props):
+    """VistaPoolLight is unavailable when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    ent = VistaPoolLight(mock_coordinator, "test_entry", "light", light_props)
+    assert ent.available is False
+
+
+def test_available_false_on_coordinator_failure(mock_coordinator, light_props):
+    """VistaPoolLight is unavailable when coordinator update fails."""
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = False
+    ent = VistaPoolLight(mock_coordinator, "test_entry", "light", light_props)
+    assert ent.available is False

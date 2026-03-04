@@ -26,6 +26,7 @@ def mock_coordinator():
     mock = MagicMock()
     mock.data = {}
     mock.device_slug = "vistapool"
+    mock.winter_mode = False
     mock.config_entry.entry_id = "test_entry"
     return mock
 
@@ -233,6 +234,32 @@ async def test_debounced_write_no_client(mock_coordinator):
 
 
 @pytest.mark.asyncio
+async def test_debounced_write_cancelled_when_winter_mode_enabled_during_delay(
+    mock_coordinator, caplog
+):
+    """_debounced_write is aborted if winter mode is enabled during the debounce delay."""
+    props = make_props(register=0x0260, scale=100.0)
+    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
+    ent._pending_value = 7.2
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+
+    async def enable_winter_mode_during_sleep(_delay):
+        """Simulate winter mode being enabled while the debounce timer is running."""
+        mock_coordinator.winter_mode = True
+
+    with patch(
+        "custom_components.vistapool.number.asyncio.sleep",
+        side_effect=enable_winter_mode_during_sleep,
+    ):
+        with caplog.at_level("WARNING"):
+            await ent._debounced_write()
+
+    ent.coordinator.client.async_write_register.assert_not_called()
+    assert "debounced write cancelled" in caplog.text
+
+
+@pytest.mark.asyncio
 async def test_async_added_to_hass_sets_value(mock_coordinator):
     props = make_props(register=0x0210, scale=1.0)
     ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
@@ -283,9 +310,10 @@ async def test_number_async_setup_entry_adds_entities(monkeypatch):
         options = {}
 
     class DummyCoordinator:
-        # Simulate all relays assigned
+        # Simulate all relays assigned and temperature active
         data = {
             "MBF_PAR_HEATING_GPIO": True,
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
             "MBF_PAR_PH_ACID_RELAY_GPIO": True,
             "MBF_PAR_PH_BASE_RELAY_GPIO": True,
             "Redox measurement module detected": True,
@@ -397,3 +425,48 @@ async def test_number_async_setup_entry_skips_unassigned(monkeypatch):
     assert "MBF_PAR_PH2" not in keys
     assert "MBF_PAR_RX1" not in keys
     assert "MBF_PAR_CL1" not in keys
+
+
+@pytest.mark.asyncio
+async def test_set_native_value_blocked_during_winter_mode(mock_coordinator, caplog):
+    """async_set_native_value is ignored when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(register=0x0260, min_value=6.8, max_value=8.2, step=0.1)
+    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
+    ent.async_write_ha_state = MagicMock()
+    with caplog.at_level("WARNING"):
+        await ent.async_set_native_value(7.2)
+    assert "Winter mode is active" in caplog.text
+    # No debounced write task should have been created
+    assert ent._pending_value is None
+
+
+def test_available_false_during_winter_mode(mock_coordinator):
+    """VistaPoolNumber is unavailable when winter mode is active."""
+    mock_coordinator.winter_mode = True
+    props = make_props(register=0x0260, min_value=6.8, max_value=8.2, step=0.1)
+    ent = VistaPoolNumber(mock_coordinator, "test_entry", "MBF_PAR_PH1", props)
+    assert ent.available is False
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_no_data(caplog):
+    """Test async_setup_entry logs warning and adds no entities when data is None."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = None
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    with caplog.at_level("WARNING"):
+        await async_setup_entry(hass, entry, async_add_entities)
+        assert "No data from Modbus" in caplog.text
+    async_add_entities.assert_not_called()

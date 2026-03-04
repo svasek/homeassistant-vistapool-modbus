@@ -28,6 +28,7 @@ from .const import (
     DOMAIN,
     DEFAULT_SCAN_INTERVAL,
     TIMER_BLOCKS,
+    CAPABILITY_KEYS,
     HEATING_SETPOINT_REGISTER,
     INTELLIGENT_SETPOINT_REGISTER,
 )
@@ -62,10 +63,19 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         self.entry_id = entry_id
         self.device_name = entry.data.get(CONF_NAME, DOMAIN)
         self.auto_time_sync = self.entry.options.get("auto_time_sync", False)
+        self.winter_mode = self.entry.options.get("winter_mode", False)
+        # Capability snapshot: persisted in options so platform setup survives restarts
+        # in winter mode (where no real Modbus read occurs to populate coordinator.data).
+        self._capability_snapshot: dict = dict(entry.options.get("_capabilities", {}))
         self._firmware = "?"
         self._model = "Unknown"
 
     async def _async_update_data(self):
+        # Winter mode: skip all Modbus communication; entities remain but show unknown values
+        if self.winter_mode:
+            _LOGGER.debug("Winter mode active – skipping Modbus communication")
+            return self.data if self.data is not None else self._capability_snapshot
+
         try:
             data = await self.client.async_read_all()
             self._consecutive_errors = 0
@@ -210,6 +220,10 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                         )
             except Exception as sync_err:  # pragma: no cover
                 _LOGGER.debug(f"Setpoint auto-sync skipped due to error: {sync_err}")
+            # Keep capability snapshot up-to-date in memory after every successful read.
+            self._capability_snapshot = {
+                k: data[k] for k in CAPABILITY_KEYS if k in data
+            }
             return data
 
         except Exception as err:
@@ -245,6 +259,22 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         options = dict(self.entry.options)
         options["auto_time_sync"] = enabled
         self.hass.config_entries.async_update_entry(self.entry, options=options)
+
+    async def set_winter_mode(self, enabled: bool):
+        self.winter_mode = enabled
+        options = dict(self.entry.options)
+        options["winter_mode"] = enabled
+        if enabled:
+            # Refresh snapshot from live data (if available) and persist so that
+            # platform setup can reconstruct the correct entity set after a restart.
+            if self.data:
+                self._capability_snapshot = {
+                    k: self.data[k] for k in CAPABILITY_KEYS if k in self.data
+                }
+            options["_capabilities"] = dict(self._capability_snapshot)
+        self.hass.config_entries.async_update_entry(self.entry, options=options)
+        if enabled:
+            self.async_set_updated_data(dict(self._capability_snapshot))
 
     @property
     def firmware(self) -> str:

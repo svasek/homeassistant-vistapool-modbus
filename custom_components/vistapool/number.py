@@ -43,20 +43,19 @@ async def async_setup_entry(
 
     entities = []
 
-    if not coordinator.data:  # pragma: no cover
+    if coordinator.data is None:
         _LOGGER.warning("No data from Modbus, skipping number setup!")
         return
 
     for key, props in NUMBER_DEFINITIONS.items():
         # Skip smart temperature numbers if no temperature sensor is active
         if key in ("MBF_PAR_SMART_TEMP_HIGH", "MBF_PAR_SMART_TEMP_LOW"):
-            if coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0:
+            if not bool(coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
                 continue
         # Conditionally add heating setpoint only if heating relay is assigned
         if key == "MBF_PAR_HEATING_TEMP":
-            if (
-                not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO"))
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE") == 0
+            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
         # Conditionally add pH high limit only if acid pump relay is assigned
@@ -138,6 +137,11 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
 
     async def async_set_native_value(self, value: float | int | str) -> None:
         """Set the native value of the number entity."""
+        if self.coordinator.winter_mode:
+            _LOGGER.warning(
+                "Winter mode is active — ignoring set_native_value for %s", self._key
+            )
+            return
         self._pending_value = value
         if (
             self._pending_write_task is not None and not self._pending_write_task.done()
@@ -156,6 +160,12 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
             return
         try:
             await asyncio.sleep(self._debounce_delay)
+            if self.coordinator.winter_mode:
+                _LOGGER.warning(
+                    "Winter mode is active — debounced write cancelled for %s",
+                    self._key,
+                )
+                return
             raw = int(self._pending_value * self._scale)
             # If user changes heating or intelligent setpoint, mirror the value
             # to both registers so a single UI control can keep them in sync.

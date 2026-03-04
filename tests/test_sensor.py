@@ -191,9 +191,20 @@ def test_options_property(mock_coordinator):
     assert ent.options == ["pol1", "pol2", "off"]
 
 
-def test_available_always_true(mock_coordinator):
+def test_available_during_winter_mode(mock_coordinator):
+    """Sensors stay available during winter mode (they show unknown values)."""
+    mock_coordinator.winter_mode = True
+    mock_coordinator.last_update_success = True
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_MEASURE_PH", {})
     assert ent.available is True
+
+
+def test_available_false_on_coordinator_failure(mock_coordinator):
+    """Sensors are unavailable when coordinator update fails."""
+    mock_coordinator.winter_mode = False
+    mock_coordinator.last_update_success = False
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_MEASURE_PH", {})
+    assert ent.available is False
 
 
 @pytest.mark.asyncio
@@ -249,6 +260,10 @@ async def test_sensor_async_setup_entry_adds_entities(monkeypatch):
     assert "FILTRATION_SPEED" in keys
     assert "MBF_PAR_FILT_MODE" in keys
     assert "MBF_PH_STATUS_ALARM" in keys
+    # These sensors have no capability gate — always created
+    assert "MBF_HIDRO_CURRENT" in keys
+    assert "MBF_HIDRO_VOLTAGE" in keys
+    assert "HIDRO_POLARITY" in keys
 
 
 @pytest.mark.asyncio
@@ -412,20 +427,28 @@ async def test_sensor_temperature_created_when_active():
 
 
 @pytest.mark.asyncio
-async def test_sensor_intelligent_intervals_skip_without_heating():
-    """Test that MBF_PAR_INTELLIGENT_INTERVALS is skipped when heating GPIO not assigned or temperature inactive."""
+@pytest.mark.parametrize(
+    "sensor_key,value",
+    [
+        ("MBF_PAR_INTELLIGENT_INTERVALS", 5),
+        ("MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL", 7200),
+    ],
+)
+async def test_sensor_intelligent_key_skip_without_heating(sensor_key, value):
+    """Intelligent-mode sensors are skipped when heating GPIO is not assigned."""
 
     class DummyEntry:
         entry_id = "test_entry"
 
     class DummyCoordinator:
-        data = {
-            "MBF_PAR_INTELLIGENT_INTERVALS": 5,
-            "MBF_PAR_HEATING_GPIO": 0,  # No heating GPIO
-            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
-        }
         config_entry = DummyEntry()
         device_slug = "vistapool"
+
+    DummyCoordinator.data = {
+        sensor_key: value,
+        "MBF_PAR_HEATING_GPIO": 0,  # No heating GPIO
+        "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+    }
 
     hass = MagicMock()
     hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
@@ -434,26 +457,33 @@ async def test_sensor_intelligent_intervals_skip_without_heating():
 
     await async_setup_entry(hass, entry, async_add_entities)
 
-    entities = async_add_entities.call_args[0][0]
-    keys = [e._key for e in entities]
-    assert "MBF_PAR_INTELLIGENT_INTERVALS" not in keys
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert sensor_key not in keys
 
 
 @pytest.mark.asyncio
-async def test_sensor_intelligent_intervals_created_with_heating():
-    """Test that MBF_PAR_INTELLIGENT_INTERVALS is created when heating GPIO assigned and temperature active."""
+@pytest.mark.parametrize(
+    "sensor_key,value",
+    [
+        ("MBF_PAR_INTELLIGENT_INTERVALS", 5),
+        ("MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL", 7200),
+    ],
+)
+async def test_sensor_intelligent_key_created_with_heating(sensor_key, value):
+    """Intelligent-mode sensors are created when heating GPIO is assigned and temperature is active."""
 
     class DummyEntry:
         entry_id = "test_entry"
 
     class DummyCoordinator:
-        data = {
-            "MBF_PAR_INTELLIGENT_INTERVALS": 5,
-            "MBF_PAR_HEATING_GPIO": 7,  # Heating GPIO assigned
-            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
-        }
         config_entry = DummyEntry()
         device_slug = "vistapool"
+
+    DummyCoordinator.data = {
+        sensor_key: value,
+        "MBF_PAR_HEATING_GPIO": 7,  # Heating GPIO assigned
+        "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+    }
 
     hass = MagicMock()
     hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
@@ -462,65 +492,8 @@ async def test_sensor_intelligent_intervals_created_with_heating():
 
     await async_setup_entry(hass, entry, async_add_entities)
 
-    entities = async_add_entities.call_args[0][0]
-    keys = [e._key for e in entities]
-    assert "MBF_PAR_INTELLIGENT_INTERVALS" in keys
-
-
-@pytest.mark.asyncio
-async def test_sensor_intelligent_tt_next_interval_skip_without_heating():
-    """Test that MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL is skipped when heating GPIO not assigned or temperature inactive."""
-
-    class DummyEntry:
-        entry_id = "test_entry"
-
-    class DummyCoordinator:
-        data = {
-            "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": 7200,
-            "MBF_PAR_HEATING_GPIO": 0,  # No heating GPIO
-            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
-        }
-        config_entry = DummyEntry()
-        device_slug = "vistapool"
-
-    hass = MagicMock()
-    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
-    entry = DummyEntry()
-    async_add_entities = MagicMock()
-
-    await async_setup_entry(hass, entry, async_add_entities)
-
-    entities = async_add_entities.call_args[0][0]
-    keys = [e._key for e in entities]
-    assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" not in keys
-
-
-@pytest.mark.asyncio
-async def test_sensor_intelligent_tt_next_interval_created_with_heating():
-    """Test that MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL is created when heating GPIO assigned and temperature active."""
-
-    class DummyEntry:
-        entry_id = "test_entry"
-
-    class DummyCoordinator:
-        data = {
-            "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL": 7200,
-            "MBF_PAR_HEATING_GPIO": 7,  # Heating GPIO assigned
-            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
-        }
-        config_entry = DummyEntry()
-        device_slug = "vistapool"
-
-    hass = MagicMock()
-    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
-    entry = DummyEntry()
-    async_add_entities = MagicMock()
-
-    await async_setup_entry(hass, entry, async_add_entities)
-
-    entities = async_add_entities.call_args[0][0]
-    keys = [e._key for e in entities]
-    assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" in keys
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert sensor_key in keys
 
 
 def test_sensor_intelligent_tt_next_interval_calls_helper():
@@ -548,3 +521,82 @@ def test_sensor_intelligent_tt_next_interval_calls_helper():
         _ = ent.native_value
         # Verify the helper was called with correct arguments
         mock_calc.assert_called_once_with(3600, mock_hass)
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_no_data(caplog):
+    """Test async_setup_entry logs warning and adds no entities when data is None."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = None
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    with caplog.at_level("WARNING"):
+        await async_setup_entry(hass, entry, async_add_entities)
+        assert "No data from Modbus" in caplog.text
+    async_add_entities.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_sensor_setup_with_capability_snapshot_only():
+    """After a HA restart in winter mode coordinator.data holds only capability keys.
+
+    All sensors that survive capability gating must still be registered so the
+    entity registry stays consistent.  Measurement values are None (shown as
+    unknown in HA) until winter mode is disabled.
+    """
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        # Simulates the capability snapshot stored by set_winter_mode(True)
+        data = {
+            "MBF_PAR_MODEL": 0x0001,  # ion bit set
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+            "MBF_PAR_FILTRATION_CONF": 0x0001,  # variable-speed pump
+            "MBF_PAR_HEATING_GPIO": 5,
+            "pH measurement module detected": True,
+            "Redox measurement module detected": True,
+            "Chlorine measurement module detected": True,
+            "Conductivity measurement module detected": True,
+            # No measurement values – as returned after a restart in winter mode
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+
+    # Measurement sensors guarded by capability flags must still be registered
+    assert "MBF_MEASURE_PH" in keys
+    assert "MBF_MEASURE_RX" in keys
+    assert "MBF_MEASURE_CL" in keys
+    assert "MBF_MEASURE_CONDUCTIVITY" in keys
+    assert "MBF_MEASURE_TEMPERATURE" in keys
+    assert "MBF_ION_CURRENT" in keys
+    assert "FILTRATION_SPEED" in keys
+    assert "MBF_PAR_INTELLIGENT_INTERVALS" in keys
+    assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" in keys
+    # Unconditional sensors
+    assert "MBF_HIDRO_CURRENT" in keys
+    assert "MBF_HIDRO_VOLTAGE" in keys
+    assert "MBF_PAR_FILT_MODE" in keys
+    assert "MBF_PH_STATUS_ALARM" in keys
+    assert "HIDRO_POLARITY" in keys
