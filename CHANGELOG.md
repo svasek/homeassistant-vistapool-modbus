@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.16.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.15.1...v1.16.0) (2026-03-04)
+
+
+### Features
+
+* ✨ add Winter Mode switch to suspend Modbus polling during off-season ([dab8508](https://github.com/svasek/homeassistant-vistapool-modbus/commit/dab8508ee6d9629cb8586406213da0adc93ca13d))
+* ✨ add Winter Mode to suspend during off-season ([#75](https://github.com/svasek/homeassistant-vistapool-modbus/issues/75)) ([dab8508](https://github.com/svasek/homeassistant-vistapool-modbus/commit/dab8508ee6d9629cb8586406213da0adc93ca13d))
+
 ## [1.15.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.15.0...v1.15.1) (2026-03-03)
 
 
