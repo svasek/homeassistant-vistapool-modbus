@@ -30,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "Nie można połączyć się z podanym adresem i portem."
+    },
+    "abort": {
+      "entry_not_found": "Nie znaleziono wpisu integracji.",
+      "reconfigure_successful": "Ustawienia połączenia zostały pomyślnie zaktualizowane."
     }
   },
   "options": {

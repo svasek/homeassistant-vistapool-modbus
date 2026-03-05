@@ -30,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "Cannot connect to the specified address and port."
+    },
+    "abort": {
+      "entry_not_found": "The integration entry could not be found.",
+      "reconfigure_successful": "Connection settings updated successfully."
     }
   },
   "options": {

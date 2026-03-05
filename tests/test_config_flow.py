@@ -171,7 +171,6 @@ async def test_reconfigure_success():
     flow.hass = MagicMock()
     flow.hass.config_entries.async_get_entry.return_value = mock_entry
     flow.context = {"entry_id": "abc123"}
-    flow._get_reconfigure_entry = MagicMock(return_value=mock_entry)
     flow.async_update_reload_and_abort = MagicMock(
         return_value={"type": "abort", "reason": "reconfigure_successful"}
     )

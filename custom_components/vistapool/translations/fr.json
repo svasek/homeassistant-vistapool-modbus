@@ -30,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "Impossible de se connecter à l'adresse et au port spécifiés."
+    },
+    "abort": {
+      "entry_not_found": "L'entrée d'intégration est introuvable.",
+      "reconfigure_successful": "Paramètres de connexion mis à jour avec succès."
     }
   },
   "options": {

@@ -30,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "No se puede conectar a la dirección y puerto especificados."
+    },
+    "abort": {
+      "entry_not_found": "No se encontró la entrada de integración.",
+      "reconfigure_successful": "Configuración de conexión actualizada correctamente."
     }
   },
   "options": {

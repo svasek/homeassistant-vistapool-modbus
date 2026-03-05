@@ -30,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "Impossibile connettersi all'indirizzo e alla porta specificati."
+    },
+    "abort": {
+      "entry_not_found": "Voce di integrazione non trovata.",
+      "reconfigure_successful": "Impostazioni di connessione aggiornate correttamente."
     }
   },
   "options": {
