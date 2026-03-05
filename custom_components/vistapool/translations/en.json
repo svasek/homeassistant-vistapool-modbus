@@ -1,6 +1,16 @@
 {
   "config": {
     "step": {
+      "reconfigure": {
+        "title": "Reconfigure VistaPool Connection",
+        "description": "Update the connection settings for your VistaPool controller.",
+        "data": {
+          "host": "Modbus gateway IP address",
+          "port": "TCP port for Modbus (default: 502).",
+          "slave_id": "Modbus device address (default: 1).",
+          "modbus_framer": "Protocol framing: 'tcp' = Modbus TCP (MBAP header, for gateways with conversion), 'rtu' = RTU over TCP (for transparent TCP gateways)"
+        }
+      },
       "user": {
         "title": "VistaPool Connection",
         "description": "Configure the connection to your VistaPool controller.",

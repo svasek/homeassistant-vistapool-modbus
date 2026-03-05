@@ -1,6 +1,16 @@
 {
   "config": {
     "step": {
+      "reconfigure": {
+        "title": "Reconfigurer la connexion VistaPool",
+        "description": "Mettez à jour les paramètres de connexion à votre contrôleur VistaPool.",
+        "data": {
+          "host": "Adresse IP de la passerelle Modbus",
+          "port": "Port TCP pour Modbus (défaut : 502).",
+          "slave_id": "Adresse de l’appareil Modbus (défaut : 1).",
+          "modbus_framer": "Tramage du protocole : 'tcp' = Modbus TCP (en-tête MBAP, pour les passerelles avec conversion), 'rtu' = RTU sur TCP (pour les passerelles TCP transparentes)"
+        }
+      },
       "user": {
         "title": "Connexion VistaPool",
         "description": "Configurez la connexion à votre contrôleur VistaPool.",

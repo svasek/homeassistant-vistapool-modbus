@@ -101,6 +101,46 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=data_schema,
         )
 
+    async def async_step_reconfigure(self, user_input=None) -> dict | None:
+        """Handle reconfiguration of an existing entry."""
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        current = entry.data if entry else {}
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(CONF_HOST, default=current.get(CONF_HOST, "")): str,
+                vol.Optional(
+                    CONF_PORT, default=current.get(CONF_PORT, DEFAULT_PORT)
+                ): int,
+                vol.Optional(
+                    "slave_id", default=current.get("slave_id", DEFAULT_SLAVE_ID)
+                ): int,
+                vol.Optional(
+                    "modbus_framer",
+                    default=current.get("modbus_framer", DEFAULT_MODBUS_FRAMER),
+                ): vol.In(["tcp", "rtu"]),
+            }
+        )
+
+        errors = {}
+        if user_input is not None:
+            host = user_input.get(CONF_HOST)
+            port = user_input.get(CONF_PORT, DEFAULT_PORT)
+            if not await is_host_port_open(host, port):
+                errors[CONF_HOST] = "cannot_connect"
+            if not errors:
+                new_data = {**current, **user_input}
+                return self.async_update_reload_and_abort(
+                    self._get_reconfigure_entry(),
+                    data=new_data,
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=data_schema,
+            errors=errors,
+        )
+
     @staticmethod
     def async_get_options_flow(config_entry):
         from .options_flow import VistaPoolOptionsFlowHandler

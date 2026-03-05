@@ -1,6 +1,16 @@
 {
   "config": {
     "step": {
+      "reconfigure": {
+        "title": "Překonfigurovat připojení VistaPool",
+        "description": "Aktualizujte nastavení připojení k vašemu řadiči VistaPool.",
+        "data": {
+          "host": "IP adresa Modbus brány",
+          "port": "TCP port pro Modbus (výchozí: 502).",
+          "slave_id": "Modbus Adresa zařízení (výchozí: 1).",
+          "modbus_framer": "Rámování protokolu: 'tcp' = Modbus TCP (MBAP header, pro TCP brány s konverzí), 'rtu' = RTU přes TCP (pro transparentní TCP brány)"
+        }
+      },
       "user": {
         "title": "Připojení VistaPool",
         "description": "Nakonfigurujte připojení k vašemu řadiči VistaPool.",
