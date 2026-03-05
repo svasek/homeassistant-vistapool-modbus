@@ -110,7 +110,10 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_reconfigure(self, user_input=None) -> dict | None:
         """Handle reconfiguration of an existing entry."""
         entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
-        current = entry.data if entry else {}
+        if entry is None:
+            return self.async_abort(reason="entry_not_found")
+
+        current = entry.data
 
         data_schema = vol.Schema(
             {
@@ -134,7 +137,7 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if not errors:
                 new_data = {**current, **user_input}
                 return self.async_update_reload_and_abort(
-                    self._get_reconfigure_entry(),
+                    entry,
                     data=new_data,
                 )
 

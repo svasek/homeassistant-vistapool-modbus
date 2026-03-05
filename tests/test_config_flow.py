@@ -234,18 +234,19 @@ async def test_reconfigure_cannot_connect():
 
 
 @pytest.mark.asyncio
-async def test_reconfigure_entry_not_found_uses_empty_defaults():
-    """When the entry cannot be found, defaults are used without crashing."""
+async def test_reconfigure_entry_not_found_aborts():
+    """When the entry cannot be found, the flow aborts gracefully."""
     flow = config_flow.VistaPoolConfigFlow()
 
     flow.hass = MagicMock()
     flow.hass.config_entries.async_get_entry.return_value = None
     flow.context = {"entry_id": "missing"}
+    flow.async_abort = MagicMock(return_value={"type": "abort", "reason": "entry_not_found"})
 
     result = await flow.async_step_reconfigure(user_input=None)
 
-    assert result["type"] == "form"
-    assert result["step_id"] == "reconfigure"
+    assert result["type"] == "abort"
+    assert result["reason"] == "entry_not_found"
 
 
 @pytest.mark.asyncio
