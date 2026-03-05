@@ -1,6 +1,16 @@
 {
   "config": {
     "step": {
+      "reconfigure": {
+        "title": "Reconfigurar conexión VistaPool",
+        "description": "Actualiza la configuración de conexión a tu controlador VistaPool.",
+        "data": {
+          "host": "Dirección IP de la puerta de enlace Modbus",
+          "port": "Puerto TCP para Modbus (por defecto: 502).",
+          "slave_id": "Dirección de dispositivo Modbus (por defecto: 1).",
+          "modbus_framer": "Encuadre de protocolo: 'tcp' = Modbus TCP (cabecera MBAP, para pasarelas con conversión), 'rtu' = RTU sobre TCP (para pasarelas TCP transparentes)"
+        }
+      },
       "user": {
         "title": "Conexión VistaPool",
         "description": "Configura la conexión a tu controlador VistaPool.",
@@ -20,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "No se puede conectar a la dirección y puerto especificados."
+    },
+    "abort": {
+      "entry_not_found": "No se encontró la entrada de integración.",
+      "reconfigure_successful": "Configuración de conexión actualizada correctamente."
     }
   },
   "options": {

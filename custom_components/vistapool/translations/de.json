@@ -1,6 +1,16 @@
 {
   "config": {
     "step": {
+      "reconfigure": {
+        "title": "VistaPool Verbindung neu konfigurieren",
+        "description": "Aktualisieren Sie die Verbindungseinstellungen Ihres VistaPool-Controllers.",
+        "data": {
+          "host": "IP-Adresse des Modbus-Gateways",
+          "port": "TCP-Port für Modbus (Standard: 502).",
+          "slave_id": "Modbus-Geräteadresse (Standard: 1).",
+          "modbus_framer": "Protokoll-Framing: 'tcp' = Modbus TCP (MBAP-Header, für Gateways mit Konvertierung), 'rtu' = RTU über TCP (für transparente TCP-Gateways)"
+        }
+      },
       "user": {
         "title": "VistaPool Verbindung",
         "description": "Konfigurieren Sie die Verbindung zu Ihrem VistaPool-Controller.",
@@ -20,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "Verbindung zur angegebenen Adresse und Port nicht möglich."
+    },
+    "abort": {
+      "entry_not_found": "Der Integrationseintrag wurde nicht gefunden.",
+      "reconfigure_successful": "Verbindungseinstellungen erfolgreich aktualisiert."
     }
   },
   "options": {

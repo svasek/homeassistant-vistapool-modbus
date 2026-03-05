@@ -44,6 +44,15 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    async def _async_validate_connection(self, user_input: dict) -> dict:
+        """Validate host/port connectivity and return an errors dict."""
+        errors = {}
+        host = user_input.get(CONF_HOST)
+        port = user_input.get(CONF_PORT, DEFAULT_PORT)
+        if not await is_host_port_open(host, port):
+            errors[CONF_HOST] = "cannot_connect"
+        return errors
+
     async def async_step_user(self, user_input=None) -> dict | None:
         """Handle the initial step of the configuration flow."""
         data_schema = vol.Schema(
@@ -83,10 +92,7 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             device_name = user_input.get(CONF_NAME, DOMAIN)
             user_input[CONF_NAME] = device_name
 
-            host = user_input.get(CONF_HOST)
-            port = user_input.get(CONF_PORT, DEFAULT_PORT)
-            if not await is_host_port_open(host, port):
-                errors[CONF_HOST] = "cannot_connect"
+            errors = await self._async_validate_connection(user_input)
             if errors:
                 # Keep the previously entered values except for required fields
                 return self.async_show_form(
@@ -99,6 +105,46 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=data_schema,
+        )
+
+    async def async_step_reconfigure(self, user_input=None) -> dict | None:
+        """Handle reconfiguration of an existing entry."""
+        entry = self.hass.config_entries.async_get_entry(self.context["entry_id"])
+        if entry is None:
+            return self.async_abort(reason="entry_not_found")
+
+        current = entry.data
+
+        data_schema = vol.Schema(
+            {
+                vol.Required(CONF_HOST, default=current.get(CONF_HOST, "")): str,
+                vol.Optional(
+                    CONF_PORT, default=current.get(CONF_PORT, DEFAULT_PORT)
+                ): int,
+                vol.Optional(
+                    "slave_id", default=current.get("slave_id", DEFAULT_SLAVE_ID)
+                ): int,
+                vol.Optional(
+                    "modbus_framer",
+                    default=current.get("modbus_framer", DEFAULT_MODBUS_FRAMER),
+                ): vol.In(["tcp", "rtu"]),
+            }
+        )
+
+        errors = {}
+        if user_input is not None:
+            errors = await self._async_validate_connection(user_input)
+            if not errors:
+                new_data = {**current, **user_input}
+                return self.async_update_reload_and_abort(
+                    entry,
+                    data=new_data,
+                )
+
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=data_schema,
+            errors=errors,
         )
 
     @staticmethod

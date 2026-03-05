@@ -1,6 +1,16 @@
 {
   "config": {
     "step": {
+      "reconfigure": {
+        "title": "Skonfiguruj ponownie połączenie VistaPool",
+        "description": "Zaktualizuj ustawienia połączenia z kontrolerem VistaPool.",
+        "data": {
+          "host": "Adres IP bramki Modbus",
+          "port": "Port TCP dla Modbus (domyślnie: 502).",
+          "slave_id": "Adres urządzenia Modbus (domyślnie: 1).",
+          "modbus_framer": "Ramkowanie protokołu: 'tcp' = Modbus TCP (nagłówek MBAP, dla bramek z konwersją), 'rtu' = RTU przez TCP (dla transparentnych bramek TCP)"
+        }
+      },
       "user": {
         "title": "Połączenie VistaPool",
         "description": "Skonfiguruj połączenie z kontrolerem VistaPool.",
@@ -20,6 +30,10 @@
     },
     "error": {
       "cannot_connect": "Nie można połączyć się z podanym adresem i portem."
+    },
+    "abort": {
+      "entry_not_found": "Nie znaleziono wpisu integracji.",
+      "reconfigure_successful": "Ustawienia połączenia zostały pomyślnie zaktualizowane."
     }
   },
   "options": {

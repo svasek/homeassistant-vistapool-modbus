@@ -115,6 +115,148 @@ def test_async_get_options_flow(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_reconfigure_shows_form_with_current_data():
+    """Reconfigure form is shown with pre-filled values from the existing entry."""
+    flow = config_flow.VistaPoolConfigFlow()
+
+    existing_data = {
+        "host": "10.0.0.1",
+        "port": 502,
+        "slave_id": 2,
+        "modbus_framer": "rtu",
+        "name": "MyPool",
+        "scan_interval": 30,
+    }
+    mock_entry = MagicMock()
+    mock_entry.data = existing_data
+
+    flow.hass = MagicMock()
+    flow.hass.config_entries.async_get_entry.return_value = mock_entry
+    flow.context = {"entry_id": "abc123"}
+
+    result = await flow.async_step_reconfigure(user_input=None)
+
+    assert result["type"] == "form"
+    assert result["step_id"] == "reconfigure"
+    assert not result.get("errors")
+
+    # Extract defaults from the voluptuous schema and verify they match existing_data
+    schema_defaults = {
+        key.schema: key.default() if callable(key.default) else key.default
+        for key in result["data_schema"].schema
+        if hasattr(key, "default")
+    }
+    assert schema_defaults["host"] == existing_data["host"]
+    assert schema_defaults["port"] == existing_data["port"]
+    assert schema_defaults["slave_id"] == existing_data["slave_id"]
+    assert schema_defaults["modbus_framer"] == existing_data["modbus_framer"]
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_success():
+    """Successful reconfiguration merges new values and calls update_reload_and_abort."""
+    flow = config_flow.VistaPoolConfigFlow()
+
+    existing_data = {
+        "host": "10.0.0.1",
+        "port": 502,
+        "slave_id": 1,
+        "modbus_framer": "tcp",
+        "name": "MyPool",
+        "scan_interval": 30,
+    }
+    mock_entry = MagicMock()
+    mock_entry.data = existing_data
+
+    flow.hass = MagicMock()
+    flow.hass.config_entries.async_get_entry.return_value = mock_entry
+    flow.context = {"entry_id": "abc123"}
+    flow.async_update_reload_and_abort = MagicMock(
+        return_value={"type": "abort", "reason": "reconfigure_successful"}
+    )
+
+    user_input = {
+        "host": "10.0.0.99",
+        "port": 503,
+        "slave_id": 2,
+        "modbus_framer": "rtu",
+    }
+
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        new=AsyncMock(return_value=True),
+    ):
+        result = await flow.async_step_reconfigure(user_input)
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "reconfigure_successful"
+
+    call_kwargs = flow.async_update_reload_and_abort.call_args
+    saved_data = call_kwargs[1]["data"]
+    # New values overwrite old ones
+    assert saved_data["host"] == "10.0.0.99"
+    assert saved_data["port"] == 503
+    assert saved_data["slave_id"] == 2
+    assert saved_data["modbus_framer"] == "rtu"
+    # Unchanged values from original entry are preserved
+    assert saved_data["name"] == "MyPool"
+    assert saved_data["scan_interval"] == 30
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_cannot_connect():
+    """Reconfigure shows cannot_connect error when host is unreachable."""
+    flow = config_flow.VistaPoolConfigFlow()
+
+    mock_entry = MagicMock()
+    mock_entry.data = {
+        "host": "10.0.0.1",
+        "port": 502,
+        "slave_id": 1,
+        "modbus_framer": "tcp",
+    }
+
+    flow.hass = MagicMock()
+    flow.hass.config_entries.async_get_entry.return_value = mock_entry
+    flow.context = {"entry_id": "abc123"}
+
+    user_input = {
+        "host": "10.0.0.99",
+        "port": 502,
+        "slave_id": 1,
+        "modbus_framer": "tcp",
+    }
+
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        new=AsyncMock(return_value=False),
+    ):
+        result = await flow.async_step_reconfigure(user_input)
+
+    assert result["type"] == "form"
+    assert result["step_id"] == "reconfigure"
+    assert result["errors"].get("host") == "cannot_connect"
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_entry_not_found_aborts():
+    """When the entry cannot be found, the flow aborts gracefully."""
+    flow = config_flow.VistaPoolConfigFlow()
+
+    flow.hass = MagicMock()
+    flow.hass.config_entries.async_get_entry.return_value = None
+    flow.context = {"entry_id": "missing"}
+    flow.async_abort = MagicMock(
+        return_value={"type": "abort", "reason": "entry_not_found"}
+    )
+
+    result = await flow.async_step_reconfigure(user_input=None)
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "entry_not_found"
+
+
+@pytest.mark.asyncio
 async def test_is_host_port_open_exception():
     # Monkeypatch asyncio.open_connection to raise
     async def raise_exc(*args, **kwargs):
