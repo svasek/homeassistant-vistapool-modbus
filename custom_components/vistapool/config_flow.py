@@ -44,6 +44,15 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     VERSION = 1
 
+    async def _async_validate_connection(self, user_input: dict) -> dict:
+        """Validate host/port connectivity and return an errors dict."""
+        errors = {}
+        host = user_input.get(CONF_HOST)
+        port = user_input.get(CONF_PORT, DEFAULT_PORT)
+        if not await is_host_port_open(host, port):
+            errors[CONF_HOST] = "cannot_connect"
+        return errors
+
     async def async_step_user(self, user_input=None) -> dict | None:
         """Handle the initial step of the configuration flow."""
         data_schema = vol.Schema(
@@ -83,10 +92,7 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             device_name = user_input.get(CONF_NAME, DOMAIN)
             user_input[CONF_NAME] = device_name
 
-            host = user_input.get(CONF_HOST)
-            port = user_input.get(CONF_PORT, DEFAULT_PORT)
-            if not await is_host_port_open(host, port):
-                errors[CONF_HOST] = "cannot_connect"
+            errors = await self._async_validate_connection(user_input)
             if errors:
                 # Keep the previously entered values except for required fields
                 return self.async_show_form(
@@ -124,10 +130,7 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors = {}
         if user_input is not None:
-            host = user_input.get(CONF_HOST)
-            port = user_input.get(CONF_PORT, DEFAULT_PORT)
-            if not await is_host_port_open(host, port):
-                errors[CONF_HOST] = "cannot_connect"
+            errors = await self._async_validate_connection(user_input)
             if not errors:
                 new_data = {**current, **user_input}
                 return self.async_update_reload_and_abort(
