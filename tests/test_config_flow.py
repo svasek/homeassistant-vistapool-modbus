@@ -139,11 +139,17 @@ async def test_reconfigure_shows_form_with_current_data():
     assert result["type"] == "form"
     assert result["step_id"] == "reconfigure"
     assert not result.get("errors")
-    schema_str = str(result["data_schema"])
-    assert "host" in schema_str
-    assert "port" in schema_str
-    assert "slave_id" in schema_str
-    assert "modbus_framer" in schema_str
+
+    # Extract defaults from the voluptuous schema and verify they match existing_data
+    schema_defaults = {
+        key.schema: key.default() if callable(key.default) else key.default
+        for key in result["data_schema"].schema
+        if hasattr(key, "default")
+    }
+    assert schema_defaults["host"] == existing_data["host"]
+    assert schema_defaults["port"] == existing_data["port"]
+    assert schema_defaults["slave_id"] == existing_data["slave_id"]
+    assert schema_defaults["modbus_framer"] == existing_data["modbus_framer"]
 
 
 @pytest.mark.asyncio
@@ -241,7 +247,9 @@ async def test_reconfigure_entry_not_found_aborts():
     flow.hass = MagicMock()
     flow.hass.config_entries.async_get_entry.return_value = None
     flow.context = {"entry_id": "missing"}
-    flow.async_abort = MagicMock(return_value={"type": "abort", "reason": "entry_not_found"})
+    flow.async_abort = MagicMock(
+        return_value={"type": "abort", "reason": "entry_not_found"}
+    )
 
     result = await flow.async_step_reconfigure(user_input=None)
 
