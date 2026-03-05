@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.17.0...v1.18.0) (2026-03-05)
+
+
+### Features
+
+* ✨ add reconfigure flow to update connection settings ([#78](https://github.com/svasek/homeassistant-vistapool-modbus/issues/78)) ([a721d30](https://github.com/svasek/homeassistant-vistapool-modbus/commit/a721d30026866b98653718e3beb5770f6bf6569b))
+
 ## [1.17.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.16.0...v1.17.0) (2026-03-04)
 
 
