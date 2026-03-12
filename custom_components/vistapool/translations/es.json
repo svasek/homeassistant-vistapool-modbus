@@ -24,7 +24,8 @@
           "use_filtration1": "Activar el 1º temporizador de filtración para modo automático",
           "use_filtration2": "Activar el 2º temporizador de filtración para modo automático",
           "use_filtration3": "Activar el 3º temporizador de filtración para modo automático",
-          "use_light": "Activar relé de luz"
+          "use_light": "Activar relé de luz",
+          "use_cover_sensor": "Activar sensor de cubierta de piscina"
         }
       }
     },
@@ -49,6 +50,7 @@
           "use_filtration2": "Activar el 2º temporizador de filtración para modo automático",
           "use_filtration3": "Activar el 3º temporizador de filtración para modo automático",
           "use_light": "Activar relé de luz",
+          "use_cover_sensor": "Activar sensor de cubierta de piscina",
           "use_aux1": "Activar relé Aux1",
           "use_aux2": "Activar relé Aux2",
           "use_aux3": "Activar relé Aux3",

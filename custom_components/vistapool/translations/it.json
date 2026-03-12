@@ -24,7 +24,8 @@
           "use_filtration1": "Abilita il 1° timer di filtrazione per la modalità automatica",
           "use_filtration2": "Abilita il 2° timer di filtrazione per la modalità automatica",
           "use_filtration3": "Abilita il 3° timer di filtrazione per la modalità automatica",
-          "use_light": "Abilita relè luce"
+          "use_light": "Abilita relè luce",
+          "use_cover_sensor": "Abilita sensore copertura piscina"
         }
       }
     },
@@ -49,6 +50,7 @@
           "use_filtration2": "Abilita il 2° timer di filtrazione per la modalità automatica",
           "use_filtration3": "Abilita il 3° timer di filtrazione per la modalità automatica",
           "use_light": "Abilita relè luce",
+          "use_cover_sensor": "Abilita sensore copertura piscina",
           "use_aux1": "Abilita relè Aux1",
           "use_aux2": "Abilita relè Aux2",
           "use_aux3": "Abilita relè Aux3",

@@ -24,7 +24,8 @@
           "use_filtration1": "Povolit 1. časovač filtrace pro automatický režim",
           "use_filtration2": "Povolit 2. časovač filtrace pro automatický režim",
           "use_filtration3": "Povolit 3. časovač filtrace pro automatický režim",
-          "use_light": "Povolit relé Osvětlení"
+          "use_light": "Povolit relé Osvětlení",
+          "use_cover_sensor": "Povolit senzor zakrytí bazénu"
         }
       }
     },
@@ -49,6 +50,7 @@
           "use_filtration2": "Povolit 2. časovač filtrace pro automatický režim",
           "use_filtration3": "Povolit 3. časovač filtrace pro automatický režim",
           "use_light": "Povolit relé Osvětlení",
+          "use_cover_sensor": "Povolit senzor zakrytí bazénu",
           "use_aux1": "Povolit relé Aux1",
           "use_aux2": "Povolit relé Aux2",
           "use_aux3": "Povolit relé Aux3",

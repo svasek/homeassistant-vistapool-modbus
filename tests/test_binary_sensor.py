@@ -137,16 +137,15 @@ async def test_async_setup_entry_option_disables_sensor(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_async_setup_entry_skips_pool_cover_when_not_enabled(monkeypatch):
-    """Test that Pool Cover sensor is skipped when cover function is not enabled."""
+    """Test that Pool Cover sensor is skipped when cover sensor option is not enabled."""
 
     class DummyEntry:
         entry_id = "test_entry"
-        options = {}
+        options = {}  # use_cover_sensor defaults to False
 
     class DummyCoordinator:
         data = {
             "MBF_PAR_MODEL": 0x0002,  # Hidro module present
-            "MBF_PAR_HIDRO_COVER_ENABLE": 0x0000,  # Cover function disabled (bit 0 = 0)
         }
         config_entry = DummyEntry()
         device_slug = "vistapool"
@@ -164,16 +163,15 @@ async def test_async_setup_entry_skips_pool_cover_when_not_enabled(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_async_setup_entry_includes_pool_cover_when_enabled(monkeypatch):
-    """Test that Pool Cover sensor is included when cover function is enabled."""
+    """Test that Pool Cover sensor is included when cover sensor option is enabled."""
 
     class DummyEntry:
         entry_id = "test_entry"
-        options = {}
+        options = {"use_cover_sensor": True}  # cover sensor option enabled
 
     class DummyCoordinator:
         data = {
             "MBF_PAR_MODEL": 0x0002,  # Hidro module present
-            "MBF_PAR_HIDRO_COVER_ENABLE": 0x0001,  # Cover function enabled (bit 0 = 1)
         }
         config_entry = DummyEntry()
         device_slug = "vistapool"

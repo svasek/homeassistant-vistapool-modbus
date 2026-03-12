@@ -24,7 +24,8 @@
           "use_filtration1": "1. Filter-Timer für Automatikbetrieb aktivieren",
           "use_filtration2": "2. Filter-Timer für Automatikbetrieb aktivieren",
           "use_filtration3": "3. Filter-Timer für Automatikbetrieb aktivieren",
-          "use_light": "Licht-Relais aktivieren"
+          "use_light": "Licht-Relais aktivieren",
+          "use_cover_sensor": "Abdeckungssensor aktivieren"
         }
       }
     },
@@ -49,6 +50,7 @@
           "use_filtration2": "2. Filter-Timer für Automatikbetrieb aktivieren",
           "use_filtration3": "3. Filter-Timer für Automatikbetrieb aktivieren",
           "use_light": "Licht-Relais aktivieren",
+          "use_cover_sensor": "Abdeckungssensor aktivieren",
           "use_aux1": "Aux1-Relais aktivieren",
           "use_aux2": "Aux2-Relais aktivieren",
           "use_aux3": "Aux3-Relais aktivieren",

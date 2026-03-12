@@ -78,6 +78,10 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                 default=options.get("use_light", False),
             ): bool,
             vol.Optional(
+                "use_cover_sensor",
+                default=options.get("use_cover_sensor", False),
+            ): bool,
+            vol.Optional(
                 "use_aux1",
                 default=options.get("use_aux1", False),
             ): bool,

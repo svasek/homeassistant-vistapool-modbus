@@ -24,7 +24,8 @@
           "use_filtration1": "Enable 1st filtration timer for automatic mode",
           "use_filtration2": "Enable 2nd filtration timer for automatic mode",
           "use_filtration3": "Enable 3rd filtration timer for automatic mode",
-          "use_light": "Enable Light Relay"
+          "use_light": "Enable Light Relay",
+          "use_cover_sensor": "Enable Pool Cover Sensor"
         }
       }
     },
@@ -49,6 +50,7 @@
           "use_filtration2": "Enable 2nd filtration timer for automatic mode",
           "use_filtration3": "Enable 3rd filtration timer for automatic mode",
           "use_light": "Enable Light Relay",
+          "use_cover_sensor": "Enable Pool Cover Sensor",
           "use_aux1": "Enable Aux1 Relay",
           "use_aux2": "Enable Aux2 Relay",
           "use_aux3": "Enable Aux3 Relay",

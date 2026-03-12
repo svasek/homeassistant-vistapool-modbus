@@ -24,7 +24,8 @@
           "use_filtration1": "Włącz 1. timer filtracji w trybie automatycznym",
           "use_filtration2": "Włącz 2. timer filtracji w trybie automatycznym",
           "use_filtration3": "Włącz 3. timer filtracji w trybie automatycznym",
-          "use_light": "Włącz przekaźnik oświetlenia"
+          "use_light": "Włącz przekaźnik oświetlenia",
+          "use_cover_sensor": "Włącz czujnik przykrycia basenu"
         }
       }
     },
@@ -49,6 +50,7 @@
           "use_filtration2": "Włącz 2. timer filtracji w trybie automatycznym",
           "use_filtration3": "Włącz 3. timer filtracji w trybie automatycznym",
           "use_light": "Włącz przekaźnik oświetlenia",
+          "use_cover_sensor": "Włącz czujnik przykrycia basenu",
           "use_aux1": "Włącz przekaźnik Aux1",
           "use_aux2": "Włącz przekaźnik Aux2",
           "use_aux3": "Włącz przekaźnik Aux3",

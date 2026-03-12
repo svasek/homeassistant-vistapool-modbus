@@ -24,7 +24,8 @@
           "use_filtration1": "Activer le 1er minuteur de filtration pour le mode automatique",
           "use_filtration2": "Activer le 2ème minuteur de filtration pour le mode automatique",
           "use_filtration3": "Activer le 3ème minuteur de filtration pour le mode automatique",
-          "use_light": "Activer le relais Lumière"
+          "use_light": "Activer le relais Lumière",
+          "use_cover_sensor": "Activer le capteur de couverture de piscine"
         }
       }
     },
@@ -49,6 +50,7 @@
           "use_filtration2": "Activer le 2ème minuteur de filtration pour le mode automatique",
           "use_filtration3": "Activer le 3ème minuteur de filtration pour le mode automatique",
           "use_light": "Activer le relais Lumière",
+          "use_cover_sensor": "Activer le capteur de couverture de piscine",
           "use_aux1": "Activer le relais Aux1",
           "use_aux2": "Activer le relais Aux2",
           "use_aux3": "Activer le relais Aux3",
