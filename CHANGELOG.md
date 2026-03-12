@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.0...v1.18.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* add use_cover_sensor toggle to guard cover-related entities ([9dac041](https://github.com/svasek/homeassistant-vistapool-modbus/commit/9dac0412213da870ed71c7d0c2fae01feb3aa846))
+* use SelectSelector for scan_interval and timer_resolution ([d4576bb](https://github.com/svasek/homeassistant-vistapool-modbus/commit/d4576bbd49f72785714bf3f7fd0dd808311d2c8f))
+
 ## [1.18.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.17.0...v1.18.0) (2026-03-05)
 
 
