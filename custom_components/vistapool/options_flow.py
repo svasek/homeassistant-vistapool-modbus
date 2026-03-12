@@ -19,6 +19,7 @@ import voluptuous as vol
 from datetime import date
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 from homeassistant.util import slugify
 from .const import DEFAULT_SCAN_INTERVAL, DEFAULT_TIMER_RESOLUTION
 
@@ -51,12 +52,18 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
         schema_dict = {
             vol.Optional(
                 "scan_interval",
-                default=options.get("scan_interval", DEFAULT_SCAN_INTERVAL),
-            ): vol.In([5, 10, 15, 20, 30, 45, 60, 120, 180, 300]),
+                default=str(options.get("scan_interval", DEFAULT_SCAN_INTERVAL)),
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=[str(v) for v in [5, 10, 15, 20, 30, 45, 60, 120, 180, 300]]
+                )
+            ),
             vol.Optional(
                 "timer_resolution",
-                default=options.get("timer_resolution", DEFAULT_TIMER_RESOLUTION),
-            ): vol.In([1, 5, 10, 15, 30, 60]),
+                default=str(options.get("timer_resolution", DEFAULT_TIMER_RESOLUTION)),
+            ): SelectSelector(
+                SelectSelectorConfig(options=[str(v) for v in [1, 5, 10, 15, 30, 60]])
+            ),
             vol.Optional(
                 "measure_when_filtration_off",
                 default=options.get("measure_when_filtration_off", False),
@@ -113,6 +120,10 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
         schema = vol.Schema(schema_dict)
 
         if user_input is not None:
+            # Coerce selector string values back to int before saving
+            for _key in ("scan_interval", "timer_resolution"):
+                if _key in user_input:
+                    user_input[_key] = int(user_input[_key])
             if already_enabled:
                 return self.async_create_entry(title="", data=user_input)
             if (user_input.get("unlock_advanced") or "").strip() == expected:

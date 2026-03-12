@@ -18,6 +18,7 @@ import asyncio
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
+from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 from .const import (
     DOMAIN,
     DEFAULT_PORT,
@@ -67,8 +68,14 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 ): vol.In(["tcp", "rtu"]),
                 vol.Optional(
                     "scan_interval",
-                    default=DEFAULT_SCAN_INTERVAL,
-                ): vol.In([5, 10, 15, 20, 30, 45, 60, 120, 180, 300]),
+                    default=str(DEFAULT_SCAN_INTERVAL),
+                ): SelectSelector(
+                    SelectSelectorConfig(
+                        options=[
+                            str(v) for v in [5, 10, 15, 20, 30, 45, 60, 120, 180, 300]
+                        ]
+                    )
+                ),
                 vol.Optional(
                     "use_filtration1",
                     default=True,
@@ -104,6 +111,8 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     data_schema=data_schema,
                     errors=errors,
                 )
+            if "scan_interval" in user_input:
+                user_input["scan_interval"] = int(user_input["scan_interval"])
             return self.async_create_entry(title=device_name, data=user_input)
 
         return self.async_show_form(
