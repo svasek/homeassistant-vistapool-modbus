@@ -430,6 +430,7 @@ BINARY_SENSOR_DEFINITIONS = {
     "Pool Cover": {
         "name": "Pool Cover",
         "device_class": BinarySensorDeviceClass.OPENING,
+        "option": "use_cover_sensor",
     },
     "HIDRO Module active": {
         "name": "Hydrolysis Module Active",
@@ -574,6 +575,7 @@ NUMBER_DEFINITIONS = {
         "device_class": None,
         "entity_category": EntityCategory.CONFIG,
         "icon": "mdi:pool",
+        "option": "use_cover_sensor",
     },
     "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE": {
         "name": "Hydrolysis Shutdown Temperature",
@@ -589,6 +591,7 @@ NUMBER_DEFINITIONS = {
         "device_class": NumberDeviceClass.TEMPERATURE,
         "entity_category": EntityCategory.CONFIG,
         "icon": "mdi:thermometer-alert",
+        "option": "use_cover_sensor",
     },
 }
 
@@ -1047,6 +1050,7 @@ SWITCH_DEFINITIONS = {
         "data_key": "MBF_PAR_HIDRO_COVER_ENABLE",
         "entity_category": EntityCategory.CONFIG,
         "switch_type": "bitmask",
+        "option": "use_cover_sensor",
     },
     "MBF_PAR_HIDRO_TEMP_SHUTDOWN": {
         "name": "Hydrolysis Temperature Shutdown",
@@ -1057,6 +1061,7 @@ SWITCH_DEFINITIONS = {
         "data_key": "MBF_PAR_HIDRO_COVER_ENABLE",
         "entity_category": EntityCategory.CONFIG,
         "switch_type": "bitmask",
+        "option": "use_cover_sensor",
     },
     "aux1": {
         "name": "Auxiliary Relay 1",

@@ -330,12 +330,22 @@ async def test_number_async_setup_entry_adds_entities(monkeypatch):
     # Patch NUMBER_DEFINITIONS for this test
     from custom_components.vistapool import number as num_module
 
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_HEATING_TEMP"] = {"register": 0x0201}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH1"] = {"register": 0x0202}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH2"] = {"register": 0x0203}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_RX1"] = {"register": 0x0204}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_CL1"] = {"register": 0x0205}
-    num_module.NUMBER_DEFINITIONS["DUMMY"] = {"register": 0x0206}
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_HEATING_TEMP", {"register": 0x0201}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_PH1", {"register": 0x0202}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_PH2", {"register": 0x0203}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_RX1", {"register": 0x0204}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_CL1", {"register": 0x0205}
+    )
+    monkeypatch.setitem(num_module.NUMBER_DEFINITIONS, "DUMMY", {"register": 0x0206})
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]
@@ -374,8 +384,12 @@ async def test_number_setup_skips_smart_when_no_temp(monkeypatch):
 
     from custom_components.vistapool import number as num_module
 
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_SMART_TEMP_HIGH"] = {"register": 0x0418}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_SMART_TEMP_LOW"] = {"register": 0x0419}
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_SMART_TEMP_HIGH", {"register": 0x0418}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_SMART_TEMP_LOW", {"register": 0x0419}
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]
@@ -410,11 +424,21 @@ async def test_number_async_setup_entry_skips_unassigned(monkeypatch):
 
     from custom_components.vistapool import number as num_module
 
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_HEATING_TEMP"] = {"register": 0x0201}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH1"] = {"register": 0x0202}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_PH2"] = {"register": 0x0203}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_RX1"] = {"register": 0x0204}
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_CL1"] = {"register": 0x0205}
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_HEATING_TEMP", {"register": 0x0201}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_PH1", {"register": 0x0202}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_PH2", {"register": 0x0203}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_RX1", {"register": 0x0204}
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS, "MBF_PAR_CL1", {"register": 0x0205}
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]
@@ -450,12 +474,16 @@ async def test_number_setup_skips_cover_without_cover_sensor(monkeypatch):
 
     from custom_components.vistapool import number as num_module
 
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_COVER_REDUCTION"] = {
-        "register": 0x042D
-    }
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE"] = {
-        "register": 0x042D
-    }
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_COVER_REDUCTION",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     keys = [e._key for e in async_add_entities.call_args[0][0]]
@@ -486,17 +514,95 @@ async def test_number_setup_creates_cover_with_cover_sensor(monkeypatch):
 
     from custom_components.vistapool import number as num_module
 
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_COVER_REDUCTION"] = {
-        "register": 0x042D
-    }
-    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE"] = {
-        "register": 0x042D
-    }
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_COVER_REDUCTION",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     keys = [e._key for e in async_add_entities.call_args[0][0]]
     assert "MBF_PAR_HIDRO_COVER_REDUCTION" in keys
     assert "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE" in keys
+
+
+@pytest.mark.asyncio
+async def test_number_setup_skips_cover_without_hydro_module(monkeypatch):
+    """Cover reduction numbers are skipped when hydrolysis module is not present."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {"use_cover_sensor": True}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_TEMPERATURE_ACTIVE": 1}  # no MBF_PAR_HIDRO_NOM
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import number as num_module
+
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_COVER_REDUCTION",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_HIDRO_COVER_REDUCTION" not in keys
+    assert "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_number_setup_skips_temp_shutdown_without_temp_sensor(monkeypatch):
+    """Shutdown temperature number is skipped when temperature sensor is inactive."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {"use_cover_sensor": True}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_HIDRO_NOM": 80}  # hydro present, but no temp sensor
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import number as num_module
+
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_COVER_REDUCTION",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
+    monkeypatch.setitem(
+        num_module.NUMBER_DEFINITIONS,
+        "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE",
+        {"register": 0x042D, "option": "use_cover_sensor"},
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_HIDRO_COVER_REDUCTION" in keys  # cover reduction still shown
+    assert "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE" not in keys
 
 
 # --- Bitmask number tests ---

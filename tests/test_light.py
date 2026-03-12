@@ -146,11 +146,15 @@ async def test_light_async_setup_entry_adds_entities(monkeypatch):
     # Patch LIGHT_DEFINITIONS for this test
     from custom_components.vistapool import light as light_module
 
-    light_module.LIGHT_DEFINITIONS["Test Light"] = {
-        "switch_type": "relay_timer",
-        "icon_on": "mdi:lightbulb-on",
-        "icon_off": "mdi:lightbulb-off",
-    }
+    monkeypatch.setitem(
+        light_module.LIGHT_DEFINITIONS,
+        "Test Light",
+        {
+            "switch_type": "relay_timer",
+            "icon_on": "mdi:lightbulb-on",
+            "icon_off": "mdi:lightbulb-off",
+        },
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]
@@ -202,10 +206,14 @@ async def test_light_async_setup_entry_option_disabled(monkeypatch):
 
     from custom_components.vistapool import light as light_module
 
-    light_module.LIGHT_DEFINITIONS["Test Option Light"] = {
-        "switch_type": "relay_timer",
-        "option": "test_option",
-    }
+    monkeypatch.setitem(
+        light_module.LIGHT_DEFINITIONS,
+        "Test Option Light",
+        {
+            "switch_type": "relay_timer",
+            "option": "test_option",
+        },
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]

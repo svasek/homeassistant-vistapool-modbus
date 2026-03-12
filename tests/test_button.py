@@ -83,7 +83,9 @@ async def test_button_async_setup_entry_adds_entities(monkeypatch):
     # Patch BUTTON_DEFINITIONS
     from custom_components.vistapool import button as btn_module
 
-    btn_module.BUTTON_DEFINITIONS["TEST_BUTTON"] = {"icon": "mdi:test"}
+    monkeypatch.setitem(
+        btn_module.BUTTON_DEFINITIONS, "TEST_BUTTON", {"icon": "mdi:test"}
+    )
     await async_setup_entry(hass, entry, async_add_entities)
     # Should add entity for each key in BUTTON_DEFINITIONS
     entities = async_add_entities.call_args[0][0]

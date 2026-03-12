@@ -433,8 +433,12 @@ async def test_select_async_setup_entry_adds_entities(monkeypatch):
     # Patch SELECT_DEFINITIONS to make the test predictable
     from custom_components.vistapool import select as select_module
 
-    select_module.SELECT_DEFINITIONS["MBF_PAR_FILTRATION_SPEED"] = {"option": None}
-    select_module.SELECT_DEFINITIONS["MBF_CELL_BOOST"] = {"option": None}
+    monkeypatch.setitem(
+        select_module.SELECT_DEFINITIONS, "MBF_PAR_FILTRATION_SPEED", {"option": None}
+    )
+    monkeypatch.setitem(
+        select_module.SELECT_DEFINITIONS, "MBF_CELL_BOOST", {"option": None}
+    )
 
     # Patch get_filtration_pump_type to always return True
     monkeypatch.setattr(
@@ -465,7 +469,9 @@ async def test_select_async_setup_entry_option_disabled(monkeypatch):
     async_add_entities = MagicMock()
     from custom_components.vistapool import select as select_module
 
-    select_module.SELECT_DEFINITIONS["TEST_SELECT"] = {"option": "test_option"}
+    monkeypatch.setitem(
+        select_module.SELECT_DEFINITIONS, "TEST_SELECT", {"option": "test_option"}
+    )
     monkeypatch.setattr(
         "custom_components.vistapool.select.get_filtration_pump_type", lambda x: True
     )
