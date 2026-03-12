@@ -125,9 +125,11 @@ async def test_async_setup_entry_option_disables_sensor(monkeypatch):
     # Patch BINARY_SENSOR_DEFINITIONS for this test
     from custom_components.vistapool import binary_sensor as bs_module
 
-    bs_module.BINARY_SENSOR_DEFINITIONS["Some Option Sensor"] = {
-        "option": "sensor_option"
-    }
+    monkeypatch.setitem(
+        bs_module.BINARY_SENSOR_DEFINITIONS,
+        "Some Option Sensor",
+        {"option": "sensor_option"},
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     # Should only add sensors without "option" or with option True

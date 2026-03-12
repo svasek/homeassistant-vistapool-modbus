@@ -336,8 +336,12 @@ async def test_switch_async_setup_entry_adds_entities(monkeypatch):
 
     from custom_components.vistapool import switch as switch_module
 
-    switch_module.SWITCH_DEFINITIONS["manual"] = {"switch_type": "manual_filtration"}
-    switch_module.SWITCH_DEFINITIONS["aux1"] = {"switch_type": "relay_timer"}
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS, "manual", {"switch_type": "manual_filtration"}
+    )
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS, "aux1", {"switch_type": "relay_timer"}
+    )
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]
     keys = [e._key for e in entities]
@@ -363,10 +367,14 @@ async def test_switch_setup_skips_smart_antifreeze_when_no_temp(monkeypatch):
 
     from custom_components.vistapool import switch as switch_module
 
-    switch_module.SWITCH_DEFINITIONS["MBF_PAR_SMART_ANTI_FREEZE"] = {
-        "switch_type": "smart_anti_freeze",
-        "function_addr": 0x041A,
-    }
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS,
+        "MBF_PAR_SMART_ANTI_FREEZE",
+        {
+            "switch_type": "smart_anti_freeze",
+            "function_addr": 0x041A,
+        },
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]
@@ -413,10 +421,14 @@ async def test_switch_async_setup_entry_option_disabled(monkeypatch):
 
     from custom_components.vistapool import switch as switch_module
 
-    switch_module.SWITCH_DEFINITIONS["Test Option Switch"] = {
-        "switch_type": "relay_timer",
-        "option": "test_option",
-    }
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS,
+        "Test Option Switch",
+        {
+            "switch_type": "relay_timer",
+            "option": "test_option",
+        },
+    )
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]

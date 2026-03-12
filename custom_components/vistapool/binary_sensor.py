@@ -94,10 +94,6 @@ async def async_setup_entry(
             and coordinator.data.get("Redox measurement module detected") is not True
         ):
             continue
-        # Skip Pool Cover if cover sensor option not enabled in integration settings
-        if key == "Pool Cover" and not entry.options.get("use_cover_sensor", False):
-            continue
-
         # Check if the entity should be skipped based on the suffixes
         # Hide selected sensors if their 'measurement module detected' status is False.
         skip_entity = False

@@ -48,6 +48,10 @@ async def async_setup_entry(
         return
 
     for key, props in NUMBER_DEFINITIONS.items():
+        # Only create number entities if enabled in options
+        option_key = props.get("option")
+        if option_key and not entry.options.get(option_key, False):
+            continue
         # Skip smart temperature numbers if no temperature sensor is active
         if key in ("MBF_PAR_SMART_TEMP_HIGH", "MBF_PAR_SMART_TEMP_LOW"):
             if not bool(coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
@@ -74,18 +78,15 @@ async def async_setup_entry(
         if key == "MBF_PAR_CL1":
             if not bool(coordinator.data.get("Chlorine measurement module detected")):
                 continue
-        # Cover reduction numbers only visible when hydrolysis module present AND cover sensor option enabled
+        # Cover reduction numbers only visible when hydrolysis module present
         if key == "MBF_PAR_HIDRO_COVER_REDUCTION":
-            if not bool(
-                coordinator.data.get("MBF_PAR_HIDRO_NOM")
-            ) or not entry.options.get("use_cover_sensor", False):
+            if not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM")):
                 continue
-        # Shutdown temperature needs hydrolysis, temperature sensor AND cover sensor option enabled
+        # Shutdown temperature needs hydrolysis and temperature sensor
         if key == "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE":
             if (
                 not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM"))
                 or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
-                or not entry.options.get("use_cover_sensor", False)
             ):
                 continue
 
