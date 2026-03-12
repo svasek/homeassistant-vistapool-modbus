@@ -283,3 +283,33 @@ async def test_is_host_port_open_success(monkeypatch):
     writer.close.assert_called_once()
     writer.wait_closed.assert_awaited_once()
     assert result is True
+
+
+@pytest.mark.asyncio
+async def test_create_entry_scan_interval_coerced_to_int():
+    """scan_interval submitted as string (from SelectSelector) must be saved as int."""
+    flow = config_flow.VistaPoolConfigFlow()
+    user_input = {
+        "host": "192.168.1.100",
+        "port": DEFAULT_PORT,
+        "slave_id": 1,
+        "name": "Test Pool",
+        "scan_interval": "30",  # SelectSelector returns strings
+    }
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        new=AsyncMock(return_value=True),
+    ):
+        result = await flow.async_step_user(user_input)
+    assert result["type"] == "create_entry"
+    assert result["data"]["scan_interval"] == 30
+    assert isinstance(result["data"]["scan_interval"], int)
+
+
+@pytest.mark.asyncio
+async def test_user_form_contains_use_cover_sensor():
+    """Config flow form schema must include use_cover_sensor toggle."""
+    flow = config_flow.VistaPoolConfigFlow()
+    result = await flow.async_step_user(user_input=None)
+    assert result["type"] == "form"
+    assert "use_cover_sensor" in str(result["data_schema"])

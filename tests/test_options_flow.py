@@ -219,3 +219,33 @@ async def test_async_step_init_show_form():
     assert result["type"] == "form"
     assert result["step_id"] == "init"
     assert "data_schema" in result
+
+
+@pytest.mark.asyncio
+async def test_options_selector_values_coerced_to_int():
+    """scan_interval and timer_resolution submitted as strings must be saved as int."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {}
+    flow = make_flow(mock_config_entry)
+    user_input = {
+        "scan_interval": "60",  # SelectSelector returns strings
+        "timer_resolution": "15",
+        "measure_when_filtration_off": False,
+    }
+    result = await flow.async_step_init(user_input=user_input)
+    assert result["type"] == "create_entry"
+    assert result["data"]["scan_interval"] == 60
+    assert isinstance(result["data"]["scan_interval"], int)
+    assert result["data"]["timer_resolution"] == 15
+    assert isinstance(result["data"]["timer_resolution"], int)
+
+
+@pytest.mark.asyncio
+async def test_options_form_contains_use_cover_sensor():
+    """Options flow form schema must include use_cover_sensor toggle."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {}
+    flow = make_flow(mock_config_entry)
+    result = await flow.async_step_init(user_input=None)
+    assert result["type"] == "form"
+    assert "use_cover_sensor" in str(result["data_schema"])
