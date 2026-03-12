@@ -427,6 +427,78 @@ async def test_number_async_setup_entry_skips_unassigned(monkeypatch):
     assert "MBF_PAR_CL1" not in keys
 
 
+@pytest.mark.asyncio
+async def test_number_setup_skips_cover_without_cover_sensor(monkeypatch):
+    """Cover reduction numbers are skipped when cover sensor option is not enabled."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}  # use_cover_sensor defaults to False
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_HIDRO_NOM": 80,  # hydro present
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import number as num_module
+
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_COVER_REDUCTION"] = {
+        "register": 0x042D
+    }
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE"] = {
+        "register": 0x042D
+    }
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_HIDRO_COVER_REDUCTION" not in keys
+    assert "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_number_setup_creates_cover_with_cover_sensor(monkeypatch):
+    """Cover reduction numbers are created when cover sensor option is enabled."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {"use_cover_sensor": True}  # cover sensor option enabled
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_HIDRO_NOM": 80,  # hydro present
+            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import number as num_module
+
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_COVER_REDUCTION"] = {
+        "register": 0x042D
+    }
+    num_module.NUMBER_DEFINITIONS["MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE"] = {
+        "register": 0x042D
+    }
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_HIDRO_COVER_REDUCTION" in keys
+    assert "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE" in keys
+
+
 # --- Bitmask number tests ---
 
 

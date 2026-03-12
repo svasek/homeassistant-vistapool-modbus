@@ -85,6 +85,10 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     "use_light",
                     default=False,
                 ): bool,
+                vol.Optional(
+                    "use_cover_sensor",
+                    default=False,
+                ): bool,
             }
         )
         errors = {}
