@@ -16,6 +16,7 @@ import pytest
 from unittest.mock import MagicMock, AsyncMock, patch
 from custom_components.vistapool.coordinator import VistaPoolCoordinator
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.update_coordinator import UpdateFailed
 
 
 @pytest.fixture
@@ -44,9 +45,9 @@ async def test_async_update_data_success(mock_entry):
 
 
 @pytest.mark.asyncio
-async def test_async_update_data_uses_cached_on_error(mock_entry):
+async def test_async_update_data_raises_UpdateFailed_on_subsequent_error(mock_entry):
+    """When cached data exists, a Modbus error raises UpdateFailed (not a silent cache return)."""
     client = AsyncMock()
-    # First call to async_read_all will fail
     client.async_read_all = AsyncMock(side_effect=Exception("Modbus fail"))
     client.read_all_timers = AsyncMock()
     coordinator = VistaPoolCoordinator(
@@ -54,8 +55,8 @@ async def test_async_update_data_uses_cached_on_error(mock_entry):
     )
     coordinator.data = {"cached": "value"}
     with patch("custom_components.vistapool.coordinator._LOGGER"):
-        data = await coordinator._async_update_data()
-    assert data == {"cached": "value"}
+        with pytest.raises(UpdateFailed):
+            await coordinator._async_update_data()
 
 
 @pytest.mark.asyncio
@@ -66,9 +67,27 @@ async def test_async_update_data_raises_ConfigEntryNotReady_on_first_error(mock_
     coordinator = VistaPoolCoordinator(
         MagicMock(), client, mock_entry, mock_entry.entry_id
     )
-    # No .data attribute set, should raise
+    # data is None (never received) → ConfigEntryNotReady
     with pytest.raises(ConfigEntryNotReady):
         await coordinator._async_update_data()
+
+
+@pytest.mark.asyncio
+async def test_async_update_data_raises_UpdateFailed_when_data_is_empty_dict(
+    mock_entry,
+):
+    """An empty dict ({}) is treated as 'data was received' — subsequent errors raise UpdateFailed."""
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(side_effect=Exception("fail"))
+    client.read_all_timers = AsyncMock()
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Simulate a previous successful read that yielded an empty payload
+    coordinator.data = {}
+    with patch("custom_components.vistapool.coordinator._LOGGER"):
+        with pytest.raises(UpdateFailed):
+            await coordinator._async_update_data()
 
 
 @pytest.mark.asyncio
@@ -544,7 +563,8 @@ async def test_winter_mode_restores_capabilities_from_options_on_restart(mock_en
 
 @pytest.mark.asyncio
 async def test_async_update_data_updates_capability_snapshot(mock_entry):
-    """A successful Modbus read updates _capability_snapshot with the capability keys."""
+    """A successful Modbus read updates _capability_snapshot with the capability keys
+    and persists it to entry.options so it survives HA restarts while Modbus is down."""
     mock_entry.options = {"winter_mode": False}
 
     client = AsyncMock()
@@ -558,9 +578,8 @@ async def test_async_update_data_updates_capability_snapshot(mock_entry):
     )
     client.read_all_timers = AsyncMock(return_value={})
 
-    coordinator = VistaPoolCoordinator(
-        MagicMock(), client, mock_entry, mock_entry.entry_id
-    )
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
     assert coordinator._capability_snapshot == {}
 
     await coordinator._async_update_data()
@@ -570,3 +589,8 @@ async def test_async_update_data_updates_capability_snapshot(mock_entry):
     # Measurement registers must not be included
     assert "MBF_MEASURE_TEMPERATURE" not in coordinator._capability_snapshot
     assert "MBF_POWER_MODULE_VERSION" not in coordinator._capability_snapshot
+    # Must also be persisted to entry.options via async_update_entry
+    hass.config_entries.async_update_entry.assert_called_once()
+    saved_options = hass.config_entries.async_update_entry.call_args[1]["options"]
+    assert saved_options["_capabilities"]["MBF_PAR_MODEL"] == 2
+    assert saved_options["_capabilities"]["MBF_PAR_TEMPERATURE_ACTIVE"] == 1

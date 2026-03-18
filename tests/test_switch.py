@@ -691,7 +691,7 @@ def test_is_on_winter_mode(mock_coordinator):
 
 @pytest.mark.asyncio
 async def test_turn_on_blocked_during_winter_mode(mock_coordinator):
-    """Non-winter_mode switch turn_on is ignored when winter mode is active."""
+    """Non-exempt switch turn_on is ignored when winter mode is active."""
     mock_coordinator.winter_mode = True
     props = make_props(switch_type="manual_filtration")
     ent = VistaPoolSwitch(
@@ -704,7 +704,7 @@ async def test_turn_on_blocked_during_winter_mode(mock_coordinator):
 
 @pytest.mark.asyncio
 async def test_turn_off_blocked_during_winter_mode(mock_coordinator):
-    """Non-winter_mode switch turn_off is ignored when winter mode is active."""
+    """Non-exempt switch turn_off is ignored when winter mode is active."""
     mock_coordinator.winter_mode = True
     props = make_props(switch_type="manual_filtration")
     ent = VistaPoolSwitch(
@@ -713,6 +713,32 @@ async def test_turn_off_blocked_during_winter_mode(mock_coordinator):
     mock_coordinator.client.async_write_register = AsyncMock()
     await ent.async_turn_off()
     mock_coordinator.client.async_write_register.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_auto_time_sync_turn_on_not_blocked_during_winter_mode(mock_coordinator):
+    """auto_time_sync switch is not blocked by winter mode — it only updates HA options."""
+    mock_coordinator.winter_mode = True
+    mock_coordinator.set_auto_time_sync = AsyncMock()
+    mock_coordinator.async_request_refresh = AsyncMock()
+    props = make_props(switch_type="auto_time_sync")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "auto_time_sync", props)
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    mock_coordinator.set_auto_time_sync.assert_awaited_once_with(True)
+
+
+@pytest.mark.asyncio
+async def test_auto_time_sync_turn_off_not_blocked_during_winter_mode(mock_coordinator):
+    """auto_time_sync switch turn_off is not blocked by winter mode."""
+    mock_coordinator.winter_mode = True
+    mock_coordinator.set_auto_time_sync = AsyncMock()
+    mock_coordinator.async_request_refresh = AsyncMock()
+    props = make_props(switch_type="auto_time_sync")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "auto_time_sync", props)
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    mock_coordinator.set_auto_time_sync.assert_awaited_once_with(False)
 
 
 def test_available_returns_false_during_winter_mode(mock_coordinator):

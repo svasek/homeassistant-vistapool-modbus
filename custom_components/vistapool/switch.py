@@ -113,7 +113,10 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
-        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+        if (
+            self._switch_type not in ("winter_mode", "auto_time_sync")
+            and self.coordinator.winter_mode
+        ):
             _LOGGER.warning(
                 "Winter mode is active — ignoring turn_on for %s", self._key
             )
@@ -167,7 +170,10 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
-        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+        if (
+            self._switch_type not in ("winter_mode", "auto_time_sync")
+            and self.coordinator.winter_mode
+        ):
             _LOGGER.warning(
                 "Winter mode is active — ignoring turn_off for %s", self._key
             )
@@ -253,10 +259,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
     @property
     def available(self) -> bool:
         """Return True if the switch is available."""
-        # The winter_mode switch must remain operable even when the coordinator
-        # reports a communication failure – that is precisely the scenario where
-        # the user needs to enable winter mode.
-        if self._switch_type == "winter_mode":
+        # These switches are pure HA settings (not device state) – always operable.
+        if self._switch_type in ("winter_mode", "auto_time_sync"):
             return True
         if not super().available:
             return False

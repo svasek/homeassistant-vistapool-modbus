@@ -16,7 +16,7 @@
 
 import logging
 from datetime import timedelta
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.core import HomeAssistant
 from homeassistant.util import slugify
 from homeassistant.exceptions import ConfigEntryNotReady
@@ -220,10 +220,14 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                         )
             except Exception as sync_err:  # pragma: no cover
                 _LOGGER.debug(f"Setpoint auto-sync skipped due to error: {sync_err}")
-            # Keep capability snapshot up-to-date in memory after every successful read.
-            self._capability_snapshot = {
-                k: data[k] for k in CAPABILITY_KEYS if k in data
-            }
+            # Keep capability snapshot up-to-date after every successful read and
+            # persist it to options so it survives HA restarts while Modbus is down.
+            new_snapshot = {k: data[k] for k in CAPABILITY_KEYS if k in data}
+            if new_snapshot != self._capability_snapshot:
+                self._capability_snapshot = new_snapshot
+                options = dict(self.entry.options)
+                options["_capabilities"] = new_snapshot
+                self.hass.config_entries.async_update_entry(self.entry, options=options)
             return data
 
         except Exception as err:
@@ -240,15 +244,13 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 )
                 self.update_interval = next_interval
 
-            # Fallback: use cached data if available
-            # This allows the integration to continue functioning with cached data
-            # if the Modbus communication fails, but only if we have cached data
-            # This is useful for scenarios where the device might be temporarily unreachable
-            # or if the Modbus server is down, but we still want to use the last known good data
-            if getattr(self, "data", None):
-                _LOGGER.warning("Using cached data due to Modbus error")
-                return self.data
-            raise ConfigEntryNotReady(f"Error fetching data: {err}") from err
+            # If we have never received data, prevent the entry from loading.
+            if getattr(self, "data", None) is None:
+                raise ConfigEntryNotReady(f"Error fetching data: {err}") from err
+            # Raise UpdateFailed so the coordinator marks last_update_success=False.
+            # All entities (except winter_mode and auto_time_sync switches) become unavailable.
+            _LOGGER.warning("Modbus error – marking all entities unavailable")
+            raise UpdateFailed(f"Modbus communication error: {err}") from err
 
     async def set_auto_time_sync(self, enabled: bool):
         self.auto_time_sync = enabled
