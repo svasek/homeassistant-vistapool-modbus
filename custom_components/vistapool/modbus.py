@@ -226,11 +226,12 @@ class VistaPoolModbusClient:
                         and data[2:4] != b"\x00\x00"
                     )
                 if is_fc20:
-                    _LOGGER.debug(
-                        "FC20 broadcast frame filtered (%d bytes): %s",
-                        len(data),
-                        data.hex(),
-                    )
+                    if _LOGGER.isEnabledFor(logging.DEBUG):
+                        _LOGGER.debug(
+                            "FC20 broadcast frame filtered (%d bytes): %s",
+                            len(data),
+                            data.hex(),
+                        )
                     return
                 original_data_received(data)
 

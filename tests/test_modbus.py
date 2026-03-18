@@ -1157,6 +1157,21 @@ def test_install_fc20_filter_rtu_filters_fc20_frames():
     assert received == [], "FC20 frame should have been filtered out"
 
 
+def test_install_fc20_filter_rtu_filters_fc20_frames_with_debug_logging(caplog):
+    """FC20 broadcast frames are dropped and debug-logged when DEBUG is enabled."""
+    import logging
+
+    client, mock_ctx, mock_client, received = _client_with_ctx(RTU_CONFIG)
+    client._install_fc20_filter(mock_client)
+
+    fc20_frame = bytes([1, 0x20, 0x02, 0x01, 0x5A, 0xBB, 0x39])
+    with caplog.at_level(logging.DEBUG, logger="custom_components.vistapool.modbus"):
+        mock_ctx.data_received(fc20_frame)
+
+    assert received == [], "FC20 frame should have been filtered out"
+    assert any("FC20 broadcast frame filtered" in m for m in caplog.messages)
+
+
 def test_install_fc20_filter_rtu_passes_normal_frames():
     """Normal FC03 frames are forwarded unchanged with RTU framing."""
     client, mock_ctx, mock_client, received = _client_with_ctx(RTU_CONFIG)
@@ -1208,8 +1223,10 @@ def test_install_fc20_filter_socket_passes_valid_mbap_response_with_tid_0x0120()
     client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
     client._install_fc20_filter(mock_client)
 
-    # Valid Modbus TCP response: TID=0x0120, Protocol ID=0x0000, rest is payload
-    valid_mbap = bytes([0x01, 0x20, 0x00, 0x00, 0x00, 0x04, 0x01, 0x03])
+    # Valid Modbus TCP response: TID=0x0120, Protocol ID=0x0000, Length=5 (unit_id + fc + byte_count + 2 data bytes)
+    valid_mbap = bytes(
+        [0x01, 0x20, 0x00, 0x00, 0x00, 0x05, 0x01, 0x03, 0x02, 0x00, 0x64]
+    )
     mock_ctx.data_received(valid_mbap)
     assert received == [
         valid_mbap
