@@ -141,6 +141,8 @@ class VistaPoolModbusClient:
                 self._last_successful_operation = datetime.now()
                 self._backoff_until = None
 
+                self._install_fc20_filter(self._client)
+
                 _LOGGER.info(
                     f"Modbus connection established successfully to {self._host}:{self._port}"
                 )
@@ -172,6 +174,47 @@ class VistaPoolModbusClient:
         raise ConnectionException(
             f"Failed to establish connection after {self._max_connection_retries} attempts: {last_error}"
         )
+
+    def _install_fc20_filter(self, client: AsyncModbusTcpClient) -> None:
+        """Install a filter on the pymodbus transport to discard Sugar Valley FC20
+        broadcast frames before pymodbus processes them.
+
+        Sugar Valley devices spontaneously broadcast proprietary FC20 (0x20) frames
+        on the RS485 bus approximately every 2 seconds. Gateways like the Elfin EW11
+        forward these raw bytes over TCP without an MBAP header. pymodbus can mistake
+        them for responses to pending FC03/FC04 requests, causing read failures.
+
+        This method monkey-patches ``client.ctx.data_received`` at the instance level
+        so that any frame whose second byte is 0x20 is silently dropped. The patch is
+        intentionally non-fatal: if the internal pymodbus structure changes in a future
+        version the method logs a debug message and returns without raising.
+        """
+        try:
+            ctx = getattr(client, "ctx", None)
+            if ctx is None:
+                _LOGGER.debug("FC20 filter: client.ctx not found, skipping")
+                return
+
+            original_data_received = ctx.data_received
+
+            unit_id = self._unit
+
+            def filtered_data_received(data: bytes) -> None:
+                # FC20 broadcasts from Sugar Valley: slave_id byte followed by 0x20
+                if len(data) >= 2 and data[0] == unit_id and data[1] == 0x20:
+                    _LOGGER.debug(
+                        "FC20 broadcast frame filtered (%d bytes): %s",
+                        len(data),
+                        data.hex(),
+                    )
+                    return
+                original_data_received(data)
+
+            ctx.data_received = filtered_data_received
+            _LOGGER.debug("FC20 broadcast filter installed for unit_id=%d", unit_id)
+
+        except Exception as exc:
+            _LOGGER.debug("Could not install FC20 filter: %s", exc)
 
     async def _is_connection_healthy(self) -> bool:
         """Quick health check for existing connection."""

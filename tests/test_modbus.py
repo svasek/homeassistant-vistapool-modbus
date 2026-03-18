@@ -1125,3 +1125,101 @@ async def test_get_client_respects_backoff(config):
     c._backoff_until = datetime.now() + timedelta(seconds=5)
     with pytest.raises(vistapool_modbus.ConnectionException):
         await c.get_client()
+
+
+# --- FC20 broadcast filter tests ---
+
+
+def test_install_fc20_filter_filters_fc20_frames(config):
+    """FC20 broadcast frames (byte[1] == 0x20) are dropped and not forwarded."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    received = []
+    mock_ctx = type(
+        "Ctx", (), {"data_received": lambda self, data: received.append(data)}
+    )()
+    mock_client = type("MC", (), {"ctx": mock_ctx})()
+
+    client._install_fc20_filter(mock_client)
+
+    # FC20 broadcast: slave_id=1, fc=0x20
+    fc20_frame = bytes([1, 0x20, 0x02, 0x01, 0x5A, 0xBB, 0x39])
+    mock_ctx.data_received(fc20_frame)
+    assert received == [], "FC20 frame should have been filtered out"
+
+
+def test_install_fc20_filter_passes_normal_frames(config):
+    """Normal Modbus frames (FC03 response) are forwarded unchanged."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    received = []
+    mock_ctx = type(
+        "Ctx", (), {"data_received": lambda self, data: received.append(data)}
+    )()
+    mock_client = type("MC", (), {"ctx": mock_ctx})()
+
+    client._install_fc20_filter(mock_client)
+
+    # FC03 response: slave_id=1, fc=0x03
+    fc03_frame = bytes([1, 0x03, 0x02, 0x00, 0x64, 0xB9, 0xAF])
+    mock_ctx.data_received(fc03_frame)
+    assert received == [fc03_frame], "FC03 frame should pass through the filter"
+
+
+def test_install_fc20_filter_wrong_unit_id_not_filtered(config):
+    """FC20 frames from a different slave ID are NOT filtered out."""
+    cfg = {**config, "slave_id": 2}
+    client = vistapool_modbus.VistaPoolModbusClient(cfg)
+
+    received = []
+    mock_ctx = type(
+        "Ctx", (), {"data_received": lambda self, data: received.append(data)}
+    )()
+    mock_client = type("MC", (), {"ctx": mock_ctx})()
+
+    client._install_fc20_filter(mock_client)
+
+    # slave_id=1, fc=0x20 — but our unit is 2, so should pass through
+    frame = bytes([1, 0x20, 0x02, 0x01])
+    mock_ctx.data_received(frame)
+    assert received == [frame], "Frame from different slave ID should not be filtered"
+
+
+def test_install_fc20_filter_no_ctx_is_safe(config):
+    """If client has no ctx attribute, the method must not raise."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    mock_client = type("MC", (), {})()  # no ctx attribute
+    # Should not raise
+    client._install_fc20_filter(mock_client)
+
+
+def test_install_fc20_filter_exception_is_safe(config):
+    """If an unexpected exception occurs when patching, the method must not raise."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class BadCtx:
+        @property
+        def data_received(self):
+            raise RuntimeError("boom")
+
+        @data_received.setter
+        def data_received(self, value):
+            raise RuntimeError("boom on set")
+
+    mock_client = type("MC", (), {"ctx": BadCtx()})()
+    # Should not raise
+    client._install_fc20_filter(mock_client)
+
+
+@pytest.mark.asyncio
+async def test_establish_connection_installs_fc20_filter(config):
+    """After a successful connection, _install_fc20_filter is called."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    with patch.object(vistapool_modbus, "AsyncModbusTcpClient") as MockClient:
+        mock_instance = MockClient.return_value
+        mock_instance.connect = AsyncMock(return_value=True)
+        mock_instance.connected = True
+
+        with patch.object(client, "_install_fc20_filter") as mock_filter:
+            await client._establish_connection_with_retry()
+            mock_filter.assert_called_once_with(mock_instance)
