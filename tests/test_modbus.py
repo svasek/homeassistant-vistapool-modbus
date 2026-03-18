@@ -1129,73 +1129,119 @@ async def test_get_client_respects_backoff(config):
 
 # --- FC20 broadcast filter tests ---
 
+RTU_CONFIG = {"host": "127.0.0.1", "port": 502, "slave_id": 1, "modbus_framer": "rtu"}
+TCP_CONFIG = {"host": "127.0.0.1", "port": 502, "slave_id": 1, "modbus_framer": "tcp"}
 
-def test_install_fc20_filter_filters_fc20_frames(config):
-    """FC20 broadcast frames (byte[1] == 0x20) are dropped and not forwarded."""
-    client = vistapool_modbus.VistaPoolModbusClient(config)
 
+def _client_with_ctx(cfg):
+    """Return a (VistaPoolModbusClient, mock_ctx, mock_client, received) tuple."""
+    client = vistapool_modbus.VistaPoolModbusClient(cfg)
     received = []
     mock_ctx = type(
         "Ctx", (), {"data_received": lambda self, data: received.append(data)}
     )()
     mock_client = type("MC", (), {"ctx": mock_ctx})()
+    return client, mock_ctx, mock_client, received
 
+
+# ---- RTU framing ----
+
+
+def test_install_fc20_filter_rtu_filters_fc20_frames():
+    """FC20 broadcast frames are dropped with RTU framing."""
+    client, mock_ctx, mock_client, received = _client_with_ctx(RTU_CONFIG)
     client._install_fc20_filter(mock_client)
 
-    # FC20 broadcast: slave_id=1, fc=0x20
     fc20_frame = bytes([1, 0x20, 0x02, 0x01, 0x5A, 0xBB, 0x39])
     mock_ctx.data_received(fc20_frame)
     assert received == [], "FC20 frame should have been filtered out"
 
 
-def test_install_fc20_filter_passes_normal_frames(config):
-    """Normal Modbus frames (FC03 response) are forwarded unchanged."""
-    client = vistapool_modbus.VistaPoolModbusClient(config)
-
-    received = []
-    mock_ctx = type(
-        "Ctx", (), {"data_received": lambda self, data: received.append(data)}
-    )()
-    mock_client = type("MC", (), {"ctx": mock_ctx})()
-
+def test_install_fc20_filter_rtu_passes_normal_frames():
+    """Normal FC03 frames are forwarded unchanged with RTU framing."""
+    client, mock_ctx, mock_client, received = _client_with_ctx(RTU_CONFIG)
     client._install_fc20_filter(mock_client)
 
-    # FC03 response: slave_id=1, fc=0x03
     fc03_frame = bytes([1, 0x03, 0x02, 0x00, 0x64, 0xB9, 0xAF])
     mock_ctx.data_received(fc03_frame)
     assert received == [fc03_frame], "FC03 frame should pass through the filter"
 
 
-def test_install_fc20_filter_wrong_unit_id_not_filtered(config):
-    """FC20 frames from a different slave ID are NOT filtered out."""
-    cfg = {**config, "slave_id": 2}
-    client = vistapool_modbus.VistaPoolModbusClient(cfg)
-
-    received = []
-    mock_ctx = type(
-        "Ctx", (), {"data_received": lambda self, data: received.append(data)}
-    )()
-    mock_client = type("MC", (), {"ctx": mock_ctx})()
-
+def test_install_fc20_filter_rtu_wrong_unit_id_not_filtered():
+    """FC20 frames from a different slave ID are NOT filtered with RTU framing."""
+    cfg = {**RTU_CONFIG, "slave_id": 2}
+    client, mock_ctx, mock_client, received = _client_with_ctx(cfg)
     client._install_fc20_filter(mock_client)
 
-    # slave_id=1, fc=0x20 — but our unit is 2, so should pass through
     frame = bytes([1, 0x20, 0x02, 0x01])
     mock_ctx.data_received(frame)
     assert received == [frame], "Frame from different slave ID should not be filtered"
 
 
-def test_install_fc20_filter_no_ctx_is_safe(config):
+# ---- SOCKET (Modbus TCP) framing ----
+
+
+def test_install_fc20_filter_socket_filters_fc20_broadcasts():
+    """Raw FC20 broadcasts (no MBAP header, bytes 2-3 != 0x0000) are dropped with SOCKET framing.
+
+    The pool controller sends FC20 frames as raw RTU bytes without an MBAP header.
+    These arrive on the TCP socket with bytes 2-3 = 0x0201 (not the Modbus TCP
+    Protocol Identifier 0x0000), so the filter can safely identify and drop them.
+    """
+    client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
+    client._install_fc20_filter(mock_client)
+
+    # Raw FC20 broadcast without MBAP: data[2:4] = 0x02 0x01 (not 0x00 0x00)
+    fc20_frame = bytes([0x01, 0x20, 0x02, 0x01, 0x5A, 0xBB, 0x39])
+    mock_ctx.data_received(fc20_frame)
+    assert received == [], "Raw FC20 broadcast should be filtered with SOCKET framing"
+
+
+def test_install_fc20_filter_socket_passes_valid_mbap_response_with_tid_0x0120():
+    """A legitimate Modbus TCP response with TID=0x0120 must NOT be filtered.
+
+    With SOCKET framing, data[0:2] is the MBAP Transaction ID. A TID of 0x0120
+    gives data[0]=0x01, data[1]=0x20, which overlaps with the FC20 signature.
+    However, a valid Modbus TCP frame always has Protocol ID 0x0000 at bytes 2-3,
+    so the filter must let it through.
+    """
+    client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
+    client._install_fc20_filter(mock_client)
+
+    # Valid Modbus TCP response: TID=0x0120, Protocol ID=0x0000, rest is payload
+    valid_mbap = bytes([0x01, 0x20, 0x00, 0x00, 0x00, 0x04, 0x01, 0x03])
+    mock_ctx.data_received(valid_mbap)
+    assert received == [
+        valid_mbap
+    ], "Legitimate Modbus TCP response must not be filtered"
+
+
+def test_install_fc20_filter_socket_passes_normal_frames():
+    """Normal Modbus TCP responses (no TID overlap) pass through with SOCKET framing."""
+    client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
+    client._install_fc20_filter(mock_client)
+
+    # Normal FC03 response with TID=0x0001
+    normal_frame = bytes(
+        [0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x01, 0x03, 0x02, 0x00, 0x64]
+    )
+    mock_ctx.data_received(normal_frame)
+    assert received == [normal_frame], "Normal Modbus TCP frame must pass through"
+
+
+# ---- Safety / edge cases ----
+
+
+def test_install_fc20_filter_no_ctx_is_safe():
     """If client has no ctx attribute, the method must not raise."""
-    client = vistapool_modbus.VistaPoolModbusClient(config)
-    mock_client = type("MC", (), {})()  # no ctx attribute
-    # Should not raise
+    client = vistapool_modbus.VistaPoolModbusClient(RTU_CONFIG)
+    mock_client = type("MC", (), {})()
     client._install_fc20_filter(mock_client)
 
 
-def test_install_fc20_filter_exception_is_safe(config):
+def test_install_fc20_filter_exception_is_safe():
     """If an unexpected exception occurs when patching, the method must not raise."""
-    client = vistapool_modbus.VistaPoolModbusClient(config)
+    client = vistapool_modbus.VistaPoolModbusClient(RTU_CONFIG)
 
     class BadCtx:
         @property
@@ -1207,7 +1253,6 @@ def test_install_fc20_filter_exception_is_safe(config):
             raise RuntimeError("boom on set")
 
     mock_client = type("MC", (), {"ctx": BadCtx()})()
-    # Should not raise
     client._install_fc20_filter(mock_client)
 
 

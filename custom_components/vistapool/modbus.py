@@ -184,10 +184,21 @@ class VistaPoolModbusClient:
         forward these raw bytes over TCP without an MBAP header. pymodbus can mistake
         them for responses to pending FC03/FC04 requests, causing read failures.
 
-        This method monkey-patches ``client.ctx.data_received`` at the instance level
-        so that any frame whose second byte is 0x20 is silently dropped. The patch is
-        intentionally non-fatal: if the internal pymodbus structure changes in a future
-        version the method logs a debug message and returns without raising.
+        The filter works for both framing modes:
+
+        - **RTU framing**: The frame layout is (slave_id, function_code, ...). An FC20
+          broadcast is identified by data[0] == unit_id and data[1] == 0x20.
+
+        - **SOCKET (Modbus TCP) framing**: The first two bytes are the MBAP Transaction
+          ID, and bytes 2–3 are the Protocol Identifier, which is always 0x0000 for any
+          valid Modbus TCP frame. FC20 broadcasts are raw RTU bytes forwarded without an
+          MBAP header, so their bytes 2–3 are NOT 0x0000 (they are 0x0201). This lets us
+          safely distinguish them from a legitimate response whose TID happens to equal
+          (unit_id << 8 | 0x20).
+
+        This method monkey-patches ``client.ctx.data_received`` at the instance level.
+        The patch is intentionally non-fatal: any exception during installation is caught
+        and logged at DEBUG level so future pymodbus changes cannot break the connect flow.
         """
         try:
             ctx = getattr(client, "ctx", None)
@@ -196,12 +207,25 @@ class VistaPoolModbusClient:
                 return
 
             original_data_received = ctx.data_received
-
             unit_id = self._unit
+            is_rtu = self._framer == FramerType.RTU
 
             def filtered_data_received(data: bytes) -> None:
-                # FC20 broadcasts from Sugar Valley: slave_id byte followed by 0x20
-                if len(data) >= 2 and data[0] == unit_id and data[1] == 0x20:
+                # FC20 broadcasts from Sugar Valley: slave_id byte followed by 0x20.
+                # For RTU framing: data[0]=slave_id, data[1]=function_code.
+                # For SOCKET framing: data[0:2]=TID, data[2:4]=Protocol ID (0x0000
+                # for valid Modbus TCP). Raw FC20 broadcasts have no MBAP header, so
+                # bytes 2-3 are NOT 0x0000 — this is the distinguishing signal.
+                if is_rtu:
+                    is_fc20 = len(data) >= 2 and data[0] == unit_id and data[1] == 0x20
+                else:
+                    is_fc20 = (
+                        len(data) >= 4
+                        and data[0] == unit_id
+                        and data[1] == 0x20
+                        and data[2:4] != b"\x00\x00"
+                    )
+                if is_fc20:
                     _LOGGER.debug(
                         "FC20 broadcast frame filtered (%d bytes): %s",
                         len(data),
@@ -211,7 +235,11 @@ class VistaPoolModbusClient:
                 original_data_received(data)
 
             ctx.data_received = filtered_data_received
-            _LOGGER.debug("FC20 broadcast filter installed for unit_id=%d", unit_id)
+            _LOGGER.debug(
+                "FC20 broadcast filter installed for unit_id=%d (framer=%s)",
+                unit_id,
+                self._framer,
+            )
 
         except Exception as exc:
             _LOGGER.debug("Could not install FC20 filter: %s", exc)
