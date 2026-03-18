@@ -245,7 +245,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 self.update_interval = next_interval
 
             # If we have never received data, prevent the entry from loading.
-            if not getattr(self, "data", None):
+            if getattr(self, "data", None) is None:
                 raise ConfigEntryNotReady(f"Error fetching data: {err}") from err
             # Raise UpdateFailed so the coordinator marks last_update_success=False.
             # All entities (except winter_mode and auto_time_sync switches) become unavailable.

@@ -67,9 +67,27 @@ async def test_async_update_data_raises_ConfigEntryNotReady_on_first_error(mock_
     coordinator = VistaPoolCoordinator(
         MagicMock(), client, mock_entry, mock_entry.entry_id
     )
-    # No .data attribute set, should raise
+    # data is None (never received) → ConfigEntryNotReady
     with pytest.raises(ConfigEntryNotReady):
         await coordinator._async_update_data()
+
+
+@pytest.mark.asyncio
+async def test_async_update_data_raises_UpdateFailed_when_data_is_empty_dict(
+    mock_entry,
+):
+    """An empty dict ({}) is treated as 'data was received' — subsequent errors raise UpdateFailed."""
+    client = AsyncMock()
+    client.async_read_all = AsyncMock(side_effect=Exception("fail"))
+    client.read_all_timers = AsyncMock()
+    coordinator = VistaPoolCoordinator(
+        MagicMock(), client, mock_entry, mock_entry.entry_id
+    )
+    # Simulate a previous successful read that yielded an empty payload
+    coordinator.data = {}
+    with patch("custom_components.vistapool.coordinator._LOGGER"):
+        with pytest.raises(UpdateFailed):
+            await coordinator._async_update_data()
 
 
 @pytest.mark.asyncio

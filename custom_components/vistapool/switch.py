@@ -113,7 +113,10 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch ON."""
-        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+        if (
+            self._switch_type not in ("winter_mode", "auto_time_sync")
+            and self.coordinator.winter_mode
+        ):
             _LOGGER.warning(
                 "Winter mode is active — ignoring turn_on for %s", self._key
             )
@@ -167,7 +170,10 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
-        if self._switch_type != "winter_mode" and self.coordinator.winter_mode:
+        if (
+            self._switch_type not in ("winter_mode", "auto_time_sync")
+            and self.coordinator.winter_mode
+        ):
             _LOGGER.warning(
                 "Winter mode is active — ignoring turn_off for %s", self._key
             )
