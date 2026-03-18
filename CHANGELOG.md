@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.1...v1.18.2) (2026-03-18)
+
+
+### Bug Fixes
+
+* **coordinator:** 🐛 mark entities unavailable on Modbus communication error ([#84](https://github.com/svasek/homeassistant-vistapool-modbus/issues/84)) ([13d6b5d](https://github.com/svasek/homeassistant-vistapool-modbus/commit/13d6b5db834dec9e2eb4cdd39673e92bb5fc2b72))
+* **modbus:** 🐛 filter FC20 broadcast frames to prevent Modbus TCP failures ([#83](https://github.com/svasek/homeassistant-vistapool-modbus/issues/83)) ([edb82d1](https://github.com/svasek/homeassistant-vistapool-modbus/commit/edb82d1373ae418f904bd5f9b2c405450a4379f7))
+
 ## [1.18.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.0...v1.18.1) (2026-03-12)
 
 
