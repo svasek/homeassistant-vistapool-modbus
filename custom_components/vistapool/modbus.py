@@ -141,6 +141,8 @@ class VistaPoolModbusClient:
                 self._last_successful_operation = datetime.now()
                 self._backoff_until = None
 
+                self._install_fc20_filter(self._client)
+
                 _LOGGER.info(
                     f"Modbus connection established successfully to {self._host}:{self._port}"
                 )
@@ -172,6 +174,108 @@ class VistaPoolModbusClient:
         raise ConnectionException(
             f"Failed to establish connection after {self._max_connection_retries} attempts: {last_error}"
         )
+
+    def _install_fc20_filter(self, client: AsyncModbusTcpClient) -> None:
+        """Install a filter on the pymodbus transport to discard Sugar Valley FC20
+        broadcast frames before pymodbus processes them.
+
+        Sugar Valley devices spontaneously broadcast proprietary FC20 (0x20) frames
+        on the RS485 bus approximately every 2 seconds. Gateways like the Elfin EW11
+        forward these raw bytes over TCP without an MBAP header. pymodbus can mistake
+        them for responses to pending FC03/FC04 requests, causing read failures.
+
+        The filter works for both framing modes:
+
+        - **RTU framing**: The frame layout is (slave_id, function_code, ...). An FC20
+          broadcast is identified by data[0] == unit_id and data[1] == 0x20.
+
+        - **SOCKET (Modbus TCP) framing**: The first two bytes are the MBAP Transaction
+          ID, and bytes 2–3 are the Protocol Identifier, which is always 0x0000 for any
+          valid Modbus TCP frame. FC20 broadcasts are raw RTU bytes forwarded without an
+          MBAP header, so their bytes 2–3 are NOT 0x0000 (they are 0x0201). This lets us
+          safely distinguish them from a legitimate response whose TID happens to equal
+          (unit_id << 8 | 0x20).
+
+        This method monkey-patches ``client.ctx.data_received`` at the instance level.
+        The patch is intentionally non-fatal: any exception during installation is caught
+        and logged at DEBUG level so future pymodbus changes cannot break the connect flow.
+        """
+        try:
+            ctx = getattr(client, "ctx", None)
+            if ctx is None:
+                _LOGGER.debug("FC20 filter: client.ctx not found, skipping")
+                return
+
+            original_data_received = ctx.data_received
+            unit_id = self._unit
+            is_rtu = self._framer == FramerType.RTU
+
+            # Small prefix buffer used only in SOCKET framing.  When a TCP read
+            # delivers only 2–3 bytes that start with [unit_id, 0x20] we cannot
+            # yet inspect the MBAP Protocol Identifier at bytes 2-3.  We stash
+            # those bytes here and prepend them to the very next chunk so the
+            # decision (drop FC20 vs forward valid MBAP) is always made with at
+            # least 4 bytes of context.
+            _socket_buf: bytes = b""
+
+            def filtered_data_received(data: bytes) -> None:
+                nonlocal _socket_buf
+                # FC20 broadcasts from Sugar Valley: slave_id byte followed by 0x20.
+                # For RTU framing: data[0]=slave_id, data[1]=function_code.
+                # For SOCKET framing: data[0:2]=TID, data[2:4]=Protocol ID (0x0000
+                # for valid Modbus TCP). Raw FC20 broadcasts have no MBAP header, so
+                # bytes 2-3 are NOT 0x0000 — this is the distinguishing signal.
+                if not is_rtu:
+                    # Reassemble any previously buffered prefix.
+                    if _socket_buf:
+                        data = _socket_buf + data
+                        _socket_buf = b""
+                    # If we have [unit_id, 0x20] but not yet the Protocol ID bytes,
+                    # buffer and wait for the next chunk rather than forwarding what
+                    # could be the start of a raw FC20 broadcast.
+                    if (
+                        len(data) >= 2
+                        and data[0] == unit_id
+                        and data[1] == 0x20
+                        and len(data) < 4
+                    ):
+                        _socket_buf = data
+                        return
+                if is_rtu:
+                    is_fc20 = len(data) >= 2 and data[0] == unit_id and data[1] == 0x20
+                else:
+                    is_fc20 = (
+                        len(data) >= 4
+                        and data[0] == unit_id
+                        and data[1] == 0x20
+                        and data[2:4] != b"\x00\x00"
+                    )
+                if is_fc20:
+                    if _LOGGER.isEnabledFor(logging.DEBUG):
+                        _LOGGER.debug(
+                            "FC20 broadcast frame filtered (%d bytes): %s",
+                            len(data),
+                            data.hex(),
+                        )
+                    # Drop the entire chunk.  FC20 is a proprietary Sugar Valley
+                    # broadcast whose internal length field cannot be reliably parsed
+                    # (the observed 27-byte frame has data[6]=0x39=57, giving a
+                    # bogus fc20_len=66).  Attempting to forward trailing bytes based
+                    # on a miscomputed offset would corrupt pymodbus state.  Dropping
+                    # the full chunk is safe: pymodbus will time-out and retry, and
+                    # the next poll cycle will succeed without interference.
+                    return
+                original_data_received(data)
+
+            ctx.data_received = filtered_data_received
+            _LOGGER.debug(
+                "FC20 broadcast filter installed for unit_id=%d (framer=%s)",
+                unit_id,
+                self._framer,
+            )
+
+        except Exception as exc:
+            _LOGGER.debug("Could not install FC20 filter: %s", exc)
 
     async def _is_connection_healthy(self) -> bool:
         """Quick health check for existing connection."""
