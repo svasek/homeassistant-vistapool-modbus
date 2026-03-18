@@ -232,6 +232,15 @@ class VistaPoolModbusClient:
                             len(data),
                             data.hex(),
                         )
+                    # Strip only the FC20 frame bytes and forward any trailing data
+                    # so that a valid response coalesced in the same TCP chunk is not
+                    # discarded.  FC20 = Write Multiple Registers:
+                    #   [slave, 0x20, addr(2), qty(2), byte_count(1), data(N), crc(2)]
+                    #   total = 9 + byte_count.
+                    if len(data) >= 7:
+                        fc20_len = 9 + data[6]
+                        if len(data) > fc20_len:
+                            original_data_received(data[fc20_len:])
                     return
                 original_data_received(data)
 
