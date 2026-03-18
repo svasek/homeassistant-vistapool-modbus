@@ -1172,32 +1172,33 @@ def test_install_fc20_filter_rtu_filters_fc20_frames_with_debug_logging(caplog):
     assert any("FC20 broadcast frame filtered" in m for m in caplog.messages)
 
 
-def test_install_fc20_filter_rtu_strips_fc20_and_forwards_trailing_data():
-    """When a valid response is coalesced after an FC20 frame, the tail is forwarded."""
+def test_install_fc20_filter_rtu_drops_coalesced_chunk_entirely():
+    """When an FC20 broadcast and a valid FC03 response arrive in the same TCP chunk,
+    the entire chunk is dropped.
+
+    The FC20 proprietary frame layout cannot be reliably parsed to determine its
+    length (the observed 27-byte frame has data[6]=0x39=57, yielding a bogus
+    fc20_len=66), so forwarding trailing bytes based on a miscomputed offset
+    would corrupt pymodbus.  Dropping the whole chunk is the safe choice;
+    pymodbus will retry and the next poll cycle will succeed.
+    """
     client, mock_ctx, mock_client, received = _client_with_ctx(RTU_CONFIG)
     client._install_fc20_filter(mock_client)
 
-    # Minimal FC20 frame: byte_count=0 → total 9 bytes (header + 0 data bytes + 2 CRC).
     fc20_frame = bytes([0x01, 0x20, 0x02, 0x01, 0x00, 0x01, 0x00, 0xAA, 0xBB])
-    # Valid FC03 response that arrives in the same TCP chunk right after.
     fc03_tail = bytes([0x01, 0x03, 0x02, 0x00, 0x64, 0xB9, 0xAF])
     mock_ctx.data_received(fc20_frame + fc03_tail)
-    assert received == [
-        fc03_tail
-    ], "Trailing FC03 bytes must be forwarded after FC20 is stripped"
+    assert received == [], "Entire chunk must be dropped when FC20 is detected"
 
 
-def test_install_fc20_filter_rtu_partial_fc20_too_short_for_byte_count():
-    """A partial FC20 chunk too short to contain the byte_count field (< 7 bytes)
-    is silently dropped without forwarding anything."""
+def test_install_fc20_filter_rtu_drops_partial_fc20_frame():
+    """A partial FC20 chunk that matches the FC20 signature is silently dropped."""
     client, mock_ctx, mock_client, received = _client_with_ctx(RTU_CONFIG)
     client._install_fc20_filter(mock_client)
 
-    # Only first 4 bytes of an FC20 frame — matches FC20 signature but byte_count
-    # (data[6]) is not yet available, so no trailing bytes can be forwarded.
     partial_fc20 = bytes([0x01, 0x20, 0x02, 0x01])
     mock_ctx.data_received(partial_fc20)
-    assert received == [], "Short partial FC20 chunk must be dropped without forwarding"
+    assert received == [], "Partial FC20 chunk must be dropped"
 
 
 def test_install_fc20_filter_rtu_split_fc20_second_chunk_not_dropped():
@@ -1302,27 +1303,75 @@ def test_install_fc20_filter_socket_passes_normal_frames():
     assert received == [normal_frame], "Normal Modbus TCP frame must pass through"
 
 
-def test_install_fc20_filter_socket_strips_fc20_and_forwards_trailing_data():
-    """With SOCKET framing, an FC20 broadcast coalesced with a valid Modbus TCP
-    response in the same TCP chunk: the FC20 bytes are stripped and the trailing
-    MBAP response is forwarded unchanged.
+def test_install_fc20_filter_socket_drops_coalesced_chunk_entirely():
+    """With SOCKET framing, when an FC20 broadcast and a valid Modbus TCP response
+    arrive in the same TCP chunk, the entire chunk is dropped.
 
-    This mirrors the RTU coalesced scenario but for SOCKET framing, where the TCP
-    gateway may buffer an FC20 broadcast and the next poll response into one chunk.
+    Same rationale as the RTU coalesced case: the FC20 frame length cannot be
+    reliably computed from the proprietary payload, so forwarding trailing bytes
+    would risk passing garbage to pymodbus.  The entire chunk is dropped and
+    pymodbus retries on the next poll cycle.
     """
     client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
     client._install_fc20_filter(mock_client)
 
-    # Raw FC20 broadcast: byte_count=0 → fc20_len=9; no MBAP header, bytes 2-3 = 0x02 0x01.
+    # Raw FC20 broadcast without MBAP: bytes 2-3 = 0x02 0x01 (not 0x00 0x00).
     fc20_frame = bytes([0x01, 0x20, 0x02, 0x01, 0x00, 0x01, 0x00, 0xAA, 0xBB])
-    # Valid Modbus TCP response coalesced immediately after: TID=0x0001, Protocol ID=0x0000.
     mbap_response = bytes(
         [0x00, 0x01, 0x00, 0x00, 0x00, 0x05, 0x01, 0x03, 0x02, 0x00, 0x64]
     )
     mock_ctx.data_received(fc20_frame + mbap_response)
-    assert received == [
-        mbap_response
-    ], "Trailing MBAP response coalesced after FC20 broadcast must be forwarded"
+    assert received == [], "Entire chunk must be dropped when FC20 is detected"
+
+
+def test_install_fc20_filter_socket_buffers_short_ambiguous_prefix_then_drops():
+    """SOCKET: 2–3 byte chunk starting with [unit_id, 0x20] is buffered; once the
+    next chunk provides the Protocol ID bytes and they confirm a raw FC20 broadcast
+    (≠ 0x0000), the combined data is dropped.
+    """
+    client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
+    client._install_fc20_filter(mock_client)
+
+    # First TCP read: only first 2 bytes of a raw FC20 broadcast.
+    mock_ctx.data_received(bytes([0x01, 0x20]))
+    assert received == [], "Short ambiguous prefix must be buffered, not forwarded"
+
+    # Second TCP read: rest of the FC20 frame; combined [0x01,0x20,0x02,0x01,...] → FC20.
+    mock_ctx.data_received(bytes([0x02, 0x01, 0x5A, 0xBB, 0x39]))
+    assert received == [], "Reassembled FC20 broadcast must be dropped"
+
+
+def test_install_fc20_filter_socket_buffers_short_ambiguous_prefix_then_passes():
+    """SOCKET: 2–3 byte chunk starting with [unit_id, 0x20] is buffered; once the
+    next chunk provides the Protocol ID bytes and they confirm a valid Modbus TCP
+    frame (PID = 0x0000), the combined data is forwarded unchanged.
+    """
+    client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
+    client._install_fc20_filter(mock_client)
+
+    # First TCP read: first 2 bytes of a Modbus TCP response with TID=0x0120.
+    mock_ctx.data_received(bytes([0x01, 0x20]))
+    assert received == [], "Short ambiguous prefix must be buffered, not forwarded"
+
+    # Second TCP read: bytes 2 onward; combined [0x01,0x20,0x00,0x00,...] → valid MBAP.
+    rest = bytes([0x00, 0x00, 0x00, 0x05, 0x01, 0x03, 0x02, 0x00, 0x64])
+    mock_ctx.data_received(rest)
+    expected = bytes([0x01, 0x20]) + rest
+    assert received == [expected], "Reassembled valid MBAP response must be forwarded"
+
+
+def test_install_fc20_filter_socket_buffers_3_byte_prefix_then_drops():
+    """SOCKET: 3-byte chunk [unit_id, 0x20, x] is still too short to check PID;
+    it is buffered and the FC20 is only recognised once the 4th byte arrives.
+    """
+    client, mock_ctx, mock_client, received = _client_with_ctx(TCP_CONFIG)
+    client._install_fc20_filter(mock_client)
+
+    mock_ctx.data_received(bytes([0x01, 0x20, 0x02]))
+    assert received == [], "3-byte prefix must be buffered"
+
+    mock_ctx.data_received(bytes([0x01, 0x5A, 0xBB]))  # byte3=0x01 → PID=0x0201 → FC20
+    assert received == [], "FC20 recognised after 4th byte is received — drop"
 
 
 # ---- Safety / edge cases ----

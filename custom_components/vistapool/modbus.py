@@ -210,12 +210,37 @@ class VistaPoolModbusClient:
             unit_id = self._unit
             is_rtu = self._framer == FramerType.RTU
 
+            # Small prefix buffer used only in SOCKET framing.  When a TCP read
+            # delivers only 2–3 bytes that start with [unit_id, 0x20] we cannot
+            # yet inspect the MBAP Protocol Identifier at bytes 2-3.  We stash
+            # those bytes here and prepend them to the very next chunk so the
+            # decision (drop FC20 vs forward valid MBAP) is always made with at
+            # least 4 bytes of context.
+            _socket_buf: bytes = b""
+
             def filtered_data_received(data: bytes) -> None:
+                nonlocal _socket_buf
                 # FC20 broadcasts from Sugar Valley: slave_id byte followed by 0x20.
                 # For RTU framing: data[0]=slave_id, data[1]=function_code.
                 # For SOCKET framing: data[0:2]=TID, data[2:4]=Protocol ID (0x0000
                 # for valid Modbus TCP). Raw FC20 broadcasts have no MBAP header, so
                 # bytes 2-3 are NOT 0x0000 — this is the distinguishing signal.
+                if not is_rtu:
+                    # Reassemble any previously buffered prefix.
+                    if _socket_buf:
+                        data = _socket_buf + data
+                        _socket_buf = b""
+                    # If we have [unit_id, 0x20] but not yet the Protocol ID bytes,
+                    # buffer and wait for the next chunk rather than forwarding what
+                    # could be the start of a raw FC20 broadcast.
+                    if (
+                        len(data) >= 2
+                        and data[0] == unit_id
+                        and data[1] == 0x20
+                        and len(data) < 4
+                    ):
+                        _socket_buf = data
+                        return
                 if is_rtu:
                     is_fc20 = len(data) >= 2 and data[0] == unit_id and data[1] == 0x20
                 else:
@@ -232,15 +257,13 @@ class VistaPoolModbusClient:
                             len(data),
                             data.hex(),
                         )
-                    # Strip only the FC20 frame bytes and forward any trailing data
-                    # so that a valid response coalesced in the same TCP chunk is not
-                    # discarded.  FC20 = Write Multiple Registers:
-                    #   [slave, 0x20, addr(2), qty(2), byte_count(1), data(N), crc(2)]
-                    #   total = 9 + byte_count.
-                    if len(data) >= 7:
-                        fc20_len = 9 + data[6]
-                        if len(data) > fc20_len:
-                            original_data_received(data[fc20_len:])
+                    # Drop the entire chunk.  FC20 is a proprietary Sugar Valley
+                    # broadcast whose internal length field cannot be reliably parsed
+                    # (the observed 27-byte frame has data[6]=0x39=57, giving a
+                    # bogus fc20_len=66).  Attempting to forward trailing bytes based
+                    # on a miscomputed offset would corrupt pymodbus state.  Dropping
+                    # the full chunk is safe: pymodbus will time-out and retry, and
+                    # the next poll cycle will succeed without interference.
                     return
                 original_data_received(data)
 
