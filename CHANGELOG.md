@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.2...v1.18.3) (2026-03-20)
+
+
+### Bug Fixes
+
+* **select:** 🐛 backwash option writes to Modbus register ([#87](https://github.com/svasek/homeassistant-vistapool-modbus/issues/87)) ([7f58f4b](https://github.com/svasek/homeassistant-vistapool-modbus/commit/7f58f4ba9f6ce730ed0d3e7dffe5c7eb79336658))
+
 ## [1.18.2](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.1...v1.18.2) (2026-03-18)
 
 
