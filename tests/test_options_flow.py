@@ -152,14 +152,16 @@ async def test_options_unlock_advanced_title_fallback(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_options_already_enabled():
-    """Test already_enabled creates entry directly."""
+    """When backwash is already enabled, saving without password saves and triggers reload if changed."""
     mock_config_entry = MagicMock()
     mock_config_entry.options = {"enable_backwash_option": True}
     flow = make_flow(mock_config_entry)
-    user_input = {"enable_backwash_option": True}
+    # Disable backwash — no password → save directly with reload
+    user_input = {"enable_backwash_option": False}
     result = await flow.async_step_init(user_input=user_input)
     assert result["type"] == "create_entry"
-    assert result["data"] == user_input
+    assert result["data"].get("enable_backwash_option") is False
+    assert flow.hass.async_create_task.called
 
 
 @pytest.mark.asyncio
@@ -197,16 +199,53 @@ async def test_async_step_advanced_show_form():
 
 @pytest.mark.asyncio
 async def test_options_reload_trigger(monkeypatch):
-    """Test async_step_init triggers reload when use_* options change."""
+    """Test async_step_init triggers reload when any option changes."""
     mock_config_entry = MagicMock()
     mock_config_entry.options = {"use_light": False, "use_aux1": False}
     flow = make_flow(mock_config_entry)
     user_input = {"use_light": True, "use_aux1": False}
-    # Patch date so unlock_advanced is not used
     result = await flow.async_step_init(user_input=user_input)
     assert result["type"] == "create_entry"
-    # Should trigger reload (async_create_task)
     assert flow.hass.async_create_task.called
+
+
+@pytest.mark.asyncio
+async def test_options_reload_trigger_any_key():
+    """Changing a non-use_* option like measure_when_filtration_off also triggers reload."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {"measure_when_filtration_off": False}
+    flow = make_flow(mock_config_entry)
+    user_input = {"measure_when_filtration_off": True}
+    result = await flow.async_step_init(user_input=user_input)
+    assert result["type"] == "create_entry"
+    assert flow.hass.async_create_task.called
+
+
+@pytest.mark.asyncio
+async def test_async_step_advanced_reload_on_backwash_toggle():
+    """Toggling enable_backwash_option alone must trigger reload."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {"enable_backwash_option": False}
+    flow = make_flow(mock_config_entry)
+    flow._base_options = {}
+    user_input = {"enable_backwash_option": True}
+    result = await flow.async_step_advanced(user_input=user_input)
+    assert result["type"] == "create_entry"
+    assert result["data"]["enable_backwash_option"] is True
+    assert flow.hass.async_create_task.called
+
+
+@pytest.mark.asyncio
+async def test_async_step_advanced_no_reload_when_unchanged():
+    """No reload when advanced options are saved without any changes."""
+    mock_config_entry = MagicMock()
+    mock_config_entry.options = {"enable_backwash_option": True}
+    flow = make_flow(mock_config_entry)
+    flow._base_options = {}
+    user_input = {"enable_backwash_option": True}
+    result = await flow.async_step_advanced(user_input=user_input)
+    assert result["type"] == "create_entry"
+    assert not flow.hass.async_create_task.called
 
 
 @pytest.mark.asyncio

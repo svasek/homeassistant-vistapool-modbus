@@ -55,7 +55,8 @@
           "use_aux2": "Włącz przekaźnik Aux2",
           "use_aux3": "Włącz przekaźnik Aux3",
           "use_aux4": "Włącz przekaźnik Aux4",
-          "unlock_advanced": "Odblokuj opcje zaawansowane"
+          "unlock_advanced": "Odblokuj opcje zaawansowane",
+          "enable_backwash_option": "Włącz tryb 'Backwash'"
         }
       },
       "advanced": {

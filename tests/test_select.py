@@ -21,6 +21,7 @@ from custom_components.vistapool.select import (
     PERIOD_SECONDS_TO_KEY,
     async_setup_entry,
 )
+from custom_components.vistapool.const import SELECT_DEFINITIONS
 
 
 @pytest.fixture(autouse=True)
@@ -278,14 +279,50 @@ async def test_async_select_option_relay_mode(mock_coordinator):
 
 @pytest.mark.asyncio
 async def test_async_select_option_backwash(mock_coordinator):
-    props = make_props(options_map={0: "auto", 1: "manual", 13: "backwash"})
+    # Use real SELECT_DEFINITIONS props — backwash (13) is NOT pre-populated in options_map.
+    # It is injected dynamically by the options property when enable_backwash_option is True.
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
     ent.hass = MagicMock()
     ent.hass.services.async_call = AsyncMock()
-    ent.coordinator.data = {}
+    ent.coordinator.data = {
+        "MBF_PAR_FILT_MODE": 1,  # current: auto (avoids manual→other double-write)
+        "MBF_PAR_HEATING_GPIO": 0,
+        "MBF_PAR_TEMPERATURE_ACTIVE": 0,
+    }
     ent.coordinator.device_name = "vistapool"
-    # Should log info, but not call anything else
+    ent.coordinator.config_entry.options = {"enable_backwash_option": True}
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    # Verify the injection path works: options property must include "backwash"
+    assert "backwash" in ent.options
+    # Should write value 13 to the filtration mode register
     await ent.async_select_option("backwash")
+    ent.coordinator.client.async_write_register.assert_awaited_once_with(0x0411, 13)
+
+
+@pytest.mark.asyncio
+async def test_async_select_option_backwash_from_manual(mock_coordinator):
+    """Switching from manual to backwash must first zero out MANUAL_FILTRATION_REGISTER."""
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    ent.hass = MagicMock()
+    ent.coordinator.data = {
+        "MBF_PAR_FILT_MODE": 0,  # current: manual (key 0 in SELECT_DEFINITIONS)
+        "MBF_PAR_HEATING_GPIO": 0,
+        "MBF_PAR_TEMPERATURE_ACTIVE": 0,
+    }
+    ent.coordinator.device_name = "vistapool"
+    ent.coordinator.config_entry.options = {"enable_backwash_option": True}
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    assert "backwash" in ent.options
+    await ent.async_select_option("backwash")
+    calls = ent.coordinator.client.async_write_register.await_args_list
+    # First call: turn off manual filtration
+    assert calls[0].args == (0x0413, 0)
+    # Second call: set backwash mode
+    assert calls[1].args == (0x0411, 13)
 
 
 @pytest.mark.asyncio

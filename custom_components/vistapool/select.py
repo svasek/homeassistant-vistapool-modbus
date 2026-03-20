@@ -88,7 +88,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
 
         self._attr_icon = props.get("icon") or None
-        self._options_map = props.get("options_map") or {}
+        self._options_map = dict(props.get("options_map") or {})
         self._attr_entity_category = props.get("entity_category") or None
         self._select_type = props.get("select_type") or None
         self._register = props.get("register") or None
@@ -220,13 +220,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             self.async_write_ha_state()
             return
 
-        if option == "backwash":
-            # Log info about backwash
-            _LOGGER.info(
-                f'Your pool "{VistaPoolEntity.slugify(self.coordinator.device_name)}" has been switched to the BACKWASH mode!'
-            )
-            return
-
         if self._key == "MBF_CELL_BOOST":
             value = None
             for k, v in self._options_map.items():
@@ -298,12 +291,16 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             if self._key == "MBF_PAR_FILT_MODE":
                 current_mode = self.coordinator.data.get(self._key)
                 current_name = self._options_map.get(current_mode)
-                if current_name == "manual" and option != "manual":  # pragma: no cover
+                if current_name == "manual" and option != "manual":
                     await client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
                     await asyncio.sleep(0.1)
             # Set the new mode
             await client.async_write_register(self._register, value)
             await asyncio.sleep(0.2)
+            if self._key == "MBF_PAR_FILT_MODE" and option == "backwash":
+                _LOGGER.info(
+                    f'Your pool "{VistaPoolEntity.slugify(self.coordinator.device_name)}" has been switched to the BACKWASH mode!'
+                )
 
         # Run a refresh to update the state
         await asyncio.sleep(0.5)
