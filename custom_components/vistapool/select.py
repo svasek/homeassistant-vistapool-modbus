@@ -88,7 +88,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         self._attr_translation_key = VistaPoolEntity.slugify(self._key)
 
         self._attr_icon = props.get("icon") or None
-        self._options_map = props.get("options_map") or {}
+        self._options_map = dict(props.get("options_map") or {})
         self._attr_entity_category = props.get("entity_category") or None
         self._select_type = props.get("select_type") or None
         self._register = props.get("register") or None

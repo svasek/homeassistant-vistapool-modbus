@@ -281,9 +281,7 @@ async def test_async_select_option_relay_mode(mock_coordinator):
 async def test_async_select_option_backwash(mock_coordinator):
     # Use real SELECT_DEFINITIONS props — backwash (13) is NOT pre-populated in options_map.
     # It is injected dynamically by the options property when enable_backwash_option is True.
-    import copy
-
-    props = copy.deepcopy(SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"])
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
     ent.hass = MagicMock()
     ent.hass.services.async_call = AsyncMock()
@@ -306,9 +304,7 @@ async def test_async_select_option_backwash(mock_coordinator):
 @pytest.mark.asyncio
 async def test_async_select_option_backwash_from_manual(mock_coordinator):
     """Switching from manual to backwash must first zero out MANUAL_FILTRATION_REGISTER."""
-    import copy
-
-    props = copy.deepcopy(SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"])
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
     ent.hass = MagicMock()
     ent.coordinator.data = {
