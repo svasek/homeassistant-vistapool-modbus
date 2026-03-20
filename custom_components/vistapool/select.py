@@ -221,11 +221,10 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             return
 
         if option == "backwash":
-            # Log info about backwash
+            # Log info about backwash and fall through to write value 13 to the register
             _LOGGER.info(
                 f'Your pool "{VistaPoolEntity.slugify(self.coordinator.device_name)}" has been switched to the BACKWASH mode!'
             )
-            return
 
         if self._key == "MBF_CELL_BOOST":
             value = None

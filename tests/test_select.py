@@ -278,14 +278,19 @@ async def test_async_select_option_relay_mode(mock_coordinator):
 
 @pytest.mark.asyncio
 async def test_async_select_option_backwash(mock_coordinator):
-    props = make_props(options_map={0: "auto", 1: "manual", 13: "backwash"})
+    props = make_props(
+        options_map={0: "auto", 1: "manual", 13: "backwash"}, register=0x0411
+    )
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
     ent.hass = MagicMock()
     ent.hass.services.async_call = AsyncMock()
-    ent.coordinator.data = {}
+    ent.coordinator.data = {"MBF_PAR_FILT_MODE": 0}  # current: auto
     ent.coordinator.device_name = "vistapool"
-    # Should log info, but not call anything else
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    # Should log info AND write value 13 to the filtration mode register
     await ent.async_select_option("backwash")
+    ent.coordinator.client.async_write_register.assert_awaited_once_with(0x0411, 13)
 
 
 @pytest.mark.asyncio
