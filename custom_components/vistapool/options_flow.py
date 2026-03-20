@@ -114,8 +114,7 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
                     description={"suggested_value": True},
                 )
             ] = bool
-        else:
-            schema_dict[vol.Optional("unlock_advanced", default="")] = str
+        schema_dict[vol.Optional("unlock_advanced", default="")] = str
 
         schema = vol.Schema(schema_dict)
 
@@ -124,8 +123,6 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             for _key in ("scan_interval", "timer_resolution"):
                 if _key in user_input:
                     user_input[_key] = int(user_input[_key])
-            if already_enabled:
-                return self.async_create_entry(title="", data=user_input)
             if (user_input.get("unlock_advanced") or "").strip() == expected:
                 self._base_options = user_input.copy()
                 self._base_options.pop("unlock_advanced", None)
@@ -143,15 +140,10 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             prev_options = dict(self.config_entry.options)
             result = self.async_create_entry(title="", data=data)
 
-            # Dynamically collect all 'use_*' option keys to compare changes and trigger reload if needed
-            reload_keys = sorted(
-                {
-                    k
-                    for k in list(prev_options) + list(user_input)
-                    if k.startswith("use_") or k.startswith("dev_overrides")
-                }
-            )
-            if any(prev_options.get(k) != user_input.get(k) for k in reload_keys):
+            if any(
+                prev_options.get(k) != data.get(k)
+                for k in set(prev_options) | set(data)
+            ):
                 self.hass.async_create_task(
                     self.hass.config_entries.async_reload(self.config_entry.entry_id)
                 )
@@ -190,16 +182,10 @@ class VistaPoolOptionsFlowHandler(config_entries.OptionsFlow):
             all_options = {**self._base_options, **user_input}
             result = self.async_create_entry(title="", data=all_options)
 
-            # Determine if a reload is needed: mirror logic from init step and include
-            # any changes to 'use_*' toggles or developer override settings.
-            reload_keys = sorted(
-                {
-                    k
-                    for k in set(prev_options) | set(all_options)
-                    if k.startswith("use_") or k.startswith("dev_overrides")
-                }
-            )
-            if any(prev_options.get(k) != all_options.get(k) for k in reload_keys):
+            if any(
+                prev_options.get(k) != all_options.get(k)
+                for k in set(prev_options) | set(all_options)
+            ):
                 self.hass.async_create_task(
                     self.hass.config_entries.async_reload(self.config_entry.entry_id)
                 )

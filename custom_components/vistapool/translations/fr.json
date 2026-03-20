@@ -55,7 +55,8 @@
           "use_aux2": "Activer le relais Aux2",
           "use_aux3": "Activer le relais Aux3",
           "use_aux4": "Activer le relais Aux4",
-          "unlock_advanced": "Débloquer les options avancées"
+          "unlock_advanced": "Débloquer les options avancées",
+          "enable_backwash_option": "Activer le mode 'Backwash'"
         }
       },
       "advanced": {

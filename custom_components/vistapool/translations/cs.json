@@ -55,7 +55,8 @@
           "use_aux2": "Povolit relé Aux2",
           "use_aux3": "Povolit relé Aux3",
           "use_aux4": "Povolit relé Aux4",
-          "unlock_advanced": "Odemknout pokročilé možnosti"
+          "unlock_advanced": "Odemknout pokročilé možnosti",
+          "enable_backwash_option": "Povolit režim 'Backwash'"
         }
       },
       "advanced": {

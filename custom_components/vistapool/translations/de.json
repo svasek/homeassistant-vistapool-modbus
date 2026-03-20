@@ -55,7 +55,8 @@
           "use_aux2": "Aux2-Relais aktivieren",
           "use_aux3": "Aux3-Relais aktivieren",
           "use_aux4": "Aux4-Relais aktivieren",
-          "unlock_advanced": "Erweiterte Optionen freischalten"
+          "unlock_advanced": "Erweiterte Optionen freischalten",
+          "enable_backwash_option": "'Backwash'-Modus aktivieren"
         }
       },
       "advanced": {

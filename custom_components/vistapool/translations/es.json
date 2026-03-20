@@ -55,7 +55,8 @@
           "use_aux2": "Activar relé Aux2",
           "use_aux3": "Activar relé Aux3",
           "use_aux4": "Activar relé Aux4",
-          "unlock_advanced": "Desbloquear opciones avanzadas"
+          "unlock_advanced": "Desbloquear opciones avanzadas",
+          "enable_backwash_option": "Activar modo 'Backwash'"
         }
       },
       "advanced": {
