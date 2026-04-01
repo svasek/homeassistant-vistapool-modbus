@@ -447,6 +447,88 @@ def test_select_filtration_speed_current_option(mock_coordinator):
     assert ent.current_option == "high"
 
 
+def test_filtration_speed_unavailable_in_non_manual_mode(mock_coordinator):
+    props = make_props(
+        options_map={0: "low", 1: "mid", 2: "high"}, mask=0x0070, shift=4
+    )
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTRATION_SPEED", props
+    )
+    mock_coordinator.last_update_success = True
+    # Non-manual mode (1 = auto) -> unavailable
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 1}
+    assert ent.available is False
+    # Manual mode (0) -> available
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 0}
+    assert ent.available is True
+    # Coordinator not ready (last_update_success=False) -> unavailable regardless of mode
+    mock_coordinator.last_update_success = False
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 0}
+    assert ent.available is False
+
+
+@pytest.mark.parametrize(
+    "key, mask, shift, conf_bits, expected",
+    [
+        # filtration1_speed: mask=0x0380, shift=7; slow=0<<7=0, mid=1<<7=128, fast=2<<7=256
+        ("filtration1_speed", 0x0380, 7, 0, "low"),
+        ("filtration1_speed", 0x0380, 7, 128, "mid"),
+        ("filtration1_speed", 0x0380, 7, 256, "high"),
+        # filtration2_speed: mask=0x1C00, shift=10; slow=0, mid=1<<10=1024, fast=2<<10=2048
+        ("filtration2_speed", 0x1C00, 10, 0, "low"),
+        ("filtration2_speed", 0x1C00, 10, 1024, "mid"),
+        ("filtration2_speed", 0x1C00, 10, 2048, "high"),
+        # filtration3_speed: mask=0xE000, shift=13; slow=0, mid=1<<13=8192, fast=2<<13=16384
+        ("filtration3_speed", 0xE000, 13, 0, "low"),
+        ("filtration3_speed", 0xE000, 13, 8192, "mid"),
+        ("filtration3_speed", 0xE000, 13, 16384, "high"),
+    ],
+)
+def test_current_option_filtration_timer_speed(
+    mock_coordinator, key, mask, shift, conf_bits, expected
+):
+    props = {
+        "options_map": {0: "low", 1: "mid", 2: "high"},
+        "mask": mask,
+        "shift": shift,
+    }
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", key, props)
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": conf_bits}
+    assert ent.current_option == expected
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "key, mask, shift, initial_conf, option, expected_written",
+    [
+        # filtration1_speed: mask=0x0380, shift=7
+        ("filtration1_speed", 0x0380, 7, 0, "mid", 128),  # 1<<7
+        ("filtration1_speed", 0x0380, 7, 0, "high", 256),  # 2<<7
+        # filtration2_speed: mask=0x1C00, shift=10
+        ("filtration2_speed", 0x1C00, 10, 0, "mid", 1024),  # 1<<10
+        # filtration3_speed: mask=0xE000, shift=13
+        ("filtration3_speed", 0xE000, 13, 0, "high", 16384),  # 2<<13
+    ],
+)
+async def test_async_select_option_filtration_timer_speed(
+    mock_coordinator, key, mask, shift, initial_conf, option, expected_written
+):
+    props = {
+        "options_map": {0: "low", 1: "mid", 2: "high"},
+        "mask": mask,
+        "shift": shift,
+        "register": 0x050F,
+    }
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", key, props)
+    ent.hass = MagicMock()
+    ent.coordinator.client = AsyncMock()
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": initial_conf}
+    await ent.async_select_option(option)
+    ent.coordinator.client.async_write_register.assert_awaited_with(
+        0x050F, expected_written, apply=True
+    )
+
+
 @pytest.mark.asyncio
 async def test_select_async_setup_entry_adds_entities(monkeypatch):
     class DummyEntry:
@@ -641,24 +723,4 @@ def test_available_false_during_winter_mode(mock_coordinator):
     mock_coordinator.winter_mode = True
     props = {"register": 0x0412, "options_map": {1: "Manual", 2: "Auto"}}
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
-    assert ent.available is False
-
-
-def test_filtration_speed_unavailable_in_non_manual_mode(mock_coordinator):
-    props = make_props(
-        options_map={0: "low", 1: "mid", 2: "high"}, mask=0x0070, shift=4
-    )
-    ent = VistaPoolSelect(
-        mock_coordinator, "test_entry", "MBF_PAR_FILTRATION_SPEED", props
-    )
-    mock_coordinator.last_update_success = True
-    # Non-manual mode (1 = auto) -> unavailable
-    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 1}
-    assert ent.available is False
-    # Manual mode (0) -> available
-    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 0}
-    assert ent.available is True
-    # Coordinator not ready (last_update_success=False) -> unavailable regardless of mode
-    mock_coordinator.last_update_success = False
-    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 0}
     assert ent.available is False

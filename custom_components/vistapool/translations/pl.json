@@ -209,10 +209,22 @@
     "select": {
       "filtration1_start": { "name": "Timer 1 - Start filtracji" },
       "filtration1_stop": { "name": "Timer 1 - Stop filtracji" },
+      "filtration1_speed": {
+        "name": "Timer 1 - Prędkość filtracji",
+        "state": { "low": "Niska", "mid": "Średnia", "high": "Wysoka" }
+      },
       "filtration2_start": { "name": "Timer 2 - Start filtracji" },
       "filtration2_stop": { "name": "Timer 2 - Stop filtracji" },
+      "filtration2_speed": {
+        "name": "Timer 2 - Prędkość filtracji",
+        "state": { "low": "Niska", "mid": "Średnia", "high": "Wysoka" }
+      },
       "filtration3_start": { "name": "Timer 3 - Start filtracji" },
       "filtration3_stop": { "name": "Timer 3 - Stop filtracji" },
+      "filtration3_speed": {
+        "name": "Timer 3 - Prędkość filtracji",
+        "state": { "low": "Niska", "mid": "Średnia", "high": "Wysoka" }
+      },
       "relay_aux1_start": { "name": "Timer Aux1 (1) - Start" },
       "relay_aux1_stop": { "name": "Timer Aux1 (1) - Zatrzymanie" },
       "relay_aux1b_start": { "name": "Timer Aux1 (2) - Start" },

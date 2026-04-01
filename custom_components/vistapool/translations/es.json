@@ -209,10 +209,22 @@
     "select": {
       "filtration1_start": { "name": "Temporizador 1 - Inicio de filtración" },
       "filtration1_stop": { "name": "Temporizador 1 - Fin de filtración" },
+      "filtration1_speed": {
+        "name": "Temporizador 1 - Velocidad de filtración",
+        "state": { "low": "Baja", "mid": "Media", "high": "Alta" }
+      },
       "filtration2_start": { "name": "Temporizador 2 - Inicio de filtración" },
       "filtration2_stop": { "name": "Temporizador 2 - Fin de filtración" },
+      "filtration2_speed": {
+        "name": "Temporizador 2 - Velocidad de filtración",
+        "state": { "low": "Baja", "mid": "Media", "high": "Alta" }
+      },
       "filtration3_start": { "name": "Temporizador 3 - Inicio de filtración" },
       "filtration3_stop": { "name": "Temporizador 3 - Fin de filtración" },
+      "filtration3_speed": {
+        "name": "Temporizador 3 - Velocidad de filtración",
+        "state": { "low": "Baja", "mid": "Media", "high": "Alta" }
+      },
       "relay_aux1_start": { "name": "Temporizador Aux1 (1) - Inicio" },
       "relay_aux1_stop": { "name": "Temporizador Aux1 (1) - Parada" },
       "relay_aux1b_start": { "name": "Temporizador Aux1 (2) - Inicio" },

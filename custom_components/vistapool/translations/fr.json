@@ -209,10 +209,22 @@
     "select": {
       "filtration1_start": { "name": "Minuteur 1 - Début de filtration" },
       "filtration1_stop": { "name": "Minuteur 1 - Fin de filtration" },
+      "filtration1_speed": {
+        "name": "Minuteur 1 - Vitesse de filtration",
+        "state": { "low": "Basse", "mid": "Moyenne", "high": "Haute" }
+      },
       "filtration2_start": { "name": "Minuteur 2 - Début de filtration" },
       "filtration2_stop": { "name": "Minuteur 2 - Fin de filtration" },
+      "filtration2_speed": {
+        "name": "Minuteur 2 - Vitesse de filtration",
+        "state": { "low": "Basse", "mid": "Moyenne", "high": "Haute" }
+      },
       "filtration3_start": { "name": "Minuteur 3 - Début de filtration" },
       "filtration3_stop": { "name": "Minuteur 3 - Fin de filtration" },
+      "filtration3_speed": {
+        "name": "Minuteur 3 - Vitesse de filtration",
+        "state": { "low": "Basse", "mid": "Moyenne", "high": "Haute" }
+      },
       "relay_aux1_start": { "name": "Minuteur Aux1 (1) - Démarrage" },
       "relay_aux1_stop": { "name": "Minuteur Aux1 (1) - Arrêt" },
       "relay_aux1b_start": { "name": "Minuteur Aux1 (2) - Démarrage" },
