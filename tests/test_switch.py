@@ -268,8 +268,10 @@ def test_available_manual_filtration(mock_coordinator):
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "foo", props)
     mock_coordinator.data = {"MBF_PAR_FILT_MODE": 0}
     assert ent.available is True
-    mock_coordinator.data = {"MBF_PAR_FILT_MODE": 1}
-    assert ent.available is False
+    # All non-manual modes must be unavailable
+    for mode in (1, 2, 3, 4, 13):  # auto, heating, smart, intelligent, backwash
+        mock_coordinator.data = {"MBF_PAR_FILT_MODE": mode}
+        assert ent.available is False, f"Expected unavailable for mode={mode}"
 
 
 def test_available_relay_timer_aux(mock_coordinator):

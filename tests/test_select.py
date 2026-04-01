@@ -642,3 +642,23 @@ def test_available_false_during_winter_mode(mock_coordinator):
     props = {"register": 0x0412, "options_map": {1: "Manual", 2: "Auto"}}
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
     assert ent.available is False
+
+
+def test_filtration_speed_unavailable_in_non_manual_mode(mock_coordinator):
+    props = make_props(
+        options_map={0: "low", 1: "mid", 2: "high"}, mask=0x0070, shift=4
+    )
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTRATION_SPEED", props
+    )
+    mock_coordinator.last_update_success = True
+    # Non-manual mode (1 = auto) -> unavailable
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 1}
+    assert ent.available is False
+    # Manual mode (0) -> available
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 0}
+    assert ent.available is True
+    # Coordinator not ready (last_update_success=False) -> unavailable regardless of mode
+    mock_coordinator.last_update_success = False
+    mock_coordinator.data = {"MBF_PAR_FILTRATION_CONF": 0, "MBF_PAR_FILT_MODE": 0}
+    assert ent.available is False

@@ -487,3 +487,11 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             # If not exactly in options_map, always return current HH:MM
             return self._options_map.get(value) or seconds_to_hhmm(value)
         return seconds_to_hhmm(value)  # pragma: no cover
+
+    @property
+    def available(self) -> bool:
+        if self._key == "MBF_PAR_FILTRATION_SPEED":
+            if not super().available:
+                return False
+            return self.coordinator.data.get("MBF_PAR_FILT_MODE", 0) == 0
+        return super().available
