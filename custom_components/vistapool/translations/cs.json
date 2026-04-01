@@ -209,10 +209,22 @@
     "select": {
       "filtration1_start": { "name": "Timer 1 - Spuštění filtrace" },
       "filtration1_stop": { "name": "Timer 1 - Vypnutí filtrace" },
+      "filtration1_speed": {
+        "name": "Timer 1 - Rychlost filtrace",
+        "state": { "low": "Nízká", "mid": "Střední", "high": "Vysoká" }
+      },
       "filtration2_start": { "name": "Timer 2 -  Spuštění filtrace" },
       "filtration2_stop": { "name": "Timer 2 - Vypnutí filtrace" },
+      "filtration2_speed": {
+        "name": "Timer 2 - Rychlost filtrace",
+        "state": { "low": "Nízká", "mid": "Střední", "high": "Vysoká" }
+      },
       "filtration3_start": { "name": "Timer 3 -  Spuštění filtrace" },
       "filtration3_stop": { "name": "Timer 3 - Vypnutí filtrace" },
+      "filtration3_speed": {
+        "name": "Timer 3 - Rychlost filtrace",
+        "state": { "low": "Nízká", "mid": "Střední", "high": "Vysoká" }
+      },
       "relay_aux1_start": { "name": "Timer Aux1 (1) -  Spuštění" },
       "relay_aux1_stop": { "name": "Timer Aux1 (1) -  Vypnutí" },
       "relay_aux1b_start": { "name": "Timer Aux1 (2) -  Spuštění" },
