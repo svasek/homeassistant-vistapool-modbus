@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.19.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.3...v1.19.0) (2026-04-01)
+
+
+### Features
+
+* ✨ add filtration speed options for timers ([#92](https://github.com/svasek/homeassistant-vistapool-modbus/issues/92)) ([a04034d](https://github.com/svasek/homeassistant-vistapool-modbus/commit/a04034d644b8028cb0240691eb665788ba155adf))
+
+
+### Bug Fixes
+
+* 🐛 availability logic for filtration speed  and manual filtration ([a261836](https://github.com/svasek/homeassistant-vistapool-modbus/commit/a261836627da7d89f9a6279897f561c33453513c))
+
 ## [1.18.3](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.2...v1.18.3) (2026-03-20)
 
 
