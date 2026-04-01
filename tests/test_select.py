@@ -508,6 +508,16 @@ def test_current_option_filtration_timer_speed(
         ("filtration2_speed", 0x1C00, 10, 0, "mid", 1024),  # 1<<10
         # filtration3_speed: mask=0xE000, shift=13
         ("filtration3_speed", 0xE000, 13, 0, "high", 16384),  # 2<<13
+        # Non-zero initial_conf: verify unrelated bits are preserved
+        # initial_conf=0x0001 (pump type=Hayward); setting filtration1 to "high" (2<<7=256)
+        # should yield 0x0001 | 256 = 257, keeping bit 0 intact
+        ("filtration1_speed", 0x0380, 7, 0x0001, "high", 0x0001 | (2 << 7)),
+        # initial_conf has filtration2 set to "high" (2<<10=0x0800); setting filtration1 to "mid"
+        # should preserve filtration2 bits: 0x0800 | (1<<7) = 0x0880
+        ("filtration1_speed", 0x0380, 7, 0x0800, "mid", 0x0800 | (1 << 7)),
+        # initial_conf has filtration1 set to "high" (2<<7=0x0100); setting filtration3 to "mid"
+        # should preserve filtration1 bits: 0x0100 | (1<<13) = 0x0100 | 0x2000 = 0x2100
+        ("filtration3_speed", 0xE000, 13, 0x0100, "mid", 0x0100 | (1 << 13)),
     ],
 )
 async def test_async_select_option_filtration_timer_speed(

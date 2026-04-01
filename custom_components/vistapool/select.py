@@ -35,6 +35,13 @@ from .helpers import (
 
 _LOGGER = logging.getLogger(__name__)
 
+_FILTRATION_SPEED_KEYS = (
+    "MBF_PAR_FILTRATION_SPEED",
+    "filtration1_speed",
+    "filtration2_speed",
+    "filtration3_speed",
+)
+
 
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Set up VistaPool select entities from a config entry."""
@@ -46,12 +53,6 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
         _LOGGER.warning("No data from Modbus, skipping select setup!")
         return
 
-    _FILTRATION_SPEED_KEYS = (
-        "MBF_PAR_FILTRATION_SPEED",
-        "filtration1_speed",
-        "filtration2_speed",
-        "filtration3_speed",
-    )
     for key, props in SELECT_DEFINITIONS.items():
         # Skip the selects if they are not detected
         if key in _FILTRATION_SPEED_KEYS and not bool(
@@ -252,12 +253,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 await asyncio.sleep(0.2)
             return
 
-        if self._key in (
-            "MBF_PAR_FILTRATION_SPEED",
-            "filtration1_speed",
-            "filtration2_speed",
-            "filtration3_speed",
-        ):
+        if self._key in _FILTRATION_SPEED_KEYS:
             rev_map = {v: k for k, v in self._options_map.items()}
             value = rev_map.get(option)
             if value is None:  # pragma: no cover
@@ -455,12 +451,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             # fallback (should not occur)
             return self._options_map[0]
 
-        if self._key in (
-            "MBF_PAR_FILTRATION_SPEED",
-            "filtration1_speed",
-            "filtration2_speed",
-            "filtration3_speed",
-        ):
+        if self._key in _FILTRATION_SPEED_KEYS:
             raw = self.coordinator.data.get("MBF_PAR_FILTRATION_CONF")
             if raw is None:  # pragma: no cover
                 return None
