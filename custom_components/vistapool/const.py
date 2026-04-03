@@ -507,7 +507,7 @@ NUMBER_DEFINITIONS = {
         "unit": "mV",
         "min": 0.0,
         "max": 1000.0,
-        "step": 10.0,
+        "step": 1.0,
         "register": 0x0508,  # MBF_PAR_RX1
         "scale": 1.0,
         "device_class": NumberDeviceClass.VOLTAGE,
