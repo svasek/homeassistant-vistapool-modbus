@@ -103,6 +103,13 @@ class VistaPoolModbusClient:
         self._polls_since_full_read: int = (
             _FULL_READ_INTERVAL  # Force full read on first poll
         )
+        self._last_notification: int = (
+            0  # Notification bits from last _perform_read_all
+        )
+        self._last_was_full_read: bool = (
+            True  # Whether last _perform_read_all was a full read
+        )
+        self._cached_timers: dict = {}  # Last known timer values
 
     async def get_client(self) -> AsyncModbusTcpClient:
         """Get or create a Modbus client with retry logic."""
@@ -355,6 +362,9 @@ class VistaPoolModbusClient:
             # Reset notification polling state so the next connect starts with a full read
             self._cached_result = {}
             self._polls_since_full_read = _FULL_READ_INTERVAL
+            self._last_notification = 0
+            self._last_was_full_read = True
+            self._cached_timers = {}
 
     async def async_read_all(self) -> dict:
         """Read all data with retry logic."""
@@ -590,7 +600,9 @@ class VistaPoolModbusClient:
                 })
                 # fmt: on
             else:
-                _LOGGER.debug("Skipping MODBUS page read (no change notification)")
+                _LOGGER.debug(
+                    "Skipping MODBUS (0x00xx)  page read (no change notification)"
+                )
 
             """
             Request GLOBAL page of registers starting from 0x0206
@@ -658,7 +670,9 @@ class VistaPoolModbusClient:
                 })
                 # fmt: on
             else:
-                _LOGGER.debug("Skipping GLOBAL page read (no change notification)")
+                _LOGGER.debug(
+                    "Skipping GLOBAL (0x02xx) page read (no change notification)"
+                )
 
             if force_full or (notification & _NOTIF_FACTORY):
                 """
@@ -685,7 +699,9 @@ class VistaPoolModbusClient:
                         self._failed_reads[f"0x{address:04X}"] = (
                             self._failed_reads.get(f"0x{address:04X}", 0) + 1
                         )
-                        raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
+                        raise ModbusException(
+                            f"Read error at 0x{address:04X}: {e}"
+                        ) from e
                     if rr03.isError():
                         self._failed_reads[f"0x{address:04X}"] = (
                             self._failed_reads.get(f"0x{address:04X}", 0) + 1
@@ -724,7 +740,9 @@ class VistaPoolModbusClient:
                 })
                 # fmt: on
             else:
-                _LOGGER.debug("Skipping FACTORY page read (no change notification)")
+                _LOGGER.debug(
+                    "Skipping FACTORY (0x03xx) page read (no change notification)"
+                )
 
             if force_full or (notification & _NOTIF_INSTALLER):
                 """
@@ -756,7 +774,9 @@ class VistaPoolModbusClient:
                         self._failed_reads[f"0x{address:04X}"] = (
                             self._failed_reads.get(f"0x{address:04X}", 0) + 1
                         )
-                        raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
+                        raise ModbusException(
+                            f"Read error at 0x{address:04X}: {e}"
+                        ) from e
                     if rr04.isError():  # pragma: no cover
                         self._failed_reads[f"0x{address:04X}"] = (
                             self._failed_reads.get(f"0x{address:04X}", 0) + 1
@@ -824,7 +844,9 @@ class VistaPoolModbusClient:
                 })
                 # fmt: on
             else:
-                _LOGGER.debug("Skipping INSTALLER page read (no change notification)")
+                _LOGGER.debug(
+                    "Skipping INSTALLER (0x04xx) page read (no change notification)"
+                )
 
             if force_full or (notification & _NOTIF_USER):
                 # MBF_PAR_RELAY_PH:
@@ -888,7 +910,9 @@ class VistaPoolModbusClient:
                 })
                 # fmt: on
             else:
-                _LOGGER.debug("Skipping USER page read (no change notification)")
+                _LOGGER.debug(
+                    "Skipping USER (0x05xx) page read (no change notification)"
+                )
 
             if force_full or (notification & _NOTIF_MISC):
                 """
@@ -952,17 +976,22 @@ class VistaPoolModbusClient:
                 })
                 # fmt: on
             else:
-                _LOGGER.debug("Skipping MISC page read (no change notification)")
-
+                _LOGGER.debug(
+                    "Skipping MISC (0x06xx) page read (no change notification)"
+                )
 
             if notification:
                 try:
                     await modbus_acall(
                         client.write_registers, self._unit, address=0x0110, values=[0]
                     )
-                    _LOGGER.debug("MBF_NOTIFICATION register cleared (was 0x%04X)", notification)
+                    _LOGGER.debug(
+                        "MBF_NOTIFICATION register cleared (was 0x%04X)", notification
+                    )
                 except Exception:
-                    _LOGGER.debug("Could not clear MBF_NOTIFICATION (0x%04X)", notification)
+                    _LOGGER.debug(
+                        "Could not clear MBF_NOTIFICATION (0x%04X)", notification
+                    )
         except Exception as e:  # pragma: no cover
             self._failed_reads["unknown"] = self._failed_reads.get("unknown", 0) + 1
             raise ModbusException(f"Modbus TCP read error: {e}") from e
@@ -973,6 +1002,8 @@ class VistaPoolModbusClient:
             self._polls_since_full_read = 0
         else:
             self._polls_since_full_read += 1
+        self._last_notification = notification
+        self._last_was_full_read = force_full
         self._cached_result.update(result)
 
         # Add filtration speed and type
@@ -1180,6 +1211,16 @@ class VistaPoolModbusClient:
         """
         timers = {}
         start = time.monotonic()
+
+        # Skip timer reads if the INSTALLER page has not changed since the last poll
+        # and this is not a forced full read.
+        if not self._last_was_full_read and not (
+            self._last_notification & _NOTIF_INSTALLER
+        ):
+            if self._cached_timers:
+                _LOGGER.debug("Skipping timer read (no INSTALLER change notification)")
+                return dict(self._cached_timers)
+
         client = await self.get_client()
         if client is None or not client.connected:
             self._failed_reads["timers_connection"] = (
@@ -1215,6 +1256,7 @@ class VistaPoolModbusClient:
 
         end = time.monotonic()
         self._response_times.append(end - start)
+        self._cached_timers.update(timers)
         return timers
 
     async def write_timer(self, block_name, timer_data) -> bool:

@@ -1737,3 +1737,79 @@ async def test_perform_read_all_reads_installer_and_user_when_both_notified(
 
     assert fake_modbus.read_holding_registers.await_count == 3
     assert isinstance(result, dict)
+
+
+@pytest.mark.asyncio
+async def test_perform_read_all_timers_skips_when_no_installer_notification(
+    config, monkeypatch
+):
+    """_perform_read_all_timers returns cached data without any Modbus reads when
+    INSTALLER notification bit is not set and it is not a full-read poll."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    # Simulate state after a previous partial read with no INSTALLER notification
+    client._last_was_full_read = False
+    client._last_notification = 0
+    client._cached_timers = {
+        "filtration1": {
+            "enable": 1,
+            "on": 3600,
+            "interval": 7200,
+            "period": 1,
+            "function": 1,
+        },
+    }
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all_timers(enabled_timers=["filtration1"])
+
+    assert result == client._cached_timers
+    fake_modbus.read_holding_registers.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_perform_read_all_timers_reads_when_installer_notified(
+    config, monkeypatch
+):
+    """_perform_read_all_timers reads Modbus when INSTALLER notification bit is set."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    client._last_was_full_read = False
+    client._last_notification = vistapool_modbus._NOTIF_INSTALLER
+    client._cached_timers = {}
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+    fake_modbus.read_holding_registers = AsyncMock(return_value=_DummyResp([0] * 15))
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all_timers(enabled_timers=["filtration1"])
+
+    fake_modbus.read_holding_registers.assert_called_once()
+    assert "filtration1" in result
+    # Cache must be updated after the read
+    assert "filtration1" in client._cached_timers
+
+
+@pytest.mark.asyncio
+async def test_perform_read_all_timers_reads_on_full_read_even_without_notification(
+    config, monkeypatch
+):
+    """_perform_read_all_timers reads Modbus when _last_was_full_read=True regardless of notification."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    client._last_was_full_read = True  # forced full read
+    client._last_notification = 0  # no notification bits
+    client._cached_timers = {
+        "filtration1": {"enable": 0, "on": 0, "interval": 0, "period": 1, "function": 1}
+    }
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+    fake_modbus.read_holding_registers = AsyncMock(return_value=_DummyResp([0] * 15))
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all_timers(enabled_timers=["filtration1"])
+
+    fake_modbus.read_holding_registers.assert_called_once()
+    assert "filtration1" in result
