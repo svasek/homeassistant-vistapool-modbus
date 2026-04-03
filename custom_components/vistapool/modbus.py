@@ -750,12 +750,16 @@ class VistaPoolModbusClient:
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
                 """
 
-                # Read configuration registers (0x0408–0x04E0) in blocks of *31* due to device limits
+                # Read configuration registers in multiple blocks due to device limits.
+                # Blocks covered:
+                #   0x0408–0x0426  (31 registers) - general config (relay GPIOs, offsets, etc.)
+                #   0x0427–0x0433  (13 registers) - pH/redox/chlorine config
+                #   0x0434–0x04E7  - TIMER_BLOCKS, read separately via read_all_timers()
+                #   0x04E8–0x04EF  ( 8 registers) - FILTVALVE / backwash valve config
                 rr04_ranges = [
                     (0x0408, 31),  # 0x0408–0x0426
                     (0x0427, 13),  # 0x0427–0x0433
-                    # TIMER_BLOCKS starts at 0x0434, so we skip 0x0434-0x04E8
-                    # (0x04E8, 9),  # 0x04F0-0x04E8
+                    (0x04E8, 8),  # 0x04E8–0x04EF  FILTVALVE / backwash registers
                 ]
 
                 reg04 = []
@@ -838,6 +842,11 @@ class VistaPoolModbusClient:
                     "MBF_PAR_RELAY_MAX_TIME": get_safe(reg04, 41),                              # 0x0431         Maximum amount of time in seconds, that a dosing pump can operate before rising an alarm signal. The behavior of the system when the dosing time is exceeded is regulated by the type of action stored in the MBF_PAR_RELAY_MODE register.
                     "MBF_PAR_RELAY_MODE": get_safe(reg04, 42),                                  # 0x0432         Behavior of the system when the dosing time is exceeded (see MBMSK_PAR_RELAY_MODE_* and MBV_PAR_RELAY_MODE_*)
                     "MBF_PAR_RELAY_ACTIVATION_DELAY": get_safe(reg04, 43, lambda v: v + 10),    # 0x0433         Delay time in seconds for the pH pump when the measured pH value is outside the allowable pH setpoints. The system internally adds an extra time of 10 seconds to the value stored here. The pump starts the dosing operation once the condition of pH out of valid interval is maintained during the time specified in this register.
+                    # FILTVALVE / backwash registers (0x04E8–0x04EF) at reg04 indices 44–51
+                    "MBF_PAR_FILTVALVE_ENABLE": get_safe(reg04, 44),                            # 0x04E8        Filter cleaning mode (0 = off, 1 = Besgo valve)
+                    "MBF_PAR_FILTVALVE_GPIO": get_safe(reg04, 46),                              # 0x04EA        Relay assigned to the filter cleaning function
+                    "MBF_PAR_FILTVALVE_INTERVAL": get_safe(reg04, 50),                          # 0x04EE        Cleaning action duration in seconds
+                    "MBF_PAR_FILTVALVE_REMAINING": get_safe(reg04, 51),                         # 0x04EF        Remaining backwash time in seconds (> 0 = backwash active)
 
                 })
                 # fmt: on
@@ -990,6 +999,7 @@ class VistaPoolModbusClient:
                     _LOGGER.debug(
                         "Could not clear MBF_NOTIFICATION (0x%04X)", notification
                     )
+
         except Exception as e:  # pragma: no cover
             self._failed_reads["unknown"] = self._failed_reads.get("unknown", 0) + 1
             raise ModbusException(f"Modbus TCP read error: {e}") from e

@@ -204,7 +204,8 @@
     },
     "button": {
       "sync_time": { "name": "Synchroniser l’heure de l’appareil" },
-      "escape": { "name": "Effacer les messages d’erreur" }
+      "escape": { "name": "Effacer les messages d'erreur" },
+      "backwash": { "name": "Démarrer le contre-lavage" }
     },
     "select": {
       "filtration1_start": { "name": "Minuteur 1 - Début de filtration" },

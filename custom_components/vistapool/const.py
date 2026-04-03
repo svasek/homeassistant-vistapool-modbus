@@ -606,6 +606,10 @@ BUTTON_DEFINITIONS = {
         "icon": "mdi:reload-alert",
         "entity_category": EntityCategory.CONFIG,
     },
+    "BACKWASH": {
+        "name": "Start Backwash",
+        "icon": "mdi:waves-arrow-left",
+    },
 }
 
 SELECT_DEFINITIONS = {

@@ -303,14 +303,17 @@ async def test_async_select_option_backwash(mock_coordinator):
 
 @pytest.mark.asyncio
 async def test_async_select_option_backwash_from_manual(mock_coordinator):
-    """Switching from manual to backwash must first zero out MANUAL_FILTRATION_REGISTER."""
+    """Switching from manual to backwash with a MANUAL valve must stop the pump first.
+    The user needs the pump stopped so they can safely rotate the multi-way valve.
+    """
     props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
     ent.hass = MagicMock()
     ent.coordinator.data = {
-        "MBF_PAR_FILT_MODE": 0,  # current: manual (key 0 in SELECT_DEFINITIONS)
+        "MBF_PAR_FILT_MODE": 0,  # current: manual
         "MBF_PAR_HEATING_GPIO": 0,
         "MBF_PAR_TEMPERATURE_ACTIVE": 0,
+        # MBF_PAR_FILTVALVE_ENABLE absent / 0 => manual valve
     }
     ent.coordinator.device_name = "vistapool"
     ent.coordinator.config_entry.options = {"enable_backwash_option": True}
@@ -319,10 +322,36 @@ async def test_async_select_option_backwash_from_manual(mock_coordinator):
     assert "backwash" in ent.options
     await ent.async_select_option("backwash")
     calls = ent.coordinator.client.async_write_register.await_args_list
-    # First call: turn off manual filtration
+    # First call: stop manual filtration (safety - user must turn valve manually)
     assert calls[0].args == (0x0413, 0)
     # Second call: set backwash mode
     assert calls[1].args == (0x0411, 13)
+
+
+@pytest.mark.asyncio
+async def test_async_select_option_backwash_from_manual_auto_valve(mock_coordinator):
+    """Switching from manual to backwash with an AUTOMATIC valve (Besgo) must NOT
+    stop the pump - it must keep running so the valve opens correctly.
+    """
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    ent.hass = MagicMock()
+    ent.coordinator.data = {
+        "MBF_PAR_FILT_MODE": 0,  # current: manual
+        "MBF_PAR_HEATING_GPIO": 0,
+        "MBF_PAR_TEMPERATURE_ACTIVE": 0,
+        "MBF_PAR_FILTVALVE_ENABLE": 1,  # Besgo auto valve present
+    }
+    ent.coordinator.device_name = "vistapool"
+    ent.coordinator.config_entry.options = {"enable_backwash_option": True}
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    assert "backwash" in ent.options
+    await ent.async_select_option("backwash")
+    calls = ent.coordinator.client.async_write_register.await_args_list
+    # Only one write: set backwash mode - pump must NOT be stopped
+    assert len(calls) == 1
+    assert calls[0].args == (0x0411, 13)
 
 
 @pytest.mark.asyncio

@@ -204,7 +204,8 @@
     },
     "button": {
       "sync_time": { "name": "Gerätezeit synchronisieren" },
-      "escape": { "name": "Fehlermeldungen löschen" }
+      "escape": { "name": "Fehlermeldungen löschen" },
+      "backwash": { "name": "Rückspülung starten" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Filtration Start" },

@@ -330,7 +330,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
 
     # Setup values for all reads in the order used in _perform_read_all:
     # rr00 (holding), rr01 (input), rr02 (holding), rr02_hidro (holding),
-    # rr03 (2x holding), rr04 (2x holding), rr05 (holding), rr06 (holding)
+    # rr03 (2x holding), rr04 (3x holding), rr05 (holding), rr06 (holding)
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
             DummyResp(
@@ -382,6 +382,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
             DummyResp(list(range(14, 18))),  # factory block 2 (0x0322, 4)
             DummyResp(list(range(1, 32))),  # installer block 1 (0x0408, 31)
             DummyResp(list(range(32, 45))),  # installer block 2 (0x0427, 13)
+            DummyResp([0] * 8),  # installer block 3 (0x04E8, 8) FILTVALVE
             DummyResp([650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]),  # rr05
             DummyResp([9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0]),  # rr06
         ]
@@ -428,7 +429,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
     assert "FILTRATION_SPEED" in result
 
     # Verify that all Modbus calls were made as expected
-    assert fake_modbus.read_holding_registers.await_count == 9
+    assert fake_modbus.read_holding_registers.await_count == 10
     assert fake_modbus.read_input_registers.await_count == 1
 
 
@@ -445,6 +446,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
         ("rr03-2", "read_holding_registers", "0x0322", "iserror"),
         ("rr04-1", "read_holding_registers", "0x0408", "exception"),
         ("rr04-2", "read_holding_registers", "0x0427", "exception"),
+        ("rr04-3", "read_holding_registers", "0x04E8", "exception"),
         ("rr05", "read_holding_registers", "0x0502", "iserror"),
         ("rr06", "read_holding_registers", "0x0600", "iserror"),
     ],
@@ -475,6 +477,7 @@ async def test_perform_read_all_raises_on_block(
         "rr03-2",
         "rr04-1",
         "rr04-2",
+        "rr04-3",
         "rr05",
         "rr06",
     ]
@@ -489,6 +492,7 @@ async def test_perform_read_all_raises_on_block(
         "rr03-2": DummyResp([0] * 4),
         "rr04-1": DummyResp([0] * 31),
         "rr04-2": DummyResp([0] * 13),
+        "rr04-3": DummyResp([0] * 8),
         "rr05": DummyResp([0] * 14),
         "rr06": DummyResp([0] * 13),
     }
@@ -547,6 +551,7 @@ async def test_perform_read_all_raises_on_block(
         ("rr03-2", 0x0322),
         ("rr04-1", 0x0408),
         ("rr04-2", 0x0427),
+        ("rr04-3", 0x04E8),
         ("rr05", 0x0502),
         ("rr06", 0x0600),
     ],
@@ -579,6 +584,7 @@ async def test_perform_read_all_block_exception(
         ("rr03-2", DummyResp([0] * 4)),
         ("rr04-1", DummyResp([0] * 31)),
         ("rr04-2", DummyResp([0] * 13)),
+        ("rr04-3", DummyResp([0] * 8)),
         ("rr05", DummyResp([0] * 14)),
         ("rr06", DummyResp([0] * 13)),
     ]
@@ -591,7 +597,7 @@ async def test_perform_read_all_block_exception(
         else:
             rh_side_effect.append(resp)
 
-    # holding: rr00, rr02, rr02_hidro, rr03-01, rr03-02, rr04-1, rr04-2, rr05, rr06 (total 9 calls)
+    # holding: rr00, rr02, rr02_hidro, rr03-01, rr03-02, rr04-1, rr04-2, rr04-3, rr05, rr06 (total 10 calls)
     # input: rr01 (only one call)
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
@@ -602,8 +608,9 @@ async def test_perform_read_all_block_exception(
             rh_side_effect[5],  # rr03-2 (0x0322)
             rh_side_effect[6],  # rr04-1 (0x0408)
             rh_side_effect[7],  # rr04-2 (0x0427)
-            rh_side_effect[8],  # rr05 (0x0502)
-            rh_side_effect[9],  # rr06 (0x0600)
+            rh_side_effect[8],  # rr04-3 (0x04E8)
+            rh_side_effect[9],  # rr05 (0x0502)
+            rh_side_effect[10],  # rr06 (0x0600)
         ]
     )
     fake_modbus.read_input_registers = AsyncMock(

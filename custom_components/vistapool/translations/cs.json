@@ -204,7 +204,8 @@
     },
     "button": {
       "sync_time": { "name": "Synchronizovat čas zařízení" },
-      "escape": { "name": "Vymazat chybová hlášení" }
+      "escape": { "name": "Vymazat chybová hlášení" },
+      "backwash": { "name": "Spustit proplach" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Spuštění filtrace" },

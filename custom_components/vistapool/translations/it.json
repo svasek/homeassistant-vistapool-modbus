@@ -204,7 +204,8 @@
     },
     "button": {
       "sync_time": { "name": "Sincronizza orario dispositivo" },
-      "escape": { "name": "Cancella messaggi di errore" }
+      "escape": { "name": "Cancella messaggi di errore" },
+      "backwash": { "name": "Avvia controlavaggio" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Inizio filtrazione" },

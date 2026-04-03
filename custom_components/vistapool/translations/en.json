@@ -204,7 +204,8 @@
     },
     "button": {
       "sync_time": { "name": "Synchronize Device Time" },
-      "escape": { "name": "Clear Error Messages" }
+      "escape": { "name": "Clear Error Messages" },
+      "backwash": { "name": "Start Backwash" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Filtration Start" },

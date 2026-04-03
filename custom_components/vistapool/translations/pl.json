@@ -204,7 +204,8 @@
     },
     "button": {
       "sync_time": { "name": "Synchronizuj czas urządzenia" },
-      "escape": { "name": "Wyczyść komunikaty o błędach" }
+      "escape": { "name": "Wyczyść komunikaty o błędach" },
+      "backwash": { "name": "Uruchom płukanie wsteczne" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Start filtracji" },

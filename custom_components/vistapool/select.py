@@ -298,9 +298,18 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             if self._key == "MBF_PAR_FILT_MODE":
                 current_mode = self.coordinator.data.get(self._key)
                 current_name = self._options_map.get(current_mode)
+                has_auto_valve = bool(
+                    self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0)
+                )
+                # When leaving manual mode, stop the pump first - EXCEPT when
+                # switching to backwash on a device WITH an automatic valve (Besgo).
+                # In that case the pump must keep running so the valve opens correctly.
+                # For manual valve users the pump must stop so the user can safely
+                # rotate the multi-way valve before the backwash cycle begins.
                 if current_name == "manual" and option != "manual":
-                    await client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
-                    await asyncio.sleep(0.1)
+                    if not (option == "backwash" and has_auto_valve):
+                        await client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
+                        await asyncio.sleep(0.1)
             # Set the new mode
             await client.async_write_register(self._register, value)
             await asyncio.sleep(0.2)
