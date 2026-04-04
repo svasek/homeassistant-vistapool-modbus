@@ -84,7 +84,7 @@ If you find this integration useful, consider supporting its development:
 - **Selects**:
   Filtration mode (Manual, Auto, Heating, Smart, Intelligent), timers for automatic filtration, filtration speed _(if supported)_, boost control _(if Hydro/Electrolysis module is present)_, pH pump activation delay.
 - **Buttons**:
-  Manual time sync, reset alarm/error states.
+  Manual time sync, reset alarm/error states, **Start Backwash** _(only if Besgo automatic filter valve is configured on the device)_.
 
 ---
 
@@ -164,7 +164,7 @@ If your pool controller is **physically disconnected during winter** (e.g. drain
 
 ### Advanced Options: Unlocking “Backwash” Mode
 
-The “Backwash” filtration mode is hidden by default, as its remote use can be risky and is intended only for advanced users.
+The "Backwash" option in the **filtration mode select** is hidden by default, as its remote use can be risky and is intended only for advanced users.
 
 To enable it:
 
@@ -172,14 +172,26 @@ To enable it:
 2. In the options dialog, find the field **Unlock advanced options**.
 3. Enter the code: `<device_prefix><current_year>`
 
-- Example: If your pool’s prefix is `vistapool` and the year is 2025, enter `vistapool2025`.
+- Example: If your pool's prefix is `vistapool` and the year is 2025, enter `vistapool2025`.
 - The prefix is the same as in your entity IDs (e.g., `switch.vistapool_light`).
 
-4. Submit the form. The advanced settings page will open, allowing you to enable “Backwash” mode.
+4. Submit the form. The advanced settings page will open, allowing you to enable "Backwash" mode.
 
 > **⚠️ WARNING:**
-> Enabling “Backwash” exposes this function in filtration mode selection.
+> Enabling "Backwash" exposes this function in filtration mode selection.
 > **Improper use may damage your filtration system! Only activate if you fully understand the risks.**
+
+### Start Backwash Button (Besgo Automatic Filter Valve)
+
+If your device is configured with a **Besgo automatic filter valve** (`MBF_PAR_FILTVALVE_ENABLE = 1`), a dedicated **`Start Backwash`** button (`button.<name>_backwash`) is automatically available - no unlock code required.
+
+- Pressing it sets the filtration mode to backwash (mode 13) and the controller opens the Besgo valve, then runs the cleaning cycle for the duration stored in the device (`MBF_PAR_FILTVALVE_INTERVAL`).
+- When switching **from manual filtration mode to backwash** on a device with a Besgo valve, the pump is intentionally **not** stopped before the mode change - this ensures the valve opens correctly under pressure.
+- On devices **without** a Besgo valve (manual multi-way valve), the pump IS stopped first so the user can safely rotate the valve before the backwash cycle begins.
+
+> **⚠️ WARNING:**
+> Always verify that your filtration system is correctly set up before triggering a backwash remotely.
+> **Improper use may damage your filtration system!**
 
 ---
 
@@ -205,7 +217,8 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
   `select.<name>_cell_boost` _(if supported)_,
   `select.<name>_relay_activation_delay`
 - **Buttons**:
-  `button.<name>_sync_time`, `button.<name>_escape`
+  `button.<name>_sync_time`, `button.<name>_escape`,
+  `button.<name>_backwash` _(if Besgo automatic filter valve is configured)_
 
 ---
 
@@ -215,7 +228,8 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
 - **Winter Mode:** Suspends all Modbus polling while keeping entities registered in Home Assistant (control entities become unavailable, sensors show unknown values). See [Winter Mode](#winter-mode) above.
 - **Timer resolution:** Can be set (in minutes) in integration Options.
 - **Entities cache last value** if there is a Modbus communication problem.
-- **Backwash and advanced options:** See above for details.
+- **Backwash (filtration mode select):** Hidden by default; unlock via advanced options. See above for details.
+- **Backwash button:** Automatically available when a Besgo automatic filter valve is configured on the device. See above for details.
 - **Reload on options change:** Integration is reloaded automatically on option changes.
 - **Filtration speed sensor/control:** Only available for variable-speed pump models.
 - **Boost control (select):** Only if Hydro/Electrolysis module is present.
