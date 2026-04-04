@@ -1514,7 +1514,7 @@ async def test_perform_read_all_force_full_after_interval(config, monkeypatch):
             _measure_regs(notification=0)
         )  # no notification bits set
     )
-    # Full read: rr00(1) + rr02(1) + rr02_hidro(1) + rr03(2) + rr04(2) + rr05(1) + rr06(1) = 9 calls
+    # Full read: rr00(1) + rr02(1) + rr02_hidro(1) + rr03(2) + rr04(3) + rr05(1) + rr06(1) = 10 calls
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
             _DummyResp([0] * 16),  # rr00
@@ -1524,6 +1524,7 @@ async def test_perform_read_all_force_full_after_interval(config, monkeypatch):
             _DummyResp([0] * 4),  # rr03-2
             _DummyResp([0] * 31),  # rr04-1
             _DummyResp([0] * 13),  # rr04-2
+            _DummyResp([0] * 8),  # rr04-3 (FILTVALVE 0x04E8)
             _DummyResp([0] * 14),  # rr05
             _DummyResp([0] * 13),  # rr06
         ]
@@ -1533,7 +1534,7 @@ async def test_perform_read_all_force_full_after_interval(config, monkeypatch):
 
     result = await client._perform_read_all()
 
-    assert fake_modbus.read_holding_registers.await_count == 9
+    assert fake_modbus.read_holding_registers.await_count == 10
     assert client._polls_since_full_read == 0  # was reset after full read
     assert isinstance(result, dict)
 
@@ -1638,6 +1639,7 @@ async def test_perform_read_all_poll_counter_resets_on_full_read(config, monkeyp
             _DummyResp([0] * 4),  # rr03-2
             _DummyResp([0] * 31),  # rr04-1
             _DummyResp([0] * 13),  # rr04-2
+            _DummyResp([0] * 8),  # rr04-3 (FILTVALVE 0x04E8)
             _DummyResp([0] * 14),  # rr05
             _DummyResp([0] * 13),  # rr06
         ]
@@ -1730,11 +1732,12 @@ async def test_perform_read_all_reads_installer_and_user_when_both_notified(
     fake_modbus.read_input_registers = AsyncMock(
         return_value=_DummyResp(_measure_regs(notification=notification))
     )
-    # INSTALLER: 2 blocks (0x0408+0x0427), USER: 1 block (0x0502) = 3 holding calls total
+    # INSTALLER: 3 blocks (0x0408+0x0427+0x04E8), USER: 1 block (0x0502) = 4 holding calls total
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
             _DummyResp([0] * 31),  # rr04-1
             _DummyResp([0] * 13),  # rr04-2
+            _DummyResp([0] * 8),  # rr04-3 (FILTVALVE 0x04E8)
             _DummyResp([0] * 14),  # rr05
         ]
     )
@@ -1743,7 +1746,7 @@ async def test_perform_read_all_reads_installer_and_user_when_both_notified(
 
     result = await client._perform_read_all()
 
-    assert fake_modbus.read_holding_registers.await_count == 3
+    assert fake_modbus.read_holding_registers.await_count == 4
     assert isinstance(result, dict)
 
 
