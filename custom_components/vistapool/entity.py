@@ -56,7 +56,7 @@ class VistaPoolEntity(CoordinatorEntity):
         info = {
             "identifiers": {(DOMAIN, self._entry_id)},
             "name": getattr(self.coordinator, "device_name", NAME),
-            "model": "SugarValley compatible",
+            "model": "NeoPool compatible",
             "manufacturer": "Sugar Valley",
             "hw_version": f"Detected Modules: [{self.decode_modules(self.coordinator.data.get('MBF_PAR_MODEL'))}]",
             "sw_version": f"v{self.coordinator.firmware} (v{parse_version(self.coordinator.data.get('MBF_PAR_VERSION'))})",
