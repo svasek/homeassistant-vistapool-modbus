@@ -528,7 +528,7 @@ class VistaPoolModbusClient:
             if force_full:
                 _LOGGER.debug(
                     "Full register read (poll %d / %d)",
-                    self._polls_since_full_read + 1,
+                    self._polls_since_full_read,
                     _FULL_READ_INTERVAL,
                 )
             elif notification:
@@ -545,7 +545,7 @@ class VistaPoolModbusClient:
             """
             if force_full or (notification & _NOTIF_MODBUS):
                 rr00_ranges = [
-                    (0x0000, 16),  # 0x0000–0x000E
+                    (0x0000, 16),  # 0x0000–0x000F
                     # (0x0022, 2),  # 0x0022–0x0024 (24-36V, 12V, 5V lines)
                     # (0x006A, 1),  # 0x006A (5V line)
                     # (0x0072, 1),  # 0x0072 (4-20mA line)
@@ -855,7 +855,7 @@ class VistaPoolModbusClient:
                 #   2: The equipment works with base pump only
 
                 """
-                Request INSTALLER page of registers starting from 0x0500
+                Request USER page of registers starting from 0x0500
                 Contains user configuration registers, such as the production level
                 for the ionization and the hydrolysis, or the set points for the pH, redox, or chlorine regulation loops.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)

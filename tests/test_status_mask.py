@@ -23,10 +23,23 @@ from custom_components.vistapool.status_mask import (
 
 
 def test_decode_notification_mask_basic():
-    # 0x003F = all first flags enabled
+    # 0x003F = all six page-change bits set
     result = decode_notification_mask(0x003F)
-    assert result["NOTIF_IO"] is True
-    assert result["NOTIF_PAGE"] is False
+    assert result["NOTIF_MODBUS_CHANGED"] is True
+    assert result["NOTIF_GLOBAL_CHANGED"] is True
+    assert result["NOTIF_FACTORY_CHANGED"] is True
+    assert result["NOTIF_INSTALLER_CHANGED"] is True
+    assert result["NOTIF_USER_CHANGED"] is True
+    assert result["NOTIF_MISC_CHANGED"] is True
+
+
+def test_decode_notification_mask_partial():
+    # Only INSTALLER (0x0008) and USER (0x0010) bits set
+    result = decode_notification_mask(0x0018)
+    assert result["NOTIF_MODBUS_CHANGED"] is False
+    assert result["NOTIF_INSTALLER_CHANGED"] is True
+    assert result["NOTIF_USER_CHANGED"] is True
+    assert result["NOTIF_MISC_CHANGED"] is False
 
 
 def test_decode_notification_mask_none():

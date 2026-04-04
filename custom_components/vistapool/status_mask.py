@@ -21,17 +21,18 @@ WARNING: DO NOT change names of this keys, they are used in the code !!!
 
 
 def decode_notification_mask(value: int) -> dict:
+    """Decode MBF_NOTIFICATION (0x0110) page-change bitmask (MBMSK_NOTIF_*_CHANGED)."""
     if value is None:
         return {}
     return {
-        "NOTIF_IO": bool(value & 0x0001),
-        "NOTIF_MEAS": bool(value & 0x0002),
-        "NOTIF_STATUS": bool(value & 0x0004),
-        "NOTIF_CONF": bool(value & 0x0008),
-        "NOTIF_WARN": bool(value & 0x0010),
-        "NOTIF_INFO": bool(value & 0x0020),
-        "NOTIF_DATE": bool(value & 0x0040),
-        "NOTIF_PAGE": bool(value & 0x0080),
+        "NOTIF_MODBUS_CHANGED": bool(value & 0x0001),  # MBMSK_NOTIF_MODBUS_CHANGED
+        "NOTIF_GLOBAL_CHANGED": bool(value & 0x0002),  # MBMSK_NOTIF_GLOBAL_CHANGED
+        "NOTIF_FACTORY_CHANGED": bool(value & 0x0004),  # MBMSK_NOTIF_FACTORY_CHANGED
+        "NOTIF_INSTALLER_CHANGED": bool(
+            value & 0x0008
+        ),  # MBMSK_NOTIF_INSTALLER_CHANGED
+        "NOTIF_USER_CHANGED": bool(value & 0x0010),  # MBMSK_NOTIF_USER_CHANGED
+        "NOTIF_MISC_CHANGED": bool(value & 0x0020),  # MBMSK_NOTIF_MISC_CHANGED
     }
 
 
