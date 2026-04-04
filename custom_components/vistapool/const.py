@@ -70,6 +70,7 @@ CAPABILITY_KEYS = (
     "MBF_PAR_HIDRO_COVER_ENABLE",
     "MBF_PAR_PH_ACID_RELAY_GPIO",
     "MBF_PAR_PH_BASE_RELAY_GPIO",
+    "MBF_PAR_FILTVALVE_ENABLE",
     "pH measurement module detected",
     "Redox measurement module detected",
     "Chlorine measurement module detected",
