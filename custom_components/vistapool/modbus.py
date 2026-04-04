@@ -27,7 +27,6 @@ from .modbus_compat import modbus_acall
 from .const import DEFAULT_MODBUS_FRAMER, TIMER_BLOCKS
 
 from .status_mask import (
-    decode_notification_mask,
     decode_relay_state,
     decode_ph_rx_cl_cd_status_bits,
     decode_ion_status_bits,
@@ -507,7 +506,6 @@ class VistaPoolModbusClient:
                     **decode_ion_status_bits(get_safe(reg01, 12)),
                     **decode_hidro_status_bits(get_safe(reg01, 13)),
                     **decode_relay_state(get_safe(reg01, 14)),
-                    **decode_notification_mask(get_safe(reg01, 16)),
                 }
             )
             # fmt: on

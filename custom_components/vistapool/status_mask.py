@@ -19,35 +19,16 @@ Mask decoders for VistaPool / NeoPool integration, based on xsns_83_neopool.ino
 WARNING: DO NOT change names of this keys, they are used in the code !!!
 """
 
-
-def decode_notification_mask(value: int) -> dict:
-    """Decode MBF_NOTIFICATION (0x0110) page-change bitmask (MBMSK_NOTIF_*_CHANGED)."""
-    if value is None:
-        return {}
-    return {
-        "NOTIF_MODBUS_CHANGED": bool(value & 0x0001),  # MBMSK_NOTIF_MODBUS_CHANGED
-        "NOTIF_GLOBAL_CHANGED": bool(value & 0x0002),  # MBMSK_NOTIF_GLOBAL_CHANGED
-        "NOTIF_FACTORY_CHANGED": bool(value & 0x0004),  # MBMSK_NOTIF_FACTORY_CHANGED
-        "NOTIF_INSTALLER_CHANGED": bool(
-            value & 0x0008
-        ),  # MBMSK_NOTIF_INSTALLER_CHANGED
-        "NOTIF_USER_CHANGED": bool(value & 0x0010),  # MBMSK_NOTIF_USER_CHANGED
-        "NOTIF_MISC_CHANGED": bool(value & 0x0020),  # MBMSK_NOTIF_MISC_CHANGED
-    }
-
-
-"""
-TODO: Check against GPIO configuration
-    MBF_PAR_LIGHTING_GPIO for relay number assigned to the lighting function (0: inactive).
-    MBF_PAR_FILT_GPIO for relay number assigned to the filtration function (0: inactive).    
-    MBF_PAR_PH_ACID_RELAY_GPIO for relay number assigned to the acid pump (0: inactive).
-    MBF_PAR_HEATING_GPIO for relay number assigned to the heating function (0: inactive).
-    MBF_PAR_UV_RELAY_GPIO for relay number assigned to the UV lamp (0: inactive).
-    
-    There should be also name for each relay available in the settings.
-    Each relay name has 5 register ASCIIZ string with up to 10 characters.
-    (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
-"""
+# TODO: Check against GPIO configuration
+#     MBF_PAR_LIGHTING_GPIO for relay number assigned to the lighting function (0: inactive).
+#     MBF_PAR_FILT_GPIO for relay number assigned to the filtration function (0: inactive).
+#     MBF_PAR_PH_ACID_RELAY_GPIO for relay number assigned to the acid pump (0: inactive).
+#     MBF_PAR_HEATING_GPIO for relay number assigned to the heating function (0: inactive).
+#     MBF_PAR_UV_RELAY_GPIO for relay number assigned to the UV lamp (0: inactive).
+#
+#     There should be also name for each relay available in the settings.
+#     Each relay name has 5 register ASCIIZ string with up to 10 characters.
+#     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
 
 
 def decode_relay_state(value: int) -> dict:
