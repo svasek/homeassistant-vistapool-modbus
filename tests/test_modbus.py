@@ -350,6 +350,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
                     0,
                     22069,
                     0,
+                    0,  # 0x000F MBF_PH_STATUS_ALARM
                 ]
             ),  # rr00
             DummyResp(
@@ -480,7 +481,7 @@ async def test_perform_read_all_raises_on_block(
 
     # Default: all blocks return OK, unless overridden
     rr_blocks = {
-        "rr00": DummyResp([0] * 15),
+        "rr00": DummyResp([0] * 16),
         "rr01": DummyResp([0] * 18),
         "rr02": DummyResp([0] * 20),
         "rr02_hidro": DummyResp([0] * 2),
@@ -570,7 +571,7 @@ async def test_perform_read_all_block_exception(
 
     # Prepare response order for all blocks.
     order = [
-        ("rr00", DummyResp([0] * 15)),
+        ("rr00", DummyResp([0] * 16)),
         ("rr01", DummyResp([0] * 18)),
         ("rr02", DummyResp([0] * 20)),
         ("rr02_hidro", DummyResp([0] * 2)),
@@ -1509,7 +1510,7 @@ async def test_perform_read_all_force_full_after_interval(config, monkeypatch):
     # Full read: rr00(1) + rr02(1) + rr02_hidro(1) + rr03(2) + rr04(2) + rr05(1) + rr06(1) = 9 calls
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
-            _DummyResp([0] * 15),  # rr00
+            _DummyResp([0] * 16),  # rr00
             _DummyResp([0] * 20),  # rr02
             _DummyResp([0] * 2),  # rr02_hidro
             _DummyResp([0] * 13),  # rr03-1
@@ -1623,7 +1624,7 @@ async def test_perform_read_all_poll_counter_resets_on_full_read(config, monkeyp
     )
     fake_modbus.read_holding_registers = AsyncMock(
         side_effect=[
-            _DummyResp([0] * 15),  # rr00
+            _DummyResp([0] * 16),  # rr00
             _DummyResp([0] * 20),  # rr02
             _DummyResp([0] * 2),  # rr02_hidro
             _DummyResp([0] * 13),  # rr03-1
@@ -1744,7 +1745,8 @@ async def test_perform_read_all_timers_skips_when_no_installer_notification(
     config, monkeypatch
 ):
     """_perform_read_all_timers returns cached data without any Modbus reads when
-    INSTALLER notification bit is not set and it is not a full-read poll."""
+    INSTALLER notification bit is not set and it is not a full-read poll.
+    When enabled_timers is provided, only the requested subset is returned."""
     client = vistapool_modbus.VistaPoolModbusClient(config)
     # Simulate state after a previous partial read with no INSTALLER notification
     client._last_was_full_read = False
@@ -1757,13 +1759,57 @@ async def test_perform_read_all_timers_skips_when_no_installer_notification(
             "period": 1,
             "function": 1,
         },
+        "filtration2": {
+            "enable": 0,
+            "on": 0,
+            "interval": 0,
+            "period": 1,
+            "function": 1,
+        },
     }
 
     fake_modbus = AsyncMock()
     fake_modbus.connected = True
     monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
 
+    # Only filtration1 is enabled - filtration2 must NOT appear in the result
     result = await client._perform_read_all_timers(enabled_timers=["filtration1"])
+
+    assert result == {"filtration1": client._cached_timers["filtration1"]}
+    assert "filtration2" not in result
+    fake_modbus.read_holding_registers.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_perform_read_all_timers_skips_returns_all_cached_when_enabled_timers_none(
+    config, monkeypatch
+):
+    """When enabled_timers=None and the read is skipped, the full cache is returned."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    client._last_was_full_read = False
+    client._last_notification = 0
+    client._cached_timers = {
+        "filtration1": {
+            "enable": 1,
+            "on": 3600,
+            "interval": 7200,
+            "period": 1,
+            "function": 1,
+        },
+        "filtration2": {
+            "enable": 0,
+            "on": 0,
+            "interval": 0,
+            "period": 1,
+            "function": 1,
+        },
+    }
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all_timers(enabled_timers=None)
 
     assert result == client._cached_timers
     fake_modbus.read_holding_registers.assert_not_called()

@@ -1219,6 +1219,12 @@ class VistaPoolModbusClient:
         ):
             if self._cached_timers:
                 _LOGGER.debug("Skipping timer read (no INSTALLER change notification)")
+                if enabled_timers is not None:
+                    return {
+                        k: v
+                        for k, v in self._cached_timers.items()
+                        if k in enabled_timers
+                    }
                 return dict(self._cached_timers)
 
         client = await self.get_client()
