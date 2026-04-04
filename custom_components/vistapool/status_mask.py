@@ -19,34 +19,16 @@ Mask decoders for VistaPool / NeoPool integration, based on xsns_83_neopool.ino
 WARNING: DO NOT change names of this keys, they are used in the code !!!
 """
 
-
-def decode_notification_mask(value: int) -> dict:
-    if value is None:
-        return {}
-    return {
-        "NOTIF_IO": bool(value & 0x0001),
-        "NOTIF_MEAS": bool(value & 0x0002),
-        "NOTIF_STATUS": bool(value & 0x0004),
-        "NOTIF_CONF": bool(value & 0x0008),
-        "NOTIF_WARN": bool(value & 0x0010),
-        "NOTIF_INFO": bool(value & 0x0020),
-        "NOTIF_DATE": bool(value & 0x0040),
-        "NOTIF_PAGE": bool(value & 0x0080),
-    }
-
-
-"""
-TODO: Check against GPIO configuration
-    MBF_PAR_LIGHTING_GPIO for relay number assigned to the lighting function (0: inactive).
-    MBF_PAR_FILT_GPIO for relay number assigned to the filtration function (0: inactive).    
-    MBF_PAR_PH_ACID_RELAY_GPIO for relay number assigned to the acid pump (0: inactive).
-    MBF_PAR_HEATING_GPIO for relay number assigned to the heating function (0: inactive).
-    MBF_PAR_UV_RELAY_GPIO for relay number assigned to the UV lamp (0: inactive).
-    
-    There should be also name for each relay available in the settings.
-    Each relay name has 5 register ASCIIZ string with up to 10 characters.
-    (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
-"""
+# TODO: Check against GPIO configuration
+#     MBF_PAR_LIGHTING_GPIO for relay number assigned to the lighting function (0: inactive).
+#     MBF_PAR_FILT_GPIO for relay number assigned to the filtration function (0: inactive).
+#     MBF_PAR_PH_ACID_RELAY_GPIO for relay number assigned to the acid pump (0: inactive).
+#     MBF_PAR_HEATING_GPIO for relay number assigned to the heating function (0: inactive).
+#     MBF_PAR_UV_RELAY_GPIO for relay number assigned to the UV lamp (0: inactive).
+#
+#     There should be also name for each relay available in the settings.
+#     Each relay name has 5 register ASCIIZ string with up to 10 characters.
+#     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
 
 
 def decode_relay_state(value: int) -> dict:

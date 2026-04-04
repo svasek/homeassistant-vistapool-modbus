@@ -14,23 +14,11 @@
 
 import pytest
 from custom_components.vistapool.status_mask import (
-    decode_notification_mask,
     decode_relay_state,
     decode_ph_rx_cl_cd_status_bits,
     decode_ion_status_bits,
     decode_hidro_status_bits,
 )
-
-
-def test_decode_notification_mask_basic():
-    # 0x003F = all first flags enabled
-    result = decode_notification_mask(0x003F)
-    assert result["NOTIF_IO"] is True
-    assert result["NOTIF_PAGE"] is False
-
-
-def test_decode_notification_mask_none():
-    assert decode_notification_mask(None) == {}
 
 
 def test_decode_relay_state_basic():
