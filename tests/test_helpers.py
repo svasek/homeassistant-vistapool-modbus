@@ -509,7 +509,7 @@ def test_is_hydrolysis_in_percent_none_values():
 @pytest.mark.parametrize(
     "machine_type, expected",
     [
-        (0, "None"),
+        (0, ""),  # MBV_PAR_MACH_NONE → no machine assigned
         (1, "Hidrolife"),
         (2, "Aquascenic"),
         (3, "Oxilife"),
@@ -518,7 +518,7 @@ def test_is_hydrolysis_in_percent_none_values():
         (6, "UVScenic"),
         (7, "Station"),
         (8, "Brilix"),
-        (9, "Generic NeoPool Compatible"),  # GENERIC but no custom name → fallback
+        (9, "Generic"),  # GENERIC but no custom name → fallback
         (10, "Bayrol"),
         (11, "Hay"),
     ],
@@ -530,19 +530,19 @@ def test_get_machine_name_known_types(machine_type, expected):
 
 
 def test_get_machine_name_unknown_type():
-    """Out-of-range value returns 'Unknown'."""
-    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": 99}) == "Unknown"
-    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": 12}) == "Unknown"
+    """Out-of-range value returns empty string."""
+    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": 99}) == ""
+    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": 12}) == ""
 
 
 def test_get_machine_name_empty_data():
-    """Missing key defaults to 0 → 'None'."""
-    assert get_machine_name({}) == "None"
+    """Missing key defaults to 0 → empty string (no machine assigned)."""
+    assert get_machine_name({}) == ""
 
 
 def test_get_machine_name_none_value():
-    """Explicit None value defaults to 0 → 'None'."""
-    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": None}) == "None"
+    """Explicit None value defaults to 0 → empty string (no machine assigned)."""
+    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": None}) == ""
 
 
 def test_get_machine_name_generic_with_custom_name():
@@ -576,23 +576,23 @@ def test_get_machine_name_generic_light_only():
 
 
 def test_get_machine_name_generic_empty_custom_name():
-    """GENERIC with both name parts empty/None falls back to 'Generic NeoPool Compatible'."""
+    """GENERIC with both name parts empty/None falls back to 'Generic'."""
     data = {
         "MBF_PAR_UICFG_MACHINE": 9,
         "MBF_PAR_UICFG_MACH_NAME_BOLD": "",
         "MBF_PAR_UICFG_MACH_NAME_LIGHT": None,
     }
-    assert get_machine_name(data) == "Generic NeoPool Compatible"
+    assert get_machine_name(data) == "Generic"
 
 
 def test_get_machine_name_generic_whitespace_name():
-    """GENERIC with only whitespace in name parts falls back to 'Generic NeoPool Compatible'."""
+    """GENERIC with only whitespace in name parts falls back to 'Generic'."""
     data = {
         "MBF_PAR_UICFG_MACHINE": 9,
         "MBF_PAR_UICFG_MACH_NAME_BOLD": "   ",
         "MBF_PAR_UICFG_MACH_NAME_LIGHT": "   ",
     }
-    assert get_machine_name(data) == "Generic NeoPool Compatible"
+    assert get_machine_name(data) == "Generic"
 
 
 def test_get_machine_name_non_generic_ignores_custom_name():

@@ -53,10 +53,13 @@ class VistaPoolEntity(CoordinatorEntity):
         serial_number = modbus_regs_to_hex_string(
             self.coordinator.data.get("MBF_POWER_MODULE_NODEID")
         )
+        machine_type = (get_machine_name(self.coordinator.data) or "").strip()
+        model_prefix = "NeoPool Compatible: " if machine_type else "NeoPool Compatible"
+
         info = {
             "identifiers": {(DOMAIN, self._entry_id)},
             "name": getattr(self.coordinator, "device_name", NAME),
-            "model": get_machine_name(self.coordinator.data),
+            "model": f"{model_prefix}{machine_type}".strip(),
             "manufacturer": "Hayward (Sugar Valley)",
             "hw_version": f"Detected Modules: [{self.decode_modules(self.coordinator.data.get('MBF_PAR_MODEL'))}]",
             "sw_version": f"v{self.coordinator.firmware} (v{parse_version(self.coordinator.data.get('MBF_PAR_VERSION'))})",

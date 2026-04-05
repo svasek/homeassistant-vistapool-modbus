@@ -283,7 +283,6 @@ def get_machine_name(data: dict) -> str:
     """
     Return the human-readable machine/brand name.
 
-    Mirrors Tasmota's GetTextIndexed(…, MBF_PAR_UICFG_MACHINE, kNeoPoolMachineNames).
     For GENERIC (9): assembles the custom name from the BOLD + LIGHT name registers
     stored in MBF_PAR_UICFG_MACH_NAME_BOLD / MBF_PAR_UICFG_MACH_NAME_LIGHT.
     If the custom name is empty, falls back to "Generic".
@@ -296,12 +295,10 @@ def get_machine_name(data: dict) -> str:
         custom_name = " ".join(filter(None, [bold, light]))
         if custom_name:
             return custom_name
-        else:
-            return f"{_MACHINE_NAMES[_MBV_PAR_MACH_GENERIC]} NeoPool Compatible"
 
-    if 0 <= machine_type < len(_MACHINE_NAMES):
+    if 0 < machine_type < len(_MACHINE_NAMES):
         return _MACHINE_NAMES[machine_type]
-    return "Unknown"
+    return ""  # 0 = no machine assigned, or unknown type
 
 
 def is_hydrolysis_in_percent(data: dict) -> bool:
