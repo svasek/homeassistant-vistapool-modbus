@@ -1,6 +1,6 @@
 {
   "domain": "vistapool",
-  "name": "VistaPool Modbus Integration",
+  "name": "VistaPool Modbus",
   "after_dependencies": [
     "modbus"
   ],

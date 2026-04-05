@@ -35,14 +35,13 @@ manifest_path = Path(__file__).parent / "manifest.json"
 with open(manifest_path, encoding="utf-8") as f:
     MANIFEST = json.load(f)
 
-INTEGRATION_NAME = MANIFEST.get("name")
 INTEGRATION_VERSION = MANIFEST.get("version")
 
 DOMAIN = (
     MANIFEST.get("domain").lower().replace("-", "_").replace(" ", "_").replace(".", "_")
     or "vistapool"
 )
-NAME = MANIFEST.get("name") or "VistaPool Integration"
+NAME = MANIFEST.get("name") or "VistaPool Modbus"
 DEFAULT_NAME = "VistaPool"
 VERSION = MANIFEST.get("version") or None
 
