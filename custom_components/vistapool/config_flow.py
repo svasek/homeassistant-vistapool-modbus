@@ -18,9 +18,11 @@ import asyncio
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
+from homeassistant.helpers import translation as ha_translation
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 from .const import (
     DOMAIN,
+    DEFAULT_NAME,
     DEFAULT_PORT,
     DEFAULT_SLAVE_ID,
     DEFAULT_SCAN_INTERVAL,
@@ -54,11 +56,23 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             errors[CONF_HOST] = "cannot_connect"
         return errors
 
+    async def _async_get_default_name(self) -> str:
+        """Return the localized default device name from translations."""
+        try:
+            t = await ha_translation.async_get_translations(
+                self.hass, self.hass.config.language, "config", {DOMAIN}
+            )
+            key = f"component.{DOMAIN}.config.step.user.data.name_default"
+            return t.get(key) or DEFAULT_NAME
+        except Exception:  # noqa: BLE001
+            return DEFAULT_NAME
+
     async def async_step_user(self, user_input=None) -> dict | None:
         """Handle the initial step of the configuration flow."""
+        default_name = await self._async_get_default_name()
         data_schema = vol.Schema(
             {
-                vol.Optional(CONF_NAME, default=DOMAIN.capitalize()): str,
+                vol.Optional(CONF_NAME, default=default_name): str,
                 vol.Required(CONF_HOST): str,
                 vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
                 vol.Optional("slave_id", default=DEFAULT_SLAVE_ID): int,
@@ -100,7 +114,9 @@ class VistaPoolConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
         errors = {}
         if user_input is not None:
-            device_name = user_input.get(CONF_NAME, DOMAIN)
+            device_name = (
+                user_input.get(CONF_NAME) or await self._async_get_default_name()
+            )
             user_input[CONF_NAME] = device_name
 
             errors = await self._async_validate_connection(user_input)

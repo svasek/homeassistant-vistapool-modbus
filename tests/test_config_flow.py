@@ -16,7 +16,13 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from custom_components.vistapool import config_flow
-from custom_components.vistapool.const import DEFAULT_PORT
+from custom_components.vistapool.const import (
+    DEFAULT_NAME,
+    DEFAULT_PORT,
+    DEFAULT_SLAVE_ID,
+    DEFAULT_MODBUS_FRAMER,
+    DOMAIN,
+)
 
 
 @pytest.mark.asyncio
@@ -313,3 +319,241 @@ async def test_user_form_contains_use_cover_sensor():
     result = await flow.async_step_user(user_input=None)
     assert result["type"] == "form"
     assert "use_cover_sensor" in str(result["data_schema"])
+
+
+# ---------------------------------------------------------------------------
+# _async_get_default_name
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_get_default_name_returns_translated_name():
+    """When translation contains name_default the translated name is returned."""
+    flow = config_flow.VistaPoolConfigFlow()
+    flow.hass = MagicMock()
+    flow.hass.config.language = "cs"
+    key = f"component.{DOMAIN}.config.step.user.data.name_default"
+    with patch(
+        "custom_components.vistapool.config_flow.ha_translation.async_get_translations",
+        new=AsyncMock(return_value={key: "Bazén"}),
+    ):
+        name = await flow._async_get_default_name()
+    assert name == "Bazén"
+
+
+@pytest.mark.asyncio
+async def test_get_default_name_falls_back_when_key_missing():
+    """When translation dict does not contain name_default, DEFAULT_NAME is returned."""
+    flow = config_flow.VistaPoolConfigFlow()
+    flow.hass = MagicMock()
+    flow.hass.config.language = "en"
+    with patch(
+        "custom_components.vistapool.config_flow.ha_translation.async_get_translations",
+        new=AsyncMock(return_value={}),
+    ):
+        name = await flow._async_get_default_name()
+    assert name == DEFAULT_NAME
+
+
+@pytest.mark.asyncio
+async def test_get_default_name_falls_back_without_hass():
+    """When hass is not set (AttributeError), DEFAULT_NAME is returned."""
+    flow = config_flow.VistaPoolConfigFlow()
+    name = await flow._async_get_default_name()
+    assert name == DEFAULT_NAME
+
+
+@pytest.mark.asyncio
+async def test_get_default_name_falls_back_on_translation_error():
+    """When async_get_translations raises, DEFAULT_NAME is returned."""
+    flow = config_flow.VistaPoolConfigFlow()
+    flow.hass = MagicMock()
+    flow.hass.config.language = "en"
+    with patch(
+        "custom_components.vistapool.config_flow.ha_translation.async_get_translations",
+        new=AsyncMock(side_effect=RuntimeError("fail")),
+    ):
+        name = await flow._async_get_default_name()
+    assert name == DEFAULT_NAME
+
+
+# ---------------------------------------------------------------------------
+# async_step_user – name fallback
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_create_entry_empty_name_uses_default():
+    """Empty string for name falls back to the default name."""
+    flow = config_flow.VistaPoolConfigFlow()
+    user_input = {
+        "host": "192.168.1.100",
+        "port": DEFAULT_PORT,
+        "slave_id": 1,
+        "name": "",  # empty → should fall back
+    }
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        new=AsyncMock(return_value=True),
+    ):
+        result = await flow.async_step_user(user_input)
+
+    assert result["type"] == "create_entry"
+    assert result["title"] == DEFAULT_NAME
+    assert result["data"]["name"] == DEFAULT_NAME
+
+
+@pytest.mark.asyncio
+async def test_create_entry_no_name_key_uses_default():
+    """Missing name key in user_input falls back to the default name."""
+    flow = config_flow.VistaPoolConfigFlow()
+    user_input = {
+        "host": "192.168.1.100",
+        "port": DEFAULT_PORT,
+        "slave_id": 1,
+        # no "name" key
+    }
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        new=AsyncMock(return_value=True),
+    ):
+        result = await flow.async_step_user(user_input)
+
+    assert result["type"] == "create_entry"
+    assert result["title"] == DEFAULT_NAME
+    assert result["data"]["name"] == DEFAULT_NAME
+
+
+# ---------------------------------------------------------------------------
+# async_step_user – form schema defaults
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_user_form_schema_boolean_defaults():
+    """Schema defaults: use_filtration1=True, others False."""
+    flow = config_flow.VistaPoolConfigFlow()
+    result = await flow.async_step_user(user_input=None)
+    schema = result["data_schema"]
+
+    bool_defaults = {
+        key.schema: key.default() if callable(key.default) else key.default
+        for key in schema.schema
+        if hasattr(key, "default")
+        and key.schema
+        in (
+            "use_filtration1",
+            "use_filtration2",
+            "use_filtration3",
+            "use_light",
+            "use_cover_sensor",
+        )
+    }
+
+    assert bool_defaults["use_filtration1"] is True
+    assert bool_defaults["use_filtration2"] is False
+    assert bool_defaults["use_filtration3"] is False
+    assert bool_defaults["use_light"] is False
+    assert bool_defaults["use_cover_sensor"] is False
+
+
+@pytest.mark.asyncio
+async def test_user_form_schema_connection_defaults():
+    """Schema defaults for port, slave_id and modbus_framer match constants."""
+    flow = config_flow.VistaPoolConfigFlow()
+    result = await flow.async_step_user(user_input=None)
+    schema = result["data_schema"]
+
+    defaults = {
+        key.schema: key.default() if callable(key.default) else key.default
+        for key in schema.schema
+        if hasattr(key, "default")
+        and key.schema in ("port", "slave_id", "modbus_framer")
+    }
+
+    assert defaults["port"] == DEFAULT_PORT
+    assert defaults["slave_id"] == DEFAULT_SLAVE_ID
+    assert defaults["modbus_framer"] == DEFAULT_MODBUS_FRAMER
+
+
+# ---------------------------------------------------------------------------
+# async_step_user – optional flags stored correctly
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_create_entry_stores_use_light_flag():
+    """use_light=True is persisted in the config entry data."""
+    flow = config_flow.VistaPoolConfigFlow()
+    user_input = {
+        "host": "192.168.1.100",
+        "port": DEFAULT_PORT,
+        "slave_id": 1,
+        "name": "Test Pool",
+        "use_light": True,
+    }
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        new=AsyncMock(return_value=True),
+    ):
+        result = await flow.async_step_user(user_input)
+
+    assert result["type"] == "create_entry"
+    assert result["data"]["use_light"] is True
+
+
+@pytest.mark.asyncio
+async def test_create_entry_stores_filtration_flags():
+    """Non-default filtration flags are persisted correctly."""
+    flow = config_flow.VistaPoolConfigFlow()
+    user_input = {
+        "host": "192.168.1.100",
+        "port": DEFAULT_PORT,
+        "slave_id": 1,
+        "name": "Test Pool",
+        "use_filtration1": False,
+        "use_filtration2": True,
+        "use_filtration3": True,
+    }
+    with patch(
+        "custom_components.vistapool.config_flow.is_host_port_open",
+        new=AsyncMock(return_value=True),
+    ):
+        result = await flow.async_step_user(user_input)
+
+    assert result["type"] == "create_entry"
+    assert result["data"]["use_filtration1"] is False
+    assert result["data"]["use_filtration2"] is True
+    assert result["data"]["use_filtration3"] is True
+
+
+# ---------------------------------------------------------------------------
+# async_step_reconfigure – missing optional keys fall back to constants
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_reconfigure_schema_defaults_to_constants_when_keys_absent():
+    """When entry data lacks optional keys the schema defaults to module constants."""
+    flow = config_flow.VistaPoolConfigFlow()
+
+    # Entry with only the host stored (no port / slave_id / modbus_framer)
+    mock_entry = MagicMock()
+    mock_entry.data = {"host": "10.0.0.1", "name": "MyPool"}
+
+    flow.hass = MagicMock()
+    flow.hass.config_entries.async_get_entry.return_value = mock_entry
+    flow.context = {"entry_id": "abc123"}
+
+    result = await flow.async_step_reconfigure(user_input=None)
+    assert result["type"] == "form"
+
+    schema_defaults = {
+        key.schema: key.default() if callable(key.default) else key.default
+        for key in result["data_schema"].schema
+        if hasattr(key, "default")
+    }
+
+    assert schema_defaults["port"] == DEFAULT_PORT
+    assert schema_defaults["slave_id"] == DEFAULT_SLAVE_ID
+    assert schema_defaults["modbus_framer"] == DEFAULT_MODBUS_FRAMER

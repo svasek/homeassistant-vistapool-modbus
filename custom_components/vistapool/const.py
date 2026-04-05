@@ -43,6 +43,7 @@ DOMAIN = (
     or "vistapool"
 )
 NAME = MANIFEST.get("name") or "VistaPool Integration"
+DEFAULT_NAME = "VistaPool"
 VERSION = MANIFEST.get("version") or None
 
 LOGGER = logging.getLogger(__name__)

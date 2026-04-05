@@ -16,6 +16,7 @@
         "description": "Skonfiguruj połączenie z kontrolerem VistaPool.",
         "data": {
           "name": "Nazwa urządzenia (używana jako prefiks ID encji).",
+          "name_default": "Basen",
           "host": "Adres IP bramki Modbus",
           "port": "Port TCP dla Modbus (domyślnie: 502).",
           "scan_interval": "Interwał aktualizacji danych (sekundy)",

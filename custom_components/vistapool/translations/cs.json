@@ -16,6 +16,7 @@
         "description": "Nakonfigurujte připojení k vašemu řadiči VistaPool.",
         "data": {
           "name": "Název zařízení (používá se jako prefix v ID entit).",
+          "name_default": "Bazén",
           "host": "IP adresa Modbus brány",
           "port": "TCP port pro Modbus (výchozí: 502).",
           "scan_interval": "Interval aktualizace dat (v sekundách)",

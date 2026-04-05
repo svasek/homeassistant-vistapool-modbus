@@ -16,6 +16,7 @@
         "description": "Konfigurieren Sie die Verbindung zu Ihrem VistaPool-Controller.",
         "data": {
           "name": "Gerätename (als Präfix für Entitäten-IDs verwendet).",
+          "name_default": "Pool",
           "host": "IP-Adresse des Modbus-Gateways",
           "port": "TCP-Port für Modbus (Standard: 502).",
           "scan_interval": "Datenaktualisierungsintervall (Sekunden)",
