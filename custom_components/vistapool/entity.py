@@ -21,7 +21,7 @@ It provides common functionality for all entities, including device information,
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify as ha_slugify
-from .helpers import parse_version, modbus_regs_to_hex_string
+from .helpers import parse_version, modbus_regs_to_hex_string, get_machine_name
 from .const import DOMAIN, NAME
 
 
@@ -56,7 +56,7 @@ class VistaPoolEntity(CoordinatorEntity):
         info = {
             "identifiers": {(DOMAIN, self._entry_id)},
             "name": getattr(self.coordinator, "device_name", NAME),
-            "model": "NeoPool Compatible",
+            "model": f"NeoPool Compatible: {get_machine_name(self.coordinator.data)}",
             "manufacturer": "Hayward (Sugar Valley)",
             "hw_version": f"Detected Modules: [{self.decode_modules(self.coordinator.data.get('MBF_PAR_MODEL'))}]",
             "sw_version": f"v{self.coordinator.firmware} (v{parse_version(self.coordinator.data.get('MBF_PAR_VERSION'))})",
