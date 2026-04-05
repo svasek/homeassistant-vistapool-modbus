@@ -924,7 +924,8 @@ class VistaPoolModbusClient:
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
                 """
                 rr06_ranges = [
-                    (0x0600, 13),  # 0x0600–0x060C
+                    # Includes full NAME_BOLD 0x0608-0x060B and NAME_LIGHT 0x060C-0x060F
+                    (0x0600, 16),  # 0x0600–0x060F
                 ]
 
                 reg06 = []

@@ -518,7 +518,7 @@ def test_is_hydrolysis_in_percent_none_values():
         (6, "UVScenic"),
         (7, "Station"),
         (8, "Brilix"),
-        (9, "Generic"),  # GENERIC but no custom name → fallback
+        (9, "Generic NeoPool Compatible"),  # GENERIC but no custom name → fallback
         (10, "Bayrol"),
         (11, "Hay"),
     ],
@@ -576,23 +576,23 @@ def test_get_machine_name_generic_light_only():
 
 
 def test_get_machine_name_generic_empty_custom_name():
-    """GENERIC with both name parts empty/None falls back to 'Generic'."""
+    """GENERIC with both name parts empty/None falls back to 'Generic NeoPool Compatible'."""
     data = {
         "MBF_PAR_UICFG_MACHINE": 9,
         "MBF_PAR_UICFG_MACH_NAME_BOLD": "",
         "MBF_PAR_UICFG_MACH_NAME_LIGHT": None,
     }
-    assert get_machine_name(data) == "Generic"
+    assert get_machine_name(data) == "Generic NeoPool Compatible"
 
 
 def test_get_machine_name_generic_whitespace_name():
-    """GENERIC with only whitespace in name parts falls back to 'Generic'."""
+    """GENERIC with only whitespace in name parts falls back to 'Generic NeoPool Compatible'."""
     data = {
         "MBF_PAR_UICFG_MACHINE": 9,
         "MBF_PAR_UICFG_MACH_NAME_BOLD": "   ",
         "MBF_PAR_UICFG_MACH_NAME_LIGHT": "   ",
     }
-    assert get_machine_name(data) == "Generic"
+    assert get_machine_name(data) == "Generic NeoPool Compatible"
 
 
 def test_get_machine_name_non_generic_ignores_custom_name():

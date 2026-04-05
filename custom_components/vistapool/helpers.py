@@ -296,6 +296,8 @@ def get_machine_name(data: dict) -> str:
         custom_name = " ".join(filter(None, [bold, light]))
         if custom_name:
             return custom_name
+        else:
+            return f"{_MACHINE_NAMES[_MBV_PAR_MACH_GENERIC]} NeoPool Compatible"
 
     if 0 <= machine_type < len(_MACHINE_NAMES):
         return _MACHINE_NAMES[machine_type]
