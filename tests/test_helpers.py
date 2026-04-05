@@ -30,6 +30,7 @@ from custom_components.vistapool.helpers import (
     is_device_time_out_of_sync,
     get_timer_interval,
     is_hydrolysis_in_percent,
+    get_machine_name,
 )
 
 
@@ -498,3 +499,107 @@ def test_is_hydrolysis_in_percent_none_values():
         "MBF_PAR_UICFG_MACHINE": 1,  # HIDROLIFE
     }
     assert is_hydrolysis_in_percent(data) is False
+
+
+# ---------------------------------------------------------------------------
+# get_machine_name tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "machine_type, expected",
+    [
+        (0, "None"),
+        (1, "Hidrolife"),
+        (2, "Aquascenic"),
+        (3, "Oxilife"),
+        (4, "Bionet"),
+        (5, "Hidroniser"),
+        (6, "UVScenic"),
+        (7, "Station"),
+        (8, "Brilix"),
+        (9, "Generic"),  # GENERIC but no custom name → fallback
+        (10, "Bayrol"),
+        (11, "Hay"),
+    ],
+)
+def test_get_machine_name_known_types(machine_type, expected):
+    """All 12 known machine types return their brand name."""
+    data = {"MBF_PAR_UICFG_MACHINE": machine_type}
+    assert get_machine_name(data) == expected
+
+
+def test_get_machine_name_unknown_type():
+    """Out-of-range value returns 'Unknown'."""
+    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": 99}) == "Unknown"
+    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": 12}) == "Unknown"
+
+
+def test_get_machine_name_empty_data():
+    """Missing key defaults to 0 → 'None'."""
+    assert get_machine_name({}) == "None"
+
+
+def test_get_machine_name_none_value():
+    """Explicit None value defaults to 0 → 'None'."""
+    assert get_machine_name({"MBF_PAR_UICFG_MACHINE": None}) == "None"
+
+
+def test_get_machine_name_generic_with_custom_name():
+    """GENERIC (9) with both name parts returns 'bold light'."""
+    data = {
+        "MBF_PAR_UICFG_MACHINE": 9,
+        "MBF_PAR_UICFG_MACH_NAME_BOLD": "vista",
+        "MBF_PAR_UICFG_MACH_NAME_LIGHT": "pool",
+    }
+    assert get_machine_name(data) == "vista pool"
+
+
+def test_get_machine_name_generic_bold_only():
+    """GENERIC with only bold part returns just that string."""
+    data = {
+        "MBF_PAR_UICFG_MACHINE": 9,
+        "MBF_PAR_UICFG_MACH_NAME_BOLD": "aqua",
+        "MBF_PAR_UICFG_MACH_NAME_LIGHT": "",
+    }
+    assert get_machine_name(data) == "aqua"
+
+
+def test_get_machine_name_generic_light_only():
+    """GENERIC with only light part returns just that string."""
+    data = {
+        "MBF_PAR_UICFG_MACHINE": 9,
+        "MBF_PAR_UICFG_MACH_NAME_BOLD": None,
+        "MBF_PAR_UICFG_MACH_NAME_LIGHT": "scenic",
+    }
+    assert get_machine_name(data) == "scenic"
+
+
+def test_get_machine_name_generic_empty_custom_name():
+    """GENERIC with both name parts empty/None falls back to 'Generic'."""
+    data = {
+        "MBF_PAR_UICFG_MACHINE": 9,
+        "MBF_PAR_UICFG_MACH_NAME_BOLD": "",
+        "MBF_PAR_UICFG_MACH_NAME_LIGHT": None,
+    }
+    assert get_machine_name(data) == "Generic"
+
+
+def test_get_machine_name_generic_whitespace_name():
+    """GENERIC with only whitespace in name parts falls back to 'Generic'."""
+    data = {
+        "MBF_PAR_UICFG_MACHINE": 9,
+        "MBF_PAR_UICFG_MACH_NAME_BOLD": "   ",
+        "MBF_PAR_UICFG_MACH_NAME_LIGHT": "   ",
+    }
+    assert get_machine_name(data) == "Generic"
+
+
+def test_get_machine_name_non_generic_ignores_custom_name():
+    """Non-GENERIC machine type ignores name registers."""
+    data = {
+        "MBF_PAR_UICFG_MACHINE": 11,  # Hay
+        "MBF_PAR_UICFG_MACH_NAME_BOLD": "something",
+        "MBF_PAR_UICFG_MACH_NAME_LIGHT": "else",
+    }
+    assert get_machine_name(data) == "Hay"
