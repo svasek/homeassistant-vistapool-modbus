@@ -70,6 +70,7 @@ CAPABILITY_KEYS = (
     "MBF_PAR_HIDRO_COVER_ENABLE",
     "MBF_PAR_PH_ACID_RELAY_GPIO",
     "MBF_PAR_PH_BASE_RELAY_GPIO",
+    "MBF_PAR_FILTVALVE_ENABLE",
     "pH measurement module detected",
     "Redox measurement module detected",
     "Chlorine measurement module detected",
@@ -119,6 +120,7 @@ SENSOR_DEFINITIONS = {
         "unit": "%",
         "device_class": SensorDeviceClass.POWER_FACTOR,
         "state_class": SensorStateClass.MEASUREMENT,
+        "display_precision": 0,
     },
     "MBF_MEASURE_PH": {
         "name": "pH Level",
@@ -145,6 +147,7 @@ SENSOR_DEFINITIONS = {
         "unit": "%",
         "device_class": SensorDeviceClass.POWER_FACTOR,
         "state_class": SensorStateClass.MEASUREMENT,
+        "display_precision": 0,
     },
     "MBF_MEASURE_TEMPERATURE": {
         "name": "Water Temperature",
@@ -202,6 +205,14 @@ SENSOR_DEFINITIONS = {
         "state_class": None,
         "icon": "mdi:timeline-clock-outline",
         "entity_category": EntityCategory.DIAGNOSTIC,
+    },
+    "MBF_PAR_FILTVALVE_REMAINING": {
+        "name": "Backwash Time Remaining",
+        "unit": "s",
+        "device_class": SensorDeviceClass.DURATION,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "icon": "mdi:timer-sand",
+        "display_precision": 0,
     },
 }
 
@@ -606,6 +617,10 @@ BUTTON_DEFINITIONS = {
         "icon": "mdi:reload-alert",
         "entity_category": EntityCategory.CONFIG,
     },
+    "BACKWASH": {
+        "name": "Start Backwash",
+        "icon": "mdi:waves-arrow-left",
+    },
 }
 
 SELECT_DEFINITIONS = {
@@ -618,7 +633,7 @@ SELECT_DEFINITIONS = {
             2: "heating",
             3: "smart",
             4: "intelligent",
-            # 13: "backwash",
+            13: "backwash",
         },
         "register": 0x0411,  # FILTRATION_MODE_REGISTER
     },
@@ -639,6 +654,36 @@ SELECT_DEFINITIONS = {
             2: "active_redox",
         },
         "register": 0x020C,
+    },
+    "MBF_PAR_FILTVALVE_PERIOD_MINUTES": {
+        "name": "Backwash Repeat Interval",
+        "icon": "mdi:timer-refresh-outline",
+        "entity_category": EntityCategory.CONFIG,
+        "options_map": {
+            1440: "1_day",
+            2880: "2_days",
+            4320: "3_days",
+            5760: "4_days",
+            7200: "5_days",
+            10080: "1_week",
+            20160: "2_weeks",
+            30240: "3_weeks",
+            40320: "4_weeks",
+        },
+        "register": 0x04ED,
+    },
+    "MBF_PAR_FILTVALVE_MODE": {
+        "name": "Backwash Valve Mode",
+        "icon": "mdi:valve",
+        "entity_category": EntityCategory.CONFIG,
+        "options_map": {
+            # 0: "disabled",     # valve disabled – hidden (covered by MBF_PAR_FILTVALVE_ENABLE)
+            1: "enabled",  # timer-controlled (MBV_PAR_CTIMER_ENABLED)
+            # 2: "auto_linked",  # linked to parent relay – not applicable for filtvalve
+            3: "always_on",  # MBV_PAR_CTIMER_ALWAYS_ON
+            4: "always_off",  # MBV_PAR_CTIMER_ALWAYS_OFF
+        },
+        "register": 0x04E9,
     },
     "MBF_PAR_INTELLIGENT_FILT_MIN_TIME": {
         "name": "Intelligent Min Filtration Time",

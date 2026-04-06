@@ -130,6 +130,9 @@
       },
       "intelligent_tt_next_interval": {
         "name": "Modalità intelligente: inizio del prossimo intervallo"
+      },
+      "filtvalve_remaining": {
+        "name": "Tempo rimanente di controlavaggio"
       }
     },
     "binary_sensor": {
@@ -205,7 +208,8 @@
     },
     "button": {
       "sync_time": { "name": "Sincronizza orario dispositivo" },
-      "escape": { "name": "Cancella messaggi di errore" }
+      "escape": { "name": "Cancella messaggi di errore" },
+      "backwash": { "name": "Avvia controlavaggio" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Inizio filtrazione" },
@@ -447,7 +451,29 @@
         }
       },
       "relay_activation_delay": { "name": "Ritardo di attivazione pompa pH (s)" },
-      "intelligent_filt_min_time": { "name": "Intelligente: Tempo minimo di filtrazione" }
+      "intelligent_filt_min_time": { "name": "Intelligente: Tempo minimo di filtrazione" },
+      "filtvalve_period_minutes": {
+        "name": "Intervallo di controlavaggio automatico",
+        "state": {
+          "1_day": "1 giorno",
+          "2_days": "2 giorni",
+          "3_days": "3 giorni",
+          "4_days": "4 giorni",
+          "5_days": "5 giorni",
+          "1_week": "1 settimana",
+          "2_weeks": "2 settimane",
+          "3_weeks": "3 settimane",
+          "4_weeks": "4 settimane"
+        }
+      },
+      "filtvalve_mode": {
+        "name": "Modalità valvola di controlavaggio",
+        "state": {
+          "enabled": "Automatico",
+          "always_on": "Sempre Attivo",
+          "always_off": "Sempre Disattivo"
+        }
+      }
     }
   },
   "services": {

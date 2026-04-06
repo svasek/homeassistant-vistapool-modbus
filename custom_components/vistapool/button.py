@@ -43,6 +43,11 @@ async def async_setup_entry(
         return
 
     for key, props in BUTTON_DEFINITIONS.items():
+        # BACKWASH button is only available when a Besgo filter valve is configured
+        if key == "BACKWASH" and not bool(
+            coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE")
+        ):
+            continue
         entities.append(VistaPoolButton(coordinator, entry_id, key, props))
     async_add_entities(entities)
 
@@ -84,6 +89,24 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
             client = self.coordinator.client
             _LOGGER.debug("Clearing all possible errors...")
             await client.async_write_register(0x0297, 1)
+            await self.coordinator.async_request_refresh()
+        elif self._key == "BACKWASH":
+            filtvalve_enable = self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0)
+            if not filtvalve_enable:
+                _LOGGER.warning(
+                    "Backwash valve not configured (MBF_PAR_FILTVALVE_ENABLE=0) "
+                    "- ignoring backwash command for %s",
+                    self.coordinator.device_name,
+                )
+                return
+            client = self.coordinator.client
+            _LOGGER.info(
+                "Starting backwash on device '%s'", self.coordinator.device_name
+            )
+            # Set filtration mode to backwash (13 = MBV_PAR_FILT_BACKWASH).
+            # The device opens the configured Besgo valve and runs the filter
+            # cleaning cycle for the duration stored in MBF_PAR_FILTVALVE_INTERVAL.
+            await client.async_write_register(0x0411, 13)
             await self.coordinator.async_request_refresh()
 
     async def async_added_to_hass(self) -> None:  # pragma: no cover

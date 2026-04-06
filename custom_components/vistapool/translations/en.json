@@ -130,6 +130,9 @@
       },
       "intelligent_tt_next_interval": {
         "name": "Intelligent Mode Next Interval Start"
+      },
+      "filtvalve_remaining": {
+        "name": "Backwash Time Remaining"
       }
     },
     "binary_sensor": {
@@ -205,7 +208,8 @@
     },
     "button": {
       "sync_time": { "name": "Synchronize Device Time" },
-      "escape": { "name": "Clear Error Messages" }
+      "escape": { "name": "Clear Error Messages" },
+      "backwash": { "name": "Start Backwash" }
     },
     "select": {
       "filtration1_start": { "name": "Timer 1 - Filtration Start" },
@@ -447,7 +451,29 @@
         }
       },
       "relay_activation_delay": { "name": "pH pump activation delay (s)" },
-      "intelligent_filt_min_time": { "name": "Intelligent: Minimum Filtration Time" }
+      "intelligent_filt_min_time": { "name": "Intelligent: Minimum Filtration Time" },
+      "filtvalve_period_minutes": {
+        "name": "Backwash Repeat Interval",
+        "state": {
+          "1_day": "1 day",
+          "2_days": "2 days",
+          "3_days": "3 days",
+          "4_days": "4 days",
+          "5_days": "5 days",
+          "1_week": "1 week",
+          "2_weeks": "2 weeks",
+          "3_weeks": "3 weeks",
+          "4_weeks": "4 weeks"
+        }
+      },
+      "filtvalve_mode": {
+        "name": "Backwash Valve Mode",
+        "state": {
+          "enabled": "Automatic",
+          "always_on": "Always On",
+          "always_off": "Always Off"
+        }
+      }
     }
   },
   "services": {

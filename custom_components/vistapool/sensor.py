@@ -118,6 +118,10 @@ async def async_setup_entry(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
+        if key == "MBF_PAR_FILTVALVE_REMAINING" and not bool(
+            coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE")
+        ):
+            continue
 
         entities.append(
             VistaPoolSensor(
@@ -149,6 +153,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         self._attr_state_class = props.get("state_class") or None
         self._attr_entity_category = props.get("entity_category") or None
         self._attr_icon = props.get("icon") or None
+        self._attr_suggested_display_precision = props.get("display_precision")
 
         # Disable some entities by default.
         if self._attr_suggested_object_id.endswith("_voltage"):  # pragma: no cover
@@ -201,19 +206,19 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
     @property
     def suggested_display_precision(self) -> int | None:
         """Return the suggested display precision for the sensor value."""
-        if self._key == "MBF_HIDRO_CURRENT":
-            # Use 0 decimals for percent mode, 1 decimal for g/h mode
-            return 0 if is_hydrolysis_in_percent(self.coordinator.data) else 1
-        if self._key == "MBF_MEASURE_CONDUCTIVITY":
-            return 0
-        return None
+        if self._key == "MBF_HIDRO_CURRENT" and not is_hydrolysis_in_percent(
+            self.coordinator.data
+        ):
+            return 1
+        return self._attr_suggested_display_precision
 
     @property
     def native_unit_of_measurement(self) -> str | None:
         """Return the unit of measurement for the sensor value."""
-        if self._key == "MBF_HIDRO_CURRENT":
-            # Dynamically determine unit based on machine configuration
-            return "%" if is_hydrolysis_in_percent(self.coordinator.data) else "g/h"
+        if self._key == "MBF_HIDRO_CURRENT" and not is_hydrolysis_in_percent(
+            self.coordinator.data
+        ):
+            return "g/h"
         return self._attr_native_unit_of_measurement
 
     @property
