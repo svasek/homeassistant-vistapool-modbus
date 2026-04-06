@@ -16,6 +16,7 @@
         "description": "Configura la connessione al tuo controller VistaPool.",
         "data": {
           "name": "Nome del dispositivo (usato come prefisso ID entità).",
+          "name_default": "Piscina",
           "host": "Indirizzo IP gateway Modbus",
           "port": "Porta TCP per Modbus (predefinito: 502).",
           "scan_interval": "Intervallo aggiornamento dati (secondi)",

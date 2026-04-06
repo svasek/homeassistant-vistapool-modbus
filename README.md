@@ -1,6 +1,7 @@
 # VistaPool Modbus Integration for Home Assistant
 
-- Easily connect your Sugar Valley (NeoPool, Hidrolife, Aquascenic, Bionet...) or compatible pool controller to Home Assistant via Modbus TCP.
+- Easily connect your **NeoPool**-based pool controller to Home Assistant via Modbus TCP.
+- NeoPool is a control system originally developed by **Sugar Valley** (acquired by **Hayward** in 2016), available under many brand names and in multiple device variants.
 - Full local control, real-time sensors, timers, relays, automation support, and more.
 
 [![Release](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/release.yml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/release.yml)
@@ -14,10 +15,24 @@
 [![Sponsor me](https://img.shields.io/badge/sponsor-❤-brightgreen?style=flat)](https://github.com/sponsors/svasek)
 [![Ko-fi](https://img.shields.io/badge/ko--fi-support-29abe0?style=flat&logo=ko-fi)](https://ko-fi.com/svasek)
 
-> **This integration is available via [HACS](https://hacs.xyz/) and is recommended for most users.**
+> **This integration is available via [HACS](https://hacs.xyz/)**
 
-**Supported brands / devices:**  
-Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • Station • Brilix (Albixon) • Bayrol • Hay • Hayward • Aquarite • Kripsol KLX • Certikin • Poolstar • GrupAquadirect • Pentair • ProducPool • Pool Technologie
+**Supported device models** (Sugar Valley / Hayward product lines):  
+Hidrolife • Aquascenic • Oxilife • Bionet • Hidroniser • UVScenic • Station • Aquarite
+
+**Distributed by** (vendors selling NeoPool-based hardware):  
+Hayward • Brilix (Albixon) • Bayrol • Certikin • Poolstar • GrupAquadirect • Pentair • ProducPool • Pool Technologie • Kripsol
+
+---
+
+## About NeoPool Controllers
+
+The hardware supported by this integration uses the **NeoPool control system**, originally developed by the Spanish company **Sugar Valley** and acquired by **Hayward** in 2016. The same system is sold under many brand names worldwide (see supported list above).
+
+The Modbus protocol implemented here is described in the official _"NeoPool Control System MODBUS Register description"_ documentation by Sugar Valley.
+
+> **Note:** _VistaPool_ is the name of Hayward's mobile/web app for cloud-based pool management.
+> This integration works entirely **locally via Modbus** — it does not require or use the VistaPool app or any cloud service.
 
 ---
 
@@ -239,7 +254,8 @@ Entities are lowercased and prefixed by your custom name, e.g. `sensor.pool1_fil
 
 ## Based On
 
-- [Tasmota Neopool driver](https://github.com/arendst/Tasmota/blob/master/tasmota/tasmota_xsns_sensor/xsns_83_neopool.ino)
+- [Tasmota NeoPool driver](https://github.com/arendst/Tasmota/blob/master/tasmota/tasmota_xsns_sensor/xsns_83_neopool.ino) — implements the NeoPool Modbus register protocol originally documented by Sugar Valley
+- _NeoPool Control System MODBUS Register description_ — official Modbus register documentation by Sugar Valley (pdf)
 
 ---
 
@@ -253,4 +269,5 @@ The author takes no responsibility for any damage, loss, or malfunction resultin
 This project is licensed under the [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0/),
 the same license used by [Home Assistant](https://www.home-assistant.io/developers/license/).
 
-_This project is not affiliated with or endorsed by any pool controller manufacturer._
+_This project is not affiliated with or endorsed by Sugar Valley, Hayward, or any other pool equipment manufacturer or distributor._  
+_"VistaPool" is a trademark of Hayward Industries, Inc. This integration communicates locally via Modbus and does not use the VistaPool cloud service._
