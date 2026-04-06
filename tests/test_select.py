@@ -784,3 +784,100 @@ def test_available_false_during_winter_mode(mock_coordinator):
     props = {"register": 0x0412, "options_map": {1: "Manual", 2: "Auto"}}
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
     assert ent.available is False
+
+
+# ---------------------------------------------------------------------------
+# MBF_PAR_FILTVALVE_PERIOD_MINUTES select tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_select_filtvalve_period_minutes_skipped_without_besgo(mock_coordinator):
+    """MBF_PAR_FILTVALVE_PERIOD_MINUTES select must be skipped when Besgo valve is not configured."""
+    from custom_components.vistapool.select import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+        data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+
+    from unittest.mock import MagicMock
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_PERIOD_MINUTES" not in keys
+
+
+@pytest.mark.asyncio
+async def test_select_filtvalve_period_minutes_created_with_besgo(mock_coordinator):
+    """MBF_PAR_FILTVALVE_PERIOD_MINUTES select must be created when Besgo valve is configured."""
+    from custom_components.vistapool.select import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+        data = {"MBF_PAR_FILTVALVE_ENABLE": 1, "MBF_PAR_FILTVALVE_PERIOD_MINUTES": 1440}
+
+    from unittest.mock import MagicMock
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_PERIOD_MINUTES" in keys
+
+
+def test_select_filtvalve_period_minutes_current_option_known(mock_coordinator):
+    """current_option returns the mapped label for a known minute value."""
+    from custom_components.vistapool.const import SELECT_DEFINITIONS
+
+    props = SELECT_DEFINITIONS["MBF_PAR_FILTVALVE_PERIOD_MINUTES"]
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTVALVE_PERIOD_MINUTES", props
+    )
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_PERIOD_MINUTES": 1440}
+    assert ent.current_option == "1_day"
+
+
+def test_select_filtvalve_period_minutes_current_option_unknown(mock_coordinator):
+    """current_option returns raw minutes string for an unmapped value."""
+    from custom_components.vistapool.const import SELECT_DEFINITIONS
+
+    props = SELECT_DEFINITIONS["MBF_PAR_FILTVALVE_PERIOD_MINUTES"]
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTVALVE_PERIOD_MINUTES", props
+    )
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_PERIOD_MINUTES": 999}
+    assert ent.current_option == "999m"
+
+
+def test_select_filtvalve_period_minutes_options_prepend_unknown(mock_coordinator):
+    """options prepends raw value when device holds an unmapped minute count."""
+    from custom_components.vistapool.const import SELECT_DEFINITIONS
+
+    props = SELECT_DEFINITIONS["MBF_PAR_FILTVALVE_PERIOD_MINUTES"]
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTVALVE_PERIOD_MINUTES", props
+    )
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_PERIOD_MINUTES": 999}
+    opts = ent.options
+    assert opts[0] == "999m"
+    assert "1_day" in opts

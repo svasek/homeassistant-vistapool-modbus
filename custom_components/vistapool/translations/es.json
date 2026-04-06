@@ -451,7 +451,21 @@
         }
       },
       "relay_activation_delay": { "name": "Retardo de activación de la bomba de pH (s)" },
-      "intelligent_filt_min_time": { "name": "Inteligente: Tiempo mínimo de filtración" }
+      "intelligent_filt_min_time": { "name": "Inteligente: Tiempo mínimo de filtración" },
+      "filtvalve_period_minutes": {
+        "name": "Intervalo de retrolavado automático",
+        "state": {
+          "1_day": "1 día",
+          "2_days": "2 días",
+          "3_days": "3 días",
+          "4_days": "4 días",
+          "5_days": "5 días",
+          "1_week": "1 semana",
+          "2_weeks": "2 semanas",
+          "3_weeks": "3 semanas",
+          "4_weeks": "4 semanas"
+        }
+      }
     }
   },
   "services": {

@@ -652,6 +652,23 @@ SELECT_DEFINITIONS = {
         },
         "register": 0x020C,
     },
+    "MBF_PAR_FILTVALVE_PERIOD_MINUTES": {
+        "name": "Backwash Repeat Interval",
+        "icon": "mdi:timer-refresh-outline",
+        "entity_category": EntityCategory.CONFIG,
+        "options_map": {
+            1440: "1_day",
+            2880: "2_days",
+            4320: "3_days",
+            5760: "4_days",
+            7200: "5_days",
+            10080: "1_week",
+            20160: "2_weeks",
+            30240: "3_weeks",
+            40320: "4_weeks",
+        },
+        "register": 0x04ED,
+    },
     "MBF_PAR_INTELLIGENT_FILT_MIN_TIME": {
         "name": "Intelligent Min Filtration Time",
         "icon": "mdi:timer-lock-outline",

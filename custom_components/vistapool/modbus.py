@@ -849,7 +849,9 @@ class VistaPoolModbusClient:
                     "MBF_PAR_RELAY_ACTIVATION_DELAY": get_safe(reg04, 43, lambda v: v + 10),    # 0x0433         Delay time in seconds for the pH pump when the measured pH value is outside the allowable pH setpoints. The system internally adds an extra time of 10 seconds to the value stored here. The pump starts the dosing operation once the condition of pH out of valid interval is maintained during the time specified in this register.
                     # FILTVALVE / backwash registers (0x04E8–0x04EF) at reg04 indices 44–51
                     "MBF_PAR_FILTVALVE_ENABLE": get_safe(reg04, 44),                            # 0x04E8        Filter cleaning mode (0 = off, 1 = Besgo valve)
+                    "MBF_PAR_FILTVALVE_MODE": get_safe(reg04, 45),                              # 0x04E9        Filter cleaning valve timing mode (MBV_PAR_CTIMER_ENABLED/ALWAYS_ON/ALWAYS_OFF)
                     "MBF_PAR_FILTVALVE_GPIO": get_safe(reg04, 46),                              # 0x04EA        Relay assigned to the filter cleaning function
+                    "MBF_PAR_FILTVALVE_PERIOD_MINUTES": get_safe(reg04, 49),                    # 0x04ED        Period in minutes between cleaning actions
                     "MBF_PAR_FILTVALVE_INTERVAL": get_safe(reg04, 50),                          # 0x04EE        Cleaning action duration in seconds
                     "MBF_PAR_FILTVALVE_REMAINING": get_safe(reg04, 51),                         # 0x04EF        Remaining backwash time in seconds (> 0 = backwash active)
 

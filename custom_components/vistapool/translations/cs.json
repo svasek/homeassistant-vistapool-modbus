@@ -451,7 +451,21 @@
         }
       },
       "relay_activation_delay": { "name": "Zpoždění aktivace pH pumpy (s)" },
-      "intelligent_filt_min_time": { "name": "Inteligentní: Minimální doba filtrace" }
+      "intelligent_filt_min_time": { "name": "Inteligentní: Minimální doba filtrace" },
+      "filtvalve_period_minutes": {
+        "name": "Interval automatického proplachování",
+        "state": {
+          "1_day": "1 den",
+          "2_days": "2 dny",
+          "3_days": "3 dny",
+          "4_days": "4 dny",
+          "5_days": "5 dní",
+          "1_week": "1 týden",
+          "2_weeks": "2 týdny",
+          "3_weeks": "3 týdny",
+          "4_weeks": "4 týdny"
+        }
+      }
     }
   },
   "services": {

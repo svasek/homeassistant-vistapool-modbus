@@ -451,7 +451,21 @@
         }
       },
       "relay_activation_delay": { "name": "Opóźnienie uruchomienia pompy pH (s)" },
-      "intelligent_filt_min_time": { "name": "Inteligentny: Minimalny czas filtracji" }
+      "intelligent_filt_min_time": { "name": "Inteligentny: Minimalny czas filtracji" },
+      "filtvalve_period_minutes": {
+        "name": "Interwał automatycznego płukania wstecznego",
+        "state": {
+          "1_day": "1 dzień",
+          "2_days": "2 dni",
+          "3_days": "3 dni",
+          "4_days": "4 dni",
+          "5_days": "5 dni",
+          "1_week": "1 tydzień",
+          "2_weeks": "2 tygodnie",
+          "3_weeks": "3 tygodnie",
+          "4_weeks": "4 tygodnie"
+        }
+      }
     }
   },
   "services": {

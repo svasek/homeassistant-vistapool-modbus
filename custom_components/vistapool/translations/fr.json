@@ -451,7 +451,21 @@
         }
       },
       "relay_activation_delay": { "name": "Délai d'activation de la pompe pH (s)" },
-      "intelligent_filt_min_time": { "name": "Intelligent: Temps minimum de filtration" }
+      "intelligent_filt_min_time": { "name": "Intelligent: Temps minimum de filtration" },
+      "filtvalve_period_minutes": {
+        "name": "Intervalle de rétrolavage automatique",
+        "state": {
+          "1_day": "1 jour",
+          "2_days": "2 jours",
+          "3_days": "3 jours",
+          "4_days": "4 jours",
+          "5_days": "5 jours",
+          "1_week": "1 semaine",
+          "2_weeks": "2 semaines",
+          "3_weeks": "3 semaines",
+          "4_weeks": "4 semaines"
+        }
+      }
     }
   },
   "services": {

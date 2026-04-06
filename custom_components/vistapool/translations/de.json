@@ -451,7 +451,21 @@
         }
       },
       "relay_activation_delay": { "name": "pH-Pumpenstartverzögerung (s)" },
-      "intelligent_filt_min_time": { "name": "Intelligent: Minimale Filterzeit" }
+      "intelligent_filt_min_time": { "name": "Intelligent: Minimale Filterzeit" },
+      "filtvalve_period_minutes": {
+        "name": "Rückspülintervall",
+        "state": {
+          "1_day": "1 Tag",
+          "2_days": "2 Tage",
+          "3_days": "3 Tage",
+          "4_days": "4 Tage",
+          "5_days": "5 Tage",
+          "1_week": "1 Woche",
+          "2_weeks": "2 Wochen",
+          "3_weeks": "3 Wochen",
+          "4_weeks": "4 Wochen"
+        }
+      }
     }
   },
   "services": {

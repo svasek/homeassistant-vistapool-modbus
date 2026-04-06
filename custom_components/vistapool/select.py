@@ -70,6 +70,12 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
+        # Besgo-valve selects: only when MBF_PAR_FILTVALVE_ENABLE=1
+        if key in (
+            "MBF_PAR_FILTVALVE_PERIOD_MINUTES",
+            "MBF_PAR_FILTVALVE_MODE",
+        ) and not bool(coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE")):
+            continue
 
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):
@@ -440,6 +446,14 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 return [f"{value}m"] + options
             return options
 
+        # Backwash repeat interval: same pattern as INTELLIGENT_FILT_MIN_TIME
+        if self._key == "MBF_PAR_FILTVALVE_PERIOD_MINUTES":
+            options = [self._options_map[k] for k in option_keys]
+            value = self.coordinator.data.get(self._key)
+            if isinstance(value, int) and value not in self._options_map:
+                return [f"{value}m"] + options
+            return options
+
         return [self._options_map[k] for k in option_keys]
 
     @property
@@ -495,6 +509,12 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             if value is None:  # pragma: no cover
                 return None
             # Return mapped label or the raw minutes as string when unknown
+            return self._options_map.get(value, f"{value}m")
+
+        if self._key == "MBF_PAR_FILTVALVE_PERIOD_MINUTES":
+            value = self.coordinator.data.get(self._key)
+            if value is None:  # pragma: no cover
+                return None
             return self._options_map.get(value, f"{value}m")
 
         value = self.coordinator.data.get(self._key)
