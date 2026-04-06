@@ -22,7 +22,12 @@ from datetime import datetime, timedelta
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.framer import FramerType
 from pymodbus.exceptions import ModbusException, ConnectionException
-from .helpers import parse_timer_block, build_timer_block, get_filtration_speed
+from .helpers import (
+    parse_timer_block,
+    build_timer_block,
+    get_filtration_speed,
+    modbus_regs_to_ascii,
+)
 from .modbus_compat import modbus_acall
 from .const import DEFAULT_MODBUS_FRAMER, TIMER_BLOCKS
 
@@ -919,7 +924,8 @@ class VistaPoolModbusClient:
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
                 """
                 rr06_ranges = [
-                    (0x0600, 13),  # 0x0600–0x060C
+                    # Includes full NAME_BOLD 0x0608-0x060B and NAME_LIGHT 0x060C-0x060F
+                    (0x0600, 16),  # 0x0600–0x060F
                 ]
 
                 reg06 = []
@@ -953,7 +959,7 @@ class VistaPoolModbusClient:
                             f"Expected at least {count} registers from 0x{address:04X}, got {len(reg06)}"
                         )
 
-                # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0]
+                # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0, 0, 0, 0]
                 # fmt: off
                 result.update({
                     "MBF_PAR_UICFG_MACHINE": get_safe(reg06, 0),                # 0x0600        Machine type (see MBV_PAR_MACH_* and  kNeoPoolMachineNames[])
@@ -964,8 +970,8 @@ class VistaPoolModbusClient:
                     "MBF_PAR_UICFG_VISUAL_OPTIONS": get_safe(reg06, 5),         # 0x0605 mask   Stores the different display options for the user interface menus (bitmask). Some bits allow you to hide options that are normally visible (bits 0 to 3) while other bits allow you to show options that are normally hidden (bits 9 to 15)
                     "MBF_PAR_UICFG_VISUAL_OPTIONS_EXT": get_safe(reg06, 6),     # 0x0606 mask   This register stores additional display options for the user interface menus (see MBMSK_VOE_*)
                     "MBF_PAR_UICFG_MACH_VISUAL_STYLE": get_safe(reg06, 7),      # 0x0607 mask   This register is an expansion of register MBF_PAR_UICFG_MACHINE and MBF_PAR_UICFG_VISUAL_OPTIONS. If MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC then the lower part (8 bits LSB) is used to store the type of color selected. Colors and styles correspond to those listed in MBF_PAR_UICFG_MACHINE (see MBV_PAR_MACH_*). The upper part (8-bit MSB) contains extra bits MBMSK_VS_FORCE_UNITS_GRH, MBMSK_VS_FORCE_UNITS_PERCENTAGE and MBMSK_ELECTROLISIS
-                    "MBF_PAR_UICFG_MACH_NAME_BOLD": get_safe(reg06, 8),         # 0x0608         Machine name bold part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x608 to 0x60B) ASCIIZ string with up to 8 characters
-                    "MBF_PAR_UICFG_MACH_NAME_LIGHT": get_safe(reg06, 12),       # 0x060C         Machine name normal intensity part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x060C to 0x060F) ASCIIZ string with up to 8 characters
+                    "MBF_PAR_UICFG_MACH_NAME_BOLD": modbus_regs_to_ascii(reg06[8:12]),   # 0x0608         Machine name bold part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x608 to 0x60B) ASCIIZ string with up to 8 characters
+                    "MBF_PAR_UICFG_MACH_NAME_LIGHT": modbus_regs_to_ascii(reg06[12:16]), # 0x060C         Machine name normal intensity part title displayed during startup if MBF_PAR_UICFG_MACHINE is MBV_PAR_MACH_GENERIC. Note: Only lowercase letters (a-z) can be used. 4 register (0x060C to 0x060F) ASCIIZ string with up to 8 characters
                     # Prepared for future use:
                     # "MBF_PAR_UICFG_MACH_NAME_AUX1": modbus_regs_to_ascii(reg06[16:21]), # 0x0610         Aux1 relay name: 5 register ASCIIZ string with up to 10 characters
                     # "MBF_PAR_UICFG_MACH_NAME_AUX2": modbus_regs_to_ascii(reg06[21:26]), # 0x0615         Aux2 relay name: 5 register ASCIIZ string with up to 10 characters

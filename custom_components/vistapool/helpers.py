@@ -261,6 +261,46 @@ def pad_list(regs, length, pad_value=0) -> list[int]:
     return regs + [pad_value] * (length - len(regs))
 
 
+# Machine type index → brand name (matches kNeoPoolMachineNames[] in Tasmota)
+_MACHINE_NAMES = [
+    "None",  # 0  MBV_PAR_MACH_NONE
+    "Hidrolife",  # 1  MBV_PAR_MACH_HIDROLIFE
+    "Aquascenic",  # 2  MBV_PAR_MACH_AQUASCENIC
+    "Oxilife",  # 3  MBV_PAR_MACH_OXILIFE
+    "Bionet",  # 4  MBV_PAR_MACH_BIONET
+    "Hidroniser",  # 5  MBV_PAR_MACH_HIDRONISER
+    "UVScenic",  # 6  MBV_PAR_MACH_UVSCENIC
+    "Station",  # 7  MBV_PAR_MACH_STATION
+    "Brilix",  # 8  MBV_PAR_MACH_BRILIX
+    "Generic",  # 9  MBV_PAR_MACH_GENERIC
+    "Bayrol",  # 10 MBV_PAR_MACH_BAYROL
+    "Hay",  # 11 MBV_PAR_MACH_HAY
+]
+_MBV_PAR_MACH_GENERIC = 9
+
+
+def get_machine_name(data: dict) -> str:
+    """
+    Return the human-readable machine/brand name.
+
+    For GENERIC (9): assembles the custom name from the BOLD + LIGHT name registers
+    stored in MBF_PAR_UICFG_MACH_NAME_BOLD / MBF_PAR_UICFG_MACH_NAME_LIGHT.
+    If the custom name is empty, falls back to "Generic".
+    """
+    machine_type = int(data.get("MBF_PAR_UICFG_MACHINE") or 0)
+
+    if machine_type == _MBV_PAR_MACH_GENERIC:
+        bold = (data.get("MBF_PAR_UICFG_MACH_NAME_BOLD") or "").strip()
+        light = (data.get("MBF_PAR_UICFG_MACH_NAME_LIGHT") or "").strip()
+        custom_name = " ".join(filter(None, [bold, light]))
+        if custom_name:
+            return custom_name
+
+    if 0 < machine_type < len(_MACHINE_NAMES):
+        return _MACHINE_NAMES[machine_type]
+    return ""  # 0 = no machine assigned, or unknown type
+
+
 def is_hydrolysis_in_percent(data: dict) -> bool:
     """
     Determine if hydrolysis/electrolysis units are displayed as percentage or g/h.
