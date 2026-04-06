@@ -149,6 +149,24 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             await self.coordinator.async_request_refresh()
             self.async_write_ha_state()
             return
+
+        # Backwash repeat interval: accept mapped labels (e.g. "1_day") or raw "Xm" strings
+        if self._key == "MBF_PAR_FILTVALVE_PERIOD_MINUTES":
+            reverse_map = {v: k for k, v in self._options_map.items()}
+            minutes = reverse_map.get(option)
+            if minutes is None:
+                try:
+                    if isinstance(option, str) and option.endswith("m"):
+                        minutes = int(option[:-1])
+                    else:  # pragma: no cover
+                        minutes = int(option)
+                except Exception:  # pragma: no cover
+                    return
+            await client.async_write_register(self._register or 0x04ED, minutes)
+            await asyncio.sleep(0.2)
+            await self.coordinator.async_request_refresh()
+            self.async_write_ha_state()
+            return
         if self._select_type == "timer_time":
             timer_name, field = self._key.rsplit("_", 1)
             entry_id = (
@@ -362,20 +380,17 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             # Remove key for "smart"
             option_keys = [k for k in option_keys if k != 3]
 
-        # Add backwash option if:
+        # Show backwash option only if:
         # - explicitly enabled in advanced config options, OR
         # - a Besgo automatic filter valve is configured (MBF_PAR_FILTVALVE_ENABLE=1)
+        # The mapping (13 -> "backwash") is always present in options_map so that
+        # current_option and async_select_option work correctly regardless of
+        # whether options() has been evaluated first.
         if self._key == "MBF_PAR_FILT_MODE":
             backwash_allowed = self.coordinator.config_entry.options.get(
                 "enable_backwash_option", False
             ) or bool(self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0))
-            if backwash_allowed:
-                # Add backwash as the last option (key 13)
-                if 13 not in option_keys:  # pragma: no cover
-                    option_keys.append(13)
-                    self._options_map[13] = "backwash"
-            else:
-                # Remove key for "backwash" if it exists and not enabled
+            if not backwash_allowed:
                 option_keys = [k for k in option_keys if k != 13]
 
         # Hide "Active (Redox control)" if no Redox module

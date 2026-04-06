@@ -897,6 +897,40 @@ def test_select_filtvalve_period_minutes_options_known_value(mock_coordinator):
     assert "999m" not in opts
 
 
+@pytest.mark.asyncio
+async def test_async_select_option_filtvalve_period_minutes_label(mock_coordinator):
+    """async_select_option writes the correct minute value for a mapped label."""
+    from custom_components.vistapool.const import SELECT_DEFINITIONS
+
+    props = SELECT_DEFINITIONS["MBF_PAR_FILTVALVE_PERIOD_MINUTES"]
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTVALVE_PERIOD_MINUTES", props
+    )
+    ent.hass = MagicMock()
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = Mock()
+    await ent.async_select_option("1_day")
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x04ED, 1440)
+
+
+@pytest.mark.asyncio
+async def test_async_select_option_filtvalve_period_minutes_raw_m(mock_coordinator):
+    """async_select_option parses and writes a raw 'Xm' string."""
+    from custom_components.vistapool.const import SELECT_DEFINITIONS
+
+    props = SELECT_DEFINITIONS["MBF_PAR_FILTVALVE_PERIOD_MINUTES"]
+    ent = VistaPoolSelect(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTVALVE_PERIOD_MINUTES", props
+    )
+    ent.hass = MagicMock()
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = Mock()
+    await ent.async_select_option("999m")
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x04ED, 999)
+
+
 # MBF_PAR_FILTVALVE_MODE select tests
 # ---------------------------------------------------------------------------
 

@@ -630,7 +630,7 @@ SELECT_DEFINITIONS = {
             2: "heating",
             3: "smart",
             4: "intelligent",
-            # 13: "backwash",
+            13: "backwash",
         },
         "register": 0x0411,  # FILTRATION_MODE_REGISTER
     },
