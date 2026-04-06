@@ -356,20 +356,21 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             # Remove key for "smart"
             option_keys = [k for k in option_keys if k != 3]
 
-        # Add backwash option if enabled in config
-        if (
-            self._key == "MBF_PAR_FILT_MODE"
-            and self.coordinator.config_entry.options.get(
+        # Add backwash option if:
+        # - explicitly enabled in advanced config options, OR
+        # - a Besgo automatic filter valve is configured (MBF_PAR_FILTVALVE_ENABLE=1)
+        if self._key == "MBF_PAR_FILT_MODE":
+            backwash_allowed = self.coordinator.config_entry.options.get(
                 "enable_backwash_option", False
-            )
-        ):
-            # Add backwash as the last option (key 13)
-            if 13 not in option_keys:  # pragma: no cover
-                option_keys.append(13)
-                self._options_map[13] = "backwash"
-        else:
-            # Remove key for "backwash" if it exists and not enabled
-            option_keys = [k for k in option_keys if k != 13]
+            ) or bool(self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0))
+            if backwash_allowed:
+                # Add backwash as the last option (key 13)
+                if 13 not in option_keys:  # pragma: no cover
+                    option_keys.append(13)
+                    self._options_map[13] = "backwash"
+            else:
+                # Remove key for "backwash" if it exists and not enabled
+                option_keys = [k for k in option_keys if k != 13]
 
         # Hide "Active (Redox control)" if no Redox module
         if self._key == "MBF_CELL_BOOST" and not bool(

@@ -97,6 +97,27 @@ def test_options_add_backwash(mock_coordinator):
     assert "backwash" in opts
 
 
+def test_options_add_backwash_via_filtvalve(mock_coordinator):
+    """Backwash must appear automatically when MBF_PAR_FILTVALVE_ENABLE=1 (Besgo valve),
+    even without enable_backwash_option in config options."""
+    props = make_props(options_map={0: "auto", 1: "manual", 2: "off", 13: "backwash"})
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 1}
+    mock_coordinator.config_entry.options = {}
+    opts = ent.options
+    assert "backwash" in opts
+
+
+def test_options_no_backwash_without_valve_or_option(mock_coordinator):
+    """Backwash must be hidden when neither enable_backwash_option nor Besgo valve."""
+    props = make_props(options_map={0: "auto", 1: "manual", 2: "off", 13: "backwash"})
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+    mock_coordinator.config_entry.options = {}
+    opts = ent.options
+    assert "backwash" not in opts
+
+
 def test_options_timer_time(mock_coordinator):
     from custom_components.vistapool.helpers import (
         hhmm_to_seconds,
