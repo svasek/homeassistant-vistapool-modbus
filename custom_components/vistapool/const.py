@@ -120,6 +120,7 @@ SENSOR_DEFINITIONS = {
         "unit": "%",
         "device_class": SensorDeviceClass.POWER_FACTOR,
         "state_class": SensorStateClass.MEASUREMENT,
+        "display_precision": 0,
     },
     "MBF_MEASURE_PH": {
         "name": "pH Level",
@@ -146,6 +147,7 @@ SENSOR_DEFINITIONS = {
         "unit": "%",
         "device_class": SensorDeviceClass.POWER_FACTOR,
         "state_class": SensorStateClass.MEASUREMENT,
+        "display_precision": 0,
     },
     "MBF_MEASURE_TEMPERATURE": {
         "name": "Water Temperature",
@@ -210,6 +212,7 @@ SENSOR_DEFINITIONS = {
         "device_class": SensorDeviceClass.DURATION,
         "state_class": SensorStateClass.MEASUREMENT,
         "icon": "mdi:timer-sand",
+        "display_precision": 0,
     },
 }
 

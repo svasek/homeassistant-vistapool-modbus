@@ -74,8 +74,15 @@ def test_icon_default(mock_coordinator):
 
 
 def test_suggested_display_precision(mock_coordinator):
+    from custom_components.vistapool.const import SENSOR_DEFINITIONS
+
     # Test for MBF_HIDRO_CURRENT with percent mode
-    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_HIDRO_CURRENT", {})
+    ent = VistaPoolSensor(
+        mock_coordinator,
+        "test_entry",
+        "MBF_HIDRO_CURRENT",
+        SENSOR_DEFINITIONS["MBF_HIDRO_CURRENT"],
+    )
     mock_coordinator.data = {
         "MBF_PAR_UICFG_MACH_VISUAL_STYLE": 0x4000,  # Force percentage
         "MBF_PAR_UICFG_MACHINE": 0,
@@ -91,7 +98,10 @@ def test_suggested_display_precision(mock_coordinator):
 
     # Test for conductivity
     ent = VistaPoolSensor(
-        mock_coordinator, "test_entry", "MBF_MEASURE_CONDUCTIVITY", {}
+        mock_coordinator,
+        "test_entry",
+        "MBF_MEASURE_CONDUCTIVITY",
+        SENSOR_DEFINITIONS["MBF_MEASURE_CONDUCTIVITY"],
     )
     assert ent.suggested_display_precision == 0
 
@@ -102,8 +112,13 @@ def test_suggested_display_precision(mock_coordinator):
 
 def test_native_unit_of_measurement_hidro_current(mock_coordinator):
     """Test native_unit_of_measurement for MBF_HIDRO_CURRENT with different configurations."""
+    from custom_components.vistapool.const import SENSOR_DEFINITIONS
+
     ent = VistaPoolSensor(
-        mock_coordinator, "test_entry", "MBF_HIDRO_CURRENT", {"unit": "%"}
+        mock_coordinator,
+        "test_entry",
+        "MBF_HIDRO_CURRENT",
+        SENSOR_DEFINITIONS["MBF_HIDRO_CURRENT"],
     )
 
     # Test percent mode
