@@ -118,6 +118,17 @@ def test_options_no_backwash_without_valve_or_option(mock_coordinator):
     assert "backwash" not in opts
 
 
+def test_options_backwash_kept_when_active(mock_coordinator):
+    """Backwash must stay in options if device is currently in mode 13,
+    even when backwash is not allowed — so current_option stays valid."""
+    props = make_props(options_map={0: "auto", 1: "manual", 2: "off", 13: "backwash"})
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILT_MODE": 13}
+    mock_coordinator.config_entry.options = {}
+    opts = ent.options
+    assert "backwash" in opts
+
+
 def test_options_timer_time(mock_coordinator):
     from custom_components.vistapool.helpers import (
         hhmm_to_seconds,

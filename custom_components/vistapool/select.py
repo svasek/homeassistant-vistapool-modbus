@@ -391,7 +391,11 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 "enable_backwash_option", False
             ) or bool(self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0))
             if not backwash_allowed:
-                option_keys = [k for k in option_keys if k != 13]
+                # Keep backwash (13) in the list if the device is currently in that
+                # mode, so current_option always matches one of the available options.
+                current_mode = self.coordinator.data.get("MBF_PAR_FILT_MODE")
+                if current_mode != 13:
+                    option_keys = [k for k in option_keys if k != 13]
 
         # Hide "Active (Redox control)" if no Redox module
         if self._key == "MBF_CELL_BOOST" and not bool(
