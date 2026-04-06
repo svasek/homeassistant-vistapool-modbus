@@ -603,3 +603,69 @@ async def test_sensor_setup_with_capability_snapshot_only():
     assert "MBF_PAR_FILT_MODE" in keys
     assert "MBF_PH_STATUS_ALARM" in keys
     assert "HIDRO_POLARITY" in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_filtvalve_remaining_skipped_without_besgo():
+    """MBF_PAR_FILTVALVE_REMAINING sensor must be skipped when Besgo valve is not configured."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    DummyCoordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_REMAINING" not in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_filtvalve_remaining_created_with_besgo():
+    """MBF_PAR_FILTVALVE_REMAINING sensor must be created when Besgo valve is configured."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    DummyCoordinator.data = {
+        "MBF_PAR_FILTVALVE_ENABLE": 1,
+        "MBF_PAR_FILTVALVE_REMAINING": 120,
+    }
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_REMAINING" in keys
+
+
+def test_sensor_filtvalve_remaining_native_value():
+    """MBF_PAR_FILTVALVE_REMAINING sensor returns raw seconds from coordinator data."""
+    mock_coordinator = MagicMock()
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_REMAINING": 90}
+    mock_coordinator.config_entry.entry_id = "test_entry"
+    mock_coordinator.device_slug = "vistapool"
+
+    from custom_components.vistapool.sensor import VistaPoolSensor
+
+    ent = VistaPoolSensor(
+        mock_coordinator, "test_entry", "MBF_PAR_FILTVALVE_REMAINING", {}
+    )
+    assert ent.native_value == 90

@@ -118,6 +118,10 @@ async def async_setup_entry(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
+        if key == "MBF_PAR_FILTVALVE_REMAINING" and not bool(
+            coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE")
+        ):
+            continue
 
         entities.append(
             VistaPoolSensor(

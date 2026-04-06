@@ -204,6 +204,13 @@ SENSOR_DEFINITIONS = {
         "icon": "mdi:timeline-clock-outline",
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
+    "MBF_PAR_FILTVALVE_REMAINING": {
+        "name": "Backwash Time Remaining",
+        "unit": "s",
+        "device_class": SensorDeviceClass.DURATION,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "icon": "mdi:timer-sand",
+    },
 }
 
 BINARY_SENSOR_DEFINITIONS = {

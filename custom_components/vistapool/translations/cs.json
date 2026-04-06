@@ -130,6 +130,9 @@
       },
       "intelligent_tt_next_interval": {
         "name": "Inteligentní režim: začátek příštího intervalu"
+      },
+      "mbf_par_filtvalve_remaining": {
+        "name": "Zbývající čas proplachování"
       }
     },
     "binary_sensor": {

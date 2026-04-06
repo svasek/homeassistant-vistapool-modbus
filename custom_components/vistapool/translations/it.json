@@ -130,6 +130,9 @@
       },
       "intelligent_tt_next_interval": {
         "name": "Modalità intelligente: inizio del prossimo intervallo"
+      },
+      "mbf_par_filtvalve_remaining": {
+        "name": "Tempo rimanente di controlavaggio"
       }
     },
     "binary_sensor": {
