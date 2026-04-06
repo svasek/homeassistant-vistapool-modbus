@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.20.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.19.0...v1.20.0) (2026-04-06)
+
+
+### Features
+
+* **button:** ✨ add backwash button and logic for automatic filtration valve ([#96](https://github.com/svasek/homeassistant-vistapool-modbus/issues/96)) ([0de93fe](https://github.com/svasek/homeassistant-vistapool-modbus/commit/0de93fe0e7b24077cbb32e6e7aee547d41cabeee))
+* **config:** ✨ add default name localization for new devices ([d98cd9e](https://github.com/svasek/homeassistant-vistapool-modbus/commit/d98cd9e0a44ad085c4a2238167a269b110dee05b))
+* **entity:** ✨detect and display machine name ([#98](https://github.com/svasek/homeassistant-vistapool-modbus/issues/98)) ([e0c60c4](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e0c60c4a4934e7257320dc7d1394717721132166))
+* **modbus:** ✨ notification based polling optimization ([#97](https://github.com/svasek/homeassistant-vistapool-modbus/issues/97)) ([244d555](https://github.com/svasek/homeassistant-vistapool-modbus/commit/244d55548d239c9925bbcdfab4b8c89efc06e9e2))
+
+
+### Bug Fixes
+
+* 🐛 update step value for redox setpoint ([5b146e8](https://github.com/svasek/homeassistant-vistapool-modbus/commit/5b146e8c44f70665b0efd0c176e3ae2605828953)), closes [#94](https://github.com/svasek/homeassistant-vistapool-modbus/issues/94)
+
 ## [1.19.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.18.3...v1.19.0) (2026-04-01)
 
 
