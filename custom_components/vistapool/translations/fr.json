@@ -131,7 +131,7 @@
       "intelligent_tt_next_interval": {
         "name": "Mode intelligent : début du prochain intervalle"
       },
-      "mbf_par_filtvalve_remaining": {
+      "filtvalve_remaining": {
         "name": "Temps restant du rétrolavage"
       }
     },

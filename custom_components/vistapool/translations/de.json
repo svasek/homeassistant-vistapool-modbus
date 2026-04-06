@@ -131,7 +131,7 @@
       "intelligent_tt_next_interval": {
         "name": "Intelligenter Modus: Beginn des nächsten Intervalls"
       },
-      "mbf_par_filtvalve_remaining": {
+      "filtvalve_remaining": {
         "name": "Verbleibende Rückspülzeit"
       }
     },
