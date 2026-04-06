@@ -465,6 +465,14 @@
           "3_weeks": "3 tygodnie",
           "4_weeks": "4 tygodnie"
         }
+      },
+      "filtvalve_mode": {
+        "name": "Tryb zaworu płukania wstecznego",
+        "state": {
+          "enabled": "Automatyczny",
+          "always_on": "Zawsze Włączony",
+          "always_off": "Zawsze Wyłączony"
+        }
       }
     }
   },

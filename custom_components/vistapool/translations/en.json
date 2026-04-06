@@ -465,6 +465,14 @@
           "3_weeks": "3 weeks",
           "4_weeks": "4 weeks"
         }
+      },
+      "filtvalve_mode": {
+        "name": "Backwash Valve Mode",
+        "state": {
+          "enabled": "Automatic",
+          "always_on": "Always On",
+          "always_off": "Always Off"
+        }
       }
     }
   },

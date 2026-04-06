@@ -465,6 +465,14 @@
           "3_weeks": "3 semaines",
           "4_weeks": "4 semaines"
         }
+      },
+      "filtvalve_mode": {
+        "name": "Mode de la vanne de rétrolavage",
+        "state": {
+          "enabled": "Automatique",
+          "always_on": "Toujours Activé",
+          "always_off": "Toujours Désactivé"
+        }
       }
     }
   },

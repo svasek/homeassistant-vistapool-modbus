@@ -517,6 +517,10 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 return None
             return self._options_map.get(value, f"{value}m")
 
+        if self._key == "MBF_PAR_FILTVALVE_MODE":
+            value = self.coordinator.data.get(self._key)
+            return self._options_map.get(value)
+
         value = self.coordinator.data.get(self._key)
         if value is None:  # pragma: no cover
             return None

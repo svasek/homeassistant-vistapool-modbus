@@ -465,6 +465,14 @@
           "3_weeks": "3 týdny",
           "4_weeks": "4 týdny"
         }
+      },
+      "filtvalve_mode": {
+        "name": "Režim ventilu zpětného proplachování",
+        "state": {
+          "enabled": "Automatický",
+          "always_on": "Vždy zapnuto",
+          "always_off": "Vždy vypnuto"
+        }
       }
     }
   },

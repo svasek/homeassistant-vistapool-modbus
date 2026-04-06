@@ -465,6 +465,14 @@
           "3_weeks": "3 Wochen",
           "4_weeks": "4 Wochen"
         }
+      },
+      "filtvalve_mode": {
+        "name": "Rückspülventil-Modus",
+        "state": {
+          "enabled": "Automatisch",
+          "always_on": "Immer An",
+          "always_off": "Immer Aus"
+        }
       }
     }
   },

@@ -465,6 +465,14 @@
           "3_weeks": "3 settimane",
           "4_weeks": "4 settimane"
         }
+      },
+      "filtvalve_mode": {
+        "name": "Modalità valvola di controlavaggio",
+        "state": {
+          "enabled": "Automatico",
+          "always_on": "Sempre Attivo",
+          "always_off": "Sempre Disattivo"
+        }
       }
     }
   },

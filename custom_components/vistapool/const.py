@@ -669,6 +669,19 @@ SELECT_DEFINITIONS = {
         },
         "register": 0x04ED,
     },
+    "MBF_PAR_FILTVALVE_MODE": {
+        "name": "Backwash Valve Mode",
+        "icon": "mdi:valve",
+        "entity_category": EntityCategory.CONFIG,
+        "options_map": {
+            # 0: "disabled",     # valve disabled – hidden (covered by MBF_PAR_FILTVALVE_ENABLE)
+            1: "enabled",  # timer-controlled (MBV_PAR_CTIMER_ENABLED)
+            # 2: "auto_linked",  # linked to parent relay – not applicable for filtvalve
+            3: "always_on",  # MBV_PAR_CTIMER_ALWAYS_ON
+            4: "always_off",  # MBV_PAR_CTIMER_ALWAYS_OFF
+        },
+        "register": 0x04E9,
+    },
     "MBF_PAR_INTELLIGENT_FILT_MIN_TIME": {
         "name": "Intelligent Min Filtration Time",
         "icon": "mdi:timer-lock-outline",

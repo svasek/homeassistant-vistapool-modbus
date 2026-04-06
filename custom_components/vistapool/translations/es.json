@@ -465,6 +465,14 @@
           "3_weeks": "3 semanas",
           "4_weeks": "4 semanas"
         }
+      },
+      "filtvalve_mode": {
+        "name": "Modo de válvula de retrolavado",
+        "state": {
+          "enabled": "Automático",
+          "always_on": "Siempre Activo",
+          "always_off": "Siempre Inactivo"
+        }
       }
     }
   },
