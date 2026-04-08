@@ -1,0 +1,228 @@
+{
+  // Commit message snippets following project convention:
+  //   <type>(<scope>): <gitmoji> <description>
+  //
+  //   Body (after blank line):
+  //   - what changed (one bullet per logical change)
+  //   - why it was changed (motivation, context)
+  //   - technical detail if non-obvious
+  //   - Resolves #<issue> if applicable
+  //
+  // Usage: in the git commit message editor, type the prefix and hit Tab
+  "feat: New feature": {
+    "scope": "git-commit",
+    "prefix": "feat",
+    "body": [
+      "feat(${1:scope}): ✨ ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}",
+      "",
+      "Resolves #${5:issue}"
+    ],
+    "description": "✨ Introduce a new feature"
+  },
+  "fix: Bug fix": {
+    "scope": "git-commit",
+    "prefix": "fix",
+    "body": [
+      "fix(${1:scope}): 🐛 ${2:description}",
+      "",
+      "- ${3:what was broken}",
+      "- ${4:root cause / why it happened}",
+      "",
+      "Resolves #${5:issue}"
+    ],
+    "description": "🐛 Fix a bug"
+  },
+  "fix: Minor / non-critical fix": {
+    "scope": "git-commit",
+    "prefix": "fixm",
+    "body": [
+      "fix(${1:scope}): 🩹 ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}"
+    ],
+    "description": "🩹 Simple fix for a non-critical issue"
+  },
+  "fix: Critical hotfix": {
+    "scope": "git-commit",
+    "prefix": "fixc",
+    "body": [
+      "fix(${1:scope}): 🚑️ ${2:description}",
+      "",
+      "- ${3:what was broken}",
+      "- ${4:root cause / impact}",
+      "",
+      "Resolves #${5:issue}"
+    ],
+    "description": "🚑️ Critical hotfix"
+  },
+  "docs: Documentation": {
+    "scope": "git-commit",
+    "prefix": "docs",
+    "body": [
+      "docs(${1:scope}): 📝 ${2:description}",
+      "",
+      "- ${3:what was added or updated}",
+      "- ${4:why / what was missing or unclear}"
+    ],
+    "description": "📝 Add or update documentation"
+  },
+  "style: Code structure / formatting": {
+    "scope": "git-commit",
+    "prefix": "style",
+    "body": [
+      "style(${1:scope}): 🎨 ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}"
+    ],
+    "description": "🎨 Improve structure or format of the code"
+  },
+  "style: UI / CSS styling": {
+    "scope": "git-commit",
+    "prefix": "styleui",
+    "body": [
+      "style(${1:scope}): 💄 ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}"
+    ],
+    "description": "💄 Add or update UI and style files"
+  },
+  "refactor: Code refactoring": {
+    "scope": "git-commit",
+    "prefix": "refactor",
+    "body": [
+      "refactor(${1:scope}): ♻️ ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}",
+      "- ${5:technical detail}"
+    ],
+    "description": "♻️ Refactor code without changing behaviour"
+  },
+  "test: Add or update tests": {
+    "scope": "git-commit",
+    "prefix": "test",
+    "body": [
+      "test(${1:scope}): ✅ ${2:description}",
+      "",
+      "- ${3:what was tested}",
+      "- ${4:why / what was missing}"
+    ],
+    "description": "✅ Add, update, or pass tests"
+  },
+  "test: Add a failing test": {
+    "scope": "git-commit",
+    "prefix": "testf",
+    "body": [
+      "test(${1:scope}): 🧪 ${2:description}",
+      "",
+      "- ${3:what the test covers}",
+      "- ${4:why it currently fails}"
+    ],
+    "description": "🧪 Add a failing test"
+  },
+  "perf: Performance improvement": {
+    "scope": "git-commit",
+    "prefix": "perf",
+    "body": [
+      "perf(${1:scope}): ⚡️ ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / what was slow}",
+      "- ${5:technical detail}"
+    ],
+    "description": "⚡️ Improve performance"
+  },
+  "chore: Configuration / tooling": {
+    "scope": "git-commit",
+    "prefix": "chore",
+    "body": [
+      "chore(${1:scope}): 🔧 ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}"
+    ],
+    "description": "🔧 Add or update configuration files"
+  },
+  "chore: Add or update types / labels": {
+    "scope": "git-commit",
+    "prefix": "choret",
+    "body": [
+      "chore(${1:scope}): 🏷️ ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}"
+    ],
+    "description": "🏷️ Add or update types or labels"
+  },
+  "chore: Release / version tag": {
+    "scope": "git-commit",
+    "prefix": "chorer",
+    "body": ["chore(${1:scope}): 🔖 ${2:description}"],
+    "description": "🔖 Release or version tag"
+  },
+  "chore: Upgrade dependency": {
+    "scope": "git-commit",
+    "prefix": "choreu",
+    "body": ["chore(deps): ⬆️ ${1:description}"],
+    "description": "⬆️ Upgrade dependencies"
+  },
+  "chore: Downgrade dependency": {
+    "scope": "git-commit",
+    "prefix": "chored",
+    "body": ["chore(deps): ⬇️ ${1:description}"],
+    "description": "⬇️ Downgrade dependencies"
+  },
+  "ci: CI build system": {
+    "scope": "git-commit",
+    "prefix": "ci",
+    "body": [
+      "ci(${1:scope}): 👷 ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}"
+    ],
+    "description": "👷 Add or update CI build system"
+  },
+  "ci: Fix CI build": {
+    "scope": "git-commit",
+    "prefix": "cifix",
+    "body": [
+      "ci(${1:scope}): 💚 ${2:description}",
+      "",
+      "- ${3:what was broken}",
+      "- ${4:root cause}"
+    ],
+    "description": "💚 Fix CI build"
+  },
+  "revert: Revert changes": {
+    "scope": "git-commit",
+    "prefix": "revert",
+    "body": [
+      "revert(${1:scope}): ⏪️ ${2:description}",
+      "",
+      "- ${3:what is being reverted}",
+      "- ${4:why / what went wrong}"
+    ],
+    "description": "⏪️ Revert changes"
+  },
+  "feat!: Breaking change": {
+    "scope": "git-commit",
+    "prefix": "break",
+    "body": [
+      "feat(${1:scope})!: 💥 ${2:description}",
+      "",
+      "- ${3:what changed}",
+      "- ${4:why / motivation}",
+      "- ${5:migration notes}",
+      "",
+      "Resolves #${6:issue}"
+    ],
+    "description": "💥 Introduce a breaking change"
+  }
+}
