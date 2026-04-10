@@ -1089,7 +1089,7 @@ class VistaPoolModbusClient:
                 client.write_registers,
                 self._unit,
                 address=address,
-                values=value if isinstance(value, list) else [value],
+                values=value,
             )
             if result.isError():
                 self._failed_writes[f"0x{address:04X}"] = (
