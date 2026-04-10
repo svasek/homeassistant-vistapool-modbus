@@ -84,11 +84,16 @@ async def async_setup(hass, config) -> bool:
         """Handle the set_timer service call."""
         try:
             timer_name = call.data["timer"]
-            if timer_name not in TIMER_BLOCKS:
-                raise ServiceValidationError(
-                    f"Invalid timer name '{timer_name}'. "
-                    f"Valid timers: {', '.join(sorted(TIMER_BLOCKS))}"
-                )
+        except KeyError:
+            raise ServiceValidationError("Missing required parameter 'timer'")
+
+        if timer_name not in TIMER_BLOCKS:
+            raise ServiceValidationError(
+                f"Invalid timer name '{timer_name}'. "
+                f"Valid timers: {', '.join(sorted(TIMER_BLOCKS))}"
+            )
+
+        try:
             start = call.data.get("start")
             stop = call.data.get("stop")
             enable = call.data.get("enable")
@@ -98,7 +103,9 @@ async def async_setup(hass, config) -> bool:
                 # fallback: if entry_id is not provided, use the first entry_id in hass.data[DOMAIN]
                 entry_id = next(iter(hass.data[DOMAIN]), None)
             if not entry_id:
-                raise ValueError("No entry_id found for VistaPool service call")
+                raise ServiceValidationError(
+                    "No entry_id found for VistaPool service call"
+                )
             coordinator = hass.data[DOMAIN][entry_id]
             # Convert start and stop times to seconds
             start_sec = hhmm_to_seconds(start) if start else None
@@ -121,11 +128,13 @@ async def async_setup(hass, config) -> bool:
             _LOGGER.debug("Setting timer %s with data: %s", timer_name, timer_data)
             await coordinator.client.write_timer(timer_name, timer_data)
             await coordinator.async_request_refresh()
+        except ServiceValidationError:
+            raise
         except Exception as e:
             _LOGGER.error(
                 "Failed to set timer %s: %s", call.data.get('timer', 'unknown'), e
             )
-            raise ServiceValidationError(f"Timer setting failed: {e}")
+            raise ServiceValidationError(f"Timer setting failed: {e}") from e
 
     hass.services.async_register(DOMAIN, "set_timer", async_handle_set_timer)
     return True

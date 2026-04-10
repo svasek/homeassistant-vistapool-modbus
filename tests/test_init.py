@@ -154,6 +154,22 @@ async def test_async_handle_set_timer_invalid_timer_name(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_async_handle_set_timer_missing_timer_key(monkeypatch):
+    """Test async_handle_set_timer raises ServiceValidationError when 'timer' key is missing."""
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"entry1": MagicMock()}}
+
+    call = MagicMock()
+    call.data = {"start": "08:00", "stop": "09:00", "entry_id": "entry1"}
+
+    await async_setup(hass, {})
+    service_func = hass.services.async_register.call_args[0][2]
+    with pytest.raises(ServiceValidationError, match="Missing required parameter"):
+        await service_func(call)
+
+
+@pytest.mark.asyncio
 async def test_async_setup_entry_success():
     """Test async_setup_entry completes successfully."""
     hass = MagicMock()
