@@ -171,8 +171,9 @@ class VistaPoolNumber(VistaPoolEntity, NumberEntity):
         ):  # pragma: no cover
             self._pending_write_task.cancel()
         self._pending_write_task = asyncio.create_task(self._debounced_write())
-        await asyncio.sleep(0.1)
-        await self.coordinator.async_request_refresh()
+        # Optimistic UI update: show the pending value immediately.
+        # The actual Modbus write and coordinator refresh happen after the
+        # debounce delay inside _debounced_write().
         self.async_write_ha_state()
 
     async def _debounced_write(self) -> None:
