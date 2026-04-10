@@ -72,7 +72,9 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
 
         _LOGGER.debug(
             "INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self._attr_suggested_object_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
 
     async def async_press(self) -> None:
@@ -114,7 +116,9 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
         """Run when the entity is added to hass."""
         _LOGGER.debug(
             "ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self.entity_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
         await super().async_added_to_hass()
 

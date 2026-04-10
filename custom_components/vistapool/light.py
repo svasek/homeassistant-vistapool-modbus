@@ -78,7 +78,9 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
         _LOGGER.debug(
             "INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self._attr_suggested_object_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
 
     async def async_turn_on(self, **kwargs) -> None:
@@ -95,7 +97,9 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         if self._switch_type == "relay_timer":
             _LOGGER.debug(
                 "Turning ON %s: function_addr=0x%04X, timer_block_addr=0x%04X",
-                self._key, self.function_addr, self.timer_block_addr,
+                self._key,
+                self.function_addr,
+                self.timer_block_addr,
             )
             await client.async_write_register(
                 self.function_addr, self.function_code
@@ -122,7 +126,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         if self._switch_type == "relay_timer":
             _LOGGER.debug(
                 "Turning OFF %s: timer_block_addr=0x%04X",
-                self._key, self.timer_block_addr,
+                self._key,
+                self.timer_block_addr,
             )
             await client.async_write_register(self.timer_block_addr, 4)  # Always OFF
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
@@ -136,7 +141,9 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         """Run when the entity is added to hass."""
         _LOGGER.debug(
             "ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self.entity_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
         await super().async_added_to_hass()
 

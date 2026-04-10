@@ -51,9 +51,7 @@ class VistaPoolEntity(CoordinatorEntity):
     def device_info(self) -> dict:  # pragma: no cover
         """Return device information for the entity."""
         data = self.coordinator.data or {}
-        serial_number = modbus_regs_to_hex_string(
-            data.get("MBF_POWER_MODULE_NODEID")
-        )
+        serial_number = modbus_regs_to_hex_string(data.get("MBF_POWER_MODULE_NODEID"))
         machine_type = (get_machine_name(data) or "").strip()
         model_prefix = "NeoPool Compatible: " if machine_type else "NeoPool Compatible"
 

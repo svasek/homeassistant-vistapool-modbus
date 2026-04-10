@@ -157,7 +157,10 @@ class VistaPoolModbusClient:
                 # Attempt connection with timeout
                 _LOGGER.debug(
                     "Attempting Modbus connection to %s:%s (attempt %d/%d)",
-                    self._host, self._port, attempt + 1, self._max_connection_retries,
+                    self._host,
+                    self._port,
+                    attempt + 1,
+                    self._max_connection_retries,
                 )
 
                 connected = await asyncio.wait_for(self._client.connect(), timeout=10)
@@ -175,7 +178,8 @@ class VistaPoolModbusClient:
 
                 _LOGGER.info(
                     "Modbus connection established successfully to %s:%s",
-                    self._host, self._port,
+                    self._host,
+                    self._port,
                 )
                 return self._client
 
@@ -188,7 +192,9 @@ class VistaPoolModbusClient:
 
                 _LOGGER.warning(
                     "Connection attempt %d/%d failed: %s",
-                    attempt + 1, self._max_connection_retries, e,
+                    attempt + 1,
+                    self._max_connection_retries,
+                    e,
                 )
 
                 # If not the last attempt, wait before retrying
@@ -393,7 +399,9 @@ class VistaPoolModbusClient:
                 last_error = e
                 self._consecutive_errors += 1
 
-                _LOGGER.warning("Read attempt %d/%d failed: %s", attempt + 1, max_retries, e)
+                _LOGGER.warning(
+                    "Read attempt %d/%d failed: %s", attempt + 1, max_retries, e
+                )
 
                 # Force reconnection on error
                 async with self._client_lock:
@@ -479,7 +487,9 @@ class VistaPoolModbusClient:
                 if len(reg01) < count:  # pragma: no cover
                     _LOGGER.warning(
                         "Expected at least %d registers from 0x%04X, got %d",
-                        count, address, len(reg01),
+                        count,
+                        address,
+                        len(reg01),
                     )
 
             # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
@@ -590,7 +600,9 @@ class VistaPoolModbusClient:
                     if len(reg00) < count:  # pragma: no cover
                         _LOGGER.warning(
                             "Expected at least %d registers from 0x%04X, got %d",
-                            count, address, len(reg00),
+                            count,
+                            address,
+                            len(reg00),
                         )
 
                 # Example: [1, 3, 1280, 32768, 88, 47, 16707, 20497, 8248, 12592, 0, 0, 0, 22069, 0]
@@ -655,7 +667,9 @@ class VistaPoolModbusClient:
                     if len(reg02) < count:  # pragma: no cover
                         _LOGGER.warning(
                             "Expected at least %d registers from 0x%04X, got %d",
-                            count, address, len(reg02),
+                            count,
+                            address,
+                            len(reg02),
                         )
 
                 # Example: [23971, 8, 23971, 8, 26922, 0, 34208, 0, 0, 65426, 0, 0, 0, 0, 64136, 3, 25371, 4, 16, 0]
@@ -726,7 +740,9 @@ class VistaPoolModbusClient:
                     if len(reg03) < count:  # pragma: no cover
                         _LOGGER.warning(
                             "Expected at least %d registers from 0x%04X, got %d",
-                            count, address, len(reg03),
+                            count,
+                            address,
+                            len(reg03),
                         )
 
                 # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297, 125, 2, 100, 100]
@@ -806,7 +822,9 @@ class VistaPoolModbusClient:
                     if len(reg04) < count:  # pragma: no cover
                         _LOGGER.warning(
                             "Expected at least %d registers from 0x%04X, got %d",
-                            count, address, len(reg04),
+                            count,
+                            address,
+                            len(reg04),
                         )
 
                 # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -916,7 +934,9 @@ class VistaPoolModbusClient:
                     if len(reg05) < count:  # pragma: no cover
                         _LOGGER.warning(
                             "Expected at least %d registers from 0x%04X, got %d",
-                            count, address, len(reg05),
+                            count,
+                            address,
+                            len(reg05),
                         )
 
                 # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
@@ -978,7 +998,9 @@ class VistaPoolModbusClient:
                     if len(reg06) < count:  # pragma: no cover
                         _LOGGER.warning(
                             "Expected at least %d registers from 0x%04X, got %d",
-                            count, address, len(reg06),
+                            count,
+                            address,
+                            len(reg06),
                         )
 
                 # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1350,7 +1372,9 @@ class VistaPoolModbusClient:
                 if not isinstance(reg, int):  # pragma: no cover
                     _LOGGER.error("Register %d is not int: %r", idx, reg)
 
-            _LOGGER.debug("Timer block %s (0x%04X) to write: %s", block_name, addr, regs)
+            _LOGGER.debug(
+                "Timer block %s (0x%04X) to write: %s", block_name, addr, regs
+            )
 
             # 4. Write full block back to Modbus
             if client is None or not client.connected:  # pragma: no cover

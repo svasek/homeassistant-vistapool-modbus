@@ -109,7 +109,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
 
         _LOGGER.debug(
             "INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self._attr_suggested_object_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
 
     async def async_turn_on(self, **kwargs) -> None:
@@ -129,7 +131,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         if self._switch_type == "manual_filtration":
             await client.async_write_register(MANUAL_FILTRATION_REGISTER, 1)
         elif self._switch_type == "aux":
-            _LOGGER.debug("Turning ON %s (relay index %s)", self._key, self._relay_index)
+            _LOGGER.debug(
+                "Turning ON %s (relay index %s)", self._key, self._relay_index
+            )
             await client.async_write_aux_relay(self._relay_index, True)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(True)
@@ -138,7 +142,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         elif self._switch_type == "relay_timer":
             _LOGGER.debug(
                 "Turning ON relay %s: function_addr=0x%04X, timer_block_addr=0x%04X",
-                self._key, self.function_addr, self.timer_block_addr,
+                self._key,
+                self.function_addr,
+                self.timer_block_addr,
             )
             await client.async_write_register(
                 self.function_addr, self.function_code
@@ -160,7 +166,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             new_value = current | self._mask_bit
             _LOGGER.debug(
                 "Bitmask ON %s: reg=0x%04X mask=0x%04X current=%s new=%s",
-                self._key, self.function_addr, self._mask_bit, current, new_value,
+                self._key,
+                self.function_addr,
+                self._mask_bit,
+                current,
+                new_value,
             )
             await client.async_write_register(self.function_addr, new_value, apply=True)
 
@@ -187,7 +197,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         if self._switch_type == "manual_filtration":
             await client.async_write_register(MANUAL_FILTRATION_REGISTER, 0)
         elif self._switch_type == "aux":
-            _LOGGER.debug("Turning OFF %s (relay index %s)", self._key, self._relay_index)
+            _LOGGER.debug(
+                "Turning OFF %s (relay index %s)", self._key, self._relay_index
+            )
             await client.async_write_aux_relay(self._relay_index, False)
         elif self._switch_type == "auto_time_sync":
             await self.coordinator.set_auto_time_sync(False)
@@ -196,7 +208,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         elif self._switch_type == "relay_timer":
             _LOGGER.debug(
                 "Turning OFF relay %s: timer_block_addr=0x%04X",
-                self._key, self.timer_block_addr,
+                self._key,
+                self.timer_block_addr,
             )
             await client.async_write_register(self.timer_block_addr, 4)  # Always off
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
@@ -215,7 +228,11 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             new_value = current & ~self._mask_bit
             _LOGGER.debug(
                 "Bitmask OFF %s: reg=0x%04X mask=0x%04X current=%s new=%s",
-                self._key, self.function_addr, self._mask_bit, current, new_value,
+                self._key,
+                self.function_addr,
+                self._mask_bit,
+                current,
+                new_value,
             )
             await client.async_write_register(self.function_addr, new_value, apply=True)
 
@@ -229,7 +246,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         """Handle entity which will be added to hass."""
         _LOGGER.debug(
             "ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self.entity_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
         await super().async_added_to_hass()
 

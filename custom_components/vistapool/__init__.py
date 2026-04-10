@@ -133,7 +133,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
             raise
         except Exception as e:
             _LOGGER.error(
-                "Failed to set timer %s: %s", call.data.get('timer', 'unknown'), e
+                "Failed to set timer %s: %s", call.data.get("timer", "unknown"), e
             )
             raise ServiceValidationError(f"Timer setting failed: {e}") from e
 

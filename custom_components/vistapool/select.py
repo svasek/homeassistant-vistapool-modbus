@@ -117,7 +117,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
         _LOGGER.debug(
             "INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
-            self._attr_suggested_object_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self._attr_suggested_object_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
 
     async def async_select_option(self, option: str) -> None:
@@ -279,7 +281,10 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             new_val = (current & ~self._attr_mask) | (value << self._attr_shift)
             _LOGGER.debug(
                 "Setting new filtration speed: current=0x%04X, new_val=0x%04X, mask=0x%04X, shift=%s",
-                current, new_val, self._attr_mask, self._attr_shift,
+                current,
+                new_val,
+                self._attr_mask,
+                self._attr_shift,
             )
             await client.async_write_register(self._register, new_val, apply=True)
             await asyncio.sleep(0.2)
@@ -341,7 +346,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         """Run when the entity is added to hass."""
         _LOGGER.debug(
             "ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
-            self.entity_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
+            self.entity_id,
+            self._attr_translation_key,
+            getattr(self, "has_entity_name", None),
         )
         await super().async_added_to_hass()
 
