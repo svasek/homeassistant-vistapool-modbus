@@ -170,11 +170,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             return
         if self._select_type == "timer_time":
             timer_name, field = self._key.rsplit("_", 1)
-            entry_id = (
-                self._entry_id
-                if hasattr(self, "_entry_id")
-                else self.coordinator.entry_id
-            )
+            entry_id = self._entry_id
             data = self.coordinator.data
             if field == "start":
                 start = option
@@ -200,11 +196,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
         if self._select_type == "timer_period":
             timer_name = self._key.rsplit("_", 1)[0]  # for example, "relay_aux1"
-            entry_id = (
-                self._entry_id
-                if hasattr(self, "_entry_id")
-                else self.coordinator.entry_id
-            )
+            entry_id = self._entry_id
 
             period_value = PERIOD_MAP.get(option)
             if period_value is None:
@@ -233,11 +225,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             value = reverse_map.get(option)
             if value is None:  # pragma: no cover
                 return
-            entry_id = (
-                self._entry_id
-                if hasattr(self, "_entry_id")
-                else self.coordinator.entry_id
-            )
+            entry_id = self._entry_id
             await self.hass.services.async_call(
                 DOMAIN,
                 "set_timer",
