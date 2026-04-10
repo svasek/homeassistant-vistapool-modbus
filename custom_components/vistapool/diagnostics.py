@@ -29,11 +29,12 @@ async def async_get_config_entry_diagnostics(
     diagnostics: dict = {}
 
     # Basic config and options (without any sensitive data)
+    SENSITIVE_KEYS = {"password", "token", "host", "port"}
     diagnostics["config_entry"] = {
         "data": {
             k: v
             for k, v in entry.data.items()
-            if "password" not in k and "token" not in k
+            if not any(s in k for s in SENSITIVE_KEYS)
         },
         "options": dict(entry.options),
         "title": entry.title,

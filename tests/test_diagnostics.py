@@ -59,10 +59,12 @@ async def test_async_get_config_entry_diagnostics_filters_sensitive_data():
     hass.data = {"vistapool": {"entry1": coordinator}}
 
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
-    # Ensure password and apitoken are filtered out from the result
+    # Ensure password, apitoken, host, and port are filtered out from the result
     data_keys = diagnostics["config_entry"]["data"].keys()
     assert "password" not in data_keys
     assert "apitoken" not in data_keys
+    assert "host" not in data_keys
+    assert "port" not in data_keys
     assert "user" in data_keys
 
     # Ensure all sections are present and have correct values
