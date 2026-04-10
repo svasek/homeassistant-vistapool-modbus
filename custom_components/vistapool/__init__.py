@@ -20,7 +20,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
 from homeassistant.exceptions import ServiceValidationError
-from .const import DOMAIN, PLATFORMS
+from .const import DOMAIN, PLATFORMS, TIMER_BLOCKS
 from .modbus import VistaPoolModbusClient
 from .coordinator import VistaPoolCoordinator
 
@@ -84,6 +84,11 @@ async def async_setup(hass, config) -> bool:
         """Handle the set_timer service call."""
         try:
             timer_name = call.data["timer"]
+            if timer_name not in TIMER_BLOCKS:
+                raise ServiceValidationError(
+                    f"Invalid timer name '{timer_name}'. "
+                    f"Valid timers: {', '.join(sorted(TIMER_BLOCKS))}"
+                )
             start = call.data.get("start")
             stop = call.data.get("stop")
             enable = call.data.get("enable")

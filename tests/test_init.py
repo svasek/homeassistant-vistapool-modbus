@@ -133,6 +133,27 @@ async def test_async_handle_set_timer_write_timer_exception(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_async_handle_set_timer_invalid_timer_name(monkeypatch):
+    """Test async_handle_set_timer rejects invalid timer names."""
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"entry1": MagicMock()}}
+
+    call = MagicMock()
+    call.data = {
+        "timer": "nonexistent_timer",
+        "start": "08:00",
+        "stop": "09:00",
+        "entry_id": "entry1",
+    }
+
+    await async_setup(hass, {})
+    service_func = hass.services.async_register.call_args[0][2]
+    with pytest.raises(ServiceValidationError, match="Invalid timer name"):
+        await service_func(call)
+
+
+@pytest.mark.asyncio
 async def test_async_setup_entry_success():
     """Test async_setup_entry completes successfully."""
     hass = MagicMock()
