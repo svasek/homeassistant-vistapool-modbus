@@ -83,7 +83,8 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
             # Reset interval after success
             if self.update_interval != self.normal_update_interval:  # pragma: no cover
                 _LOGGER.info(
-                    f"Communication OK, resetting update interval to {self.normal_update_interval.total_seconds()} seconds."
+                    "Communication OK, resetting update interval to %s seconds.",
+                    self.normal_update_interval.total_seconds(),
                 )
                 self.update_interval = self.normal_update_interval
 
@@ -219,7 +220,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                             data["MBF_PAR_INTELLIGENT_TEMP"],
                         )
             except Exception as sync_err:  # pragma: no cover
-                _LOGGER.debug(f"Setpoint auto-sync skipped due to error: {sync_err}")
+                _LOGGER.debug("Setpoint auto-sync skipped due to error: %s", sync_err)
             # Keep capability snapshot up-to-date after every successful read and
             # persist it to options so it survives HA restarts while Modbus is down.
             new_snapshot = {k: data[k] for k in CAPABILITY_KEYS if k in data}
@@ -232,7 +233,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
 
         except Exception as err:
             self._consecutive_errors += 1
-            _LOGGER.error(f"Modbus communication error: {err}")
+            _LOGGER.error("Modbus communication error: %s", err)
 
             # Exponential backoff: double the interval, but never more than max
             next_interval = self.update_interval * 2
@@ -240,7 +241,8 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 next_interval = self.max_update_interval
             if self.update_interval != next_interval:
                 _LOGGER.warning(
-                    f"Increasing update interval to {int(next_interval.total_seconds())} seconds due to communication errors."
+                    "Increasing update interval to %s seconds due to communication errors.",
+                    int(next_interval.total_seconds()),
                 )
                 self.update_interval = next_interval
 

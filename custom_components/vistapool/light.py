@@ -77,7 +77,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
         self.function_code = props.get("function_code") or None
 
         _LOGGER.debug(
-            f"INIT: suggested_object_id={self._attr_suggested_object_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
+            "INIT: suggested_object_id=%s, translation_key=%s, has_entity_name=%s",
+            self._attr_suggested_object_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
         )
 
     async def async_turn_on(self, **kwargs) -> None:
@@ -93,7 +94,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
             return
         if self._switch_type == "relay_timer":
             _LOGGER.debug(
-                f"Turning ON {self._key}: function_addr=0x{self.function_addr:04X}, timer_block_addr=0x{self.timer_block_addr:04X}"
+                "Turning ON %s: function_addr=0x%04X, timer_block_addr=0x%04X",
+                self._key, self.function_addr, self.timer_block_addr,
             )
             await client.async_write_register(
                 self.function_addr, self.function_code
@@ -119,7 +121,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
             return
         if self._switch_type == "relay_timer":
             _LOGGER.debug(
-                f"Turning OFF {self._key}: timer_block_addr=0x{self.timer_block_addr:04X}"
+                "Turning OFF %s: timer_block_addr=0x%04X",
+                self._key, self.timer_block_addr,
             )
             await client.async_write_register(self.timer_block_addr, 4)  # Always OFF
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
@@ -132,7 +135,8 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
         _LOGGER.debug(
-            f"ADDED: entity_id={self.entity_id}, translation_key={self._attr_translation_key}, has_entity_name={getattr(self, 'has_entity_name', None)}"
+            "ADDED: entity_id=%s, translation_key=%s, has_entity_name=%s",
+            self.entity_id, self._attr_translation_key, getattr(self, 'has_entity_name', None),
         )
         await super().async_added_to_hass()
 

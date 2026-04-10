@@ -156,7 +156,8 @@ class VistaPoolModbusClient:
 
                 # Attempt connection with timeout
                 _LOGGER.debug(
-                    f"Attempting Modbus connection to {self._host}:{self._port} (attempt {attempt + 1}/{self._max_connection_retries})"
+                    "Attempting Modbus connection to %s:%s (attempt %d/%d)",
+                    self._host, self._port, attempt + 1, self._max_connection_retries,
                 )
 
                 connected = await asyncio.wait_for(self._client.connect(), timeout=10)
@@ -173,7 +174,8 @@ class VistaPoolModbusClient:
                 self._install_fc20_filter(self._client)
 
                 _LOGGER.info(
-                    f"Modbus connection established successfully to {self._host}:{self._port}"
+                    "Modbus connection established successfully to %s:%s",
+                    self._host, self._port,
                 )
                 return self._client
 
@@ -185,12 +187,13 @@ class VistaPoolModbusClient:
                 delay = min(self._base_delay * (2**attempt), self._max_delay)
 
                 _LOGGER.warning(
-                    f"Connection attempt {attempt + 1}/{self._max_connection_retries} failed: {e}"
+                    "Connection attempt %d/%d failed: %s",
+                    attempt + 1, self._max_connection_retries, e,
                 )
 
                 # If not the last attempt, wait before retrying
                 if attempt < self._max_connection_retries - 1:
-                    _LOGGER.debug(f"Waiting {delay:.1f} seconds before retry...")
+                    _LOGGER.debug("Waiting %.1f seconds before retry...", delay)
                     await asyncio.sleep(delay)
                     continue
 
@@ -198,7 +201,8 @@ class VistaPoolModbusClient:
         self._backoff_until = datetime.now() + timedelta(minutes=2)
 
         _LOGGER.error(
-            f"All {self._max_connection_retries} connection attempts failed. Setting 2-minute backoff period."
+            "All %d connection attempts failed. Setting 2-minute backoff period.",
+            self._max_connection_retries,
         )
         raise ConnectionException(
             f"Failed to establish connection after {self._max_connection_retries} attempts: {last_error}"
@@ -337,7 +341,7 @@ class VistaPoolModbusClient:
             return is_healthy
 
         except Exception as e:  # pragma: no cover
-            _LOGGER.debug(f"Connection health check failed: {e}")
+            _LOGGER.debug("Connection health check failed: %s", e)
             return False
 
     async def _safe_close_client(self):
@@ -351,7 +355,7 @@ class VistaPoolModbusClient:
                         await asyncio.wait_for(result, timeout=5)
                 _LOGGER.debug("Modbus client closed successfully")
             except Exception as e:  # pragma: no cover
-                _LOGGER.debug(f"Error closing Modbus client: {e}")
+                _LOGGER.debug("Error closing Modbus client: %s", e)
             finally:
                 self._client = None
 
@@ -389,7 +393,7 @@ class VistaPoolModbusClient:
                 last_error = e
                 self._consecutive_errors += 1
 
-                _LOGGER.warning(f"Read attempt {attempt + 1}/{max_retries} failed: {e}")
+                _LOGGER.warning("Read attempt %d/%d failed: %s", attempt + 1, max_retries, e)
 
                 # Force reconnection on error
                 async with self._client_lock:
@@ -402,7 +406,7 @@ class VistaPoolModbusClient:
                     continue
 
         # All retries failed
-        _LOGGER.error(f"All read attempts failed: {last_error}")
+        _LOGGER.error("All read attempts failed: %s", last_error)
         raise last_error
 
     async def _perform_read_all(self) -> dict:
@@ -415,7 +419,7 @@ class VistaPoolModbusClient:
             try:
                 val = regs[idx]
             except IndexError:  # pragma: no cover
-                _LOGGER.warning(f"Register at index {idx} is missing in {regs}")
+                _LOGGER.warning("Register at index %d is missing in %s", idx, regs)
                 return None
             if val is None:
                 return None  # pragma: no cover
@@ -470,11 +474,12 @@ class VistaPoolModbusClient:
                     )
                 self._successful_addresses.append((f"0x{address:04X}", time.time()))
                 reg01.extend(rr01.registers)
-                _LOGGER.debug(f"Raw rr01 from 0x{address:04X}: {rr01.registers}")
+                _LOGGER.debug("Raw rr01 from 0x%04X: %s", address, rr01.registers)
 
                 if len(reg01) < count:  # pragma: no cover
                     _LOGGER.warning(
-                        f"Expected at least {count} registers from 0x{address:04X}, got {len(reg01)}"
+                        "Expected at least %d registers from 0x%04X, got %d",
+                        count, address, len(reg01),
                     )
 
             # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
@@ -580,11 +585,12 @@ class VistaPoolModbusClient:
                         )
                     self._successful_addresses.append((f"0x{address:04X}", time.time()))
                     reg00.extend(rr00.registers)
-                    _LOGGER.debug(f"Raw rr00 from 0x{address:04X}: {rr00.registers}")
+                    _LOGGER.debug("Raw rr00 from 0x%04X: %s", address, rr00.registers)
 
                     if len(reg00) < count:  # pragma: no cover
                         _LOGGER.warning(
-                            f"Expected at least {count} registers from 0x{address:04X}, got {len(reg00)}"
+                            "Expected at least %d registers from 0x%04X, got %d",
+                            count, address, len(reg00),
                         )
 
                 # Example: [1, 3, 1280, 32768, 88, 47, 16707, 20497, 8248, 12592, 0, 0, 0, 22069, 0]
@@ -644,11 +650,12 @@ class VistaPoolModbusClient:
                         )
                     self._successful_addresses.append((f"0x{address:04X}", time.time()))
                     reg02.extend(rr02.registers)
-                    _LOGGER.debug(f"Raw rr02 from 0x{address:04X}: {rr02.registers}")
+                    _LOGGER.debug("Raw rr02 from 0x%04X: %s", address, rr02.registers)
 
                     if len(reg02) < count:  # pragma: no cover
                         _LOGGER.warning(
-                            f"Expected at least {count} registers from 0x{address:04X}, got {len(reg02)}"
+                            "Expected at least %d registers from 0x%04X, got %d",
+                            count, address, len(reg02),
                         )
 
                 # Example: [23971, 8, 23971, 8, 26922, 0, 34208, 0, 0, 65426, 0, 0, 0, 0, 64136, 3, 25371, 4, 16, 0]
@@ -714,11 +721,12 @@ class VistaPoolModbusClient:
                         )
                     reg03.extend(rr03.registers)
                     self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    _LOGGER.debug(f"Raw rr03 from 0x{address:04X}: {rr03.registers}")
+                    _LOGGER.debug("Raw rr03 from 0x%04X: %s", address, rr03.registers)
 
                     if len(reg03) < count:  # pragma: no cover
                         _LOGGER.warning(
-                            f"Expected at least {count} registers from 0x{address:04X}, got {len(reg03)}"
+                            "Expected at least %d registers from 0x%04X, got %d",
+                            count, address, len(reg03),
                         )
 
                 # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297, 125, 2, 100, 100]
@@ -793,11 +801,12 @@ class VistaPoolModbusClient:
                         )
                     reg04.extend(rr04.registers)
                     self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    _LOGGER.debug(f"Raw rr04 from 0x{address:04X}: {rr04.registers}")
+                    _LOGGER.debug("Raw rr04 from 0x%04X: %s", address, rr04.registers)
 
                     if len(reg04) < count:  # pragma: no cover
                         _LOGGER.warning(
-                            f"Expected at least {count} registers from 0x{address:04X}, got {len(reg04)}"
+                            "Expected at least %d registers from 0x%04X, got %d",
+                            count, address, len(reg04),
                         )
 
                 # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -902,11 +911,12 @@ class VistaPoolModbusClient:
                         )
                     self._successful_addresses.append((f"0x{address:04X}", time.time()))
                     reg05.extend(rr05.registers)
-                    _LOGGER.debug(f"Raw rr05 from 0x{address:04X}: {rr05.registers}")
+                    _LOGGER.debug("Raw rr05 from 0x%04X: %s", address, rr05.registers)
 
                     if len(reg05) < count:  # pragma: no cover
                         _LOGGER.warning(
-                            f"Expected at least {count} registers from 0x{address:04X}, got {len(reg05)}"
+                            "Expected at least %d registers from 0x%04X, got %d",
+                            count, address, len(reg05),
                         )
 
                 # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
@@ -963,11 +973,12 @@ class VistaPoolModbusClient:
                         )
                     self._successful_addresses.append((f"0x{address:04X}", time.time()))
                     reg06.extend(rr06.registers)
-                    _LOGGER.debug(f"Raw rr06 from 0x{address:04X}: {rr06.registers}")
+                    _LOGGER.debug("Raw rr06 from 0x%04X: %s", address, rr06.registers)
 
                     if len(reg06) < count:  # pragma: no cover
                         _LOGGER.warning(
-                            f"Expected at least {count} registers from 0x{address:04X}, got {len(reg06)}"
+                            "Expected at least %d registers from 0x%04X, got %d",
+                            count, address, len(reg06),
                         )
 
                 # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1084,9 +1095,9 @@ class VistaPoolModbusClient:
                 self._failed_writes[f"0x{address:04X}"] = (
                     self._failed_writes.get(f"0x{address:04X}", 0) + 1
                 )
-                _LOGGER.error(f"Write failed at 0x{address:04X}: {result}")
+                _LOGGER.error("Write failed at 0x%04X: %s", address, result)
                 return None
-            _LOGGER.debug(f"Wrote register(s) at 0x{address:04X}: {value}")
+            _LOGGER.debug("Wrote register(s) at 0x%04X: %s", address, value)
 
             # Confirm the write
             await asyncio.sleep(0.05)
@@ -1098,7 +1109,7 @@ class VistaPoolModbusClient:
                 count=len(value),
             )
             if confirm.isError():
-                _LOGGER.error(f"Read failed at 0x{address:04X}: {confirm}")
+                _LOGGER.error("Read failed at 0x%04X: %s", address, confirm)
                 return None
 
             # If apply is True, save the configuration to EEPROM and execute
@@ -1109,7 +1120,7 @@ class VistaPoolModbusClient:
                 )
 
                 if result.isError():  # pragma: no cover
-                    _LOGGER.error(f"EEPROM save failed (0x02F0): {result}")
+                    _LOGGER.error("EEPROM save failed (0x02F0): %s", result)
                     return None
                 _LOGGER.debug("EEPROM save triggered (0x02F0)")
 
@@ -1118,7 +1129,7 @@ class VistaPoolModbusClient:
                     client.write_registers, self._unit, address=0x02F5, values=[1]
                 )
                 if result.isError():  # pragma: no cover
-                    _LOGGER.error(f"EXEC failed (0x02F5): {result}")
+                    _LOGGER.error("EXEC failed (0x02F5): %s", result)
                     return None
                 _LOGGER.debug("Config EXEC triggered (0x02F5)")
                 await asyncio.sleep(0.1)
@@ -1150,7 +1161,7 @@ class VistaPoolModbusClient:
     async def async_write_aux_relay(self, relay_index, on) -> dict | None:
         """Write state of an AUX relay (1-4) using function 0x10 (Write Multiple Registers)."""
         if relay_index not in AUX_BITMASKS:  # pragma: no cover
-            _LOGGER.error(f"Invalid AUX relay index: {relay_index} (expected 1–4)")
+            _LOGGER.error("Invalid AUX relay index: %s (expected 1–4)", relay_index)
             return None
         aux_bit = AUX_BITMASKS[relay_index]
         addr = 0x010E
@@ -1185,7 +1196,7 @@ class VistaPoolModbusClient:
             await modbus_acall(
                 client.write_registers, self._unit, address=addr, values=[value]
             )
-            _LOGGER.debug(f"Wrote relay state at 0x{addr:04X}: 0x{value:04X}")
+            _LOGGER.debug("Wrote relay state at 0x%04X: 0x%04X", addr, value)
             await modbus_acall(
                 client.write_registers, self._unit, address=0x0289, values=[0]
             )
@@ -1263,15 +1274,15 @@ class VistaPoolModbusClient:
                 self._failed_reads[f"0x{addr:04X}"] = (
                     self._failed_reads.get(f"0x{addr:04X}", 0) + 1
                 )
-                _LOGGER.error(f"Timer block read error at {addr:#04x}: {e}")
+                _LOGGER.error("Timer block read error at 0x%04X: %s", addr, e)
                 continue
             if rr.isError():
                 self._failed_reads[f"0x{addr:04X}"] = (
                     self._failed_reads.get(f"0x{addr:04X}", 0) + 1
                 )
-                _LOGGER.error(f"Modbus read error from 0x{addr:04X}: {rr}")
+                _LOGGER.error("Modbus read error from 0x%04X: %s", addr, rr)
                 continue
-            _LOGGER.debug(f"Raw rr-{name} from 0x{addr:04X}: {rr.registers}")
+            _LOGGER.debug("Raw rr-%s from 0x%04X: %s", name, addr, rr.registers)
             self._successful_addresses.append((f"0x{addr:04X}", time.time()))
             timers[name] = parse_timer_block(rr.registers)
             await asyncio.sleep(0.05)
@@ -1323,7 +1334,7 @@ class VistaPoolModbusClient:
                     self._failed_writes.get(f"0x{addr:04X}", 0) + 1
                 )
                 _LOGGER.error(
-                    f"Could not read timer block at 0x{addr:04X} before write: {rr}"
+                    "Could not read timer block at 0x%04X before write: %s", addr, rr
                 )
                 return False
             current_regs = rr.registers
@@ -1337,9 +1348,9 @@ class VistaPoolModbusClient:
             regs = build_timer_block(current_data)
             for idx, reg in enumerate(regs):
                 if not isinstance(reg, int):  # pragma: no cover
-                    _LOGGER.error(f"Register {idx} is not int: {reg!r}")
+                    _LOGGER.error("Register %d is not int: %r", idx, reg)
 
-            _LOGGER.debug(f"Timer block {block_name} (0x{addr:04X}) to write: {regs}")
+            _LOGGER.debug("Timer block %s (0x%04X) to write: %s", block_name, addr, regs)
 
             # 4. Write full block back to Modbus
             if client is None or not client.connected:  # pragma: no cover
@@ -1354,10 +1365,10 @@ class VistaPoolModbusClient:
                 self._failed_writes[f"0x{addr:04X}"] = (
                     self._failed_writes.get(f"0x{addr:04X}", 0) + 1
                 )
-                _LOGGER.error(f"Timer block write error at 0x{addr:04X}: {result}")
+                _LOGGER.error("Timer block write error at 0x%04X: %s", addr, result)
                 return False
 
-            _LOGGER.debug(f"Wrote timer block {block_name} (0x{addr:04X}): {regs}")
+            _LOGGER.debug("Wrote timer block %s (0x%04X): %s", block_name, addr, regs)
             await asyncio.sleep(0.1)
             # Write to EEPROM and execute
             await modbus_acall(
@@ -1376,7 +1387,7 @@ class VistaPoolModbusClient:
             self._failed_writes[f"0x{addr:04X}"] = (
                 self._failed_writes.get(f"0x{addr:04X}", 0) + 1
             )
-            _LOGGER.error(f"Modbus TCP write timer exception at 0x{addr:04X}: {e}")
+            _LOGGER.error("Modbus TCP write timer exception at 0x%04X: %s", addr, e)
             raise
         finally:
             end = time.monotonic()
