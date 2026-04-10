@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.20.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.20.0...v1.20.1) (2026-04-10)
+
+
+### Bug Fixes
+
+* 🔒️ validate timer name in set_timer service handler ([c328d55](https://github.com/svasek/homeassistant-vistapool-modbus/commit/c328d555643984aec6c59d572f96f30784043de1))
+* **diagnostics:** 🔒️ redact host and port from diagnostic data ([11037e8](https://github.com/svasek/homeassistant-vistapool-modbus/commit/11037e89919915e42ee52361ce800908db3ee2f0))
+* **entity:** 🛡️ guard against None coordinator data in device_info ([36521fa](https://github.com/svasek/homeassistant-vistapool-modbus/commit/36521fa344e6d34ce3831b49e795cff36b6658b8))
+* **number:** 🐛 remove premature refresh before debounced write completes ([0382c59](https://github.com/svasek/homeassistant-vistapool-modbus/commit/0382c592e0023c163e8085ff592b803ea77cd457))
+
+
+### Performance Improvements
+
+* ⚡️ replace f-string logging with lazy % formatting ([5194ca2](https://github.com/svasek/homeassistant-vistapool-modbus/commit/5194ca2aedb32e57b7885e647c285897b57752dc))
+
 ## [1.20.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.19.0...v1.20.0) (2026-04-06)
 
 
