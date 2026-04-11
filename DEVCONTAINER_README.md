@@ -20,14 +20,14 @@
 ## Development workflow
 
 - **Workspace**: Your code is available at `/workspace` inside the container
-- **Code formatting**: Black formatter runs automatically on save
+- **Code formatting**: Ruff formatter runs automatically on save
 - **Type checking**: Pylance with Home Assistant libraries configured
 - **Testing**: Run `pytest tests/` with coverage reporting
 
 ## Useful commands
 
 - **Tests with coverage**: `pytest tests/ --cov=custom_components/vistapool --cov-report=term-missing -q`
-- **Linting**: Use Black formatter (auto-formats on save) or `ruff check .` if available
+- **Linting**: Use Ruff (auto-formats and lints on save) or `ruff check .` / `ruff format .` from CLI
 - **Home Assistant logs**: Check VS Code terminal or HA web interface
 - **Restart HA**: Restart the devcontainer when making structural changes
 

@@ -3,5 +3,9 @@
     {
       "file": ".github/copilot-commit-instructions.md"
     }
-  ]
+  ],
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+  "editor.formatOnSave": true
 }

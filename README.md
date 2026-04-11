@@ -8,7 +8,7 @@
 [![Hassfest](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hassfest.yml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hassfest.yml)
 [![HACS](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hacs.yaml/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/hacs.yaml)
 [![CodeQL](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/svasek/homeassistant-vistapool-modbus/actions/workflows/github-code-scanning/codeql)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![codecov](https://codecov.io/github/svasek/homeassistant-vistapool-modbus/graph/badge.svg?token=44MRDJIHJ9)](https://app.codecov.io/github/svasek/homeassistant-vistapool-modbus?displayType=list)
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/svasek/homeassistant-vistapool-modbus/2-getting-started)
