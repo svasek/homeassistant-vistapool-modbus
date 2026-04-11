@@ -1,6 +1,6 @@
 [tool.ruff]
 line-length = 88
-exclude = ["LICENSE"]
+exclude = ["LICENSE", ".github/CODEOWNERS"]
 
 [tool.ruff.format]
 quote-style = "double"
