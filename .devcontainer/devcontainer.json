@@ -58,7 +58,7 @@
         "editorconfig.editorconfig"
       ],
       "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash",
+        "terminal.integrated.defaultProfile.linux": "bash",
 
         // Let Pylance resolve imports
         "python.analysis.extraPaths": [
