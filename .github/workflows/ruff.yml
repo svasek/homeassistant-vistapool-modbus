@@ -6,10 +6,16 @@ on:
     paths:
       - "custom_components/vistapool/**"
       - "tests/**"
+      - "pyproject.toml"
+      - "requirements-dev.txt"
+      - ".github/workflows/ruff.yml"
   pull_request:
     paths:
       - "custom_components/vistapool/**"
       - "tests/**"
+      - "pyproject.toml"
+      - "requirements-dev.txt"
+      - ".github/workflows/ruff.yml"
 
 permissions:
   contents: read
