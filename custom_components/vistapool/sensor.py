@@ -128,9 +128,9 @@ async def async_setup_entry(
         entities.append(
             VistaPoolSensor(
                 coordinator,
-                entry.entry_id,
+                entry.entry_id,  # Pass entry_id explicitly to the sensor entity
                 key,
-                props,  # Pass entry_id explicitly
+                props,
             )
         )
     async_add_entities(entities)

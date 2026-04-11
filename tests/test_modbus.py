@@ -925,8 +925,6 @@ async def test_perform_write_timer_happy_path(config, monkeypatch):
             self.registers = regs
             self.isError = lambda: is_error
 
-    # Patch TIMER_BLOCKS to ensure known block address
-
     block_name = "filtration1"
 
     # Read block returns current values
