@@ -133,7 +133,6 @@ def test_options_backwash_kept_when_active(mock_coordinator):
 
 
 def test_options_timer_time(mock_coordinator):
-
     props = make_props(select_type="timer_time")
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "relay_aux1_start", props)
     mock_coordinator.data = {"relay_aux1_start": 0}
