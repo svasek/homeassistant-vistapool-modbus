@@ -15,11 +15,13 @@
 """VistaPool Integration for Home Assistant - Button Module"""
 
 import logging
+
 from homeassistant.components.button import ButtonEntity
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from .const import DOMAIN, BUTTON_DEFINITIONS
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+from .const import BUTTON_DEFINITIONS, DOMAIN
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
 from .helpers import prepare_device_time

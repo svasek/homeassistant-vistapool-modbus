@@ -14,18 +14,19 @@
 
 """VistaPool Integration for Home Assistant - Number Module"""
 
-import logging
 import asyncio
+import logging
+
 from homeassistant.components.number import NumberEntity
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     DOMAIN,
-    NUMBER_DEFINITIONS,
     HEATING_SETPOINT_REGISTER,
     INTELLIGENT_SETPOINT_REGISTER,
+    NUMBER_DEFINITIONS,
 )
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity

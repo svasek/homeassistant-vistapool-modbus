@@ -16,10 +16,12 @@
 
 import asyncio
 import logging
+
 from homeassistant.components.switch import SwitchEntity
-from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
-from .const import DOMAIN, SWITCH_DEFINITIONS, EXEC_REGISTER, MANUAL_FILTRATION_REGISTER
+from homeassistant.core import HomeAssistant
+
+from .const import DOMAIN, EXEC_REGISTER, MANUAL_FILTRATION_REGISTER, SWITCH_DEFINITIONS
 from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)

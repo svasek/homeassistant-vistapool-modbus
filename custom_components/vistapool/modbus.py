@@ -14,28 +14,29 @@
 
 """VistaPool Integration for Home Assistant - Modbus Client"""
 
-import logging
 import asyncio
+import logging
 import time
 from collections import deque
 from datetime import datetime, timedelta
+
 from pymodbus.client import AsyncModbusTcpClient
+from pymodbus.exceptions import ConnectionException, ModbusException
 from pymodbus.framer import FramerType
-from pymodbus.exceptions import ModbusException, ConnectionException
+
+from .const import DEFAULT_MODBUS_FRAMER, TIMER_BLOCKS
 from .helpers import (
-    parse_timer_block,
     build_timer_block,
     get_filtration_speed,
     modbus_regs_to_ascii,
+    parse_timer_block,
 )
 from .modbus_compat import modbus_acall
-from .const import DEFAULT_MODBUS_FRAMER, TIMER_BLOCKS
-
 from .status_mask import (
-    decode_relay_state,
-    decode_ph_rx_cl_cd_status_bits,
-    decode_ion_status_bits,
     decode_hidro_status_bits,
+    decode_ion_status_bits,
+    decode_ph_rx_cl_cd_status_bits,
+    decode_relay_state,
 )
 
 _LOGGER = logging.getLogger(__name__)

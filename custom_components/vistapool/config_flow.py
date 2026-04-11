@@ -15,18 +15,20 @@
 """VistaPool Integration for Home Assistant - Config Flow"""
 
 import asyncio
+
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
 from homeassistant.helpers import translation as ha_translation
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
+
 from .const import (
-    DOMAIN,
+    DEFAULT_MODBUS_FRAMER,
     DEFAULT_NAME,
     DEFAULT_PORT,
-    DEFAULT_SLAVE_ID,
     DEFAULT_SCAN_INTERVAL,
-    DEFAULT_MODBUS_FRAMER,
+    DEFAULT_SLAVE_ID,
+    DOMAIN,
 )
 
 

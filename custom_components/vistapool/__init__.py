@@ -15,15 +15,17 @@
 """VistaPool Integration for Home Assistant"""
 
 import logging
+
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.typing import ConfigType
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
-from homeassistant.const import CONF_HOST, CONF_PORT, CONF_NAME
-from homeassistant.exceptions import ServiceValidationError
+
 from .const import DOMAIN, PLATFORMS, TIMER_BLOCKS
-from .modbus import VistaPoolModbusClient
 from .coordinator import VistaPoolCoordinator
+from .modbus import VistaPoolModbusClient
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 

@@ -24,10 +24,11 @@ and to display information about the integration in Home Assistant
 import json
 import logging
 from pathlib import Path
+
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass
+from homeassistant.components.number import NumberDeviceClass
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.components.number import NumberDeviceClass
 
 PLATFORMS = ["sensor", "binary_sensor", "switch", "number", "button", "select", "light"]
 

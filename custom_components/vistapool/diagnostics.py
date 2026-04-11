@@ -15,8 +15,9 @@
 """VistaPool Integration for Home Assistant - Diagnostics Module"""
 
 from __future__ import annotations
-from homeassistant.core import HomeAssistant
+
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
 

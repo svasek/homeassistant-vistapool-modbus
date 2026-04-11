@@ -15,16 +15,18 @@
 """VistaPool Integration for Home Assistant - Sensor Module"""
 
 import logging
-from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
+
 from homeassistant.components.sensor import SensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
 from .const import DOMAIN, SENSOR_DEFINITIONS
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
 from .helpers import (
-    get_filtration_pump_type,
     calculate_next_interval_time,
+    get_filtration_pump_type,
     is_hydrolysis_in_percent,
 )
 
@@ -125,7 +127,10 @@ async def async_setup_entry(
 
         entities.append(
             VistaPoolSensor(
-                coordinator, entry.entry_id, key, props  # Pass entry_id explicitly
+                coordinator,
+                entry.entry_id,
+                key,
+                props,  # Pass entry_id explicitly
             )
         )
     async_add_entities(entities)

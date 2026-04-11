@@ -15,11 +15,13 @@
 """VistaPool Integration for Home Assistant - Binary Sensor Module"""
 
 import logging
-from homeassistant.core import HomeAssistant
-from homeassistant.config_entries import ConfigEntry
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from .const import DOMAIN, BINARY_SENSOR_DEFINITIONS
+
+from .const import BINARY_SENSOR_DEFINITIONS, DOMAIN
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
 from .helpers import is_device_time_out_of_sync

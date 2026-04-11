@@ -12,16 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest, asyncio
-from unittest.mock import MagicMock, AsyncMock, Mock, patch
+import asyncio
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
+
+import pytest
+
+from custom_components.vistapool.const import SELECT_DEFINITIONS
 from custom_components.vistapool.select import (
-    VistaPoolSelect,
-    VistaPoolEntity,
     PERIOD_MAP,
     PERIOD_SECONDS_TO_KEY,
+    VistaPoolEntity,
+    VistaPoolSelect,
     async_setup_entry,
 )
-from custom_components.vistapool.const import SELECT_DEFINITIONS
 
 
 @pytest.fixture(autouse=True)
@@ -130,10 +133,6 @@ def test_options_backwash_kept_when_active(mock_coordinator):
 
 
 def test_options_timer_time(mock_coordinator):
-    from custom_components.vistapool.helpers import (
-        hhmm_to_seconds,
-        generate_time_options,
-    )
 
     props = make_props(select_type="timer_time")
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "relay_aux1_start", props)

@@ -12,25 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest, datetime
+import datetime
+
+import pytest
+
 from custom_components.vistapool.helpers import (
-    parse_version,
-    pad_list,
-    modbus_regs_to_ascii,
     build_timer_block,
-    get_filtration_speed,
-    get_filtration_pump_type,
-    hhmm_to_seconds,
-    seconds_to_hhmm,
-    prepare_device_time,
-    get_device_time,
     generate_time_options,
-    parse_timer_block,
-    modbus_regs_to_hex_string,
-    is_device_time_out_of_sync,
-    get_timer_interval,
-    is_hydrolysis_in_percent,
+    get_device_time,
+    get_filtration_pump_type,
+    get_filtration_speed,
     get_machine_name,
+    get_timer_interval,
+    hhmm_to_seconds,
+    is_device_time_out_of_sync,
+    is_hydrolysis_in_percent,
+    modbus_regs_to_ascii,
+    modbus_regs_to_hex_string,
+    pad_list,
+    parse_timer_block,
+    parse_version,
+    prepare_device_time,
+    seconds_to_hhmm,
 )
 
 
@@ -311,6 +314,7 @@ def test_calculate_next_interval_time_with_hass():
     from datetime import datetime, timedelta
     from unittest.mock import MagicMock
     from zoneinfo import ZoneInfo
+
     from custom_components.vistapool.helpers import calculate_next_interval_time
 
     # Mock hass with Prague timezone
@@ -342,6 +346,7 @@ def test_calculate_next_interval_time_with_hass():
 def test_calculate_next_interval_time_without_hass():
     """Test calculate_next_interval_time without hass (UTC fallback)."""
     from datetime import datetime, timedelta, timezone
+
     from custom_components.vistapool.helpers import calculate_next_interval_time
 
     # Calculate with 7200 seconds (2 hours), no hass

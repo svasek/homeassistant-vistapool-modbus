@@ -16,8 +16,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Awaitable, Dict
 import inspect
+from typing import Any, Awaitable, Callable, Dict
 
 
 def address_kwargs(bound_method: Callable[..., Any], device_id: int) -> Dict[str, int]:

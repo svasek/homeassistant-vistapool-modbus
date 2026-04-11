@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import MagicMock
+
 import pytest
 
-from unittest.mock import MagicMock
 from custom_components.vistapool.entity import VistaPoolEntity
 
 
