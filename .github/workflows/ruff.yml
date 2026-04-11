@@ -38,23 +38,7 @@ jobs:
           pip install --upgrade ruff
 
       - name: Run Ruff format check
-        # Fail on PR, warn on push (main or other branches)
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "Pull request — running Ruff format check (will fail if not clean)."
-            ruff format --check custom_components/vistapool tests
-          else
-            echo "Push event — running Ruff format check (will not fail if not clean)."
-            ruff format --check custom_components/vistapool tests || echo "::warning file=Ruff::Some files would be reformatted"
-          fi
+        run: ruff format --check custom_components/vistapool tests
 
       - name: Run Ruff lint check
-        # Fail on PR, warn on push (main or other branches)
-        run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "Pull request — running Ruff lint check (will fail if not clean)."
-            ruff check custom_components/vistapool tests
-          else
-            echo "Push event — running Ruff lint check (will not fail if not clean)."
-            ruff check custom_components/vistapool tests || echo "::warning file=Ruff::Linting issues found"
-          fi
+        run: ruff check custom_components/vistapool tests
