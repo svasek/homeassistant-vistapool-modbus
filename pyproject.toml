@@ -1,5 +1,6 @@
 [tool.ruff]
 line-length = 88
+exclude = ["LICENSE"]
 
 [tool.ruff.format]
 quote-style = "double"
