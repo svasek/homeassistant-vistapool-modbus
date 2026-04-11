@@ -31,4 +31,3 @@ This ensures the corresponding issue will be closed automatically once the PR is
 ---
 
 Thanks again for contributing to the project! 🎉
-

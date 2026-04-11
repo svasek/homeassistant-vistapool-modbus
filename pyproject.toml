@@ -1,0 +1,13 @@
+[tool.ruff]
+line-length = 88
+exclude = ["LICENSE", ".github/CODEOWNERS"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]

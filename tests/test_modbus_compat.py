@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import pytest
+
 import custom_components.vistapool.modbus_compat as compat
 from custom_components.vistapool.modbus_compat import (
     address_kwargs,

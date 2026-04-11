@@ -14,24 +14,25 @@
 
 """VistaPool Integration for Home Assistant - Coordinator Module"""
 
+import json
 import logging
 from datetime import timedelta
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
-from homeassistant.core import HomeAssistant
-from homeassistant.util import slugify
-from homeassistant.exceptions import ConfigEntryNotReady
-from homeassistant.const import CONF_NAME
-import json
 
-from .helpers import parse_version, prepare_device_time, is_device_time_out_of_sync
+from homeassistant.const import CONF_NAME
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import slugify
+
 from .const import (
-    DOMAIN,
-    DEFAULT_SCAN_INTERVAL,
-    TIMER_BLOCKS,
     CAPABILITY_KEYS,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
     HEATING_SETPOINT_REGISTER,
     INTELLIGENT_SETPOINT_REGISTER,
+    TIMER_BLOCKS,
 )
+from .helpers import is_device_time_out_of_sync, parse_version, prepare_device_time
 
 MAX_SCAN_INTERVAL = timedelta(seconds=180)  # Maximum allowed scan interval (3 minutes)
 

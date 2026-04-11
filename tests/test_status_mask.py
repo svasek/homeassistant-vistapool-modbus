@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 from custom_components.vistapool.status_mask import (
-    decode_relay_state,
-    decode_ph_rx_cl_cd_status_bits,
-    decode_ion_status_bits,
     decode_hidro_status_bits,
+    decode_ion_status_bits,
+    decode_ph_rx_cl_cd_status_bits,
+    decode_relay_state,
 )
 
 

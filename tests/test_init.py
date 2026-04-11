@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
+from homeassistant.exceptions import ServiceValidationError
+
 from custom_components.vistapool import (
+    async_setup,
     async_setup_entry,
     async_unload_entry,
-    async_setup,
 )
 
 
@@ -83,9 +86,6 @@ async def test_async_handle_set_timer_entry_id_fallback(monkeypatch):
         "relay_aux1",
         {"on": 0, "interval": 3600, "enable": 0},
     )
-
-
-from homeassistant.exceptions import ServiceValidationError
 
 
 @pytest.mark.asyncio

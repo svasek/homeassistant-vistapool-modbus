@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest, asyncio
-from unittest.mock import MagicMock, AsyncMock
+import asyncio
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
 from custom_components.vistapool.switch import VistaPoolSwitch, async_setup_entry
 
 

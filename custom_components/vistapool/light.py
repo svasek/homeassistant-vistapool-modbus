@@ -16,10 +16,12 @@
 
 import asyncio
 import logging
-from homeassistant.components.light import LightEntity, ColorMode
-from homeassistant.core import HomeAssistant
+
+from homeassistant.components.light import ColorMode, LightEntity
 from homeassistant.config_entries import ConfigEntry
-from .const import DOMAIN, LIGHT_DEFINITIONS, EXEC_REGISTER
+from homeassistant.core import HomeAssistant
+
+from .const import DOMAIN, EXEC_REGISTER, LIGHT_DEFINITIONS
 from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)

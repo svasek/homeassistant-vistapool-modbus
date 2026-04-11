@@ -12,15 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys, os
+import os
+import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import pytest, asyncio
-from unittest.mock import AsyncMock, patch
+import asyncio
 from datetime import datetime, timedelta
-import custom_components.vistapool.modbus as vistapool_modbus
+from unittest.mock import AsyncMock, patch
+
+import pytest
 from pymodbus.framer import FramerType
+
+import custom_components.vistapool.modbus as vistapool_modbus
 
 ModbusException = vistapool_modbus.ModbusException
 
@@ -921,11 +925,7 @@ async def test_perform_write_timer_happy_path(config, monkeypatch):
             self.registers = regs
             self.isError = lambda: is_error
 
-    # Patch TIMER_BLOCKS to ensure known block address
-    from custom_components.vistapool.const import TIMER_BLOCKS
-
     block_name = "filtration1"
-    block_addr = TIMER_BLOCKS[block_name]
 
     # Read block returns current values
     fake_modbus.read_holding_registers = AsyncMock(return_value=DummyResp([0] * 15))
@@ -1232,9 +1232,9 @@ def test_install_fc20_filter_rtu_split_fc20_second_chunk_not_dropped():
     assert received == [], "First partial-FC20 chunk must be dropped"
 
     mock_ctx.data_received(fc20_tail_plus_response)
-    assert received == [
-        fc20_tail_plus_response
-    ], "Second chunk (FC20 tail + valid response) must be forwarded — valid data must not be lost"
+    assert received == [fc20_tail_plus_response], (
+        "Second chunk (FC20 tail + valid response) must be forwarded — valid data must not be lost"
+    )
 
 
 def test_install_fc20_filter_rtu_passes_normal_frames():
@@ -1293,9 +1293,9 @@ def test_install_fc20_filter_socket_passes_valid_mbap_response_with_tid_0x0120()
         [0x01, 0x20, 0x00, 0x00, 0x00, 0x05, 0x01, 0x03, 0x02, 0x00, 0x64]
     )
     mock_ctx.data_received(valid_mbap)
-    assert received == [
-        valid_mbap
-    ], "Legitimate Modbus TCP response must not be filtered"
+    assert received == [valid_mbap], (
+        "Legitimate Modbus TCP response must not be filtered"
+    )
 
 
 def test_install_fc20_filter_socket_passes_normal_frames():

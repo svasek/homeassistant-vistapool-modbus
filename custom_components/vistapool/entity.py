@@ -21,8 +21,9 @@ It provides common functionality for all entities, including device information,
 
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify as ha_slugify
-from .helpers import parse_version, modbus_regs_to_hex_string, get_machine_name
+
 from .const import DOMAIN, NAME
+from .helpers import get_machine_name, modbus_regs_to_hex_string, parse_version
 
 
 class VistaPoolEntity(CoordinatorEntity):

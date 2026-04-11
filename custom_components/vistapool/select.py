@@ -14,23 +14,25 @@
 
 """VistaPool Integration for Home Assistant - Select Module"""
 
-import logging
 import asyncio
+import logging
+
 from homeassistant.components.select import SelectEntity
+
 from .const import (
-    DOMAIN,
-    SELECT_DEFINITIONS,
     DEFAULT_TIMER_RESOLUTION,
+    DOMAIN,
+    MANUAL_FILTRATION_REGISTER,
     PERIOD_MAP,
     PERIOD_SECONDS_TO_KEY,
-    MANUAL_FILTRATION_REGISTER,
+    SELECT_DEFINITIONS,
 )
 from .entity import VistaPoolEntity
 from .helpers import (
-    seconds_to_hhmm,
+    generate_time_options,
     get_filtration_pump_type,
     hhmm_to_seconds,
-    generate_time_options,
+    seconds_to_hhmm,
 )
 
 _LOGGER = logging.getLogger(__name__)

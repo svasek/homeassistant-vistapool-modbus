@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
-from custom_components.vistapool.coordinator import VistaPoolCoordinator
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import UpdateFailed
+
+from custom_components.vistapool.coordinator import VistaPoolCoordinator
 
 
 @pytest.fixture
@@ -103,11 +105,15 @@ async def test_async_update_data_time_sync(mock_entry):
     client.read_all_timers = AsyncMock(return_value={})
     client.async_write_register = AsyncMock()
     hass = MagicMock()
-    with patch(
-        "custom_components.vistapool.coordinator.is_device_time_out_of_sync",
-        return_value=True,
-    ), patch(
-        "custom_components.vistapool.coordinator.prepare_device_time", return_value=1234
+    with (
+        patch(
+            "custom_components.vistapool.coordinator.is_device_time_out_of_sync",
+            return_value=True,
+        ),
+        patch(
+            "custom_components.vistapool.coordinator.prepare_device_time",
+            return_value=1234,
+        ),
     ):
         coordinator = VistaPoolCoordinator(hass, client, entry, entry.entry_id)
         await coordinator._async_update_data()

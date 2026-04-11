@@ -12,15 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
 
 from custom_components.vistapool import config_flow
 from custom_components.vistapool.const import (
+    DEFAULT_MODBUS_FRAMER,
     DEFAULT_NAME,
     DEFAULT_PORT,
     DEFAULT_SLAVE_ID,
-    DEFAULT_MODBUS_FRAMER,
     DOMAIN,
 )
 

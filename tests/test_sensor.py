@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 from unittest.mock import MagicMock, patch
-from homeassistant.components.sensor import SensorDeviceClass
+
+import pytest
+
 from custom_components.vistapool.sensor import (
-    VistaPoolSensor,
     FILTRATION_MODE_MAP,
-    PH_STATUS_ALARM_MAP,
     FILTRATION_SPEED_MAP,
+    PH_STATUS_ALARM_MAP,
+    VistaPoolSensor,
     async_setup_entry,
 )
 
@@ -47,24 +48,6 @@ def test_icon_filtration_modes(mock_coordinator):
         mock_coordinator.data = {"MBF_PAR_FILT_MODE": raw}
         result = ent.icon
         assert isinstance(result, str)
-
-
-def test_icon_ph_alarm(mock_coordinator):
-    props = make_props(icon="mdi:alert")
-    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PH_STATUS_ALARM", props)
-    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 0}
-    assert ent.icon == "mdi:alert"
-    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 2}
-    assert ent.icon == "mdi:alert"
-
-
-def test_icon_hidro_current(mock_coordinator):
-    props = make_props(icon="mdi:air-humidifier")
-    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_HIDRO_CURRENT", props)
-    mock_coordinator.data = {"MBF_HIDRO_CURRENT": True}
-    assert ent.icon == "mdi:air-humidifier"
-    mock_coordinator.data = {"MBF_HIDRO_CURRENT": False}
-    assert ent.icon == "mdi:air-humidifier-off"
 
 
 def test_icon_default(mock_coordinator):

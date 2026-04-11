@@ -46,13 +46,10 @@
         // Python tooling
         "ms-python.python",
         "ms-python.vscode-pylance",
-        "ms-python.black-formatter",
+        "charliermarsh.ruff",
 
         // Optional: Docker tooling (handy for logs/inspecting)
         "ms-azuretools.vscode-docker",
-
-        // Optional: Ruff linter
-        // "charliermarsh.ruff",
 
         // Prettier code formatter
         "esbenp.prettier-vscode",
@@ -61,7 +58,7 @@
         "editorconfig.editorconfig"
       ],
       "settings": {
-        "terminal.integrated.shell.linux": "/bin/bash",
+        "terminal.integrated.defaultProfile.linux": "bash",
 
         // Let Pylance resolve imports
         "python.analysis.extraPaths": [
@@ -71,10 +68,13 @@
         "python.analysis.typeCheckingMode": "off",
         "python.analysis.diagnosticSeverityOverrides": { "reportMissingImports": "none" },
 
-        // Use Black as formatter
-        "python.formatting.provider": "none",
-        "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
+        // Use Ruff as formatter and linter
+        "[python]": { "editor.defaultFormatter": "charliermarsh.ruff" },
         "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.ruff": "explicit",
+          "source.organizeImports.ruff": "explicit"
+        },
 
         // Testing: run pytest with the same args you'd run from CLI
         "python.testing.pytestEnabled": true,

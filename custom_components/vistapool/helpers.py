@@ -21,6 +21,7 @@ and parse version information.
 """
 
 import datetime
+
 import homeassistant.util.dt as dt_util
 
 

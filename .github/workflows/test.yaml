@@ -12,8 +12,7 @@ on:
       - "tests/**"
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
   id-token: write
 
 jobs:

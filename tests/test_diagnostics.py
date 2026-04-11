@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from unittest.mock import MagicMock
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock
+
 from custom_components.vistapool.diagnostics import async_get_config_entry_diagnostics
 
 

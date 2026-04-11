@@ -15,12 +15,14 @@
 """VistaPool Integration for Home Assistant - Options Flow Module"""
 
 import logging
-import voluptuous as vol
 from datetime import date
+
+import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.const import CONF_NAME
 from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 from homeassistant.util import slugify
+
 from .const import DEFAULT_SCAN_INTERVAL, DEFAULT_TIMER_RESOLUTION
 
 _LOGGER = logging.getLogger(__name__)
