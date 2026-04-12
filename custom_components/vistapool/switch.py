@@ -67,9 +67,10 @@ async def async_setup_entry(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
-        # UV mode switch only when UV relay is assigned
+        # UV mode switch only when UV relay is assigned (valid range 1-7)
         if key == "MBF_PAR_UV_MODE":
-            if not bool(coordinator.data.get("MBF_PAR_UV_RELAY_GPIO")):
+            uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
+            if not (1 <= uv_gpio <= 7):
                 continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))

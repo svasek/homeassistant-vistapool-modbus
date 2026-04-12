@@ -61,7 +61,7 @@ def decode_relay_state(value: int, uv_relay_gpio: int = 0) -> dict:
         "Filtration high speed": bool(value & 0x0400),
         "Filtration current speed": (value & 0x0700) >> 8,
     }
-    if 1 <= uv_relay_gpio <= 16:
+    if 1 <= uv_relay_gpio <= 7:
         result["UV Lamp"] = bool((value >> (uv_relay_gpio - 1)) & 1)
     return result
 

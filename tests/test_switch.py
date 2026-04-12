@@ -921,3 +921,36 @@ async def test_switch_setup_skips_uv_mode_when_key_missing(monkeypatch):
     entities = async_add_entities.call_args[0][0]
     keys = [e._key for e in entities]
     assert "MBF_PAR_UV_MODE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_skips_uv_mode_when_gpio_out_of_range(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_UV_RELAY_GPIO": 255}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import switch as switch_module
+
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS,
+        "MBF_PAR_UV_MODE",
+        {
+            "switch_type": "uv_mode",
+            "function_addr": 0x0427,
+        },
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_UV_MODE" not in keys

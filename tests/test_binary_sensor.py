@@ -405,6 +405,32 @@ async def test_async_setup_entry_skips_uv_lamp_when_key_missing():
     assert not any(e._key == "UV Lamp" for e in entities)
 
 
+@pytest.mark.asyncio
+async def test_async_setup_entry_skips_uv_lamp_when_gpio_out_of_range():
+    """UV Lamp binary sensor is skipped when MBF_PAR_UV_RELAY_GPIO is out of range."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x0001,
+            "MBF_PAR_UV_RELAY_GPIO": 255,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    assert not any(e._key == "UV Lamp" for e in entities)
+
+
 def test_uv_lamp_is_on(mock_coordinator):
     """UV Lamp binary sensor reads state from coordinator data."""
     props = make_props()
