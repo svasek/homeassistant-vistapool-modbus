@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.20.1...v1.21.0) (2026-04-12)
+
+
+### Features
+
+* ✨ add UV lamp support with auto-detection ([#102](https://github.com/svasek/homeassistant-vistapool-modbus/issues/102)) ([e4d00c5](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e4d00c519c72657de2f159f6f066c189b92fb7db))
+
 ## [1.20.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.20.0...v1.20.1) (2026-04-10)
 
 
