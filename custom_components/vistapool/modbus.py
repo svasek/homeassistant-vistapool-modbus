@@ -517,9 +517,6 @@ class VistaPoolModbusClient:
             # fmt: on
 
             # After loading reg01, update result with all decodings:
-            # Use cached MBF_PAR_UV_RELAY_GPIO for UV relay state decoding
-            # (INSTALLER page may not have been read yet in this poll cycle)
-            _uv_gpio = self._cached_result.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
             # fmt: off
             result.update(
                 {
@@ -529,7 +526,7 @@ class VistaPoolModbusClient:
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 10), "Conductivity"),
                     **decode_ion_status_bits(get_safe(reg01, 12)),
                     **decode_hidro_status_bits(get_safe(reg01, 13)),
-                    **decode_relay_state(get_safe(reg01, 14), _uv_gpio),
+                    **decode_relay_state(get_safe(reg01, 14)),
                 }
             )
             # fmt: on
@@ -892,6 +889,13 @@ class VistaPoolModbusClient:
                 _LOGGER.debug(
                     "Skipping INSTALLER (0x04xx) page read (no change notification)"
                 )
+
+            # Decode UV Lamp relay state after INSTALLER data is available in result
+            # (MBF_PAR_UV_RELAY_GPIO comes from INSTALLER page or cache merge)
+            _uv_gpio = result.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
+            relay_state = result.get("MBF_RELAY_STATE")
+            if relay_state is not None and 1 <= _uv_gpio <= 7:
+                result["UV Lamp"] = bool((relay_state >> (_uv_gpio - 1)) & 1)
 
             if force_full or (notification & _NOTIF_USER):
                 # MBF_PAR_RELAY_PH:
