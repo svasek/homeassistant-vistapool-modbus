@@ -21,7 +21,13 @@ from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, EXEC_REGISTER, MANUAL_FILTRATION_REGISTER, SWITCH_DEFINITIONS
+from .const import (
+    DOMAIN,
+    EXEC_REGISTER,
+    MANUAL_FILTRATION_REGISTER,
+    SWITCH_DEFINITIONS,
+    is_valid_relay_gpio,
+)
 from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -67,10 +73,10 @@ async def async_setup_entry(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
-        # UV mode switch only when UV relay is assigned (valid range 1-7)
+        # UV mode switch only when UV relay is assigned
         if key == "MBF_PAR_UV_MODE":
             uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
-            if not (1 <= uv_gpio <= 7):
+            if not is_valid_relay_gpio(uv_gpio):
                 continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))

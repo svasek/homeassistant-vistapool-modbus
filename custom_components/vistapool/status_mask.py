@@ -31,6 +31,19 @@ WARNING: DO NOT change names of this keys, they are used in the code !!!
 #     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
 
 
+def decode_uv_lamp_state(relay_state: int | None, uv_relay_gpio: int) -> dict:
+    """Decode the UV Lamp relay bit from MBF_RELAY_STATE.
+
+    Returns {"UV Lamp": bool} when relay_state and uv_relay_gpio are valid,
+    otherwise returns an empty dict.
+    """
+    from .const import is_valid_relay_gpio
+
+    if relay_state is None or not is_valid_relay_gpio(uv_relay_gpio):
+        return {}
+    return {"UV Lamp": bool((relay_state >> (uv_relay_gpio - 1)) & 1)}
+
+
 def decode_relay_state(value: int | None) -> dict:
     """Decode the relay state bits."""
     # Relay state bits are 16 bits, where each bit represents a relay state

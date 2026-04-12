@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from custom_components.vistapool.const import is_valid_relay_gpio
 from custom_components.vistapool.status_mask import (
     decode_hidro_status_bits,
     decode_ion_status_bits,
     decode_ph_rx_cl_cd_status_bits,
     decode_relay_state,
+    decode_uv_lamp_state,
 )
 
 
@@ -74,3 +76,47 @@ def test_decode_hidro_status_bits_basic():
 
 def test_decode_hidro_status_bits_none():
     assert decode_hidro_status_bits(None) == {}
+
+
+# --- is_valid_relay_gpio tests ---
+
+
+def test_is_valid_relay_gpio_valid():
+    for gpio in range(1, 8):
+        assert is_valid_relay_gpio(gpio) is True
+
+
+def test_is_valid_relay_gpio_invalid():
+    for gpio in (0, -1, 8, 16, 255):
+        assert is_valid_relay_gpio(gpio) is False
+
+
+# --- decode_uv_lamp_state tests ---
+
+
+def test_decode_uv_lamp_state_on():
+    """UV Lamp is ON when the bit at (gpio - 1) is set."""
+    assert decode_uv_lamp_state(0x0004, 3) == {"UV Lamp": True}
+
+
+def test_decode_uv_lamp_state_off():
+    """UV Lamp is OFF when the bit at (gpio - 1) is clear."""
+    assert decode_uv_lamp_state(0x0000, 3) == {"UV Lamp": False}
+
+
+def test_decode_uv_lamp_state_gpio_boundaries():
+    """GPIO 1 checks bit 0, GPIO 7 checks bit 6."""
+    assert decode_uv_lamp_state(0x0001, 1)["UV Lamp"] is True
+    assert decode_uv_lamp_state(0x0040, 7)["UV Lamp"] is True
+
+
+def test_decode_uv_lamp_state_none_relay():
+    """Returns empty dict when relay_state is None."""
+    assert decode_uv_lamp_state(None, 3) == {}
+
+
+def test_decode_uv_lamp_state_invalid_gpio():
+    """Returns empty dict when gpio is out of range."""
+    assert decode_uv_lamp_state(0xFFFF, 0) == {}
+    assert decode_uv_lamp_state(0xFFFF, 8) == {}
+    assert decode_uv_lamp_state(0xFFFF, 255) == {}

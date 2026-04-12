@@ -59,6 +59,15 @@ EXEC_REGISTER = 0x02F5
 HEATING_SETPOINT_REGISTER = 0x0416  # MBF_PAR_HEATING_TEMP
 INTELLIGENT_SETPOINT_REGISTER = 0x041C  # MBF_PAR_INTELLIGENT_TEMP
 
+# MBF_RELAY_STATE has 7 relays (bits 0-6); MBF_PAR_UV_RELAY_GPIO is a 1-based index.
+MAX_RELAY_GPIO = 7
+
+
+def is_valid_relay_gpio(gpio: int) -> bool:
+    """Return True if the relay GPIO number is within the hardware range (1-based, 1–7)."""
+    return 1 <= gpio <= MAX_RELAY_GPIO
+
+
 # Capability keys that drive entity-creation logic in every platform's async_setup_entry.
 # They are snapshotted when winter mode is enabled and persisted in entry.options so that
 # platforms can set up the correct set of entities after a HA restart in winter mode.
