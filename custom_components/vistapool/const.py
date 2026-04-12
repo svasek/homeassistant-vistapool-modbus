@@ -478,6 +478,7 @@ BINARY_SENSOR_DEFINITIONS = {
     "UV Lamp": {
         "name": "UV Lamp",
         "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
         "icon_on": "mdi:lightbulb-fluorescent-tube",
         "icon_off": "mdi:lightbulb-fluorescent-tube-outline",
     },
