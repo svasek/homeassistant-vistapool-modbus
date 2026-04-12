@@ -7,5 +7,7 @@
   "[python]": {
     "editor.defaultFormatter": "charliermarsh.ruff"
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests", "--cov=custom_components/vistapool"]
 }
