@@ -31,7 +31,7 @@ WARNING: DO NOT change names of this keys, they are used in the code !!!
 #     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
 
 
-def decode_relay_state(value: int) -> dict:
+def decode_relay_state(value: int, uv_relay_gpio: int = 0) -> dict:
     """Decode the relay state bits."""
     # Relay state bits are 16 bits, where each bit represents a relay state
     # Bit 0: pH Acid Pump
@@ -45,9 +45,10 @@ def decode_relay_state(value: int) -> dict:
     # Bit 9: Filtration mid speed
     # Bit 10: Filtration high speed
     # Bits 8-10: Filtration current speed (0: off, 1: low, 2: mid, 3: high)
+    # UV Lamp: dynamic relay from MBF_PAR_UV_RELAY_GPIO (1-based index into relay state)
     if value is None:
         return {}
-    return {
+    result = {
         "pH Acid Pump": bool(value & 0x0001),
         "Filtration Pump": bool(value & 0x0002),
         "Pool Light": bool(value & 0x0004),
@@ -60,6 +61,9 @@ def decode_relay_state(value: int) -> dict:
         "Filtration high speed": bool(value & 0x0400),
         "Filtration current speed": (value & 0x0700) >> 8,
     }
+    if uv_relay_gpio:
+        result["UV Lamp"] = bool((value >> (uv_relay_gpio - 1)) & 1)
+    return result
 
 
 def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:

@@ -170,6 +170,7 @@
       "hidro_chlorine_flow_indicator_fl2": { "name": "Indicador de flujo de cloro de hidrólisis FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hidrólisis activada por el módulo de cloro" },
       "hidro_in_dead_time": { "name": "Hidrólisis en tiempo muerto" },
+      "uv_lamp": { "name": "Lámpara UV" },
       "hidro_in_pol1": { "name": "Hidrólisis Polaridad 1" },
       "hidro_in_pol2": { "name": "Hidrólisis Polaridad 2" },
       "device_time_out_of_sync": { "name": "Sincronización de hora del dispositivo" },
@@ -201,7 +202,8 @@
       "aux3": { "name": "Relé Aux3" },
       "aux4": { "name": "Relé Aux4" },
       "hidro_cover_enable": { "name": "Habilitar reducción con cubierta" },
-      "hidro_temp_shutdown": { "name": "Habilitar apagado por temperatura" }
+      "hidro_temp_shutdown": { "name": "Habilitar apagado por temperatura" },
+      "uv_mode": { "name": "Modo UV" }
     },
     "light": {
       "pool_light": { "name": "Luz de la piscina" }

@@ -71,6 +71,9 @@ async def async_setup_entry(
             (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
         ):
             continue  # pragma: no cover
+        # Skip UV Lamp if UV relay is not assigned
+        if key == "UV Lamp" and not bool(coordinator.data.get("MBF_PAR_UV_RELAY_GPIO")):
+            continue
         # Hide all "measurement module detected" sensors
         if "measurement module detected" in key.lower():
             continue

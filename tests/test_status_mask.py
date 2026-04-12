@@ -74,3 +74,54 @@ def test_decode_hidro_status_bits_basic():
 
 def test_decode_hidro_status_bits_none():
     assert decode_hidro_status_bits(None) == {}
+
+
+# --- UV Lamp relay state tests ---
+
+
+def test_decode_relay_state_uv_lamp_on():
+    """UV Lamp is ON when the bit at (uv_relay_gpio - 1) is set."""
+    # uv_relay_gpio=3 means bit 2 (0x0004) → Pool Light position
+    value = 0x0004
+    result = decode_relay_state(value, uv_relay_gpio=3)
+    assert result["UV Lamp"] is True
+
+
+def test_decode_relay_state_uv_lamp_off():
+    """UV Lamp is OFF when the bit at (uv_relay_gpio - 1) is clear."""
+    value = 0x0000
+    result = decode_relay_state(value, uv_relay_gpio=3)
+    assert result["UV Lamp"] is False
+
+
+def test_decode_relay_state_uv_lamp_gpio_1():
+    """UV Lamp with gpio=1 checks bit 0 (pH Acid Pump position)."""
+    value = 0x0001
+    result = decode_relay_state(value, uv_relay_gpio=1)
+    assert result["UV Lamp"] is True
+    assert result["pH Acid Pump"] is True
+
+
+def test_decode_relay_state_uv_lamp_gpio_7():
+    """UV Lamp with gpio=7 checks bit 6 (AUX4 position)."""
+    value = 0x0040
+    result = decode_relay_state(value, uv_relay_gpio=7)
+    assert result["UV Lamp"] is True
+    assert result["AUX4"] is True
+
+
+def test_decode_relay_state_no_uv_gpio():
+    """UV Lamp key is absent when uv_relay_gpio is 0 (default)."""
+    value = 0x0004
+    result = decode_relay_state(value)
+    assert "UV Lamp" not in result
+
+
+def test_decode_relay_state_uv_lamp_among_other_relays():
+    """UV Lamp is decoded correctly alongside other relay bits."""
+    # Filtration + AUX1 + UV on relay 5 (AUX2 position, bit 4 = 0x0010)
+    value = 0x001A  # bits 1,3,4 set → Filtration, AUX1, AUX2
+    result = decode_relay_state(value, uv_relay_gpio=5)
+    assert result["Filtration Pump"] is True
+    assert result["AUX1"] is True
+    assert result["UV Lamp"] is True

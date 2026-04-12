@@ -67,6 +67,10 @@ async def async_setup_entry(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
+        # UV mode switch only when UV relay is assigned
+        if key == "MBF_PAR_UV_MODE":
+            if not bool(coordinator.data.get("MBF_PAR_UV_RELAY_GPIO")):
+                continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))
 
@@ -163,6 +167,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
                 "Setting smart antifreeze ON via register 0x%04X", self.function_addr
             )
             await client.async_write_register(self.function_addr, 1)
+        elif self._switch_type == "uv_mode":
+            _LOGGER.debug("Setting UV mode ON via register 0x%04X", self.function_addr)
+            await client.async_write_register(self.function_addr, 1)
         elif self._switch_type == "bitmask":
             current = int(self.coordinator.data.get(self._data_key, 0) or 0)
             new_value = current | self._mask_bit
@@ -225,6 +232,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
                 "Setting smart antifreeze OFF via register 0x%04X", self.function_addr
             )
             await client.async_write_register(self.function_addr, 0)
+        elif self._switch_type == "uv_mode":
+            _LOGGER.debug("Setting UV mode OFF via register 0x%04X", self.function_addr)
+            await client.async_write_register(self.function_addr, 0)
         elif self._switch_type == "bitmask":
             current = int(self.coordinator.data.get(self._data_key, 0) or 0)
             new_value = current & ~self._mask_bit
@@ -276,6 +286,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             return bool(self.coordinator.data.get("MBF_PAR_CLIMA_ONOFF", 0))
         elif self._switch_type == "smart_anti_freeze":
             return bool(self.coordinator.data.get("MBF_PAR_SMART_ANTI_FREEZE", 0))
+        elif self._switch_type == "uv_mode":
+            return bool(self.coordinator.data.get("MBF_PAR_UV_MODE", 0))
         elif self._switch_type == "bitmask":
             raw = int(self.coordinator.data.get(self._data_key, 0) or 0)
             return bool(raw & self._mask_bit)

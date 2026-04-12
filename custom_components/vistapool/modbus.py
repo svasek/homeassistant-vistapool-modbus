@@ -517,6 +517,9 @@ class VistaPoolModbusClient:
             # fmt: on
 
             # After loading reg01, update result with all decodings:
+            # Use cached MBF_PAR_UV_RELAY_GPIO for UV relay state decoding
+            # (INSTALLER page may not have been read yet in this poll cycle)
+            _uv_gpio = self._cached_result.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
             # fmt: off
             result.update(
                 {
@@ -526,7 +529,7 @@ class VistaPoolModbusClient:
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 10), "Conductivity"),
                     **decode_ion_status_bits(get_safe(reg01, 12)),
                     **decode_hidro_status_bits(get_safe(reg01, 13)),
-                    **decode_relay_state(get_safe(reg01, 14)),
+                    **decode_relay_state(get_safe(reg01, 14), _uv_gpio),
                 }
             )
             # fmt: on
