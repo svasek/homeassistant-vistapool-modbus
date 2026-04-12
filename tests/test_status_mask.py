@@ -125,3 +125,14 @@ def test_decode_relay_state_uv_lamp_among_other_relays():
     assert result["Filtration Pump"] is True
     assert result["AUX1"] is True
     assert result["UV Lamp"] is True
+
+
+def test_decode_relay_state_uv_lamp_out_of_range():
+    """UV Lamp key is absent when uv_relay_gpio is out of valid range (1-16)."""
+    value = 0xFFFF
+    assert "UV Lamp" not in decode_relay_state(value, uv_relay_gpio=0)
+    assert "UV Lamp" not in decode_relay_state(value, uv_relay_gpio=-1)
+    assert "UV Lamp" not in decode_relay_state(value, uv_relay_gpio=17)
+    assert "UV Lamp" not in decode_relay_state(value, uv_relay_gpio=255)
+    # Boundary: 16 is valid (last bit of 16-bit register)
+    assert "UV Lamp" in decode_relay_state(value, uv_relay_gpio=16)
