@@ -786,3 +786,171 @@ def test_available_winter_mode_switch_during_coordinator_failure(mock_coordinato
     props = make_props(switch_type="winter_mode")
     ent = VistaPoolSwitch(mock_coordinator, "test_entry", "WINTER_MODE", props)
     assert ent.available is True
+
+
+# --- UV Mode switch tests ---
+
+
+@pytest.mark.asyncio
+async def test_turn_on_uv_mode(mock_coordinator):
+    props = make_props(switch_type="uv_mode", function_addr=0x0427)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "MBF_PAR_UV_MODE", props)
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x0427, 1)
+
+
+@pytest.mark.asyncio
+async def test_turn_off_uv_mode(mock_coordinator):
+    props = make_props(switch_type="uv_mode", function_addr=0x0427)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "MBF_PAR_UV_MODE", props)
+    ent.coordinator.client = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    ent.coordinator.client.async_write_register.assert_awaited_with(0x0427, 0)
+
+
+def test_is_on_uv_mode(mock_coordinator):
+    props = make_props(switch_type="uv_mode")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "MBF_PAR_UV_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_UV_MODE": 1}
+    assert ent.is_on is True
+    mock_coordinator.data = {"MBF_PAR_UV_MODE": 0}
+    assert ent.is_on is False
+    mock_coordinator.data = {}
+    assert ent.is_on is False
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_includes_uv_mode_when_relay_assigned(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_UV_RELAY_GPIO": 3}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import switch as switch_module
+
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS,
+        "MBF_PAR_UV_MODE",
+        {
+            "switch_type": "uv_mode",
+            "function_addr": 0x0427,
+        },
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_UV_MODE" in keys
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_skips_uv_mode_when_no_relay(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_UV_RELAY_GPIO": 0}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import switch as switch_module
+
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS,
+        "MBF_PAR_UV_MODE",
+        {
+            "switch_type": "uv_mode",
+            "function_addr": 0x0427,
+        },
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_UV_MODE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_skips_uv_mode_when_key_missing(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {}  # no MBF_PAR_UV_RELAY_GPIO at all
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import switch as switch_module
+
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS,
+        "MBF_PAR_UV_MODE",
+        {
+            "switch_type": "uv_mode",
+            "function_addr": 0x0427,
+        },
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_UV_MODE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_switch_setup_skips_uv_mode_when_gpio_out_of_range(monkeypatch):
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_UV_RELAY_GPIO": 255}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import switch as switch_module
+
+    monkeypatch.setitem(
+        switch_module.SWITCH_DEFINITIONS,
+        "MBF_PAR_UV_MODE",
+        {
+            "switch_type": "uv_mode",
+            "function_addr": 0x0427,
+        },
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_UV_MODE" not in keys

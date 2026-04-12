@@ -170,6 +170,7 @@
       "hidro_chlorine_flow_indicator_fl2": { "name": "Průtokový indikátor chloru hydrolýzy FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolýza aktivována CL modulem" },
       "hidro_in_dead_time": { "name": "Hydrolýza v době mrtvého času" },
+      "uv_lamp": { "name": "UV lampa" },
       "hidro_in_pol1": { "name": "Hydrolýza polarita 1" },
       "hidro_in_pol2": { "name": "Hydrolýza polarita 2" },
       "device_time_out_of_sync": { "name": "Čas v zařízení" },
@@ -201,7 +202,8 @@
       "aux3": { "name": "Pomocné relé Aux3" },
       "aux4": { "name": "Pomocné relé Aux4" },
       "hidro_cover_enable": { "name": "Povolit snížení produkce při zakrytí" },
-      "hidro_temp_shutdown": { "name": "Povolit vypnutí elektrolýzy podle teploty" }
+      "hidro_temp_shutdown": { "name": "Povolit vypnutí elektrolýzy podle teploty" },
+      "uv_mode": { "name": "UV režim" }
     },
     "light": {
       "light": { "name": "Osvětlení bazénu" }

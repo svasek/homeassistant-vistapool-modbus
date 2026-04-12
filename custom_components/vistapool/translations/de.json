@@ -170,6 +170,7 @@
       "hidro_chlorine_flow_indicator_fl2": { "name": "Hydrolyse Chlor-Durchflussanzeige FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolyse aktiviert durch Chlor-Modul" },
       "hidro_in_dead_time": { "name": "Hydrolyse in Totzeit" },
+      "uv_lamp": { "name": "UV-Lampe" },
       "hidro_in_pol1": { "name": "Hydrolyse Polarität 1" },
       "hidro_in_pol2": { "name": "Hydrolyse Polarität 2" },
       "device_time_out_of_sync": { "name": "Gerätezeitsynchronisierung" },
@@ -201,7 +202,8 @@
       "aux3": { "name": "Relais Aux3" },
       "aux4": { "name": "Relais Aux4" },
       "hidro_cover_enable": { "name": "Abdeckungsreduktion aktivieren" },
-      "hidro_temp_shutdown": { "name": "Hydrolyse-Abschaltung nach Temperatur aktivieren" }
+      "hidro_temp_shutdown": { "name": "Hydrolyse-Abschaltung nach Temperatur aktivieren" },
+      "uv_mode": { "name": "UV-Modus" }
     },
     "light": {
       "light": { "name": "Poollicht" }

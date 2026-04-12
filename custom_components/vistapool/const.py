@@ -59,6 +59,15 @@ EXEC_REGISTER = 0x02F5
 HEATING_SETPOINT_REGISTER = 0x0416  # MBF_PAR_HEATING_TEMP
 INTELLIGENT_SETPOINT_REGISTER = 0x041C  # MBF_PAR_INTELLIGENT_TEMP
 
+# MBF_RELAY_STATE has 7 relays (bits 0-6); MBF_PAR_UV_RELAY_GPIO is a 1-based index.
+MAX_RELAY_GPIO = 7
+
+
+def is_valid_relay_gpio(gpio: int) -> bool:
+    """Return True if the relay GPIO number is within the hardware range (1-based, 1–7)."""
+    return 1 <= gpio <= MAX_RELAY_GPIO
+
+
 # Capability keys that drive entity-creation logic in every platform's async_setup_entry.
 # They are snapshotted when winter mode is enabled and persisted in entry.options so that
 # platforms can set up the correct set of entities after a HA restart in winter mode.
@@ -71,6 +80,7 @@ CAPABILITY_KEYS = (
     "MBF_PAR_HIDRO_COVER_ENABLE",
     "MBF_PAR_PH_ACID_RELAY_GPIO",
     "MBF_PAR_PH_BASE_RELAY_GPIO",
+    "MBF_PAR_UV_RELAY_GPIO",
     "MBF_PAR_FILTVALVE_ENABLE",
     "pH measurement module detected",
     "Redox measurement module detected",
@@ -473,6 +483,13 @@ BINARY_SENSOR_DEFINITIONS = {
         "name": "Hydrolysis Activated by Chlorine Module",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
+    },
+    "UV Lamp": {
+        "name": "UV Lamp",
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:lightbulb-fluorescent-tube",
+        "icon_off": "mdi:lightbulb-fluorescent-tube-outline",
     },
     "HIDRO in dead time": {
         "name": "Hydrolysis In Dead Time",
@@ -1117,6 +1134,32 @@ SWITCH_DEFINITIONS = {
         "entity_category": EntityCategory.CONFIG,
         "switch_type": "smart_anti_freeze",
     },
+    "MBF_PAR_UV_MODE": {
+        "name": "UV Mode",
+        "icon_on": "mdi:lightbulb-fluorescent-tube",
+        "icon_off": "mdi:lightbulb-fluorescent-tube-outline",
+        "function_addr": 0x0427,
+        "entity_category": EntityCategory.CONFIG,
+        "switch_type": "uv_mode",
+    },
+    # "MBF_PAR_UV_HIDE_WARN_CLEAN": {
+    #     "name": "Suppress UV Clean Warning",
+    #     "icon": "mdi:alert-minus-outline",
+    #     "function_addr": 0x0428,
+    #     "mask_bit": 0x0001,
+    #     "data_key": "MBF_PAR_UV_HIDE_WARN",
+    #     "entity_category": EntityCategory.CONFIG,
+    #     "switch_type": "bitmask",
+    # },
+    # "MBF_PAR_UV_HIDE_WARN_REPLACE": {
+    #     "name": "Suppress UV Replace Warning",
+    #     "icon": "mdi:alert-minus-outline",
+    #     "function_addr": 0x0428,
+    #     "mask_bit": 0x0002,
+    #     "data_key": "MBF_PAR_UV_HIDE_WARN",
+    #     "entity_category": EntityCategory.CONFIG,
+    #     "switch_type": "bitmask",
+    # },
     "MBF_PAR_HIDRO_COVER_ENABLE": {
         "name": "Hydrolysis Cover Reduction",
         "icon_on": "mdi:pool",

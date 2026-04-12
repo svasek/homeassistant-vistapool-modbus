@@ -31,7 +31,20 @@ WARNING: DO NOT change names of this keys, they are used in the code !!!
 #     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
 
 
-def decode_relay_state(value: int) -> dict:
+def decode_uv_lamp_state(relay_state: int | None, uv_relay_gpio: int) -> dict:
+    """Decode the UV Lamp relay bit from MBF_RELAY_STATE.
+
+    Returns {"UV Lamp": bool} when relay_state and uv_relay_gpio are valid,
+    otherwise returns an empty dict.
+    """
+    from .const import is_valid_relay_gpio
+
+    if relay_state is None or not is_valid_relay_gpio(uv_relay_gpio):
+        return {}
+    return {"UV Lamp": bool((relay_state >> (uv_relay_gpio - 1)) & 1)}
+
+
+def decode_relay_state(value: int | None) -> dict:
     """Decode the relay state bits."""
     # Relay state bits are 16 bits, where each bit represents a relay state
     # Bit 0: pH Acid Pump
@@ -62,7 +75,7 @@ def decode_relay_state(value: int) -> dict:
     }
 
 
-def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:
+def decode_ph_rx_cl_cd_status_bits(status: int | None, unit: str) -> dict:
     """Decode the status bits for pH, Redox, Chlorine, and Conductivity sensors."""
     # Status bits are 16 bits, where each bit represents a status flag
     # Bit 0: Flow sensor problem
@@ -85,7 +98,7 @@ def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:
     }
 
 
-def decode_ion_status_bits(status: int) -> dict:
+def decode_ion_status_bits(status: int | None) -> dict:
     """Decode the status bits for ION sensor."""
     # Status bits are 16 bits, where each bit represents a status flag
     # Bit 0: ION On Target
@@ -110,7 +123,7 @@ def decode_ion_status_bits(status: int) -> dict:
     }
 
 
-def decode_hidro_status_bits(status: int) -> dict:
+def decode_hidro_status_bits(status: int | None) -> dict:
     """Decode the status bits for HIDRO sensor."""
     # Status bits are 16 bits, where each bit represents a status flag
     # Bit 0: HIDRO On Target

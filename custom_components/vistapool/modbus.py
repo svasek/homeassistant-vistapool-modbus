@@ -37,6 +37,7 @@ from .status_mask import (
     decode_ion_status_bits,
     decode_ph_rx_cl_cd_status_bits,
     decode_relay_state,
+    decode_uv_lamp_state,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -889,6 +890,11 @@ class VistaPoolModbusClient:
                 _LOGGER.debug(
                     "Skipping INSTALLER (0x04xx) page read (no change notification)"
                 )
+
+            # Decode UV Lamp relay state after INSTALLER data is available in result
+            # (MBF_PAR_UV_RELAY_GPIO comes from INSTALLER page or cache merge)
+            _uv_gpio = result.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
+            result.update(decode_uv_lamp_state(result.get("MBF_RELAY_STATE"), _uv_gpio))
 
             if force_full or (notification & _NOTIF_USER):
                 # MBF_PAR_RELAY_PH:

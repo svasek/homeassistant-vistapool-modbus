@@ -21,7 +21,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import BINARY_SENSOR_DEFINITIONS, DOMAIN
+from .const import BINARY_SENSOR_DEFINITIONS, DOMAIN, is_valid_relay_gpio
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
 from .helpers import is_device_time_out_of_sync
@@ -71,6 +71,11 @@ async def async_setup_entry(
             (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
         ):
             continue  # pragma: no cover
+        # Skip UV Lamp if UV relay is not assigned
+        if key == "UV Lamp":
+            uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
+            if not is_valid_relay_gpio(uv_gpio):
+                continue
         # Hide all "measurement module detected" sensors
         if "measurement module detected" in key.lower():
             continue
