@@ -31,7 +31,7 @@ WARNING: DO NOT change names of this keys, they are used in the code !!!
 #     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
 
 
-def decode_relay_state(value: int, uv_relay_gpio: int = 0) -> dict:
+def decode_relay_state(value: int | None, uv_relay_gpio: int = 0) -> dict:
     """Decode the relay state bits."""
     # Relay state bits are 16 bits, where each bit represents a relay state
     # Bit 0: pH Acid Pump
@@ -66,7 +66,7 @@ def decode_relay_state(value: int, uv_relay_gpio: int = 0) -> dict:
     return result
 
 
-def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:
+def decode_ph_rx_cl_cd_status_bits(status: int | None, unit: str) -> dict:
     """Decode the status bits for pH, Redox, Chlorine, and Conductivity sensors."""
     # Status bits are 16 bits, where each bit represents a status flag
     # Bit 0: Flow sensor problem
@@ -89,7 +89,7 @@ def decode_ph_rx_cl_cd_status_bits(status: int, unit: str) -> dict:
     }
 
 
-def decode_ion_status_bits(status: int) -> dict:
+def decode_ion_status_bits(status: int | None) -> dict:
     """Decode the status bits for ION sensor."""
     # Status bits are 16 bits, where each bit represents a status flag
     # Bit 0: ION On Target
@@ -114,7 +114,7 @@ def decode_ion_status_bits(status: int) -> dict:
     }
 
 
-def decode_hidro_status_bits(status: int) -> dict:
+def decode_hidro_status_bits(status: int | None) -> dict:
     """Decode the status bits for HIDRO sensor."""
     # Status bits are 16 bits, where each bit represents a status flag
     # Bit 0: HIDRO On Target
