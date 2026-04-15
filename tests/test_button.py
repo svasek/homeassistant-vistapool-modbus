@@ -177,3 +177,49 @@ async def test_button_press_backwash_gpio_only(mock_coordinator, caplog):
     await ent.async_press()
     mock_coordinator.client.async_write_register.assert_awaited_once_with(0x0411, 13)
     mock_coordinator.async_request_refresh.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_button_setup_entry_creates_backwash_with_gpio_only():
+    """async_setup_entry creates BACKWASH button when only GPIO is set (ENABLE=0)."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 5}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "BACKWASH" in keys
+
+
+@pytest.mark.asyncio
+async def test_button_setup_entry_skips_backwash_without_valve():
+    """async_setup_entry skips BACKWASH button when neither ENABLE nor GPIO is set."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 0}
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "BACKWASH" not in keys

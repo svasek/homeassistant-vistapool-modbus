@@ -870,6 +870,37 @@ async def test_select_filtvalve_period_minutes_created_with_besgo(mock_coordinat
     assert "MBF_PAR_FILTVALVE_PERIOD_MINUTES" in keys
 
 
+@pytest.mark.asyncio
+async def test_select_filtvalve_period_minutes_created_with_gpio_only(mock_coordinator):
+    """MBF_PAR_FILTVALVE_PERIOD_MINUTES select must be created when only GPIO is set (ENABLE=0)."""
+    from custom_components.vistapool.select import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+        data = {
+            "MBF_PAR_FILTVALVE_ENABLE": 0,
+            "MBF_PAR_FILTVALVE_GPIO": 5,
+            "MBF_PAR_FILTVALVE_PERIOD_MINUTES": 1440,
+        }
+
+    from unittest.mock import MagicMock
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_PERIOD_MINUTES" in keys
+
+
 def test_select_filtvalve_period_minutes_current_option_known(mock_coordinator):
     """current_option returns the mapped label for a known minute value."""
     from custom_components.vistapool.const import SELECT_DEFINITIONS
@@ -1000,6 +1031,37 @@ async def test_select_filtvalve_mode_created_with_besgo(mock_coordinator):
         config_entry = DummyEntry()
         device_slug = "vistapool"
         data = {"MBF_PAR_FILTVALVE_ENABLE": 1, "MBF_PAR_FILTVALVE_MODE": 1}
+
+    from unittest.mock import MagicMock
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_MODE" in keys
+
+
+@pytest.mark.asyncio
+async def test_select_filtvalve_mode_created_with_gpio_only(mock_coordinator):
+    """MBF_PAR_FILTVALVE_MODE select must be created when only GPIO is set (ENABLE=0)."""
+    from custom_components.vistapool.select import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+        data = {
+            "MBF_PAR_FILTVALVE_ENABLE": 0,
+            "MBF_PAR_FILTVALVE_GPIO": 5,
+            "MBF_PAR_FILTVALVE_MODE": 1,
+        }
 
     from unittest.mock import MagicMock
 
