@@ -608,3 +608,47 @@ def test_get_machine_name_non_generic_ignores_custom_name():
         "MBF_PAR_UICFG_MACH_NAME_LIGHT": "else",
     }
     assert get_machine_name(data) == "Hay"
+
+
+# ---------------------------------------------------------------------------
+# has_filtvalve tests
+# ---------------------------------------------------------------------------
+
+
+def test_has_filtvalve_enable_only():
+    from custom_components.vistapool.helpers import has_filtvalve
+
+    assert has_filtvalve({"MBF_PAR_FILTVALVE_ENABLE": 1}) is True
+
+
+def test_has_filtvalve_gpio_only():
+    from custom_components.vistapool.helpers import has_filtvalve
+
+    assert (
+        has_filtvalve({"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 5})
+        is True
+    )
+
+
+def test_has_filtvalve_both():
+    from custom_components.vistapool.helpers import has_filtvalve
+
+    assert (
+        has_filtvalve({"MBF_PAR_FILTVALVE_ENABLE": 1, "MBF_PAR_FILTVALVE_GPIO": 5})
+        is True
+    )
+
+
+def test_has_filtvalve_neither():
+    from custom_components.vistapool.helpers import has_filtvalve
+
+    assert (
+        has_filtvalve({"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 0})
+        is False
+    )
+
+
+def test_has_filtvalve_missing_keys():
+    from custom_components.vistapool.helpers import has_filtvalve
+
+    assert has_filtvalve({}) is False

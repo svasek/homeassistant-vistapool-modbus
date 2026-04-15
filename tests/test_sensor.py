@@ -614,7 +614,7 @@ async def test_sensor_filtvalve_remaining_skipped_without_besgo():
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
-    DummyCoordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+    DummyCoordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 0}
 
     hass = MagicMock()
     hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
@@ -641,6 +641,34 @@ async def test_sensor_filtvalve_remaining_created_with_besgo():
     DummyCoordinator.data = {
         "MBF_PAR_FILTVALVE_ENABLE": 1,
         "MBF_PAR_FILTVALVE_REMAINING": 120,
+    }
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_REMAINING" in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_filtvalve_remaining_created_with_gpio_only():
+    """MBF_PAR_FILTVALVE_REMAINING sensor must be created when only GPIO is set (ENABLE=0)."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    DummyCoordinator.data = {
+        "MBF_PAR_FILTVALVE_ENABLE": 0,
+        "MBF_PAR_FILTVALVE_GPIO": 5,
+        "MBF_PAR_FILTVALVE_REMAINING": 60,
     }
 
     hass = MagicMock()

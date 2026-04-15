@@ -31,6 +31,7 @@ from .entity import VistaPoolEntity
 from .helpers import (
     generate_time_options,
     get_filtration_pump_type,
+    has_filtvalve,
     hhmm_to_seconds,
     seconds_to_hhmm,
 )
@@ -72,11 +73,11 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
-        # Besgo-valve selects: only when MBF_PAR_FILTVALVE_ENABLE=1
+        # Besgo-valve selects: only when a Besgo valve is detected
         if key in (
             "MBF_PAR_FILTVALVE_PERIOD_MINUTES",
             "MBF_PAR_FILTVALVE_MODE",
-        ) and not bool(coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE")):
+        ) and not has_filtvalve(coordinator.data):
             continue
 
         option_key = props.get("option")
@@ -319,9 +320,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             if self._key == "MBF_PAR_FILT_MODE":
                 current_mode = self.coordinator.data.get(self._key)
                 current_name = self._options_map.get(current_mode)
-                has_auto_valve = bool(
-                    self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0)
-                )
+                has_auto_valve = has_filtvalve(self.coordinator.data)
                 # When leaving manual mode, stop the pump first - EXCEPT when
                 # switching to backwash on a device WITH an automatic valve (Besgo).
                 # In that case the pump must keep running so the valve opens correctly.
@@ -382,14 +381,14 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
         # Show backwash option only if:
         # - explicitly enabled in advanced config options, OR
-        # - a Besgo automatic filter valve is configured (MBF_PAR_FILTVALVE_ENABLE=1)
+        # - a Besgo automatic filter valve is configured
         # The mapping (13 -> "backwash") is always present in options_map so that
         # current_option and async_select_option work correctly regardless of
         # whether options() has been evaluated first.
         if self._key == "MBF_PAR_FILT_MODE":
             backwash_allowed = self.coordinator.config_entry.options.get(
                 "enable_backwash_option", False
-            ) or bool(self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0))
+            ) or has_filtvalve(self.coordinator.data)
             if not backwash_allowed:
                 # Keep backwash (13) in the list if the device is currently in that
                 # mode, so current_option always matches one of the available options.

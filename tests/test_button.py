@@ -154,7 +154,7 @@ async def test_button_press_backwash_with_valve(mock_coordinator, caplog):
 @pytest.mark.asyncio
 async def test_button_press_backwash_no_valve(mock_coordinator, caplog):
     """async_press for BACKWASH logs warning and does nothing when valve not configured."""
-    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 0}
     mock_coordinator.device_name = "Test Pool"
     props = {"name": "Start Backwash", "icon": "mdi:waves-arrow-left"}
     ent = VistaPoolButton(mock_coordinator, "test_entry", "BACKWASH", props)
@@ -163,3 +163,16 @@ async def test_button_press_backwash_no_valve(mock_coordinator, caplog):
         await ent.async_press()
     mock_coordinator.client.async_write_register.assert_not_called()
     assert "MBF_PAR_FILTVALVE_ENABLE=0" in caplog.text
+
+
+@pytest.mark.asyncio
+async def test_button_press_backwash_gpio_only(mock_coordinator, caplog):
+    """async_press for BACKWASH works when only GPIO is set (ENABLE=0, GPIO!=0)."""
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 5}
+    mock_coordinator.device_name = "Test Pool"
+    props = {"name": "Start Backwash", "icon": "mdi:waves-arrow-left"}
+    ent = VistaPoolButton(mock_coordinator, "test_entry", "BACKWASH", props)
+    ent.hass = MagicMock()
+    await ent.async_press()
+    mock_coordinator.client.async_write_register.assert_awaited_once_with(0x0411, 13)
+    mock_coordinator.async_request_refresh.assert_awaited_once()

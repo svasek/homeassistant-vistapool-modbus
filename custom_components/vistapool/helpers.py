@@ -346,3 +346,15 @@ def is_hydrolysis_in_percent(data: dict) -> bool:
 
     # c. Otherwise "%" is displayed
     return True
+
+
+def has_filtvalve(data: dict) -> bool:
+    """Return True if a Besgo automatic filter valve is configured.
+
+    The check mirrors Tasmota's NeoPool driver which uses MBF_PAR_FILTVALVE_GPIO
+    to detect valve presence. We also honour MBF_PAR_FILTVALVE_ENABLE for cases
+    where the GPIO is 0 but the feature flag is explicitly set.
+    """
+    return bool(data.get("MBF_PAR_FILTVALVE_ENABLE")) or bool(
+        data.get("MBF_PAR_FILTVALVE_GPIO")
+    )

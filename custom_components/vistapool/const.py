@@ -81,6 +81,7 @@ CAPABILITY_KEYS = (
     "MBF_PAR_PH_ACID_RELAY_GPIO",
     "MBF_PAR_PH_BASE_RELAY_GPIO",
     "MBF_PAR_UV_RELAY_GPIO",
+    "MBF_PAR_FILTVALVE_GPIO",
     "MBF_PAR_FILTVALVE_ENABLE",
     "pH measurement module detected",
     "Redox measurement module detected",
