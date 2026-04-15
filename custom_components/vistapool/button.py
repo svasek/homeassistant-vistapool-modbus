@@ -97,8 +97,10 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
             if not has_filtvalve(self.coordinator.data):
                 _LOGGER.warning(
                     "Backwash valve not configured "
-                    "(MBF_PAR_FILTVALVE_ENABLE=0 and MBF_PAR_FILTVALVE_GPIO=0) "
+                    "(MBF_PAR_FILTVALVE_ENABLE=%r, MBF_PAR_FILTVALVE_GPIO=%r) "
                     "- ignoring backwash command for %s",
+                    self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE"),
+                    self.coordinator.data.get("MBF_PAR_FILTVALVE_GPIO"),
                     self.coordinator.device_name,
                 )
                 return

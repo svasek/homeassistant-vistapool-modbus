@@ -163,6 +163,7 @@ async def test_button_press_backwash_no_valve(mock_coordinator, caplog):
         await ent.async_press()
     mock_coordinator.client.async_write_register.assert_not_called()
     assert "MBF_PAR_FILTVALVE_ENABLE=0" in caplog.text
+    assert "MBF_PAR_FILTVALVE_GPIO=0" in caplog.text
 
 
 @pytest.mark.asyncio
