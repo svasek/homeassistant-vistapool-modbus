@@ -558,7 +558,7 @@ NUMBER_DEFINITIONS = {
     "MBF_PAR_HEATING_TEMP": {
         "name": "Temperature Setpoint",
         "unit": "°C",
-        "min": 10.0,
+        "min": 0.0,
         "max": 40.0,
         "step": 1.0,
         "register": 0x0416,  # MBF_PAR_HEATING_TEMP
