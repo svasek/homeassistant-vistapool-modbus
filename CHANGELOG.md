@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.21.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.21.0...v1.21.1) (2026-04-16)
+
+
+### Bug Fixes
+
+* 🐛 Detect Besgo automatic valve via GPIO register ([#104](https://github.com/svasek/homeassistant-vistapool-modbus/issues/104)) ([19991dd](https://github.com/svasek/homeassistant-vistapool-modbus/commit/19991dd4acfdd80b927fcd4ae3bc06c23ee1725f))
+* **const:** 🐛 lower MBF_PAR_HEATING_TEMP minimum from 10 °C to 0 °C ([225c257](https://github.com/svasek/homeassistant-vistapool-modbus/commit/225c25733bcc589cc2789b53e69b99835fd0b89b)), closes [#106](https://github.com/svasek/homeassistant-vistapool-modbus/issues/106)
+* **modbus:** 🐛 fix binary_sensor.filtration_active incorrect in some installations ([#108](https://github.com/svasek/homeassistant-vistapool-modbus/issues/108)) ([37755b0](https://github.com/svasek/homeassistant-vistapool-modbus/commit/37755b0c582b9c1761f85bd974a7902e9d25ddaf))
+
 ## [1.21.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.20.1...v1.21.0) (2026-04-12)
 
 
