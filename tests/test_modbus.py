@@ -1971,3 +1971,54 @@ async def test_filtration_state_fixup_pump_off_agrees(config, monkeypatch):
 
     assert result["Filtration Pump"] is False
     assert not (result["MBF_RELAY_STATE"] & 0x0002)
+
+
+@pytest.mark.asyncio
+async def test_filtration_state_fixup_relay_on_but_state_off(config, monkeypatch):
+    """Test fixup when MBF_RELAY_STATE bit 1 is set but MBF_PAR_FILTRATION_STATE says off.
+
+    Edge case: relay state claims pump is running but authoritative register says it's off.
+    Fixup must clear bit 1 from MBF_RELAY_STATE and set Filtration Pump to False.
+    """
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class DummyResp:
+        def __init__(self, regs, is_error=False):
+            self.registers = regs
+            self.isError = lambda: is_error
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    reg01 = [0] * 18
+    reg01[14] = 0x0002  # MBF_RELAY_STATE — bit 1 set (relay claims pump on)
+
+    installer_block1 = [0] * 31
+    installer_block1[25] = 0  # MBF_PAR_FILTRATION_STATE = 0 (authoritative: pump off)
+
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            DummyResp([1, 3, 1280, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            DummyResp([0] * 20),
+            DummyResp([0, 0]),
+            DummyResp([0] * 13),
+            DummyResp([0] * 4),
+            DummyResp(installer_block1),
+            DummyResp([0] * 13),
+            DummyResp([0] * 8),
+            DummyResp([0] * 14),
+            DummyResp([0] * 13),
+        ]
+    )
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01))
+
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all()
+
+    assert result["Filtration Pump"] is False, (
+        "Filtration Pump should be False based on MBF_PAR_FILTRATION_STATE=0"
+    )
+    assert not (result["MBF_RELAY_STATE"] & 0x0002), (
+        "MBF_RELAY_STATE bit 1 should be cleared to match the authoritative register"
+    )
