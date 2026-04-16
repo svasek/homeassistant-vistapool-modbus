@@ -1060,7 +1060,6 @@ class VistaPoolModbusClient:
             self._polls_since_full_read += 1
         self._last_notification = notification
         self._last_was_full_read = force_full
-        self._cached_result.update(result)
 
         # Fixup: on some firmware versions (e.g. v8.07 on HIDRO-only variants),
         # MBF_RELAY_STATE bit 1 is not set even when the filtration pump is running.
@@ -1068,8 +1067,8 @@ class VistaPoolModbusClient:
         # When the two disagree, patch both the decoded key and the relay state bit so
         # that get_filtration_speed() also sees the correct on/off state.
         filtration_state = result.get("MBF_PAR_FILTRATION_STATE")
-        if filtration_state is not None:
-            authoritative = bool(filtration_state)
+        if filtration_state in (0, 1):
+            authoritative = filtration_state == 1
             if result.get("Filtration Pump") != authoritative:
                 _LOGGER.debug(
                     "MBF_RELAY_STATE bit 1 disagrees with MBF_PAR_FILTRATION_STATE (%d); "
@@ -1083,6 +1082,9 @@ class VistaPoolModbusClient:
                     result["MBF_RELAY_STATE"] = relay_state | 0x0002
                 else:
                     result["MBF_RELAY_STATE"] = relay_state & ~0x0002
+
+        # Update cache after fixup so partial reads start from consistent patched values
+        self._cached_result.update(result)
 
         # Add filtration speed and type
         result["FILTRATION_SPEED"] = get_filtration_speed(result)
