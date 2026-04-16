@@ -27,6 +27,7 @@ from .entity import VistaPoolEntity
 from .helpers import (
     calculate_next_interval_time,
     get_filtration_pump_type,
+    has_filtvalve,
     is_hydrolysis_in_percent,
 )
 
@@ -120,9 +121,7 @@ async def async_setup_entry(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue
-        if key == "MBF_PAR_FILTVALVE_REMAINING" and not bool(
-            coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE")
-        ):
+        if key == "MBF_PAR_FILTVALVE_REMAINING" and not has_filtvalve(coordinator.data):
             continue
 
         entities.append(

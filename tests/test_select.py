@@ -115,10 +115,20 @@ def test_options_no_backwash_without_valve_or_option(mock_coordinator):
     """Backwash must be hidden when neither enable_backwash_option nor Besgo valve."""
     props = make_props(options_map={0: "auto", 1: "manual", 2: "off", 13: "backwash"})
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
-    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 0}
     mock_coordinator.config_entry.options = {}
     opts = ent.options
     assert "backwash" not in opts
+
+
+def test_options_add_backwash_via_gpio_only(mock_coordinator):
+    """Backwash must appear when MBF_PAR_FILTVALVE_GPIO!=0 even with ENABLE=0."""
+    props = make_props(options_map={0: "auto", 1: "manual", 2: "off", 13: "backwash"})
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 5}
+    mock_coordinator.config_entry.options = {}
+    opts = ent.options
+    assert "backwash" in opts
 
 
 def test_options_backwash_kept_when_active(mock_coordinator):
@@ -126,7 +136,11 @@ def test_options_backwash_kept_when_active(mock_coordinator):
     even when backwash is not allowed — so current_option stays valid."""
     props = make_props(options_map={0: "auto", 1: "manual", 2: "off", 13: "backwash"})
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
-    mock_coordinator.data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILT_MODE": 13}
+    mock_coordinator.data = {
+        "MBF_PAR_FILTVALVE_ENABLE": 0,
+        "MBF_PAR_FILTVALVE_GPIO": 0,
+        "MBF_PAR_FILT_MODE": 13,
+    }
     mock_coordinator.config_entry.options = {}
     opts = ent.options
     assert "backwash" in opts
@@ -343,7 +357,8 @@ async def test_async_select_option_backwash_from_manual(mock_coordinator):
         "MBF_PAR_FILT_MODE": 0,  # current: manual
         "MBF_PAR_HEATING_GPIO": 0,
         "MBF_PAR_TEMPERATURE_ACTIVE": 0,
-        # MBF_PAR_FILTVALVE_ENABLE absent / 0 => manual valve
+        "MBF_PAR_FILTVALVE_ENABLE": 0,
+        "MBF_PAR_FILTVALVE_GPIO": 0,  # no valve => manual
     }
     ent.coordinator.device_name = "vistapool"
     ent.coordinator.config_entry.options = {"enable_backwash_option": True}
@@ -371,6 +386,7 @@ async def test_async_select_option_backwash_from_manual_auto_valve(mock_coordina
         "MBF_PAR_HEATING_GPIO": 0,
         "MBF_PAR_TEMPERATURE_ACTIVE": 0,
         "MBF_PAR_FILTVALVE_ENABLE": 1,  # Besgo auto valve present
+        "MBF_PAR_FILTVALVE_GPIO": 5,
     }
     ent.coordinator.device_name = "vistapool"
     ent.coordinator.config_entry.options = {"enable_backwash_option": True}
@@ -812,7 +828,7 @@ async def test_select_filtvalve_period_minutes_skipped_without_besgo(mock_coordi
     class DummyCoordinator:
         config_entry = DummyEntry()
         device_slug = "vistapool"
-        data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+        data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 0}
 
     from unittest.mock import MagicMock
 
@@ -840,6 +856,37 @@ async def test_select_filtvalve_period_minutes_created_with_besgo(mock_coordinat
         config_entry = DummyEntry()
         device_slug = "vistapool"
         data = {"MBF_PAR_FILTVALVE_ENABLE": 1, "MBF_PAR_FILTVALVE_PERIOD_MINUTES": 1440}
+
+    from unittest.mock import MagicMock
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_PERIOD_MINUTES" in keys
+
+
+@pytest.mark.asyncio
+async def test_select_filtvalve_period_minutes_created_with_gpio_only(mock_coordinator):
+    """MBF_PAR_FILTVALVE_PERIOD_MINUTES select must be created when only GPIO is set (ENABLE=0)."""
+    from custom_components.vistapool.select import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+        data = {
+            "MBF_PAR_FILTVALVE_ENABLE": 0,
+            "MBF_PAR_FILTVALVE_GPIO": 5,
+            "MBF_PAR_FILTVALVE_PERIOD_MINUTES": 1440,
+        }
 
     from unittest.mock import MagicMock
 
@@ -956,7 +1003,7 @@ async def test_select_filtvalve_mode_skipped_without_besgo(mock_coordinator):
     class DummyCoordinator:
         config_entry = DummyEntry()
         device_slug = "vistapool"
-        data = {"MBF_PAR_FILTVALVE_ENABLE": 0}
+        data = {"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 0}
 
     from unittest.mock import MagicMock
 
@@ -984,6 +1031,37 @@ async def test_select_filtvalve_mode_created_with_besgo(mock_coordinator):
         config_entry = DummyEntry()
         device_slug = "vistapool"
         data = {"MBF_PAR_FILTVALVE_ENABLE": 1, "MBF_PAR_FILTVALVE_MODE": 1}
+
+    from unittest.mock import MagicMock
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    keys = [e._key for e in async_add_entities.call_args[0][0]]
+    assert "MBF_PAR_FILTVALVE_MODE" in keys
+
+
+@pytest.mark.asyncio
+async def test_select_filtvalve_mode_created_with_gpio_only(mock_coordinator):
+    """MBF_PAR_FILTVALVE_MODE select must be created when only GPIO is set (ENABLE=0)."""
+    from custom_components.vistapool.select import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+        data = {
+            "MBF_PAR_FILTVALVE_ENABLE": 0,
+            "MBF_PAR_FILTVALVE_GPIO": 5,
+            "MBF_PAR_FILTVALVE_MODE": 1,
+        }
 
     from unittest.mock import MagicMock
 

@@ -24,7 +24,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .const import BUTTON_DEFINITIONS, DOMAIN
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
-from .helpers import prepare_device_time
+from .helpers import has_filtvalve, prepare_device_time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,9 +46,7 @@ async def async_setup_entry(
 
     for key, props in BUTTON_DEFINITIONS.items():
         # BACKWASH button is only available when a Besgo filter valve is configured
-        if key == "BACKWASH" and not bool(
-            coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE")
-        ):
+        if key == "BACKWASH" and not has_filtvalve(coordinator.data):
             continue
         entities.append(VistaPoolButton(coordinator, entry_id, key, props))
     async_add_entities(entities)
@@ -96,11 +94,13 @@ class VistaPoolButton(VistaPoolEntity, ButtonEntity):
             await client.async_write_register(0x0297, 1)
             await self.coordinator.async_request_refresh()
         elif self._key == "BACKWASH":
-            filtvalve_enable = self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE", 0)
-            if not filtvalve_enable:
+            if not has_filtvalve(self.coordinator.data):
                 _LOGGER.warning(
-                    "Backwash valve not configured (MBF_PAR_FILTVALVE_ENABLE=0) "
+                    "Backwash valve not configured "
+                    "(MBF_PAR_FILTVALVE_ENABLE=%r, MBF_PAR_FILTVALVE_GPIO=%r) "
                     "- ignoring backwash command for %s",
+                    self.coordinator.data.get("MBF_PAR_FILTVALVE_ENABLE"),
+                    self.coordinator.data.get("MBF_PAR_FILTVALVE_GPIO"),
                     self.coordinator.device_name,
                 )
                 return
