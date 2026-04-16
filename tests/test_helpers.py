@@ -652,3 +652,13 @@ def test_has_filtvalve_missing_keys():
     from custom_components.vistapool.helpers import has_filtvalve
 
     assert has_filtvalve({}) is False
+
+
+def test_has_filtvalve_gpio_out_of_range():
+    from custom_components.vistapool.helpers import has_filtvalve
+
+    # GPIO=8 is outside the valid hardware range (1-7) and must not trigger detection
+    assert (
+        has_filtvalve({"MBF_PAR_FILTVALVE_ENABLE": 0, "MBF_PAR_FILTVALVE_GPIO": 8})
+        is False
+    )

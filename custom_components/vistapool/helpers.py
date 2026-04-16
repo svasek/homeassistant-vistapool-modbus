@@ -351,10 +351,13 @@ def is_hydrolysis_in_percent(data: dict) -> bool:
 def has_filtvalve(data: dict) -> bool:
     """Return True if a Besgo automatic filter valve is configured.
 
-    The check mirrors Tasmota's NeoPool driver which uses MBF_PAR_FILTVALVE_GPIO
-    to detect valve presence. We also honour MBF_PAR_FILTVALVE_ENABLE for cases
-    where the GPIO is 0 but the feature flag is explicitly set.
+    Primary signal is MBF_PAR_FILTVALVE_GPIO (relay assigned to the valve,
+    valid range 1-7). MBF_PAR_FILTVALVE_ENABLE is honoured as a fallback
+    for cases where GPIO is 0 but the feature flag is explicitly set.
+    Values outside the valid relay range (1-7) are treated as not present.
     """
-    return bool(data.get("MBF_PAR_FILTVALVE_ENABLE")) or bool(
-        data.get("MBF_PAR_FILTVALVE_GPIO")
-    )
+    from .const import is_valid_relay_gpio
+
+    gpio = data.get("MBF_PAR_FILTVALVE_GPIO") or 0
+    enable = data.get("MBF_PAR_FILTVALVE_ENABLE") or 0
+    return is_valid_relay_gpio(gpio) or enable != 0
