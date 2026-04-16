@@ -1871,3 +1871,154 @@ async def test_perform_read_all_timers_reads_on_full_read_even_without_notificat
 
     fake_modbus.read_holding_registers.assert_called_once()
     assert "filtration1" in result
+
+
+@pytest.mark.asyncio
+async def test_filtration_state_fixup_v8_07_firmware(config, monkeypatch):
+    """Test that MBF_PAR_FILTRATION_STATE overrides MBF_RELAY_STATE bit 1 when they disagree.
+
+    On firmware v8.07 (HIDRO-only, e.g. Oxilife), MBF_RELAY_STATE = 0x0700 with bit 1
+    not set even when the pump runs. MBF_PAR_FILTRATION_STATE (0x0421) is authoritative.
+    """
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class DummyResp:
+        def __init__(self, regs, is_error=False):
+            self.registers = regs
+            self.isError = lambda: is_error
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    # reg01 (input registers from 0x0100): MBF_RELAY_STATE at index 14 = 0x0700
+    # (firmware v8.07 quirk: bits 8-10 set, bit 1 not set)
+    reg01 = [0] * 18
+    reg01[14] = 0x0700  # MBF_RELAY_STATE
+
+    # installer block 1 (0x0408, 31 registers): MBF_PAR_FILTRATION_STATE at index 25 = 1
+    installer_block1 = [0] * 31
+    installer_block1[25] = 1  # MBF_PAR_FILTRATION_STATE = 1 (pump running)
+
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            DummyResp([1, 3, 1280, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),  # rr00
+            DummyResp([0] * 20),  # rr02
+            DummyResp([0, 0]),  # rr02_hidro
+            DummyResp([0] * 13),  # factory block 1 (0x0300)
+            DummyResp([0] * 4),  # factory block 2 (0x0322)
+            DummyResp(
+                installer_block1
+            ),  # installer block 1 (0x0408, 31) — has MBF_PAR_FILTRATION_STATE
+            DummyResp([0] * 13),  # installer block 2 (0x0427)
+            DummyResp([0] * 8),  # installer block 3 (0x04E8, FILTVALVE)
+            DummyResp([0] * 14),  # rr05
+            DummyResp([0] * 13),  # rr06
+        ]
+    )
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01))
+
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all()
+
+    # Fixup must have overridden MBF_RELAY_STATE bit 1 with the authoritative value
+    assert result["Filtration Pump"] is True, (
+        "Filtration Pump should be True based on MBF_PAR_FILTRATION_STATE=1"
+    )
+    assert result["MBF_RELAY_STATE"] & 0x0002, (
+        "MBF_RELAY_STATE bit 1 should be patched so get_filtration_speed sees pump as running"
+    )
+
+
+@pytest.mark.asyncio
+async def test_filtration_state_fixup_pump_off_agrees(config, monkeypatch):
+    """Test that when MBF_RELAY_STATE and MBF_PAR_FILTRATION_STATE agree (both off), no fixup fires."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class DummyResp:
+        def __init__(self, regs, is_error=False):
+            self.registers = regs
+            self.isError = lambda: is_error
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    reg01 = [0] * 18
+    reg01[14] = 0x0000  # MBF_RELAY_STATE — bit 1 not set (pump off)
+
+    installer_block1 = [0] * 31
+    installer_block1[25] = 0  # MBF_PAR_FILTRATION_STATE = 0 (pump off — agrees)
+
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            DummyResp([1, 3, 1280, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            DummyResp([0] * 20),
+            DummyResp([0, 0]),
+            DummyResp([0] * 13),
+            DummyResp([0] * 4),
+            DummyResp(installer_block1),
+            DummyResp([0] * 13),
+            DummyResp([0] * 8),
+            DummyResp([0] * 14),
+            DummyResp([0] * 13),
+        ]
+    )
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01))
+
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all()
+
+    assert result["Filtration Pump"] is False
+    assert not (result["MBF_RELAY_STATE"] & 0x0002)
+
+
+@pytest.mark.asyncio
+async def test_filtration_state_fixup_relay_on_but_state_off(config, monkeypatch):
+    """Test fixup when MBF_RELAY_STATE bit 1 is set but MBF_PAR_FILTRATION_STATE says off.
+
+    Edge case: relay state claims pump is running but authoritative register says it's off.
+    Fixup must clear bit 1 from MBF_RELAY_STATE and set Filtration Pump to False.
+    """
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class DummyResp:
+        def __init__(self, regs, is_error=False):
+            self.registers = regs
+            self.isError = lambda: is_error
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    reg01 = [0] * 18
+    reg01[14] = 0x0002  # MBF_RELAY_STATE — bit 1 set (relay claims pump on)
+
+    installer_block1 = [0] * 31
+    installer_block1[25] = 0  # MBF_PAR_FILTRATION_STATE = 0 (authoritative: pump off)
+
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            DummyResp([1, 3, 1280, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            DummyResp([0] * 20),
+            DummyResp([0, 0]),
+            DummyResp([0] * 13),
+            DummyResp([0] * 4),
+            DummyResp(installer_block1),
+            DummyResp([0] * 13),
+            DummyResp([0] * 8),
+            DummyResp([0] * 14),
+            DummyResp([0] * 13),
+        ]
+    )
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01))
+
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all()
+
+    assert result["Filtration Pump"] is False, (
+        "Filtration Pump should be False based on MBF_PAR_FILTRATION_STATE=0"
+    )
+    assert not (result["MBF_RELAY_STATE"] & 0x0002), (
+        "MBF_RELAY_STATE bit 1 should be cleared to match the authoritative register"
+    )

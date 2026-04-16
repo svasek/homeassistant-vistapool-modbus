@@ -9,5 +9,8 @@
   },
   "editor.formatOnSave": true,
   "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": ["tests", "--cov=custom_components/vistapool"]
+  "python.testing.pytestArgs": ["tests", "--cov=custom_components/vistapool"],
+  "editor.codeActionsOnSave": {
+    "source.organizeImports.ruff": "always"
+  }
 }
