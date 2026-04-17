@@ -88,6 +88,12 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         await self.async_request_refresh()
         self._schedule_follow_up_refresh(delay)
 
+    def cancel_follow_up_refresh(self) -> None:
+        """Cancel any pending follow-up refresh (e.g. on config entry unload)."""
+        if self._follow_up_unsub:
+            self._follow_up_unsub()
+            self._follow_up_unsub = None
+
     def _schedule_follow_up_refresh(self, delay: float) -> None:
         """Schedule a delayed follow-up refresh."""
         if self._follow_up_unsub:
