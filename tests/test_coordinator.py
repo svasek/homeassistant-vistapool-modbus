@@ -600,3 +600,73 @@ async def test_async_update_data_updates_capability_snapshot(mock_entry):
     saved_options = hass.config_entries.async_update_entry.call_args[1]["options"]
     assert saved_options["_capabilities"]["MBF_PAR_MODEL"] == 2
     assert saved_options["_capabilities"]["MBF_PAR_TEMPERATURE_ACTIVE"] == 1
+
+
+@pytest.mark.asyncio
+async def test_request_refresh_with_followup(mock_entry, monkeypatch):
+    """async_request_refresh_with_followup calls immediate refresh and schedules follow-up."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    calls = []
+
+    def fake_call_later(hass, delay, action):
+        calls.append((delay, action))
+        return lambda: None
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    await coordinator.async_request_refresh_with_followup()
+    coordinator.async_request_refresh.assert_awaited_once()
+    assert len(calls) == 1
+    assert calls[0][0] == 2.0
+
+
+@pytest.mark.asyncio
+async def test_request_refresh_with_followup_custom_delay(mock_entry, monkeypatch):
+    """Follow-up delay can be customized."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    calls = []
+
+    def fake_call_later(hass, delay, action):
+        calls.append((delay, action))
+        return lambda: None
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    await coordinator.async_request_refresh_with_followup(delay=5.0)
+    assert calls[0][0] == 5.0
+
+
+@pytest.mark.asyncio
+async def test_follow_up_cancels_previous(mock_entry, monkeypatch):
+    """A new follow-up refresh cancels any previously scheduled one."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    unsub = MagicMock()
+
+    def fake_call_later(hass, delay, action):
+        return unsub
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    await coordinator.async_request_refresh_with_followup()
+    assert unsub.call_count == 0  # first schedule, nothing to cancel
+
+    await coordinator.async_request_refresh_with_followup()
+    assert unsub.call_count == 1  # previous follow-up was cancelled

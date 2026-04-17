@@ -241,7 +241,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 },
             )
             await asyncio.sleep(0.2)
-            await self.coordinator.async_request_refresh()
+            await self.coordinator.async_request_refresh_with_followup()
             self.async_write_ha_state()
             return
 
@@ -340,7 +340,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
         # Run a refresh to update the state
         await asyncio.sleep(0.5)
-        await self.coordinator.async_request_refresh()
+        await self.coordinator.async_request_refresh_with_followup()
         self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:

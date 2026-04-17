@@ -111,7 +111,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
         # Run a refresh to update the state
         await asyncio.sleep(2.0)
-        await self.coordinator.async_request_refresh()
+        await self.coordinator.async_request_refresh_with_followup()
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
@@ -136,7 +136,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
         # Run a refresh to update the state
         await asyncio.sleep(2.0)
-        await self.coordinator.async_request_refresh()
+        await self.coordinator.async_request_refresh_with_followup()
         self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:
