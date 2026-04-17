@@ -193,7 +193,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         # Run a refresh to update the state; skip delay for non-IO switch types
         if self._switch_type not in ("auto_time_sync", "winter_mode"):
             await asyncio.sleep(1.0)
-        await self.coordinator.async_request_refresh()
+            await self.coordinator.async_request_refresh_with_followup()
+        else:
+            await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
@@ -258,7 +260,9 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         # Run a refresh to update the state; skip delay for non-IO switch types
         if self._switch_type not in ("auto_time_sync", "winter_mode"):
             await asyncio.sleep(0.1)
-        await self.coordinator.async_request_refresh()
+            await self.coordinator.async_request_refresh_with_followup()
+        else:
+            await self.coordinator.async_request_refresh()
         self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:  # pragma: no cover

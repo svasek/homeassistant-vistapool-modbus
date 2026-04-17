@@ -33,6 +33,7 @@ def mock_coordinator():
     mock.device_slug = "vistapool"
     mock.config_entry.entry_id = "test_entry"
     mock.winter_mode = False
+    mock.async_request_refresh_with_followup = AsyncMock()
     return mock
 
 
@@ -954,3 +955,38 @@ async def test_switch_setup_skips_uv_mode_when_gpio_out_of_range(monkeypatch):
     entities = async_add_entities.call_args[0][0]
     keys = [e._key for e in entities]
     assert "MBF_PAR_UV_MODE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_follow_up_refresh_called_on_turn_on(mock_coordinator):
+    """Follow-up refresh is used after turn_on for IO switch types."""
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "manual", props)
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.async_request_refresh_with_followup.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_follow_up_refresh_called_on_turn_off(mock_coordinator):
+    """Follow-up refresh is used after turn_off for IO switch types."""
+    props = make_props(switch_type="aux", relay_index=1)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "aux1", props)
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    ent.coordinator.async_request_refresh_with_followup.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_no_follow_up_refresh_for_non_io_switch(mock_coordinator):
+    """Non-IO switches use plain refresh without follow-up."""
+    props = make_props(switch_type="auto_time_sync")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "sync", props)
+    ent.coordinator.set_auto_time_sync = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.async_request_refresh.assert_awaited_once()
+    ent.coordinator.async_request_refresh_with_followup.assert_not_awaited()
