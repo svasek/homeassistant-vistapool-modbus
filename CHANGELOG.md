@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.21.1...v1.22.0) (2026-04-17)
+
+
+### Features
+
+* ✨ add optimistic state updates with follow-up refresh for IO entities ([#109](https://github.com/svasek/homeassistant-vistapool-modbus/issues/109)) ([97b5470](https://github.com/svasek/homeassistant-vistapool-modbus/commit/97b54708331f8db26dbfc256829df4afa36b6323))
+
 ## [1.21.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.21.0...v1.21.1) (2026-04-16)
 
 
