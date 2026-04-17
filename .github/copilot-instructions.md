@@ -1,8 +1,42 @@
+# Agent Instructions
+
+## General
+
+- **Unrelated changes:** Do not modify files unrelated to the current task without asking first.
+- **Destructive actions:** Always ask for approval before performing destructive or hard-to-reverse actions (e.g. `git push --force`, `git reset --hard`, deleting branches/files, dropping tables).
+
+## Branch Naming
+
+Follow [Conventional Branch](https://conventional-branch.github.io/) format: `<type>/<description>`
+
+- Lowercase alphanumerics and hyphens only (dots allowed in release versions)
+- No consecutive, leading, or trailing hyphens or dots
+- Include ticket/issue number when applicable
+
+| prefix     | when to use                                 |
+| ---------- | ------------------------------------------- |
+| `feature/` | new feature (alias: `feat/`)                |
+| `bugfix/`  | bug fix (alias: `fix/`)                     |
+| `hotfix/`  | urgent fix                                  |
+| `release/` | release preparation (e.g. `release/v1.2.0`) |
+| `chore/`   | non-code tasks (deps, docs, config)         |
+
+Examples: `feat/add-login-page`, `fix/header-bug`, `feature/issue-123-new-login`
+
+## Git Commits
+
+### Approval
+
+- **Never commit automatically.** Always wait for my explicit approval before running `git commit`.
+- **Tests:** If the project has tests, run them before proposing a commit. Verify that all tests pass and that code coverage has not decreased.
+
+### Commit Message Format
+
 Always use the format: `<type>(<scope>): <gitmoji> <description>`
 
 **Rules:**
 
-- `scope` is optional but use it when the change is clearly scoped to a module  
+- `scope` is optional but use it when the change is clearly scoped to a module
   (e.g. `sensor`, `modbus`, `config`, `button`, `select`, `coordinator`, `number`, `switch`, `cover`, `binary_sensor`, `climate`, `light`, `text`, `time`)
 - `description`: lowercase, imperative mood ("add", not "added"), no period at end
 
@@ -64,3 +98,13 @@ refactor: ♻️ use data-driven option gating for cover sensor entities
 chore: 🏷️ update model and manufacturer details for VistaPool
 chore(deps): ⬆️ bump codecov/codecov-action from 5 to 6
 ```
+
+### Shell Execution
+
+Multi-line commit messages in zsh: use multiple `-m` flags (one per paragraph) or heredoc (`git commit -F - <<'EOF' ... EOF`). A single `-m` with newlines inside quotes does NOT work reliably.
+
+## Pull Requests
+
+- PR description must be in **English** and **Markdown** format (ready for copy & paste into GitHub).
+- **PR title** must follow the same commit message format: `<type>(<scope>): <gitmoji> <description>`.
+- **PR body** should use emoji to visually categorize sections and bullet points.
