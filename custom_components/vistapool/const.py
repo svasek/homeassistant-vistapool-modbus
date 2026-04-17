@@ -51,7 +51,7 @@ LOGGER = logging.getLogger(__name__)
 DEFAULT_TIMER_RESOLUTION = 15  # in minutes
 DEFAULT_SCAN_INTERVAL = 30  # in seconds
 FOLLOW_UP_REFRESH_DELAY = (
-    2.0  # seconds — delay before a second refresh after switch toggle
+    2.0  # seconds — delay before a second refresh after IO entity actions
 )
 DEFAULT_PORT = 502
 DEFAULT_SLAVE_ID = 1

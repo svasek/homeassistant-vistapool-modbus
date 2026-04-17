@@ -18,6 +18,7 @@ import pytest
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
+from custom_components.vistapool.const import FOLLOW_UP_REFRESH_DELAY
 from custom_components.vistapool.coordinator import VistaPoolCoordinator
 
 
@@ -623,7 +624,7 @@ async def test_request_refresh_with_followup(mock_entry, monkeypatch):
     await coordinator.async_request_refresh_with_followup()
     coordinator.async_request_refresh.assert_awaited_once()
     assert len(calls) == 1
-    assert calls[0][0] == 2.0
+    assert calls[0][0] == FOLLOW_UP_REFRESH_DELAY
 
 
 @pytest.mark.asyncio
