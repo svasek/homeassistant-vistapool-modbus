@@ -670,3 +670,32 @@ async def test_follow_up_cancels_previous(mock_entry, monkeypatch):
 
     await coordinator.async_request_refresh_with_followup()
     assert unsub.call_count == 1  # previous follow-up was cancelled
+
+
+@pytest.mark.asyncio
+async def test_follow_up_callback_triggers_refresh(mock_entry, monkeypatch):
+    """The scheduled follow-up callback clears unsub and creates a refresh task."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    captured_callback = None
+
+    def fake_call_later(hass, delay, action):
+        nonlocal captured_callback
+        captured_callback = action
+        return MagicMock()
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    await coordinator.async_request_refresh_with_followup()
+    assert captured_callback is not None
+    assert coordinator._follow_up_unsub is not None
+
+    # Simulate the timer firing
+    captured_callback(None)
+    assert coordinator._follow_up_unsub is None
+    hass.async_create_task.assert_called_once()
