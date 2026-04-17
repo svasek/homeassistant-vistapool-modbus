@@ -196,7 +196,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "stop": stop,
                 },
             )
-            self.coordinator.request_refresh_with_followup()
             return
 
         if self._select_type == "timer_period":
@@ -220,7 +219,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "period": period_value,
                 },
             )
-            self.coordinator.request_refresh_with_followup()
             return
 
         if self._select_type == "relay_mode":
@@ -242,7 +240,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             )
             self._optimistic_update(value)
             self.coordinator.async_set_updated_data(self.coordinator.data)
-            self.coordinator.request_refresh_with_followup()
             return
 
         if self._key == "MBF_CELL_BOOST":

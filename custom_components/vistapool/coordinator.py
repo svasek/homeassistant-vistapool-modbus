@@ -16,11 +16,10 @@
 
 import json
 import logging
-from collections.abc import Callable
 from datetime import timedelta
 
 from homeassistant.const import CONF_NAME
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -73,7 +72,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         self._capability_snapshot: dict = dict(entry.options.get("_capabilities", {}))
         self._firmware = "?"
         self._model = "Unknown"
-        self._follow_up_unsub: Callable | None = None
+        self._follow_up_unsub: CALLBACK_TYPE | None = None
 
     def request_refresh_with_followup(
         self, delay: float = FOLLOW_UP_REFRESH_DELAY
