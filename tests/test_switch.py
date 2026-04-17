@@ -33,7 +33,7 @@ def mock_coordinator():
     mock.device_slug = "vistapool"
     mock.config_entry.entry_id = "test_entry"
     mock.winter_mode = False
-    mock.async_request_refresh_with_followup = AsyncMock()
+    mock.request_refresh_with_followup = MagicMock()
     return mock
 
 
@@ -965,7 +965,7 @@ async def test_follow_up_refresh_called_on_turn_on(mock_coordinator):
     ent.coordinator.client = AsyncMock()
     ent.async_write_ha_state = MagicMock()
     await ent.async_turn_on()
-    ent.coordinator.async_request_refresh_with_followup.assert_awaited_once()
+    ent.coordinator.request_refresh_with_followup.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -976,7 +976,7 @@ async def test_follow_up_refresh_called_on_turn_off(mock_coordinator):
     ent.coordinator.client = AsyncMock()
     ent.async_write_ha_state = MagicMock()
     await ent.async_turn_off()
-    ent.coordinator.async_request_refresh_with_followup.assert_awaited_once()
+    ent.coordinator.request_refresh_with_followup.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -989,7 +989,7 @@ async def test_no_follow_up_refresh_for_non_io_switch(mock_coordinator):
     ent.async_write_ha_state = MagicMock()
     await ent.async_turn_on()
     ent.coordinator.async_request_refresh.assert_awaited_once()
-    ent.coordinator.async_request_refresh_with_followup.assert_not_awaited()
+    ent.coordinator.request_refresh_with_followup.assert_not_called()
 
 
 @pytest.mark.asyncio

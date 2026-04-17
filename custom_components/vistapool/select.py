@@ -196,7 +196,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "stop": stop,
                 },
             )
-            await self.coordinator.async_request_refresh_with_followup()
+            self.coordinator.request_refresh_with_followup()
             return
 
         if self._select_type == "timer_period":
@@ -220,7 +220,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "period": period_value,
                 },
             )
-            await self.coordinator.async_request_refresh_with_followup()
+            self.coordinator.request_refresh_with_followup()
             return
 
         if self._select_type == "relay_mode":
@@ -242,7 +242,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             )
             self._optimistic_update(value)
             self.coordinator.async_set_updated_data(self.coordinator.data)
-            await self.coordinator.async_request_refresh_with_followup()
+            self.coordinator.request_refresh_with_followup()
             return
 
         if self._key == "MBF_CELL_BOOST":
@@ -341,7 +341,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         # Optimistic update + schedule follow-up
         self._optimistic_update(value)
         self.coordinator.async_set_updated_data(self.coordinator.data)
-        await self.coordinator.async_request_refresh_with_followup()
+        self.coordinator.request_refresh_with_followup()
 
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
@@ -480,8 +480,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
         if data is None or value is None:
             return
         if self._select_type == "relay_mode":
+            timer_field = self._props.get("timer_field", "enable")
             timer_name = self._key.rsplit("_", 1)[0]
-            data[f"{timer_name}_enable"] = value
+            data[f"{timer_name}_{timer_field}"] = value
         elif self._key in (
             "MBF_PAR_FILT_MODE",
             "MBF_PAR_FILTVALVE_MODE",

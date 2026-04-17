@@ -132,6 +132,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
             _LOGGER.debug("Setting timer %s with data: %s", timer_name, timer_data)
             await coordinator.client.write_timer(timer_name, timer_data)
+            coordinator.request_refresh_with_followup()
         except ServiceValidationError:
             raise
         except Exception as e:

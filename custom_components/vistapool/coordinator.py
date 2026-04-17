@@ -75,7 +75,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         self._model = "Unknown"
         self._follow_up_unsub: Callable | None = None
 
-    async def async_request_refresh_with_followup(
+    def request_refresh_with_followup(
         self, delay: float = FOLLOW_UP_REFRESH_DELAY
     ) -> None:
         """Schedule a follow-up refresh after a delay.
@@ -99,6 +99,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         """Schedule a delayed follow-up refresh."""
         if self._follow_up_unsub:
             self._follow_up_unsub()
+            self._follow_up_unsub = None
 
         @callback
         def _do_refresh(_now) -> None:

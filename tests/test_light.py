@@ -34,7 +34,7 @@ def mock_coordinator():
     mock.winter_mode = False
     mock.client = AsyncMock()
     mock.async_request_refresh = AsyncMock()
-    mock.async_request_refresh_with_followup = AsyncMock()
+    mock.request_refresh_with_followup = MagicMock()
     config_entry = MagicMock()
     config_entry.entry_id = "test_entry"
     config_entry.unique_id = "test_slug"

@@ -605,7 +605,7 @@ async def test_async_update_data_updates_capability_snapshot(mock_entry):
 
 @pytest.mark.asyncio
 async def test_request_refresh_with_followup(mock_entry, monkeypatch):
-    """async_request_refresh_with_followup schedules a follow-up without immediate refresh."""
+    """request_refresh_with_followup schedules a follow-up without immediate refresh."""
     client = AsyncMock()
     hass = MagicMock()
     coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
@@ -621,7 +621,7 @@ async def test_request_refresh_with_followup(mock_entry, monkeypatch):
         "custom_components.vistapool.coordinator.async_call_later", fake_call_later
     )
 
-    await coordinator.async_request_refresh_with_followup()
+    coordinator.request_refresh_with_followup()
     coordinator.async_request_refresh.assert_not_awaited()
     assert len(calls) == 1
     assert calls[0][0] == FOLLOW_UP_REFRESH_DELAY
@@ -645,7 +645,7 @@ async def test_request_refresh_with_followup_custom_delay(mock_entry, monkeypatc
         "custom_components.vistapool.coordinator.async_call_later", fake_call_later
     )
 
-    await coordinator.async_request_refresh_with_followup(delay=5.0)
+    coordinator.request_refresh_with_followup(delay=5.0)
     assert calls[0][0] == 5.0
 
 
@@ -666,10 +666,10 @@ async def test_follow_up_cancels_previous(mock_entry, monkeypatch):
         "custom_components.vistapool.coordinator.async_call_later", fake_call_later
     )
 
-    await coordinator.async_request_refresh_with_followup()
+    coordinator.request_refresh_with_followup()
     assert unsub.call_count == 0  # first schedule, nothing to cancel
 
-    await coordinator.async_request_refresh_with_followup()
+    coordinator.request_refresh_with_followup()
     assert unsub.call_count == 1  # previous follow-up was cancelled
 
 
@@ -692,7 +692,7 @@ async def test_follow_up_callback_triggers_refresh(mock_entry, monkeypatch):
         "custom_components.vistapool.coordinator.async_call_later", fake_call_later
     )
 
-    await coordinator.async_request_refresh_with_followup()
+    coordinator.request_refresh_with_followup()
     assert captured_callback is not None
     assert coordinator._follow_up_unsub is not None
 
@@ -719,7 +719,7 @@ async def test_cancel_follow_up_refresh(mock_entry, monkeypatch):
         "custom_components.vistapool.coordinator.async_call_later", fake_call_later
     )
 
-    await coordinator.async_request_refresh_with_followup()
+    coordinator.request_refresh_with_followup()
     assert coordinator._follow_up_unsub is not None
 
     coordinator.cancel_follow_up_refresh()

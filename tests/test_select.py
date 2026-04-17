@@ -313,11 +313,11 @@ async def test_async_select_option_relay_mode(mock_coordinator):
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "relay_aux1_enable", props)
     ent.hass = MagicMock()
     ent.hass.services.async_call = AsyncMock()
-    ent.coordinator.async_request_refresh_with_followup = AsyncMock()
+    ent.coordinator.request_refresh_with_followup = MagicMock()
     ent.coordinator.async_set_updated_data = MagicMock()
     await ent.async_select_option("manual")
     ent.hass.services.async_call.assert_awaited()
-    ent.coordinator.async_request_refresh_with_followup.assert_awaited()
+    ent.coordinator.request_refresh_with_followup.assert_called()
     ent.coordinator.async_set_updated_data.assert_called()
 
 
