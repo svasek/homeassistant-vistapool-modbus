@@ -19,8 +19,9 @@ import logging
 from datetime import timedelta
 
 from homeassistant.const import CONF_NAME
-from homeassistant.core import HomeAssistant
+from homeassistant.core import CALLBACK_TYPE, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import slugify
 
@@ -28,6 +29,7 @@ from .const import (
     CAPABILITY_KEYS,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    FOLLOW_UP_REFRESH_DELAY,
     HEATING_SETPOINT_REGISTER,
     INTELLIGENT_SETPOINT_REGISTER,
     TIMER_BLOCKS,
@@ -70,6 +72,40 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
         self._capability_snapshot: dict = dict(entry.options.get("_capabilities", {}))
         self._firmware = "?"
         self._model = "Unknown"
+        self._follow_up_unsub: CALLBACK_TYPE | None = None
+
+    def request_refresh_with_followup(
+        self, delay: float = FOLLOW_UP_REFRESH_DELAY
+    ) -> None:
+        """Schedule a follow-up refresh after a delay.
+
+        The follow-up catches delayed device state changes that may not
+        be visible in Modbus registers immediately after a write.
+        No immediate refresh is performed — callers should apply optimistic
+        state updates before calling this method.
+        If called again before the previous follow-up fires, the old one
+        is cancelled to avoid stacking.
+        """
+        self._schedule_follow_up_refresh(delay)
+
+    def cancel_follow_up_refresh(self) -> None:
+        """Cancel any pending follow-up refresh (e.g. on config entry unload)."""
+        if self._follow_up_unsub:
+            self._follow_up_unsub()
+            self._follow_up_unsub = None
+
+    def _schedule_follow_up_refresh(self, delay: float) -> None:
+        """Schedule a delayed follow-up refresh."""
+        if self._follow_up_unsub:
+            self._follow_up_unsub()
+            self._follow_up_unsub = None
+
+        @callback
+        def _do_refresh(_now) -> None:
+            self._follow_up_unsub = None
+            self.hass.async_create_task(self.async_request_refresh())
+
+        self._follow_up_unsub = async_call_later(self.hass, delay, _do_refresh)
 
     async def _async_update_data(self):
         # Winter mode: skip all Modbus communication; entities remain but show unknown values

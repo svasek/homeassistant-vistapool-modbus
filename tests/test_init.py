@@ -33,6 +33,7 @@ async def test_async_handle_set_timer_happy(monkeypatch):
     coordinator = hass.data["vistapool"]["entry1"]
     coordinator.client.write_timer = AsyncMock(return_value=True)
     coordinator.async_request_refresh = AsyncMock()
+    coordinator.request_refresh_with_followup = MagicMock()
 
     # Prepare call mock
     call = MagicMock()
@@ -56,7 +57,8 @@ async def test_async_handle_set_timer_happy(monkeypatch):
         "filtration1",
         {"on": 30600, "interval": 6300, "period": 1234, "enable": 1},
     )
-    coordinator.async_request_refresh.assert_awaited_once()
+    coordinator.async_request_refresh.assert_not_awaited()
+    coordinator.request_refresh_with_followup.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -68,6 +70,7 @@ async def test_async_handle_set_timer_entry_id_fallback(monkeypatch):
     coordinator = hass.data["vistapool"]["fallback"]
     coordinator.client.write_timer = AsyncMock(return_value=True)
     coordinator.async_request_refresh = AsyncMock()
+    coordinator.request_refresh_with_followup = MagicMock()
 
     call = MagicMock()
     call.data = {
@@ -117,6 +120,7 @@ async def test_async_handle_set_timer_write_timer_exception(monkeypatch):
     coordinator = hass.data["vistapool"]["entryX"]
     coordinator.client.write_timer = AsyncMock(side_effect=Exception("fail!"))
     coordinator.async_request_refresh = AsyncMock()
+    coordinator.request_refresh_with_followup = MagicMock()
 
     call = MagicMock()
     call.data = {
@@ -203,7 +207,8 @@ async def test_async_unload_entry_success():
     hass.services.async_remove = MagicMock()
     result = await async_unload_entry(hass, config_entry)
     assert result is True
-    # Check that client.close() was called
+    # Check that follow-up refresh was cancelled and client closed
+    coordinator.cancel_follow_up_refresh.assert_called_once()
     assert coordinator.client.close.await_count == 1
 
 

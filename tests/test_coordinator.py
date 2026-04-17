@@ -18,6 +18,7 @@ import pytest
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
+from custom_components.vistapool.const import FOLLOW_UP_REFRESH_DELAY
 from custom_components.vistapool.coordinator import VistaPoolCoordinator
 
 
@@ -600,3 +601,138 @@ async def test_async_update_data_updates_capability_snapshot(mock_entry):
     saved_options = hass.config_entries.async_update_entry.call_args[1]["options"]
     assert saved_options["_capabilities"]["MBF_PAR_MODEL"] == 2
     assert saved_options["_capabilities"]["MBF_PAR_TEMPERATURE_ACTIVE"] == 1
+
+
+@pytest.mark.asyncio
+async def test_request_refresh_with_followup(mock_entry, monkeypatch):
+    """request_refresh_with_followup schedules a follow-up without immediate refresh."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    calls = []
+
+    def fake_call_later(hass, delay, action):
+        calls.append((delay, action))
+        return lambda: None
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    coordinator.request_refresh_with_followup()
+    coordinator.async_request_refresh.assert_not_awaited()
+    assert len(calls) == 1
+    assert calls[0][0] == FOLLOW_UP_REFRESH_DELAY
+
+
+@pytest.mark.asyncio
+async def test_request_refresh_with_followup_custom_delay(mock_entry, monkeypatch):
+    """Follow-up delay can be customized."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    calls = []
+
+    def fake_call_later(hass, delay, action):
+        calls.append((delay, action))
+        return lambda: None
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    coordinator.request_refresh_with_followup(delay=5.0)
+    assert calls[0][0] == 5.0
+
+
+@pytest.mark.asyncio
+async def test_follow_up_cancels_previous(mock_entry, monkeypatch):
+    """A new follow-up refresh cancels any previously scheduled one."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    unsub = MagicMock()
+
+    def fake_call_later(hass, delay, action):
+        return unsub
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    coordinator.request_refresh_with_followup()
+    assert unsub.call_count == 0  # first schedule, nothing to cancel
+
+    coordinator.request_refresh_with_followup()
+    assert unsub.call_count == 1  # previous follow-up was cancelled
+
+
+@pytest.mark.asyncio
+async def test_follow_up_callback_triggers_refresh(mock_entry, monkeypatch):
+    """The scheduled follow-up callback clears unsub and creates a refresh task."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    captured_callback = None
+
+    def fake_call_later(hass, delay, action):
+        nonlocal captured_callback
+        captured_callback = action
+        return MagicMock()
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    coordinator.request_refresh_with_followup()
+    assert captured_callback is not None
+    assert coordinator._follow_up_unsub is not None
+
+    # Simulate the timer firing
+    captured_callback(None)
+    assert coordinator._follow_up_unsub is None
+    hass.async_create_task.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_cancel_follow_up_refresh(mock_entry, monkeypatch):
+    """cancel_follow_up_refresh cancels a pending follow-up and clears the handle."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    unsub = MagicMock()
+
+    def fake_call_later(hass, delay, action):
+        return unsub
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    coordinator.request_refresh_with_followup()
+    assert coordinator._follow_up_unsub is not None
+
+    coordinator.cancel_follow_up_refresh()
+    unsub.assert_called_once()
+    assert coordinator._follow_up_unsub is None
+
+
+@pytest.mark.asyncio
+async def test_cancel_follow_up_refresh_noop_when_none(mock_entry):
+    """cancel_follow_up_refresh is safe to call when no follow-up is pending."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    assert coordinator._follow_up_unsub is None
+    coordinator.cancel_follow_up_refresh()  # should not raise
+    assert coordinator._follow_up_unsub is None

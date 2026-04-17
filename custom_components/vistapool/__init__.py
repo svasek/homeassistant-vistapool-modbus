@@ -67,8 +67,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a VistaPool config entry."""
     coordinator = hass.data[DOMAIN].get(entry.entry_id)
-    if coordinator and getattr(coordinator, "client", None):
-        await coordinator.client.close()
+    if coordinator:
+        coordinator.cancel_follow_up_refresh()
+        if getattr(coordinator, "client", None):
+            await coordinator.client.close()
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
@@ -130,7 +132,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
             _LOGGER.debug("Setting timer %s with data: %s", timer_name, timer_data)
             await coordinator.client.write_timer(timer_name, timer_data)
-            await coordinator.async_request_refresh()
+            coordinator.request_refresh_with_followup()
         except ServiceValidationError:
             raise
         except Exception as e:

@@ -33,6 +33,7 @@ def mock_coordinator():
     mock.device_slug = "vistapool"
     mock.config_entry.entry_id = "test_entry"
     mock.winter_mode = False
+    mock.request_refresh_with_followup = MagicMock()
     return mock
 
 
@@ -954,3 +955,104 @@ async def test_switch_setup_skips_uv_mode_when_gpio_out_of_range(monkeypatch):
     entities = async_add_entities.call_args[0][0]
     keys = [e._key for e in entities]
     assert "MBF_PAR_UV_MODE" not in keys
+
+
+@pytest.mark.asyncio
+async def test_follow_up_refresh_called_on_turn_on(mock_coordinator):
+    """Follow-up refresh is used after turn_on for IO switch types."""
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "manual", props)
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.request_refresh_with_followup.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_follow_up_refresh_called_on_turn_off(mock_coordinator):
+    """Follow-up refresh is used after turn_off for IO switch types."""
+    props = make_props(switch_type="aux", relay_index=1)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "aux1", props)
+    ent.coordinator.client = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_off()
+    ent.coordinator.request_refresh_with_followup.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_no_follow_up_refresh_for_non_io_switch(mock_coordinator):
+    """Non-IO switches use plain refresh without follow-up."""
+    props = make_props(switch_type="auto_time_sync")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "sync", props)
+    ent.coordinator.set_auto_time_sync = AsyncMock()
+    ent.coordinator.async_request_refresh = AsyncMock()
+    ent.async_write_ha_state = MagicMock()
+    await ent.async_turn_on()
+    ent.coordinator.async_request_refresh.assert_awaited_once()
+    ent.coordinator.request_refresh_with_followup.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_optimistic_update_manual_filtration(mock_coordinator):
+    """Optimistic update sets MBF_PAR_FILT_MANUAL_STATE correctly."""
+    mock_coordinator.data = {"MBF_PAR_FILT_MANUAL_STATE": 0}
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "manual", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["MBF_PAR_FILT_MANUAL_STATE"] == 1
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["MBF_PAR_FILT_MANUAL_STATE"] == 0
+
+
+@pytest.mark.asyncio
+async def test_optimistic_update_aux(mock_coordinator):
+    """Optimistic update sets data[key] for aux switches."""
+    mock_coordinator.data = {"aux1": False}
+    props = make_props(switch_type="aux", relay_index=1)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "aux1", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["aux1"] is True
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["aux1"] is False
+
+
+@pytest.mark.asyncio
+async def test_optimistic_update_relay_timer(mock_coordinator):
+    """Optimistic update sets relay enable value for relay_timer switches."""
+    mock_coordinator.data = {"relay_aux1_enable": 4}
+    props = make_props(
+        switch_type="relay_timer",
+        timer_block_addr=0x04AC,
+        function_addr=0x04B7,
+        function_code=0x0800,
+    )
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "aux1", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["relay_aux1_enable"] == 3
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["relay_aux1_enable"] == 4
+
+
+@pytest.mark.asyncio
+async def test_optimistic_update_bitmask(mock_coordinator):
+    """Optimistic update sets bitmask values correctly."""
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0}
+    props = make_props(
+        switch_type="bitmask",
+        function_addr=0x042C,
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "cover", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["MBF_PAR_HIDRO_COVER_ENABLE"] == 1
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["MBF_PAR_HIDRO_COVER_ENABLE"] == 0
+
+
+def test_optimistic_update_noop_when_data_is_none(mock_coordinator):
+    """Optimistic update is a no-op when coordinator data is None."""
+    mock_coordinator.data = None
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "manual", props)
+    ent._optimistic_update(True)  # Should not raise

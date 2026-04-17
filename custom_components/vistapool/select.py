@@ -196,7 +196,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "stop": stop,
                 },
             )
-            await asyncio.sleep(0.2)
             return
 
         if self._select_type == "timer_period":
@@ -220,7 +219,6 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "period": period_value,
                 },
             )
-            await asyncio.sleep(0.2)
             return
 
         if self._select_type == "relay_mode":
@@ -240,9 +238,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     timer_field: value,
                 },
             )
-            await asyncio.sleep(0.2)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
+            self._optimistic_update(value)
+            if self.coordinator.data is not None:
+                self.coordinator.async_set_updated_data(self.coordinator.data)
             return
 
         if self._key == "MBF_CELL_BOOST":
@@ -332,16 +330,16 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                         await asyncio.sleep(0.1)
             # Set the new mode
             await client.async_write_register(self._register, value)
-            await asyncio.sleep(0.2)
             if self._key == "MBF_PAR_FILT_MODE" and option == "backwash":
                 _LOGGER.info(
                     f'Your pool "{VistaPoolEntity.slugify(self.coordinator.device_name)}" has been switched to the BACKWASH mode!'
                 )
 
-        # Run a refresh to update the state
-        await asyncio.sleep(0.5)
-        await self.coordinator.async_request_refresh()
-        self.async_write_ha_state()
+            # Optimistic update + schedule follow-up
+            self._optimistic_update(value)
+            if self.coordinator.data is not None:
+                self.coordinator.async_set_updated_data(self.coordinator.data)
+            self.coordinator.request_refresh_with_followup()
 
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
@@ -473,6 +471,23 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
             return options
 
         return [self._options_map[k] for k in option_keys]
+
+    def _optimistic_update(self, value: int | None) -> None:
+        """Apply an optimistic state update to coordinator data."""
+        data = self.coordinator.data
+        if data is None or value is None:
+            return
+        if self._select_type == "relay_mode":
+            timer_field = self._props.get("timer_field", "enable")
+            timer_name = self._key.rsplit("_", 1)[0]
+            data[f"{timer_name}_{timer_field}"] = value
+        elif self._key in (
+            "MBF_PAR_FILT_MODE",
+            "MBF_PAR_FILTVALVE_MODE",
+            "MBF_PAR_FILTVALVE_PERIOD_MINUTES",
+            "MBF_PAR_INTELLIGENT_FILT_MIN_TIME",
+        ):
+            data[self._key] = value
 
     @property
     def current_option(self) -> str | None:

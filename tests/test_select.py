@@ -39,6 +39,8 @@ def mock_coordinator():
     mock.data = {}
     mock.device_slug = "vistapool"
     mock.winter_mode = False
+    mock.async_set_updated_data = MagicMock()
+    mock.request_refresh_with_followup = MagicMock()
     config_entry = MagicMock()
     config_entry.entry_id = "test_entry"
     config_entry.unique_id = "test_slug"
@@ -313,12 +315,9 @@ async def test_async_select_option_relay_mode(mock_coordinator):
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "relay_aux1_enable", props)
     ent.hass = MagicMock()
     ent.hass.services.async_call = AsyncMock()
-    ent.coordinator.async_request_refresh = AsyncMock()
-    ent.async_write_ha_state = MagicMock()
     await ent.async_select_option("manual")
     ent.hass.services.async_call.assert_awaited()
-    ent.coordinator.async_request_refresh.assert_awaited()
-    ent.async_write_ha_state.assert_called()
+    ent.coordinator.async_set_updated_data.assert_called()
 
 
 @pytest.mark.asyncio
@@ -1109,3 +1108,38 @@ def test_select_filtvalve_mode_options(mock_coordinator):
     )
     mock_coordinator.data = {"MBF_PAR_FILTVALVE_MODE": 1}
     assert ent.options == ["enabled", "always_on", "always_off"]
+
+
+def test_optimistic_update_relay_mode(mock_coordinator):
+    """Optimistic update sets relay enable value for relay_mode selects."""
+    props = SELECT_DEFINITIONS["relay_aux1_mode"]
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "relay_aux1_mode", props)
+    mock_coordinator.data = {"relay_aux1_enable": 4}
+    ent._optimistic_update(3)
+    assert mock_coordinator.data["relay_aux1_enable"] == 3
+
+
+def test_optimistic_update_filt_mode(mock_coordinator):
+    """Optimistic update sets MBF_PAR_FILT_MODE value."""
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_FILT_MODE": 0}
+    ent._optimistic_update(1)
+    assert mock_coordinator.data["MBF_PAR_FILT_MODE"] == 1
+
+
+def test_optimistic_update_noop_when_data_is_none(mock_coordinator):
+    """Optimistic update is a no-op when coordinator data is None."""
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = None
+    ent._optimistic_update(1)  # Should not raise
+
+
+def test_optimistic_update_noop_when_value_is_none(mock_coordinator):
+    """Optimistic update is a no-op when value is None."""
+    props = SELECT_DEFINITIONS["MBF_PAR_FILT_MODE"]
+    ent = VistaPoolSelect(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", props)
+    mock_coordinator.data = {"MBF_PAR_FILT_MODE": 0}
+    ent._optimistic_update(None)
+    assert mock_coordinator.data["MBF_PAR_FILT_MODE"] == 0

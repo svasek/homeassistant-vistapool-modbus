@@ -34,6 +34,7 @@ def mock_coordinator():
     mock.winter_mode = False
     mock.client = AsyncMock()
     mock.async_request_refresh = AsyncMock()
+    mock.request_refresh_with_followup = MagicMock()
     config_entry = MagicMock()
     config_entry.entry_id = "test_entry"
     config_entry.unique_id = "test_slug"
@@ -326,3 +327,20 @@ def test_available_false_on_coordinator_failure(mock_coordinator, light_props):
     mock_coordinator.last_update_success = False
     ent = VistaPoolLight(mock_coordinator, "test_entry", "light", light_props)
     assert ent.available is False
+
+
+def test_optimistic_update_light(mock_coordinator, light_props):
+    """Optimistic update sets relay_light_enable correctly."""
+    mock_coordinator.data = {"relay_light_enable": 4}
+    ent = VistaPoolLight(mock_coordinator, "test_entry", "light", light_props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["relay_light_enable"] == 3
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["relay_light_enable"] == 4
+
+
+def test_optimistic_update_light_noop_when_data_is_none(mock_coordinator, light_props):
+    """Optimistic update is a no-op when coordinator data is None."""
+    mock_coordinator.data = None
+    ent = VistaPoolLight(mock_coordinator, "test_entry", "light", light_props)
+    ent._optimistic_update(True)  # Should not raise

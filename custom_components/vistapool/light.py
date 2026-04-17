@@ -14,7 +14,6 @@
 
 """VistaPool Integration for Home Assistant - Light Module"""
 
-import asyncio
 import logging
 
 from homeassistant.components.light import ColorMode, LightEntity
@@ -109,10 +108,11 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
             await client.async_write_register(self.timer_block_addr, 3)  # Always ON
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
 
-        # Run a refresh to update the state
-        await asyncio.sleep(2.0)
-        await self.coordinator.async_request_refresh()
-        self.async_write_ha_state()
+        # Optimistic update + schedule follow-up
+        self._optimistic_update(True)
+        if self.coordinator.data is not None:
+            self.coordinator.async_set_updated_data(self.coordinator.data)
+        self.coordinator.request_refresh_with_followup()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the light OFF."""
@@ -134,10 +134,19 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
             await client.async_write_register(self.timer_block_addr, 4)  # Always OFF
             await client.async_write_register(EXEC_REGISTER, 1)  # Commit
 
-        # Run a refresh to update the state
-        await asyncio.sleep(2.0)
-        await self.coordinator.async_request_refresh()
-        self.async_write_ha_state()
+        # Optimistic update + schedule follow-up
+        self._optimistic_update(False)
+        if self.coordinator.data is not None:
+            self.coordinator.async_set_updated_data(self.coordinator.data)
+        self.coordinator.request_refresh_with_followup()
+
+    def _optimistic_update(self, state: bool) -> None:
+        """Apply an optimistic state update to coordinator data."""
+        data = self.coordinator.data
+        if data is None:
+            return
+        if self._switch_type == "relay_timer":
+            data["relay_light_enable"] = 3 if state else 4
 
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
