@@ -39,6 +39,8 @@ def mock_coordinator():
     mock.data = {}
     mock.device_slug = "vistapool"
     mock.winter_mode = False
+    mock.async_set_updated_data = MagicMock()
+    mock.request_refresh_with_followup = MagicMock()
     config_entry = MagicMock()
     config_entry.entry_id = "test_entry"
     config_entry.unique_id = "test_slug"
@@ -313,7 +315,6 @@ async def test_async_select_option_relay_mode(mock_coordinator):
     ent = VistaPoolSelect(mock_coordinator, "test_entry", "relay_aux1_enable", props)
     ent.hass = MagicMock()
     ent.hass.services.async_call = AsyncMock()
-    ent.coordinator.async_set_updated_data = MagicMock()
     await ent.async_select_option("manual")
     ent.hass.services.async_call.assert_awaited()
     ent.coordinator.async_set_updated_data.assert_called()
