@@ -192,7 +192,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         # Optimistic update + schedule follow-up for IO switch types
         if self._switch_type not in ("auto_time_sync", "winter_mode"):
             self._optimistic_update(True)
-            self.async_write_ha_state()
+            self.coordinator.async_set_updated_data(self.coordinator.data)
             await self.coordinator.async_request_refresh_with_followup()
         else:
             await self.coordinator.async_request_refresh()
@@ -260,7 +260,7 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
         # Optimistic update + schedule follow-up for IO switch types
         if self._switch_type not in ("auto_time_sync", "winter_mode"):
             self._optimistic_update(False)
-            self.async_write_ha_state()
+            self.coordinator.async_set_updated_data(self.coordinator.data)
             await self.coordinator.async_request_refresh_with_followup()
         else:
             await self.coordinator.async_request_refresh()

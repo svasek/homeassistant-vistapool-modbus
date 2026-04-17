@@ -56,7 +56,7 @@ async def test_async_handle_set_timer_happy(monkeypatch):
         "filtration1",
         {"on": 30600, "interval": 6300, "period": 1234, "enable": 1},
     )
-    coordinator.async_request_refresh.assert_awaited_once()
+    coordinator.async_request_refresh.assert_not_awaited()
 
 
 @pytest.mark.asyncio

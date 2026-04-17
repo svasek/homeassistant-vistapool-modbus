@@ -110,7 +110,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
         # Optimistic update + schedule follow-up
         self._optimistic_update(True)
-        self.async_write_ha_state()
+        self.coordinator.async_set_updated_data(self.coordinator.data)
         await self.coordinator.async_request_refresh_with_followup()
 
     async def async_turn_off(self, **kwargs) -> None:
@@ -135,7 +135,7 @@ class VistaPoolLight(VistaPoolEntity, LightEntity):
 
         # Optimistic update + schedule follow-up
         self._optimistic_update(False)
-        self.async_write_ha_state()
+        self.coordinator.async_set_updated_data(self.coordinator.data)
         await self.coordinator.async_request_refresh_with_followup()
 
     def _optimistic_update(self, state: bool) -> None:

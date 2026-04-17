@@ -196,7 +196,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "stop": stop,
                 },
             )
-            await asyncio.sleep(0.2)
+            await self.coordinator.async_request_refresh_with_followup()
             return
 
         if self._select_type == "timer_period":
@@ -220,7 +220,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     "period": period_value,
                 },
             )
-            await asyncio.sleep(0.2)
+            await self.coordinator.async_request_refresh_with_followup()
             return
 
         if self._select_type == "relay_mode":
@@ -240,9 +240,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                     timer_field: value,
                 },
             )
-            await asyncio.sleep(0.2)
             self._optimistic_update(value)
-            self.async_write_ha_state()
+            self.coordinator.async_set_updated_data(self.coordinator.data)
             await self.coordinator.async_request_refresh_with_followup()
             return
 
@@ -341,7 +340,7 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
         # Optimistic update + schedule follow-up
         self._optimistic_update(value)
-        self.async_write_ha_state()
+        self.coordinator.async_set_updated_data(self.coordinator.data)
         await self.coordinator.async_request_refresh_with_followup()
 
     async def async_added_to_hass(self) -> None:

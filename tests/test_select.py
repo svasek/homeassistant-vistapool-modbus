@@ -314,11 +314,11 @@ async def test_async_select_option_relay_mode(mock_coordinator):
     ent.hass = MagicMock()
     ent.hass.services.async_call = AsyncMock()
     ent.coordinator.async_request_refresh_with_followup = AsyncMock()
-    ent.async_write_ha_state = MagicMock()
+    ent.coordinator.async_set_updated_data = MagicMock()
     await ent.async_select_option("manual")
     ent.hass.services.async_call.assert_awaited()
     ent.coordinator.async_request_refresh_with_followup.assert_awaited()
-    ent.async_write_ha_state.assert_called()
+    ent.coordinator.async_set_updated_data.assert_called()
 
 
 @pytest.mark.asyncio
