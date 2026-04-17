@@ -78,14 +78,15 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
     async def async_request_refresh_with_followup(
         self, delay: float = FOLLOW_UP_REFRESH_DELAY
     ) -> None:
-        """Perform an immediate refresh and schedule a follow-up refresh.
+        """Schedule a follow-up refresh after a delay.
 
         The follow-up catches delayed device state changes that may not
         be visible in Modbus registers immediately after a write.
+        No immediate refresh is performed — callers should apply optimistic
+        state updates before calling this method.
         If called again before the previous follow-up fires, the old one
         is cancelled to avoid stacking.
         """
-        await self.async_request_refresh()
         self._schedule_follow_up_refresh(delay)
 
     def cancel_follow_up_refresh(self) -> None:

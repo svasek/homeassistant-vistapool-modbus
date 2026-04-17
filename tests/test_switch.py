@@ -990,3 +990,57 @@ async def test_no_follow_up_refresh_for_non_io_switch(mock_coordinator):
     await ent.async_turn_on()
     ent.coordinator.async_request_refresh.assert_awaited_once()
     ent.coordinator.async_request_refresh_with_followup.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_optimistic_update_manual_filtration(mock_coordinator):
+    """Optimistic update sets MBF_PAR_FILT_MANUAL_STATE correctly."""
+    mock_coordinator.data = {"MBF_PAR_FILT_MANUAL_STATE": 0}
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "manual", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["MBF_PAR_FILT_MANUAL_STATE"] == 1
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["MBF_PAR_FILT_MANUAL_STATE"] == 0
+
+
+@pytest.mark.asyncio
+async def test_optimistic_update_relay_timer(mock_coordinator):
+    """Optimistic update sets relay enable value for relay_timer switches."""
+    mock_coordinator.data = {"relay_aux1_enable": 4}
+    props = make_props(
+        switch_type="relay_timer",
+        timer_block_addr=0x04AC,
+        function_addr=0x04B7,
+        function_code=0x0800,
+    )
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "aux1", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["relay_aux1_enable"] == 3
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["relay_aux1_enable"] == 4
+
+
+@pytest.mark.asyncio
+async def test_optimistic_update_bitmask(mock_coordinator):
+    """Optimistic update sets bitmask values correctly."""
+    mock_coordinator.data = {"MBF_PAR_HIDRO_COVER_ENABLE": 0}
+    props = make_props(
+        switch_type="bitmask",
+        function_addr=0x042C,
+        mask_bit=0x0001,
+        data_key="MBF_PAR_HIDRO_COVER_ENABLE",
+    )
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "cover", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["MBF_PAR_HIDRO_COVER_ENABLE"] == 1
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["MBF_PAR_HIDRO_COVER_ENABLE"] == 0
+
+
+def test_optimistic_update_noop_when_data_is_none(mock_coordinator):
+    """Optimistic update is a no-op when coordinator data is None."""
+    mock_coordinator.data = None
+    props = make_props(switch_type="manual_filtration")
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "manual", props)
+    ent._optimistic_update(True)  # Should not raise

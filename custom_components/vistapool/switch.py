@@ -14,7 +14,6 @@
 
 """VistaPool Integration for Home Assistant - Switch Module"""
 
-import asyncio
 import logging
 
 from homeassistant.components.switch import SwitchEntity
@@ -190,13 +189,14 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )
             await client.async_write_register(self.function_addr, new_value, apply=True)
 
-        # Run a refresh to update the state; skip delay for non-IO switch types
+        # Optimistic update + schedule follow-up for IO switch types
         if self._switch_type not in ("auto_time_sync", "winter_mode"):
-            await asyncio.sleep(1.0)
+            self._optimistic_update(True)
+            self.async_write_ha_state()
             await self.coordinator.async_request_refresh_with_followup()
         else:
             await self.coordinator.async_request_refresh()
-        self.async_write_ha_state()
+            self.async_write_ha_state()
 
     async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch OFF."""
@@ -257,13 +257,14 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             )
             await client.async_write_register(self.function_addr, new_value, apply=True)
 
-        # Run a refresh to update the state; skip delay for non-IO switch types
+        # Optimistic update + schedule follow-up for IO switch types
         if self._switch_type not in ("auto_time_sync", "winter_mode"):
-            await asyncio.sleep(0.1)
+            self._optimistic_update(False)
+            self.async_write_ha_state()
             await self.coordinator.async_request_refresh_with_followup()
         else:
             await self.coordinator.async_request_refresh()
-        self.async_write_ha_state()
+            self.async_write_ha_state()
 
     async def async_added_to_hass(self) -> None:  # pragma: no cover
         """Handle entity which will be added to hass."""
@@ -274,6 +275,28 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             getattr(self, "has_entity_name", None),
         )
         await super().async_added_to_hass()
+
+    def _optimistic_update(self, state: bool) -> None:
+        """Apply an optimistic state update to coordinator data."""
+        data = self.coordinator.data
+        if data is None:
+            return
+        if self._switch_type == "manual_filtration":
+            data["MBF_PAR_FILT_MANUAL_STATE"] = 1 if state else 0
+        elif self._switch_type == "relay_timer":
+            data[f"relay_{self._key}_enable"] = 3 if state else 4
+        elif self._switch_type == "climate_mode":
+            data["MBF_PAR_CLIMA_ONOFF"] = 1 if state else 0
+        elif self._switch_type == "smart_anti_freeze":
+            data["MBF_PAR_SMART_ANTI_FREEZE"] = 1 if state else 0
+        elif self._switch_type == "uv_mode":
+            data["MBF_PAR_UV_MODE"] = 1 if state else 0
+        elif self._switch_type == "bitmask":
+            current = int(data.get(self._data_key, 0) or 0)
+            if state:
+                data[self._data_key] = current | self._mask_bit
+            else:
+                data[self._data_key] = current & ~self._mask_bit
 
     @property
     def is_on(self) -> bool:

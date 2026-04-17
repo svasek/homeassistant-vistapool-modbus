@@ -605,7 +605,7 @@ async def test_async_update_data_updates_capability_snapshot(mock_entry):
 
 @pytest.mark.asyncio
 async def test_request_refresh_with_followup(mock_entry, monkeypatch):
-    """async_request_refresh_with_followup calls immediate refresh and schedules follow-up."""
+    """async_request_refresh_with_followup schedules a follow-up without immediate refresh."""
     client = AsyncMock()
     hass = MagicMock()
     coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
@@ -622,7 +622,7 @@ async def test_request_refresh_with_followup(mock_entry, monkeypatch):
     )
 
     await coordinator.async_request_refresh_with_followup()
-    coordinator.async_request_refresh.assert_awaited_once()
+    coordinator.async_request_refresh.assert_not_awaited()
     assert len(calls) == 1
     assert calls[0][0] == FOLLOW_UP_REFRESH_DELAY
 
