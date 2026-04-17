@@ -330,17 +330,16 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                         await asyncio.sleep(0.1)
             # Set the new mode
             await client.async_write_register(self._register, value)
-            await asyncio.sleep(0.2)
             if self._key == "MBF_PAR_FILT_MODE" and option == "backwash":
                 _LOGGER.info(
                     f'Your pool "{VistaPoolEntity.slugify(self.coordinator.device_name)}" has been switched to the BACKWASH mode!'
                 )
 
-        # Optimistic update + schedule follow-up
-        self._optimistic_update(value)
-        if self.coordinator.data is not None:
-            self.coordinator.async_set_updated_data(self.coordinator.data)
-        self.coordinator.request_refresh_with_followup()
+            # Optimistic update + schedule follow-up
+            self._optimistic_update(value)
+            if self.coordinator.data is not None:
+                self.coordinator.async_set_updated_data(self.coordinator.data)
+            self.coordinator.request_refresh_with_followup()
 
     async def async_added_to_hass(self) -> None:
         """Run when the entity is added to hass."""
