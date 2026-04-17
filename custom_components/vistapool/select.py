@@ -239,7 +239,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 },
             )
             self._optimistic_update(value)
-            self.coordinator.async_set_updated_data(self.coordinator.data)
+            if self.coordinator.data is not None:
+                self.coordinator.async_set_updated_data(self.coordinator.data)
             return
 
         if self._key == "MBF_CELL_BOOST":
@@ -337,7 +338,8 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
 
         # Optimistic update + schedule follow-up
         self._optimistic_update(value)
-        self.coordinator.async_set_updated_data(self.coordinator.data)
+        if self.coordinator.data is not None:
+            self.coordinator.async_set_updated_data(self.coordinator.data)
         self.coordinator.request_refresh_with_followup()
 
     async def async_added_to_hass(self) -> None:
