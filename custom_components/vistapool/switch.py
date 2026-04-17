@@ -283,6 +283,8 @@ class VistaPoolSwitch(VistaPoolEntity, SwitchEntity):
             return
         if self._switch_type == "manual_filtration":
             data["MBF_PAR_FILT_MANUAL_STATE"] = 1 if state else 0
+        elif self._switch_type == "aux":
+            data[self._key] = state
         elif self._switch_type == "relay_timer":
             data[f"relay_{self._key}_enable"] = 3 if state else 4
         elif self._switch_type == "climate_mode":

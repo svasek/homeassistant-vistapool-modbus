@@ -1005,6 +1005,18 @@ async def test_optimistic_update_manual_filtration(mock_coordinator):
 
 
 @pytest.mark.asyncio
+async def test_optimistic_update_aux(mock_coordinator):
+    """Optimistic update sets data[key] for aux switches."""
+    mock_coordinator.data = {"aux1": False}
+    props = make_props(switch_type="aux", relay_index=1)
+    ent = VistaPoolSwitch(mock_coordinator, "test_entry", "aux1", props)
+    ent._optimistic_update(True)
+    assert mock_coordinator.data["aux1"] is True
+    ent._optimistic_update(False)
+    assert mock_coordinator.data["aux1"] is False
+
+
+@pytest.mark.asyncio
 async def test_optimistic_update_relay_timer(mock_coordinator):
     """Optimistic update sets relay enable value for relay_timer switches."""
     mock_coordinator.data = {"relay_aux1_enable": 4}

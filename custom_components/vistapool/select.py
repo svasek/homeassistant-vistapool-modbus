@@ -241,8 +241,9 @@ class VistaPoolSelect(VistaPoolEntity, SelectEntity):
                 },
             )
             await asyncio.sleep(0.2)
-            await self.coordinator.async_request_refresh_with_followup()
+            self._optimistic_update(value)
             self.async_write_ha_state()
+            await self.coordinator.async_request_refresh_with_followup()
             return
 
         if self._key == "MBF_CELL_BOOST":
