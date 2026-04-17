@@ -699,3 +699,39 @@ async def test_follow_up_callback_triggers_refresh(mock_entry, monkeypatch):
     captured_callback(None)
     assert coordinator._follow_up_unsub is None
     hass.async_create_task.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_cancel_follow_up_refresh(mock_entry, monkeypatch):
+    """cancel_follow_up_refresh cancels a pending follow-up and clears the handle."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    coordinator.async_request_refresh = AsyncMock()
+
+    unsub = MagicMock()
+
+    def fake_call_later(hass, delay, action):
+        return unsub
+
+    monkeypatch.setattr(
+        "custom_components.vistapool.coordinator.async_call_later", fake_call_later
+    )
+
+    await coordinator.async_request_refresh_with_followup()
+    assert coordinator._follow_up_unsub is not None
+
+    coordinator.cancel_follow_up_refresh()
+    unsub.assert_called_once()
+    assert coordinator._follow_up_unsub is None
+
+
+@pytest.mark.asyncio
+async def test_cancel_follow_up_refresh_noop_when_none(mock_entry):
+    """cancel_follow_up_refresh is safe to call when no follow-up is pending."""
+    client = AsyncMock()
+    hass = MagicMock()
+    coordinator = VistaPoolCoordinator(hass, client, mock_entry, mock_entry.entry_id)
+    assert coordinator._follow_up_unsub is None
+    coordinator.cancel_follow_up_refresh()  # should not raise
+    assert coordinator._follow_up_unsub is None

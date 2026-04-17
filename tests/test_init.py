@@ -203,7 +203,8 @@ async def test_async_unload_entry_success():
     hass.services.async_remove = MagicMock()
     result = await async_unload_entry(hass, config_entry)
     assert result is True
-    # Check that client.close() was called
+    # Check that follow-up refresh was cancelled and client closed
+    coordinator.cancel_follow_up_refresh.assert_called_once()
     assert coordinator.client.close.await_count == 1
 
 
