@@ -20,7 +20,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Run release-please
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         id: release
         with:
           release-type: simple
