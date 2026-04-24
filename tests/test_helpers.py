@@ -59,13 +59,13 @@ def test_build_timer_block():
 
 
 def test_get_filtration_speed_low():
-    d = {"MBF_RELAY_STATE": 0x0042, "MBF_PAR_FILTRATION_CONF": 0x0000}
+    d = {"MBF_RELAY_STATE": 0x0202, "MBF_PAR_FILTRATION_CONF": 0x0000}
     # relay_speed == 2 → Mid
     assert get_filtration_speed(d) == 2
 
 
 def test_get_filtration_speed_high():
-    d = {"MBF_RELAY_STATE": 0x0082, "MBF_PAR_FILTRATION_CONF": 0x0000}
+    d = {"MBF_RELAY_STATE": 0x0402, "MBF_PAR_FILTRATION_CONF": 0x0000}
     # relay_speed == 4 → High
     assert get_filtration_speed(d) == 3
 
@@ -86,7 +86,7 @@ def test_get_filtration_speed_conf_speed_2():
 
 
 def test_get_filtration_speed_relay_speed_1():
-    d = {"MBF_RELAY_STATE": 0x0022, "MBF_PAR_FILTRATION_CONF": 0x0000}
+    d = {"MBF_RELAY_STATE": 0x0102, "MBF_PAR_FILTRATION_CONF": 0x0000}
     # relay_speed == 1, should return 1 (Low)
     assert get_filtration_speed(d) == 1
 
