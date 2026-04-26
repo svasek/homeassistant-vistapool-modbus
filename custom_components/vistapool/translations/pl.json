@@ -102,7 +102,17 @@
         "state": {
           "pol1": "Polaryzacja 1",
           "pol2": "Polaryzacja 2",
+          "dead_time": "Martwy czas",
           "off": "Wyłączone"
+        }
+      },
+      "ion_polarity": {
+        "name": "Polaryzacja jonizatora",
+        "state": {
+          "pol1": "Polaryzacja 1",
+          "pol2": "Polaryzacja 2",
+          "dead_time": "Martwy czas",
+          "off": "Wyłączony"
         }
       },
       "filt_mode": {
@@ -156,9 +166,6 @@
       "ion_on_target": { "name": "Jonizator na celu" },
       "ion_low_flow": { "name": "Niski przepływ jonizatora" },
       "ion_program_time_exceeded": { "name": "Przekroczony czas programu jonizatora" },
-      "ion_in_dead_time": { "name": "Jonizator w martwym czasie" },
-      "ion_in_pol1": { "name": "Jonizator polaryzacja 1" },
-      "ion_in_pol2": { "name": "Jonizator polaryzacja 2" },
       "hidro_on_target": { "name": "Elektroliza na celu" },
       "hidro_low_flow": { "name": "Niski przepływ elektrolizy" },
       "hidro_cell_flow_fl1": { "name": "Przepływ komórki elektrolizy FL1" },
@@ -169,10 +176,7 @@
       "hidro_chlorine_shock_mode": { "name": "Tryb szoku chloru elektrolizy (Boost)" },
       "hidro_chlorine_flow_indicator_fl2": { "name": "Wskaźnik przepływu chloru elektrolizy FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Elektroliza aktywowana przez moduł chloru" },
-      "hidro_in_dead_time": { "name": "Elektroliza w martwym czasie" },
       "uv_lamp": { "name": "Lampa UV" },
-      "hidro_in_pol1": { "name": "Elektroliza polaryzacja 1" },
-      "hidro_in_pol2": { "name": "Elektroliza polaryzacja 2" },
       "device_time_out_of_sync": { "name": "Synchronizacja czasu urządzenia" },
       "aux1": { "name": "Przekaźnik pomocniczy Aux1" },
       "aux2": { "name": "Przekaźnik pomocniczy Aux2" },

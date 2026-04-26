@@ -102,6 +102,16 @@
         "state": {
           "pol1": "Polarität 1",
           "pol2": "Polarität 2",
+          "dead_time": "Totzeit",
+          "off": "Aus"
+        }
+      },
+      "ion_polarity": {
+        "name": "Ionisator-Polarität",
+        "state": {
+          "pol1": "Polarität 1",
+          "pol2": "Polarität 2",
+          "dead_time": "Totzeit",
           "off": "Aus"
         }
       },
@@ -156,9 +166,6 @@
       "ion_on_target": { "name": "Ionisator am Ziel" },
       "ion_low_flow": { "name": "Ionisator Niedriger Durchfluss" },
       "ion_program_time_exceeded": { "name": "Ionisator Programmlaufzeit überschritten" },
-      "ion_in_dead_time": { "name": "Ionisator in Totzeit" },
-      "ion_in_pol1": { "name": "Ionisator Polarität 1" },
-      "ion_in_pol2": { "name": "Ionisator Polarität 2" },
       "hidro_on_target": { "name": "Hydrolyse am Ziel" },
       "hidro_low_flow": { "name": "Hydrolyse Niedriger Durchfluss" },
       "hidro_cell_flow_fl1": { "name": "Hydrolyse-Zelldurchfluss FL1" },
@@ -169,10 +176,7 @@
       "hidro_chlorine_shock_mode": { "name": "Hydrolyse Chlor-Schock-Modus (Boost)" },
       "hidro_chlorine_flow_indicator_fl2": { "name": "Hydrolyse Chlor-Durchflussanzeige FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolyse aktiviert durch Chlor-Modul" },
-      "hidro_in_dead_time": { "name": "Hydrolyse in Totzeit" },
       "uv_lamp": { "name": "UV-Lampe" },
-      "hidro_in_pol1": { "name": "Hydrolyse Polarität 1" },
-      "hidro_in_pol2": { "name": "Hydrolyse Polarität 2" },
       "device_time_out_of_sync": { "name": "Gerätezeitsynchronisierung" },
       "aux1": { "name": "Relais Aux1" },
       "aux2": { "name": "Relais Aux2" },
