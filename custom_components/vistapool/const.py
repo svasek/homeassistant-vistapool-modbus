@@ -190,6 +190,7 @@ SENSOR_DEFINITIONS = {
         "device_class": SensorDeviceClass.ENUM,
         "state_class": None,
         "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon": "mdi:ph",
     },
     "HIDRO_POLARITY": {
         "name": "Hydrolysis Polarity",

@@ -173,6 +173,12 @@ def test_native_value_special_keys(mock_coordinator):
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PH_STATUS_ALARM", {})
     mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 2}
     assert ent.native_value == "ph_low"
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 0}
+    assert ent.native_value == "ok"
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 3}
+    assert ent.native_value == "pump_stopped"
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 6}
+    assert ent.native_value == "tank_level"
 
 
 def test_native_value_default(mock_coordinator):
@@ -294,6 +300,8 @@ async def test_sensor_async_setup_entry_detected_flags(monkeypatch):
     # MBF_MEASURE_PH and MBF_MEASURE_RX should be skipped
     assert "MBF_MEASURE_PH" not in keys
     assert "MBF_MEASURE_RX" not in keys
+    # MBF_PH_STATUS_ALARM is also gated by pH detection flag
+    assert "MBF_PH_STATUS_ALARM" not in keys
 
 
 @pytest.mark.asyncio
@@ -357,6 +365,17 @@ def test_icon_ph_alarm(mock_coordinator):
     # Alarm
     mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 3}
     assert ent.icon == "mdi:alert"
+
+
+def test_icon_ph_status_alarm_default_icon(mock_coordinator):
+    props = make_props(icon="mdi:ph")
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PH_STATUS_ALARM", props)
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 0}
+    assert ent.icon == "mdi:check-circle-outline"
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": 1}
+    assert ent.icon == "mdi:alert"
+    mock_coordinator.data = {"MBF_PH_STATUS_ALARM": None}
+    assert ent.icon == "mdi:ph"
 
 
 def test_icon_hidro_current(mock_coordinator):
@@ -593,13 +612,13 @@ async def test_sensor_setup_with_capability_snapshot_only():
     assert "MBF_MEASURE_TEMPERATURE" in keys
     assert "MBF_ION_CURRENT" in keys
     assert "FILTRATION_SPEED" in keys
+    assert "MBF_PH_STATUS_ALARM" in keys
     assert "MBF_PAR_INTELLIGENT_INTERVALS" in keys
     assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" in keys
     # Unconditional sensors
     assert "MBF_HIDRO_CURRENT" in keys
     assert "MBF_HIDRO_VOLTAGE" in keys
     assert "MBF_PAR_FILT_MODE" in keys
-    assert "MBF_PH_STATUS_ALARM" in keys
     assert "HIDRO_POLARITY" in keys
 
 

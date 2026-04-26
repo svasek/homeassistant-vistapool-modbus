@@ -354,7 +354,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
                     0,
                     22069,
                     0,
-                    0,  # 0x000F MBF_PH_STATUS_ALARM
+                    0,  # 0x000F (unused)
                 ]
             ),  # rr00
             DummyResp(
@@ -433,6 +433,9 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
     assert "MBF_PAR_PH1" in result
     assert result["MBF_PAR_PH1"] == 7.5
     assert "FILTRATION_SPEED" in result
+    # MBF_PH_STATUS_ALARM derived from MBF_PH_STATUS (reg01[7]=50560=0xC580)
+    # lower 4 bits: 0xC580 & 0x000F = 0
+    assert result["MBF_PH_STATUS_ALARM"] == 0
 
     # Verify that all Modbus calls were made as expected
     assert fake_modbus.read_holding_registers.await_count == 10

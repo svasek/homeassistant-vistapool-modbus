@@ -53,10 +53,10 @@ FILTRATION_SPEED_MAP = {
 }
 
 PH_STATUS_ALARM_MAP = {
-    0: "no_alarm",
+    0: "ok",
     1: "ph_high",
     2: "ph_low",
-    3: "ph_stopped",
+    3: "pump_stopped",
     4: "ph_over",
     5: "ph_under",
     6: "tank_level",
@@ -84,7 +84,7 @@ async def async_setup_entry(
         ):
             continue
         if (
-            key == "MBF_MEASURE_PH"
+            key in ("MBF_MEASURE_PH", "MBF_PH_STATUS_ALARM")
             and coordinator.data.get("pH measurement module detected") is not True
         ):
             continue
@@ -201,10 +201,11 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         # PH alarm icons
         if self._key == "MBF_PH_STATUS_ALARM":
             status = PH_STATUS_ALARM_MAP.get(raw)
-            if status == "no_alarm":
+            if status == "ok":
                 return "mdi:check-circle-outline"
-            else:
+            if status is not None:
                 return "mdi:alert"
+            return self._attr_icon or None
         if self._key == "MBF_HIDRO_CURRENT":
             return (
                 "mdi:air-humidifier"

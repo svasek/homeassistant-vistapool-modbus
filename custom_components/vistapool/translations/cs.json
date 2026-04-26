@@ -88,10 +88,10 @@
       "ph_status_alarm": {
         "name": "pH Alarm",
         "state": {
-          "no_alarm": "OK",
-          "ph_high": "pH je moc nízké",
-          "ph_low": "pH je moc vysoké",
-          "ph_stopped": "pH pumpa zastavena (překročený pracovní čas)",
+          "ok": "OK",
+          "ph_high": "pH je příliš vysoké",
+          "ph_low": "pH je příliš nízké",
+          "pump_stopped": "Čerpadlo zastaveno (překročena pracovní doba)",
           "ph_over": "pH je vyšší než nastavená hodnota",
           "ph_under": "pH je nižší než nastavená hodnota",
           "tank_level": "Alarm hladiny nádrže"

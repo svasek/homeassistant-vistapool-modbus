@@ -517,11 +517,17 @@ class VistaPoolModbusClient:
             })
             # fmt: on
 
+            # Extract pH status enum from lower bits of MBF_PH_STATUS
+            _ph_status = get_safe(reg01, 7)
+            result["MBF_PH_STATUS_ALARM"] = (
+                (_ph_status & 0x000F) if _ph_status is not None else None
+            )
+
             # After loading reg01, update result with all decodings:
             # fmt: off
             result.update(
                 {
-                    **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 7), "pH"),
+                    **decode_ph_rx_cl_cd_status_bits(_ph_status, "pH"),
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 8), "Redox"),
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 9), "Chlorine"),
                     **decode_ph_rx_cl_cd_status_bits(get_safe(reg01, 10), "Conductivity"),
@@ -614,7 +620,6 @@ class VistaPoolModbusClient:
                     "MBF_POWER_MODULE_NODEID": reg00[4:10],             # 0x0004         ! Power module Node ID (6 register 0x0004 - 0x0009)
                     "MBF_POWER_MODULE_REGISTER": get_safe(reg00, 12),   # 0x000C         ! Writing an address in this register causes the power module register address to be read out into MBF_POWER_MODULE_DATA, see MBF_POWER_MODULE_REG_*
                     "MBF_POWER_MODULE_DATA": get_safe(reg00, 13),       # 0x000D         ! power module data as requested in MBF_POWER_MODULE_REGISTER
-                    "MBF_PH_STATUS_ALARM": get_safe(reg00, 15),         # 0x000F           PH alarm. The possible alarm values are depending on the regulation model
                     # Prepared for future use:
                     # "MBF_VOLT_24_36": get_safe(reg00, 16),            # 0x0022*        ! Current 24-36V line in mV
                     # "MBF_VOLT_12": get_safe(reg00, 17),               # 0x0023*        ! Current 12V line in mV
