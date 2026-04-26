@@ -88,10 +88,10 @@
       "ph_status_alarm": {
         "name": "Alarme pH",
         "state": {
-          "no_alarm": "OK",
+          "ok": "OK",
           "ph_high": "pH trop élevé",
           "ph_low": "pH trop bas",
-          "ph_stopped": "Pompe pH arrêtée (temps de fonctionnement dépassé)",
+          "pump_stopped": "Pompe arrêtée (temps de fonctionnement dépassé)",
           "ph_over": "pH au-dessus de la cible",
           "ph_under": "pH en dessous de la cible",
           "tank_level": "Alarme de niveau de cuve"

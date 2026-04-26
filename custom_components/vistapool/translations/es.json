@@ -88,10 +88,10 @@
       "ph_status_alarm": {
         "name": "Alarma de pH",
         "state": {
-          "no_alarm": "OK",
-          "ph_high": "pH alto",
-          "ph_low": "pH bajo",
-          "ph_stopped": "Bomba de pH detenida (tiempo excedido)",
+          "ok": "OK",
+          "ph_high": "pH demasiado alto",
+          "ph_low": "pH demasiado bajo",
+          "pump_stopped": "Bomba detenida (tiempo excedido)",
           "ph_over": "pH por encima del objetivo",
           "ph_under": "pH por debajo del objetivo",
           "tank_level": "Alarma de nivel de tanque"

@@ -88,10 +88,10 @@
       "ph_status_alarm": {
         "name": "Allarme pH",
         "state": {
-          "no_alarm": "OK",
-          "ph_high": "pH alto",
-          "ph_low": "pH basso",
-          "ph_stopped": "Pompa pH fermata (tempo di lavoro superato)",
+          "ok": "OK",
+          "ph_high": "pH troppo alto",
+          "ph_low": "pH troppo basso",
+          "pump_stopped": "Pompa fermata (tempo di lavoro superato)",
           "ph_over": "pH sopra il target",
           "ph_under": "pH sotto il target",
           "tank_level": "Allarme livello serbatoio"
