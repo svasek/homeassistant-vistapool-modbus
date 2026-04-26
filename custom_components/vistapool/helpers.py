@@ -233,7 +233,7 @@ def get_filtration_speed(data) -> int:
         return 0  # Filtration is off
 
     par_filtration_conf = data.get("MBF_PAR_FILTRATION_CONF", 0)
-    relay_speed = (relay_state & 0x00E0) >> 5
+    relay_speed = (relay_state & 0x0700) >> 8
     if relay_speed == 1:
         return 1  # Low
     elif relay_speed == 2:
