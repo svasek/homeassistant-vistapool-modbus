@@ -112,7 +112,7 @@
           "pol1": "Polaryzacja 1",
           "pol2": "Polaryzacja 2",
           "dead_time": "Martwy czas",
-          "off": "Wyłączony"
+          "off": "Wyłączone"
         }
       },
       "filt_mode": {

@@ -426,7 +426,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": BinarySensorDeviceClass.PROBLEM,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    # Note: "ION in dead time" is merged into the ION_POLARITY enum sensor as "dead_time" state.
     # Hydrolysis status bits
     "HIDRO On Target": {
         "name": "Hydrolysis On Target",
