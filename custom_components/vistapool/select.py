@@ -79,6 +79,12 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
             "MBF_PAR_FILTVALVE_MODE",
         ) and not has_filtvalve(coordinator.data):
             continue
+        # Skip relay activation delay if no pH module is detected
+        if (
+            key == "MBF_PAR_RELAY_ACTIVATION_DELAY"
+            and coordinator.data.get("pH measurement module detected") is not True
+        ):
+            continue
 
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):

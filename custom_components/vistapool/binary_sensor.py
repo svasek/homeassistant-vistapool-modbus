@@ -71,6 +71,16 @@ async def async_setup_entry(
             (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
         ):
             continue  # pragma: no cover
+        # Skip HIDRO entities if no hydrolysis module is installed
+        if key.startswith("HIDRO ") and not coordinator.data.get(
+            "Hydrolysis module detected"
+        ):
+            continue
+        # Skip pH Acid Pump relay if acid pump relay is not assigned
+        if key == "pH Acid Pump" and not is_valid_relay_gpio(
+            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO", 0) or 0
+        ):
+            continue
         # Skip UV Lamp if UV relay is not assigned
         if key == "UV Lamp":
             uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0

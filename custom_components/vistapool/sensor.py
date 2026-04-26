@@ -108,6 +108,12 @@ async def async_setup_entry(
             (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
         ):
             continue
+        if key in (
+            "MBF_HIDRO_CURRENT",
+            "MBF_HIDRO_VOLTAGE",
+            "HIDRO_POLARITY",
+        ) and not coordinator.data.get("Hydrolysis module detected"):
+            continue
         if key == "FILTRATION_SPEED" and not get_filtration_pump_type(
             coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
         ):

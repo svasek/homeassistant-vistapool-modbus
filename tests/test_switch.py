@@ -477,7 +477,7 @@ async def test_switch_setup_skips_hidro_cover_without_hydro_module():
         options = {"use_cover_sensor": True}  # cover sensor option enabled
 
     class DummyCoordinator:
-        data = {"MBF_PAR_HIDRO_NOM": 0}  # hydro module absent (falsy)
+        data = {"Hydrolysis module detected": False}  # hydro module absent
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -502,7 +502,7 @@ async def test_switch_setup_creates_hidro_cover_with_hydro_module():
 
     class DummyCoordinator:
         data = {
-            "MBF_PAR_HIDRO_NOM": 80,  # hydro module present
+            "Hydrolysis module detected": True,
             "MBF_PAR_TEMPERATURE_ACTIVE": 1,
         }
         config_entry = DummyEntry()
@@ -529,7 +529,7 @@ async def test_switch_setup_skips_hidro_temp_shutdown_without_temp_sensor():
 
     class DummyCoordinator:
         data = {
-            "MBF_PAR_HIDRO_NOM": 80,  # hydro present
+            "Hydrolysis module detected": True,
             "MBF_PAR_TEMPERATURE_ACTIVE": 0,  # but temp sensor inactive
         }
         config_entry = DummyEntry()
@@ -558,7 +558,7 @@ async def test_switch_setup_skips_hidro_cover_without_cover_sensor():
 
     class DummyCoordinator:
         data = {
-            "MBF_PAR_HIDRO_NOM": 80,
+            "Hydrolysis module detected": True,
             "MBF_PAR_TEMPERATURE_ACTIVE": 1,
         }
         config_entry = DummyEntry()
