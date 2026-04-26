@@ -1088,9 +1088,6 @@ class VistaPoolModbusClient:
                 else:
                     result["MBF_RELAY_STATE"] = relay_state & ~0x0002
 
-        # Update cache after fixup so partial reads start from consistent patched values
-        self._cached_result.update(result)
-
         # Derive hydrolysis module presence:
         # MBF_PAR_MODEL bit 1 (MBMSK_MODEL_HIDRO) OR MBF_HIDRO_STATUS bit 6 (CTRL_ACTIVE)
         result["Hydrolysis module detected"] = bool(
@@ -1099,6 +1096,10 @@ class VistaPoolModbusClient:
 
         # Add filtration speed and type
         result["FILTRATION_SPEED"] = get_filtration_speed(result)
+
+        # Update cache after fixup and derived fields so partial reads
+        # start from consistent values including derived flags.
+        self._cached_result.update(result)
 
         # _LOGGER.debug("All Results: %s", result)
         return result
