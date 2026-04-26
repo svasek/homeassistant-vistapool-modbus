@@ -64,11 +64,13 @@ async def async_setup_entry(
                 continue
         # Hydro cover-reduction switch only when hydrolysis module present
         if key == "MBF_PAR_HIDRO_COVER_ENABLE":
-            if not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM")):
+            if not coordinator.data.get("Hydrolysis module detected"):
                 continue
         # Hydro temp-shutdown switch needs hydrolysis and temperature sensor
         if key == "MBF_PAR_HIDRO_TEMP_SHUTDOWN":
-            if not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM")) or not bool(
+            if not coordinator.data.get(
+                "Hydrolysis module detected"
+            ) or not bool(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue

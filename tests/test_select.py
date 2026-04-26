@@ -1143,3 +1143,32 @@ def test_optimistic_update_noop_when_value_is_none(mock_coordinator):
     mock_coordinator.data = {"MBF_PAR_FILT_MODE": 0}
     ent._optimistic_update(None)
     assert mock_coordinator.data["MBF_PAR_FILT_MODE"] == 0
+
+
+@pytest.mark.asyncio
+async def test_setup_entry_skips_relay_activation_delay_without_ph_module():
+    """MBF_PAR_RELAY_ACTIVATION_DELAY is skipped when pH module is not detected."""
+    from custom_components.vistapool.select import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            # pH module NOT detected
+            "pH measurement module detected": False,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    entry.options = {}
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_RELAY_ACTIVATION_DELAY" not in keys

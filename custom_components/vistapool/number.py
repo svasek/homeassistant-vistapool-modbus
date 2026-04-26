@@ -79,14 +79,19 @@ async def async_setup_entry(
         if key == "MBF_PAR_CL1":
             if not bool(coordinator.data.get("Chlorine measurement module detected")):
                 continue
+        # Skip hydrolysis target if no hydrolysis module is installed
+        if key == "MBF_PAR_HIDRO" and not coordinator.data.get(
+            "Hydrolysis module detected"
+        ):
+            continue
         # Cover reduction numbers only visible when hydrolysis module present
         if key == "MBF_PAR_HIDRO_COVER_REDUCTION":
-            if not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM")):
+            if not coordinator.data.get("Hydrolysis module detected"):
                 continue
         # Shutdown temperature needs hydrolysis and temperature sensor
         if key == "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE":
             if (
-                not bool(coordinator.data.get("MBF_PAR_HIDRO_NOM"))
+                not coordinator.data.get("Hydrolysis module detected")
                 or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
             ):
                 continue

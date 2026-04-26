@@ -81,6 +81,64 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_async_setup_entry_skips_hidro_without_hydrolysis(monkeypatch):
+    """Test that HIDRO binary sensors are skipped when Hydrolysis module detected is False."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": True,
+            "Hydrolysis module detected": False,  # No hydrolysis module
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    entity_keys = [e._key for e in entities]
+    hidro_keys = [k for k in entity_keys if k.startswith("HIDRO ")]
+    assert hidro_keys == [], f"HIDRO entities should be skipped: {hidro_keys}"
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_skips_ph_acid_pump_without_relay(monkeypatch):
+    """Test that pH Acid Pump binary sensor is skipped when relay is not assigned."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": 0,  # No acid relay
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    entity_keys = [e._key for e in entities]
+    assert "pH Acid Pump" not in entity_keys
+
+
+@pytest.mark.asyncio
 async def test_async_setup_entry_no_data(monkeypatch, caplog):
     """Test async_setup_entry returns early if coordinator.data is None."""
 

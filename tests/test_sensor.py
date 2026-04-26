@@ -247,6 +247,7 @@ async def test_sensor_async_setup_entry_adds_entities(monkeypatch):
             "FILTRATION_SPEED": 1,
             "MBF_PAR_FILT_MODE": 1,
             "MBF_PH_STATUS_ALARM": 0,
+            "Hydrolysis module detected": True,
         }
         config_entry = DummyEntry()
         device_slug = "vistapool"
@@ -267,7 +268,7 @@ async def test_sensor_async_setup_entry_adds_entities(monkeypatch):
     assert "FILTRATION_SPEED" in keys
     assert "MBF_PAR_FILT_MODE" in keys
     assert "MBF_PH_STATUS_ALARM" in keys
-    # These sensors have no capability gate — always created
+    # HIDRO sensors created when Hydrolysis module detected
     assert "MBF_HIDRO_CURRENT" in keys
     assert "MBF_HIDRO_VOLTAGE" in keys
     assert "HIDRO_POLARITY" in keys
@@ -327,6 +328,32 @@ async def test_sensor_async_setup_entry_model_mask(monkeypatch):
     entities = async_add_entities.call_args[0][0]
     keys = [e._key for e in entities]
     assert "MBF_ION_CURRENT" not in keys
+
+
+@pytest.mark.asyncio
+async def test_sensor_hidro_skipped_without_hydrolysis(monkeypatch):
+    """Test async_setup_entry skips HIDRO sensors when Hydrolysis module detected is False."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+
+    class DummyCoordinator:
+        data = {
+            "Hydrolysis module detected": False,  # No hydrolysis module
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_HIDRO_CURRENT" not in keys
+    assert "MBF_HIDRO_VOLTAGE" not in keys
+    assert "HIDRO_POLARITY" not in keys
 
 
 def make_sensor(props, key, data):
@@ -585,6 +612,7 @@ async def test_sensor_setup_with_capability_snapshot_only():
             "MBF_PAR_TEMPERATURE_ACTIVE": 1,
             "MBF_PAR_FILTRATION_CONF": 0x0001,  # variable-speed pump
             "MBF_PAR_HEATING_GPIO": 5,
+            "Hydrolysis module detected": True,
             "pH measurement module detected": True,
             "Redox measurement module detected": True,
             "Chlorine measurement module detected": True,
@@ -615,11 +643,12 @@ async def test_sensor_setup_with_capability_snapshot_only():
     assert "MBF_PH_STATUS_ALARM" in keys
     assert "MBF_PAR_INTELLIGENT_INTERVALS" in keys
     assert "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL" in keys
-    # Unconditional sensors
+    # HIDRO sensors gated by Hydrolysis module detected
     assert "MBF_HIDRO_CURRENT" in keys
     assert "MBF_HIDRO_VOLTAGE" in keys
-    assert "MBF_PAR_FILT_MODE" in keys
     assert "HIDRO_POLARITY" in keys
+    # Unconditional sensors
+    assert "MBF_PAR_FILT_MODE" in keys
 
 
 @pytest.mark.asyncio

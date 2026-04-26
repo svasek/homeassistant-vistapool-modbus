@@ -463,8 +463,7 @@ async def test_number_setup_skips_cover_without_cover_sensor(monkeypatch):
 
     class DummyCoordinator:
         data = {
-            "MBF_PAR_HIDRO_NOM": 80,  # hydro present
-            "MBF_PAR_TEMPERATURE_ACTIVE": 1,
+            "Hydrolysis module detected": True,
         }
         config_entry = DummyEntry()
         device_slug = "vistapool"
@@ -503,7 +502,7 @@ async def test_number_setup_creates_cover_with_cover_sensor(monkeypatch):
 
     class DummyCoordinator:
         data = {
-            "MBF_PAR_HIDRO_NOM": 80,  # hydro present
+            "Hydrolysis module detected": True,
             "MBF_PAR_TEMPERATURE_ACTIVE": 1,
         }
         config_entry = DummyEntry()
@@ -542,7 +541,7 @@ async def test_number_setup_skips_cover_without_hydro_module(monkeypatch):
         options = {"use_cover_sensor": True}
 
     class DummyCoordinator:
-        data = {"MBF_PAR_TEMPERATURE_ACTIVE": 1}  # no MBF_PAR_HIDRO_NOM
+        data = {"MBF_PAR_TEMPERATURE_ACTIVE": 1}  # Hydrolysis module not detected
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -579,7 +578,7 @@ async def test_number_setup_skips_temp_shutdown_without_temp_sensor(monkeypatch)
         options = {"use_cover_sensor": True}
 
     class DummyCoordinator:
-        data = {"MBF_PAR_HIDRO_NOM": 80}  # hydro present, but no temp sensor
+        data = {"Hydrolysis module detected": True}  # hydro present, but no temp sensor
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -762,3 +761,31 @@ async def test_async_setup_entry_no_data(caplog):
         await async_setup_entry(hass, entry, async_add_entities)
         assert "No data from Modbus" in caplog.text
     async_add_entities.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_skips_hidro_without_hydrolysis(caplog):
+    """Test that MBF_PAR_HIDRO number is skipped when Hydrolysis module detected is False."""
+    from custom_components.vistapool.number import async_setup_entry
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "Hydrolysis module detected": False,  # No hydrolysis module
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+    assert "MBF_PAR_HIDRO" not in keys
