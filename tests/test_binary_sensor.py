@@ -49,8 +49,8 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
     class DummyCoordinator:
         data = {
             "MBF_PAR_MODEL": 0x000F,  # All bits set (should allow all modules)
-            "MBF_PAR_PH_BASE_RELAY_GPIO": True,
-            "MBF_PAR_PH_ACID_RELAY_GPIO": True,
+            "MBF_PAR_PH_BASE_RELAY_GPIO": 1,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": 1,
             "Hydrolysis module detected": True,
             "Chlorine measurement module detected": True,
             "Redox measurement module detected": True,
@@ -97,7 +97,7 @@ async def test_async_setup_entry_skips_hidro_without_hydrolysis(monkeypatch):
     class DummyCoordinator:
         data = {
             "MBF_PAR_MODEL": 0x000F,
-            "MBF_PAR_PH_ACID_RELAY_GPIO": True,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": 1,
             "Hydrolysis module detected": False,  # No hydrolysis module
         }
         config_entry = DummyEntry()

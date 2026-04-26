@@ -77,8 +77,8 @@ async def async_setup_entry(
         ):
             continue
         # Skip pH Acid Pump relay if acid pump relay is not assigned
-        if key == "pH Acid Pump" and not bool(
-            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO")
+        if key == "pH Acid Pump" and not is_valid_relay_gpio(
+            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO", 0) or 0
         ):
             continue
         # Skip UV Lamp if UV relay is not assigned
