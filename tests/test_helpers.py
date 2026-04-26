@@ -91,6 +91,13 @@ def test_get_filtration_speed_relay_speed_1():
     assert get_filtration_speed(d) == 1
 
 
+@pytest.mark.parametrize("aux_bit", [0x0010, 0x0020, 0x0040])
+def test_get_filtration_speed_aux_bits_do_not_affect_speed(aux_bit):
+    # filtration ON (0x0002), speed MID (0x0200), plus AUX relay bit set
+    d = {"MBF_RELAY_STATE": 0x0202 | aux_bit, "MBF_PAR_FILTRATION_CONF": 0x0000}
+    assert get_filtration_speed(d) == 2
+
+
 def test_get_filtration_speed_no_match():
     d = {"MBF_RELAY_STATE": 0x0002, "MBF_PAR_FILTRATION_CONF": 0x00F0}
     # relay_speed == 0, conf_speed == 15 (not 0,1,2) → default 0
