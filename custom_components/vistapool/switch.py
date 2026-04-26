@@ -68,9 +68,7 @@ async def async_setup_entry(
                 continue
         # Hydro temp-shutdown switch needs hydrolysis and temperature sensor
         if key == "MBF_PAR_HIDRO_TEMP_SHUTDOWN":
-            if not coordinator.data.get(
-                "Hydrolysis module detected"
-            ) or not bool(
+            if not coordinator.data.get("Hydrolysis module detected") or not bool(
                 coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
             ):
                 continue

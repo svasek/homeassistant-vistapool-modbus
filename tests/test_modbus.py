@@ -2025,3 +2025,84 @@ async def test_filtration_state_fixup_relay_on_but_state_off(config, monkeypatch
     assert not (result["MBF_RELAY_STATE"] & 0x0002), (
         "MBF_RELAY_STATE bit 1 should be cleared to match the authoritative register"
     )
+
+
+@pytest.mark.asyncio
+async def test_hydrolysis_detected_via_model_bit(config, monkeypatch):
+    """Hydrolysis module detected is True when MBF_PAR_MODEL bit 1 (MBMSK_MODEL_HIDRO) is set."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class DummyResp:
+        def __init__(self, regs, is_error=False):
+            self.registers = regs
+            self.isError = lambda: is_error
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    reg01 = [0] * 18  # MBF_HIDRO_STATUS at index 13 = 0 (no CTRL_ACTIVE)
+
+    factory_block1 = [0] * 13
+    factory_block1[1] = 0x0002  # MBF_PAR_MODEL bit 1 set (MBMSK_MODEL_HIDRO)
+
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            DummyResp([0] * 16),  # rr00
+            DummyResp([0] * 20),  # rr02
+            DummyResp([0, 0]),  # rr02_hidro
+            DummyResp(factory_block1),  # factory block 1 (0x0300)
+            DummyResp([0] * 4),  # factory block 2 (0x0322)
+            DummyResp([0] * 31),  # installer block 1
+            DummyResp([0] * 13),  # installer block 2
+            DummyResp([0] * 8),  # installer block 3
+            DummyResp([0] * 14),  # rr05
+            DummyResp([0] * 16),  # rr06
+        ]
+    )
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01))
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all()
+
+    assert result["Hydrolysis module detected"] is True
+
+
+@pytest.mark.asyncio
+async def test_hydrolysis_detected_via_status_ctrl_active(config, monkeypatch):
+    """Hydrolysis module detected is True when MBF_HIDRO_STATUS bit 6 (CTRL_ACTIVE) is set."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class DummyResp:
+        def __init__(self, regs, is_error=False):
+            self.registers = regs
+            self.isError = lambda: is_error
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    reg01 = [0] * 18
+    reg01[13] = 0x0040  # MBF_HIDRO_STATUS bit 6 (CTRL_ACTIVE)
+
+    factory_block1 = [0] * 13
+    factory_block1[1] = 0x0000  # MBF_PAR_MODEL — no HIDRO bit
+
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            DummyResp([0] * 16),  # rr00
+            DummyResp([0] * 20),  # rr02
+            DummyResp([0, 0]),  # rr02_hidro
+            DummyResp(factory_block1),  # factory block 1 (0x0300)
+            DummyResp([0] * 4),  # factory block 2 (0x0322)
+            DummyResp([0] * 31),  # installer block 1
+            DummyResp([0] * 13),  # installer block 2
+            DummyResp([0] * 8),  # installer block 3
+            DummyResp([0] * 14),  # rr05
+            DummyResp([0] * 16),  # rr06
+        ]
+    )
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01))
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all()
+
+    assert result["Hydrolysis module detected"] is True

@@ -51,6 +51,7 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
             "MBF_PAR_MODEL": 0x000F,  # All bits set (should allow all modules)
             "MBF_PAR_PH_BASE_RELAY_GPIO": True,
             "MBF_PAR_PH_ACID_RELAY_GPIO": True,
+            "Hydrolysis module detected": True,
             "Chlorine measurement module detected": True,
             "Redox measurement module detected": True,
         }
@@ -78,6 +79,11 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
     # Should contain at least one expected sensor (by key from BINARY_SENSOR_DEFINITIONS)
     # For example, "pH acid pump active"
     assert any("acid" in k for k in entity_keys)
+    # HIDRO entities created when Hydrolysis module detected
+    hidro_keys = [k for k in entity_keys if k.startswith("HIDRO ")]
+    assert len(hidro_keys) > 0, "HIDRO entities should be created"
+    # pH Acid Pump created when relay is assigned
+    assert "pH Acid Pump" in entity_keys
 
 
 @pytest.mark.asyncio
@@ -136,6 +142,66 @@ async def test_async_setup_entry_skips_ph_acid_pump_without_relay(monkeypatch):
     entities = async_add_entities.call_args[0][0]
     entity_keys = [e._key for e in entities]
     assert "pH Acid Pump" not in entity_keys
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_skips_cl_module_sensor_without_chlorine(monkeypatch):
+    """Test that CL module binary sensor is skipped when chlorine module is not detected."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "Hydrolysis module detected": True,
+            "Chlorine measurement module detected": False,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    entity_keys = [e._key for e in entities]
+    cl_keys = [k for k in entity_keys if k.endswith("Activated by the CL module")]
+    assert cl_keys == [], f"CL module entities should be skipped: {cl_keys}"
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_skips_rx_module_sensor_without_redox(monkeypatch):
+    """Test that RX module binary sensor is skipped when redox module is not detected."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "Hydrolysis module detected": True,
+            "Redox measurement module detected": False,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    entity_keys = [e._key for e in entities]
+    rx_keys = [k for k in entity_keys if k.endswith("Activated by the RX module")]
+    assert rx_keys == [], f"RX module entities should be skipped: {rx_keys}"
 
 
 @pytest.mark.asyncio
