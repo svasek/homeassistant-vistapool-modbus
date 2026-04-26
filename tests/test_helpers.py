@@ -58,7 +58,7 @@ def test_build_timer_block():
     assert isinstance(regs, list) and len(regs) == 15
 
 
-def test_get_filtration_speed_low():
+def test_get_filtration_speed_mid():
     d = {"MBF_RELAY_STATE": 0x0202, "MBF_PAR_FILTRATION_CONF": 0x0000}
     # relay_speed == 2 → Mid
     assert get_filtration_speed(d) == 2
