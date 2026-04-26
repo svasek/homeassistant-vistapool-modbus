@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.22.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.22.0...v1.22.1) (2026-04-26)
+
+
+### Bug Fixes
+
+* 🐛 gate entities on hardware module presence ([#116](https://github.com/svasek/homeassistant-vistapool-modbus/issues/116)) ([e99366f](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e99366f37744b3d0c94123a41a121d6019698561))
+* **helpers:** 🐛 read filtration speed from correct relay bits ([#113](https://github.com/svasek/homeassistant-vistapool-modbus/issues/113)) ([eb23b04](https://github.com/svasek/homeassistant-vistapool-modbus/commit/eb23b044e41379f516bd10c4da3cea0ad8e052c8)), closes [#112](https://github.com/svasek/homeassistant-vistapool-modbus/issues/112)
+* **sensor:** 💥 merge polarity binary sensors into enum sensors ([#117](https://github.com/svasek/homeassistant-vistapool-modbus/issues/117)) ([b93ae6c](https://github.com/svasek/homeassistant-vistapool-modbus/commit/b93ae6cfa33e54498efd17dc1f9e537dc784d579))
+* **sensor:** 🩹 derive ph alarm states from MBF_PH_STATUS register ([#115](https://github.com/svasek/homeassistant-vistapool-modbus/issues/115)) ([e3d7d45](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e3d7d4558887fcc259f3d8cb73f27ebb40cef59b))
+
 ## [1.22.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.21.1...v1.22.0) (2026-04-17)
 
 
