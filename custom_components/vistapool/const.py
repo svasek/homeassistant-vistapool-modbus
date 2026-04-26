@@ -200,6 +200,13 @@ SENSOR_DEFINITIONS = {
         "state_class": None,
         "icon": "mdi:plus-minus-variant",
     },
+    "ION_POLARITY": {
+        "name": "Ionizer Polarity",
+        "unit": None,
+        "device_class": SensorDeviceClass.ENUM,
+        "state_class": None,
+        "icon": "mdi:plus-minus-variant",
+    },
     "FILTRATION_SPEED": {
         "name": "Filtration Current Speed",
         "unit": None,
@@ -419,21 +426,6 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": BinarySensorDeviceClass.PROBLEM,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    "ION in dead time": {
-        "name": "Ionizer In Dead Time",
-        "device_class": BinarySensorDeviceClass.PROBLEM,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
-    "ION in Pol1": {
-        "name": "Ionizer Polarity 1",
-        "device_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
-    "ION in Pol2": {
-        "name": "Ionizer Polarity 2",
-        "device_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
     # Hydrolysis status bits
     "HIDRO On Target": {
         "name": "Hydrolysis On Target",
@@ -497,11 +489,10 @@ BINARY_SENSOR_DEFINITIONS = {
         "icon_on": "mdi:lightbulb-fluorescent-tube",
         "icon_off": "mdi:lightbulb-fluorescent-tube-outline",
     },
-    "HIDRO in dead time": {
-        "name": "Hydrolysis In Dead Time",
-        "device_class": BinarySensorDeviceClass.PROBLEM,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
+    # Note: "HIDRO in dead time", "HIDRO in Pol1" and "HIDRO in Pol2" are merged
+    # into the HIDRO_POLARITY enum sensor.
+    # Similarly, "ION in dead time", "ION in Pol1" and "ION in Pol2" are merged
+    # into the ION_POLARITY enum sensor.
 }
 
 NUMBER_DEFINITIONS = {

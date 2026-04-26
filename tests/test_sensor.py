@@ -155,13 +155,59 @@ def test_native_value_filtration_pump_off(mock_coordinator):
 
 def test_native_value_special_keys(mock_coordinator):
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "HIDRO_POLARITY", {})
-    mock_coordinator.data = {"HIDRO in Pol1": True, "HIDRO in Pol2": False}
+    mock_coordinator.data = {
+        "HIDRO in Pol1": True,
+        "HIDRO in Pol2": False,
+        "HIDRO in dead time": False,
+    }
     assert ent.native_value == "pol1"
-    mock_coordinator.data = {"HIDRO in Pol1": False, "HIDRO in Pol2": True}
+    mock_coordinator.data = {
+        "HIDRO in Pol1": False,
+        "HIDRO in Pol2": True,
+        "HIDRO in dead time": False,
+    }
     assert ent.native_value == "pol2"
-    mock_coordinator.data = {"HIDRO in Pol1": False, "HIDRO in Pol2": False}
+    mock_coordinator.data = {
+        "HIDRO in Pol1": False,
+        "HIDRO in Pol2": False,
+        "HIDRO in dead time": True,
+    }
+    assert ent.native_value == "dead_time"
+    mock_coordinator.data = {
+        "HIDRO in Pol1": False,
+        "HIDRO in Pol2": False,
+        "HIDRO in dead time": False,
+    }
     assert ent.native_value == "off"
-    # Both keys absent (e.g. winter mode with empty capability snapshot) → unknown
+    # All keys absent (e.g. winter mode with empty capability snapshot) → unknown
+    mock_coordinator.data = {}
+    assert ent.native_value is None
+    # ION_POLARITY enum sensor
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "ION_POLARITY", {})
+    mock_coordinator.data = {
+        "ION in Pol1": True,
+        "ION in Pol2": False,
+        "ION in dead time": False,
+    }
+    assert ent.native_value == "pol1"
+    mock_coordinator.data = {
+        "ION in Pol1": False,
+        "ION in Pol2": True,
+        "ION in dead time": False,
+    }
+    assert ent.native_value == "pol2"
+    mock_coordinator.data = {
+        "ION in Pol1": False,
+        "ION in Pol2": False,
+        "ION in dead time": True,
+    }
+    assert ent.native_value == "dead_time"
+    mock_coordinator.data = {
+        "ION in Pol1": False,
+        "ION in Pol2": False,
+        "ION in dead time": False,
+    }
+    assert ent.native_value == "off"
     mock_coordinator.data = {}
     assert ent.native_value is None
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", {})
@@ -195,7 +241,9 @@ def test_options_property(mock_coordinator):
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PH_STATUS_ALARM", {})
     assert ent.options == list(PH_STATUS_ALARM_MAP.values())
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "HIDRO_POLARITY", {})
-    assert ent.options == ["pol1", "pol2", "off"]
+    assert ent.options == ["pol1", "pol2", "dead_time", "off"]
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "ION_POLARITY", {})
+    assert ent.options == ["pol1", "pol2", "dead_time", "off"]
 
 
 def test_available_during_winter_mode(mock_coordinator):
@@ -265,6 +313,7 @@ async def test_sensor_async_setup_entry_adds_entities(monkeypatch):
     assert "MBF_MEASURE_CL" in keys
     assert "MBF_MEASURE_CONDUCTIVITY" in keys
     assert "MBF_ION_CURRENT" in keys
+    assert "ION_POLARITY" in keys
     assert "FILTRATION_SPEED" in keys
     assert "MBF_PAR_FILT_MODE" in keys
     assert "MBF_PH_STATUS_ALARM" in keys
@@ -328,6 +377,7 @@ async def test_sensor_async_setup_entry_model_mask(monkeypatch):
     entities = async_add_entities.call_args[0][0]
     keys = [e._key for e in entities]
     assert "MBF_ION_CURRENT" not in keys
+    assert "ION_POLARITY" not in keys
 
 
 @pytest.mark.asyncio
@@ -639,6 +689,7 @@ async def test_sensor_setup_with_capability_snapshot_only():
     assert "MBF_MEASURE_CONDUCTIVITY" in keys
     assert "MBF_MEASURE_TEMPERATURE" in keys
     assert "MBF_ION_CURRENT" in keys
+    assert "ION_POLARITY" in keys
     assert "FILTRATION_SPEED" in keys
     assert "MBF_PH_STATUS_ALARM" in keys
     assert "MBF_PAR_INTELLIGENT_INTERVALS" in keys

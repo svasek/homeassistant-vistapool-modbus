@@ -114,6 +114,10 @@ async def async_setup_entry(
             "HIDRO_POLARITY",
         ) and not coordinator.data.get("Hydrolysis module detected"):
             continue
+        if key == "ION_POLARITY" and not bool(
+            (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
+        ):
+            continue
         if key == "FILTRATION_SPEED" and not get_filtration_pump_type(
             coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
         ):
@@ -266,15 +270,31 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             if filtration_state is not None and filtration_state is False:
                 return None
 
-        # Polarity sensor created from two binary sensors
+        # Polarity sensors created from status register bits (Pol1, Pol2, dead time)
         if self._key == "HIDRO_POLARITY":
             pol1 = self.coordinator.data.get("HIDRO in Pol1")
             pol2 = self.coordinator.data.get("HIDRO in Pol2")
-            if pol1 is None and pol2 is None:
+            dead = self.coordinator.data.get("HIDRO in dead time")
+            if pol1 is None and pol2 is None and dead is None:
                 return None
+            if dead:
+                return "dead_time"
             if pol1:
                 return "pol1"
-            elif pol2:
+            if pol2:
+                return "pol2"
+            return "off"
+        if self._key == "ION_POLARITY":
+            pol1 = self.coordinator.data.get("ION in Pol1")
+            pol2 = self.coordinator.data.get("ION in Pol2")
+            dead = self.coordinator.data.get("ION in dead time")
+            if pol1 is None and pol2 is None and dead is None:
+                return None
+            if dead:
+                return "dead_time"
+            if pol1:
+                return "pol1"
+            if pol2:
                 return "pol2"
             return "off"
         if self._key == "MBF_PAR_FILT_MODE":
@@ -302,5 +322,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "MBF_PH_STATUS_ALARM":
             return list(PH_STATUS_ALARM_MAP.values())
         if self._key == "HIDRO_POLARITY":
-            return ["pol1", "pol2", "off"]
+            return ["pol1", "pol2", "dead_time", "off"]
+        if self._key == "ION_POLARITY":
+            return ["pol1", "pol2", "dead_time", "off"]
         return None  # pragma: no cover

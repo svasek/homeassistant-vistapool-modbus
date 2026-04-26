@@ -102,6 +102,16 @@
         "state": {
           "pol1": "Polarita 1",
           "pol2": "Polarita 2",
+          "dead_time": "Mrtvý čas",
+          "off": "Vypnuto"
+        }
+      },
+      "ion_polarity": {
+        "name": "Polarita ionizátoru",
+        "state": {
+          "pol1": "Polarita 1",
+          "pol2": "Polarita 2",
+          "dead_time": "Mrtvý čas",
           "off": "Vypnuto"
         }
       },
@@ -156,9 +166,6 @@
       "ion_on_target": { "name": "Ionizátor na cíli" },
       "ion_low_flow": { "name": "Nízký průtok ionizátoru" },
       "ion_program_time_exceeded": { "name": "Překročen čas programu ionizátoru" },
-      "ion_in_dead_time": { "name": "Ionizátor v době mrtvého času" },
-      "ion_in_pol1": { "name": "Ionizátor polarita 1" },
-      "ion_in_pol2": { "name": "Ionizátor polarita 2" },
       "hidro_on_target": { "name": "Hydrolýza na cíli" },
       "hidro_low_flow": { "name": "Nízký průtok hydrolýzy" },
       "hidro_cell_flow_fl1": { "name": "Proudění článkem hydrolýzy FL1" },
@@ -169,10 +176,7 @@
       "hidro_chlorine_shock_mode": { "name": "Hydrolýza šokový režim chloru (Boost)" },
       "hidro_chlorine_flow_indicator_fl2": { "name": "Průtokový indikátor chloru hydrolýzy FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolýza aktivována CL modulem" },
-      "hidro_in_dead_time": { "name": "Hydrolýza v době mrtvého času" },
       "uv_lamp": { "name": "UV lampa" },
-      "hidro_in_pol1": { "name": "Hydrolýza polarita 1" },
-      "hidro_in_pol2": { "name": "Hydrolýza polarita 2" },
       "device_time_out_of_sync": { "name": "Čas v zařízení" },
       "aux1": { "name": "Pomocné relé Aux1" },
       "aux2": { "name": "Pomocné relé Aux2" },
