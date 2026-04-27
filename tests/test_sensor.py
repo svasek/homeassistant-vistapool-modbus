@@ -205,6 +205,14 @@ def test_native_value_special_keys(mock_coordinator):
         "Filtration Pump": True,
     }
     assert ent.native_value == "no_flow"
+    # FL1 = False but filtration state unknown → fall through to polarity logic, not "no_flow"
+    mock_coordinator.data = {
+        "HIDRO in Pol1": False,
+        "HIDRO in Pol2": False,
+        "HIDRO in dead time": False,
+        "HIDRO Cell Flow FL1": False,
+    }
+    assert ent.native_value == "off"
     # All keys absent (e.g. winter mode with empty capability snapshot) → unknown
     mock_coordinator.data = {}
     assert ent.native_value is None

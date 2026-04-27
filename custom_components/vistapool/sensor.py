@@ -281,7 +281,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             if filtration is not None and filtration is False:
                 return "off"
             fl1 = self.coordinator.data.get("HIDRO Cell Flow FL1")
-            if fl1 is False:
+            if filtration is True and fl1 is False:
                 return "no_flow"
             if dead:
                 return "dead_time"
