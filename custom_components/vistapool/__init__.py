@@ -21,15 +21,30 @@ from homeassistant.const import CONF_HOST, CONF_NAME, CONF_PORT
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.typing import ConfigType
 
-from .const import DOMAIN, PLATFORMS, TIMER_BLOCKS
+from .const import DOMAIN, PLATFORMS, REMOVED_ENTITY_KEYS, TIMER_BLOCKS
 from .coordinator import VistaPoolCoordinator
 from .modbus import VistaPoolModbusClient
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _cleanup_removed_entities(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    """Remove orphaned entity-registry entries for entities no longer in definitions."""
+    registry = er.async_get(hass)
+    removed_uids = {f"{entry.entry_id}_{key}" for key in REMOVED_ENTITY_KEYS}
+    for entity_entry in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if entity_entry.unique_id in removed_uids:
+            _LOGGER.debug(
+                "Removing orphaned entity %s (unique_id=%s)",
+                entity_entry.entity_id,
+                entity_entry.unique_id,
+            )
+            registry.async_remove(entity_entry.entity_id)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -58,6 +73,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Store the coordinator and client in hass.data for easy access
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
+
+    # Remove orphaned entity-registry entries for sensors that no longer exist
+    _cleanup_removed_entities(hass, entry)
 
     # Forward entities setup to Home Assistant
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

@@ -18,6 +18,7 @@ import pytest
 from homeassistant.exceptions import ServiceValidationError
 
 from custom_components.vistapool import (
+    _cleanup_removed_entities,
     async_setup,
     async_setup_entry,
     async_unload_entry,
@@ -188,8 +189,15 @@ async def test_async_setup_entry_success():
             mock_coord_instance.async_config_entry_first_refresh = AsyncMock(
                 return_value=None
             )
-            result = await async_setup_entry(hass, config_entry)
-            assert result is True
+            with patch("custom_components.vistapool.er.async_get") as mock_er_get:
+                mock_registry = MagicMock()
+                mock_er_get.return_value = mock_registry
+                with patch(
+                    "custom_components.vistapool.er.async_entries_for_config_entry",
+                    return_value=[],
+                ):
+                    result = await async_setup_entry(hass, config_entry)
+                    assert result is True
 
 
 @pytest.mark.asyncio
@@ -250,3 +258,53 @@ async def test_async_setup_registers_service():
     result = await async_setup(hass, {})
     assert result is True
     hass.services.async_register.assert_called_once()
+
+
+def test_cleanup_removes_orphaned_entities():
+    """Test _cleanup_removed_entities removes entities matching REMOVED_ENTITY_KEYS."""
+    hass = MagicMock()
+    entry = MagicMock()
+    entry.entry_id = "test_entry"
+
+    orphan = MagicMock()
+    orphan.unique_id = "test_entry_hidro on target"
+    orphan.entity_id = "binary_sensor.hydrolysis_on_target"
+
+    valid = MagicMock()
+    valid.unique_id = "test_entry_hidro low flow"
+    valid.entity_id = "binary_sensor.hydrolysis_low_flow"
+
+    mock_registry = MagicMock()
+
+    with patch("custom_components.vistapool.er.async_get", return_value=mock_registry):
+        with patch(
+            "custom_components.vistapool.er.async_entries_for_config_entry",
+            return_value=[orphan, valid],
+        ):
+            _cleanup_removed_entities(hass, entry)
+
+    mock_registry.async_remove.assert_called_once_with(
+        "binary_sensor.hydrolysis_on_target"
+    )
+
+
+def test_cleanup_no_orphans():
+    """Test _cleanup_removed_entities does nothing when no orphans exist."""
+    hass = MagicMock()
+    entry = MagicMock()
+    entry.entry_id = "test_entry"
+
+    valid = MagicMock()
+    valid.unique_id = "test_entry_hidro low flow"
+    valid.entity_id = "binary_sensor.hydrolysis_low_flow"
+
+    mock_registry = MagicMock()
+
+    with patch("custom_components.vistapool.er.async_get", return_value=mock_registry):
+        with patch(
+            "custom_components.vistapool.er.async_entries_for_config_entry",
+            return_value=[valid],
+        ):
+            _cleanup_removed_entities(hass, entry)
+
+    mock_registry.async_remove.assert_not_called()

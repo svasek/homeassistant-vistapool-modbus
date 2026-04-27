@@ -159,24 +159,58 @@ def test_native_value_special_keys(mock_coordinator):
         "HIDRO in Pol1": True,
         "HIDRO in Pol2": False,
         "HIDRO in dead time": False,
+        "HIDRO Cell Flow FL1": True,
+        "Filtration Pump": True,
     }
     assert ent.native_value == "pol1"
     mock_coordinator.data = {
         "HIDRO in Pol1": False,
         "HIDRO in Pol2": True,
         "HIDRO in dead time": False,
+        "HIDRO Cell Flow FL1": True,
+        "Filtration Pump": True,
     }
     assert ent.native_value == "pol2"
     mock_coordinator.data = {
         "HIDRO in Pol1": False,
         "HIDRO in Pol2": False,
         "HIDRO in dead time": True,
+        "HIDRO Cell Flow FL1": True,
+        "Filtration Pump": True,
     }
     assert ent.native_value == "dead_time"
     mock_coordinator.data = {
         "HIDRO in Pol1": False,
         "HIDRO in Pol2": False,
         "HIDRO in dead time": False,
+        "HIDRO Cell Flow FL1": True,
+        "Filtration Pump": True,
+    }
+    assert ent.native_value == "off"
+    # Filtration off → always "off" regardless of polarity bits
+    mock_coordinator.data = {
+        "HIDRO in Pol1": True,
+        "HIDRO in Pol2": False,
+        "HIDRO in dead time": False,
+        "HIDRO Cell Flow FL1": True,
+        "Filtration Pump": False,
+    }
+    assert ent.native_value == "off"
+    # FL1 = False (no flow) with filtration running → "no_flow"
+    mock_coordinator.data = {
+        "HIDRO in Pol1": False,
+        "HIDRO in Pol2": False,
+        "HIDRO in dead time": False,
+        "HIDRO Cell Flow FL1": False,
+        "Filtration Pump": True,
+    }
+    assert ent.native_value == "no_flow"
+    # FL1 = False but filtration state unknown → fall through to polarity logic, not "no_flow"
+    mock_coordinator.data = {
+        "HIDRO in Pol1": False,
+        "HIDRO in Pol2": False,
+        "HIDRO in dead time": False,
+        "HIDRO Cell Flow FL1": False,
     }
     assert ent.native_value == "off"
     # All keys absent (e.g. winter mode with empty capability snapshot) → unknown
@@ -241,7 +275,7 @@ def test_options_property(mock_coordinator):
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PH_STATUS_ALARM", {})
     assert ent.options == list(PH_STATUS_ALARM_MAP.values())
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "HIDRO_POLARITY", {})
-    assert ent.options == ["pol1", "pol2", "dead_time", "off"]
+    assert ent.options == ["pol1", "pol2", "dead_time", "no_flow", "off"]
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "ION_POLARITY", {})
     assert ent.options == ["pol1", "pol2", "dead_time", "off"]
 

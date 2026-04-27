@@ -80,8 +80,8 @@ def decode_ph_rx_cl_cd_status_bits(status: int | None, unit: str) -> dict:
     # Status bits are 16 bits, where each bit represents a status flag
     # Bit 0: Flow sensor problem
     # Bit 10: Module control status
-    # Bit 11: Acid pump active
-    # Bit 12: Pump active
+    # Bit 11: Acid pump active (not decoded — always 0 on known firmware)
+    # Bit 12: Pump active (not decoded — always 0 on known firmware)
     # Bit 13: Control module
     # Bit 14: Measurement active
     # Bit 15: Measurement module detected
@@ -90,8 +90,6 @@ def decode_ph_rx_cl_cd_status_bits(status: int | None, unit: str) -> dict:
     return {
         f"{unit} flow sensor problem": bool(status & 0x0008),
         f"{unit} module control status": bool(status & 0x0400),
-        f"{unit} acid pump active": bool(status & 0x0800),
-        f"{unit} pump active": bool(status & 0x1000),
         f"{unit} control module": bool(status & 0x2000),
         f"{unit} measurement active": bool(status & 0x4000),
         f"{unit} measurement module detected": bool(status & 0x8000),

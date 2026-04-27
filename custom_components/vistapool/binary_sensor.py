@@ -89,16 +89,6 @@ async def async_setup_entry(
         # Hide all "measurement module detected" sensors
         if "measurement module detected" in key.lower():
             continue
-        # Skip the base pump if the relay is not assigned
-        if key == "pH pump active" and not bool(
-            coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO")
-        ):
-            continue
-        # Skip the acid pump if the relay is not assigned
-        if key == "pH acid pump active" and not bool(
-            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO")
-        ):
-            continue
         # Skip chlorine related sensors
         if (
             key.endswith("Activated by the CL module")

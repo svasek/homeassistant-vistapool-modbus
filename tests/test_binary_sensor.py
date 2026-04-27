@@ -77,8 +77,8 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
     # (Optional) Check that entities have correct keys
     entity_keys = [e._key for e in entities]
     # Should contain at least one expected sensor (by key from BINARY_SENSOR_DEFINITIONS)
-    # For example, "pH acid pump active"
-    assert any("acid" in k for k in entity_keys)
+    # For example, "pH control module"
+    assert any("control module" in k for k in entity_keys)
     # HIDRO entities created when Hydrolysis module detected
     hidro_keys = [k for k in entity_keys if k.startswith("HIDRO ")]
     assert len(hidro_keys) > 0, "HIDRO entities should be created"
