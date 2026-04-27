@@ -93,6 +93,21 @@ CAPABILITY_KEYS = (
     "Conductivity measurement module detected",
 )
 
+# Entity keys removed in past releases. async_setup_entry() uses this list to
+# purge orphaned entity-registry entries so they don't linger as "unavailable".
+REMOVED_ENTITY_KEYS = (
+    # Removed in PR #117 — merged into polarity enum sensors
+    "ion in dead time",
+    "ion in pol1",
+    "ion in pol2",
+    "hidro in dead time",
+    # Removed in PR #118 — redundant / not useful as sensors
+    "hidro on target",
+    "hidro chlorine flow indicator fl2",
+    "ph module control status",
+    "hidro cell flow fl1",
+)
+
 PERIOD_MAP = {
     "1_day": 86400,
     "2_days": 2 * 86400,
