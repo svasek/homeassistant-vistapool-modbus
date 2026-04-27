@@ -37,13 +37,12 @@ def test_decode_relay_state_none():
 
 
 def test_decode_ph_rx_cl_cd_status_bits_basic():
-    # flow sensor problem, acid pump active, pump active
-    status = 0x1808
+    # flow sensor problem, control module
+    status = 0x2008
     unit = "pH"
     result = decode_ph_rx_cl_cd_status_bits(status, unit)
     assert result["pH flow sensor problem"] is True
-    assert result["pH acid pump active"] is True
-    assert result["pH pump active"] is True
+    assert result["pH control module"] is True
 
 
 def test_decode_ph_rx_cl_cd_status_bits_none():
