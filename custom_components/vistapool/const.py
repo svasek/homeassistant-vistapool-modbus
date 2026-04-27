@@ -427,7 +427,7 @@ BINARY_SENSOR_DEFINITIONS = {
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "ION Low Flow": {
-        "name": "Ionizer Low Flow",
+        "name": "Ionizer Production Problem",
         "device_class": BinarySensorDeviceClass.PROBLEM,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
@@ -446,7 +446,7 @@ BINARY_SENSOR_DEFINITIONS = {
     # indicates setpoint reached, which is derivable from hidro_current vs hidro
     # setpoint. Even Tasmota defines this bit but never displays it.
     "HIDRO Low Flow": {
-        "name": "Hydrolysis Low Flow",
+        "name": "Hydrolysis Production Problem",
         "device_class": BinarySensorDeviceClass.PROBLEM,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },

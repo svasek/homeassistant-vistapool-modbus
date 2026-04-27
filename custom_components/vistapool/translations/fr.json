@@ -165,10 +165,10 @@
       "conductivity_control_module": { "name": "Module de contrôle conductivité" },
       "conductivity_measurement_active": { "name": "Mesure de conductivité" },
       "ion_on_target": { "name": "Ioniseur sur cible" },
-      "ion_low_flow": { "name": "Faible débit de l’ioniseur" },
+      "ion_low_flow": { "name": "Problème de production de l'ioniseur" },
       "ion_program_time_exceeded": { "name": "Temps de programme de l’ioniseur dépassé" },
 
-      "hidro_low_flow": { "name": "Hydrolyse faible débit" },
+      "hidro_low_flow": { "name": "Problème de production d'hydrolyse" },
       "pool_cover": { "name": "Volet de piscine" },
       "hidro_module_active": { "name": "Module hydrolyse actif" },
       "hidro_module_regulated": { "name": "Module hydrolyse régulé" },
