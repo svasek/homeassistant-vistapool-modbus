@@ -18,7 +18,7 @@ import pytest
 from homeassistant.exceptions import ServiceValidationError
 
 from custom_components.vistapool import (
-    _async_cleanup_removed_entities,
+    _cleanup_removed_entities,
     async_setup,
     async_setup_entry,
     async_unload_entry,
@@ -261,7 +261,7 @@ async def test_async_setup_registers_service():
 
 
 def test_cleanup_removes_orphaned_entities():
-    """Test _async_cleanup_removed_entities removes entities matching REMOVED_ENTITY_KEYS."""
+    """Test _cleanup_removed_entities removes entities matching REMOVED_ENTITY_KEYS."""
     hass = MagicMock()
     entry = MagicMock()
     entry.entry_id = "test_entry"
@@ -281,7 +281,7 @@ def test_cleanup_removes_orphaned_entities():
             "custom_components.vistapool.er.async_entries_for_config_entry",
             return_value=[orphan, valid],
         ):
-            _async_cleanup_removed_entities(hass, entry)
+            _cleanup_removed_entities(hass, entry)
 
     mock_registry.async_remove.assert_called_once_with(
         "binary_sensor.hydrolysis_on_target"
@@ -289,7 +289,7 @@ def test_cleanup_removes_orphaned_entities():
 
 
 def test_cleanup_no_orphans():
-    """Test _async_cleanup_removed_entities does nothing when no orphans exist."""
+    """Test _cleanup_removed_entities does nothing when no orphans exist."""
     hass = MagicMock()
     entry = MagicMock()
     entry.entry_id = "test_entry"
@@ -305,6 +305,6 @@ def test_cleanup_no_orphans():
             "custom_components.vistapool.er.async_entries_for_config_entry",
             return_value=[valid],
         ):
-            _async_cleanup_removed_entities(hass, entry)
+            _cleanup_removed_entities(hass, entry)
 
     mock_registry.async_remove.assert_not_called()

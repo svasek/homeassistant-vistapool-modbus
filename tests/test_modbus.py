@@ -413,7 +413,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
                 0,
                 0,
                 9,
-                0,
+                52,
             ]
         )
     )
@@ -430,6 +430,7 @@ async def test_perform_read_all_happy_path(config, monkeypatch):
     assert result["MBF_POWER_MODULE_VERSION"] == 1280
     assert "MBF_MEASURE_PH" in result
     assert result["MBF_MEASURE_PH"] == 8.20
+    assert result["MBF_HIDRO_VOLTAGE"] == pytest.approx(5.2)
     assert "MBF_PAR_PH1" in result
     assert result["MBF_PAR_PH1"] == 7.5
     assert "FILTRATION_SPEED" in result

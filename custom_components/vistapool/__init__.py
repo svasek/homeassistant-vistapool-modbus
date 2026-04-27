@@ -33,7 +33,7 @@ CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 _LOGGER = logging.getLogger(__name__)
 
 
-def _async_cleanup_removed_entities(hass: HomeAssistant, entry: ConfigEntry) -> None:
+def _cleanup_removed_entities(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Remove entity-registry entries for sensors that have been removed from definitions."""
     registry = er.async_get(hass)
     removed_uids = {f"{entry.entry_id}_{key}" for key in REMOVED_ENTITY_KEYS}
@@ -75,7 +75,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
 
     # Remove orphaned entity-registry entries for sensors that no longer exist
-    _async_cleanup_removed_entities(hass, entry)
+    _cleanup_removed_entities(hass, entry)
 
     # Forward entities setup to Home Assistant
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)

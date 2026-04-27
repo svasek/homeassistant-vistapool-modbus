@@ -101,6 +101,8 @@ REMOVED_ENTITY_KEYS = (
     "ion in pol1",
     "ion in pol2",
     "hidro in dead time",
+    "hidro in pol1",
+    "hidro in pol2",
     # Removed in PR #118 — redundant / not useful as sensors
     "hidro on target",
     "hidro chlorine flow indicator fl2",
