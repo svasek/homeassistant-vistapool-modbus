@@ -277,6 +277,12 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             dead = self.coordinator.data.get("HIDRO in dead time")
             if pol1 is None and pol2 is None and dead is None:
                 return None
+            filtration = self.coordinator.data.get("Filtration Pump")
+            if filtration is not None and filtration is False:
+                return "off"
+            fl1 = self.coordinator.data.get("HIDRO Cell Flow FL1")
+            if fl1 is False:
+                return "no_flow"
             if dead:
                 return "dead_time"
             if pol1:
@@ -322,7 +328,7 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "MBF_PH_STATUS_ALARM":
             return list(PH_STATUS_ALARM_MAP.values())
         if self._key == "HIDRO_POLARITY":
-            return ["pol1", "pol2", "dead_time", "off"]
+            return ["pol1", "pol2", "dead_time", "no_flow", "off"]
         if self._key == "ION_POLARITY":
             return ["pol1", "pol2", "dead_time", "off"]
         return None  # pragma: no cover

@@ -103,6 +103,7 @@
           "pol1": "Polarität 1",
           "pol2": "Polarität 2",
           "dead_time": "Totzeit",
+          "no_flow": "Kein Durchfluss",
           "off": "Aus"
         }
       },
@@ -149,7 +150,7 @@
       "ph_acid_pump": { "name": "pH-Säurepumpe" },
       "filtration_pump": { "name": "Filtration aktiv" },
       "pool_light": { "name": "Poollicht" },
-      "ph_module_control_status": { "name": "pH-Steuermodul-Status" },
+
       "ph_acid_pump_active": { "name": "pH-Regulierung" },
       "ph_control_module": { "name": "pH-Steuermodul" },
       "ph_measurement_active": { "name": "pH-Messung" },
@@ -166,15 +167,12 @@
       "ion_on_target": { "name": "Ionisator am Ziel" },
       "ion_low_flow": { "name": "Ionisator Niedriger Durchfluss" },
       "ion_program_time_exceeded": { "name": "Ionisator Programmlaufzeit überschritten" },
-      "hidro_on_target": { "name": "Hydrolyse am Ziel" },
       "hidro_low_flow": { "name": "Hydrolyse Niedriger Durchfluss" },
-      "hidro_cell_flow_fl1": { "name": "Hydrolyse-Zelldurchfluss FL1" },
       "pool_cover": { "name": "Beckenabdeckung" },
       "hidro_module_active": { "name": "Hydrolyse-Modul aktiv" },
       "hidro_module_regulated": { "name": "Hydrolyse-Modul geregelt" },
       "hidro_activated_by_the_rx_module": { "name": "Hydrolyse aktiviert durch Redox-Modul" },
       "hidro_chlorine_shock_mode": { "name": "Hydrolyse Chlor-Schock-Modus (Boost)" },
-      "hidro_chlorine_flow_indicator_fl2": { "name": "Hydrolyse Chlor-Durchflussanzeige FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolyse aktiviert durch Chlor-Modul" },
       "uv_lamp": { "name": "UV-Lampe" },
       "device_time_out_of_sync": { "name": "Gerätezeitsynchronisierung" },

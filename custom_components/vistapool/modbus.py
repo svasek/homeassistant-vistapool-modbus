@@ -513,7 +513,7 @@ class VistaPoolModbusClient:
                 "MBF_RELAY_STATE": get_safe(reg01, 14),                             # 0x010E mask   Status of each configurable relay
                 "MBF_HIDRO_SWITCH_VALUE": get_safe(reg01, 15),                      # 0x010F        INTERNAL - contains the opening of the hydrolysis PWM.
                 "MBF_NOTIFICATION": get_safe(reg01, 16),                            # 0x0110 mask   Bit field that informs whether a property page has changed since the last time it was queried. (see MBMSK_NOTIF_*). This register makes it possible to refresh the content of the registers maintained by a modbus master in an optimized way, without the need to reread all registers periodically, but only those on a page that has been changed.
-                "MBF_HIDRO_VOLTAGE": get_safe(reg01, 17),                           # 0x0111        The voltage applied to the hydrolysis cell. This register, together with that of MBF_HIDRO_CURRENT allows extrapolation of water salinity.
+                "MBF_HIDRO_VOLTAGE": get_safe(reg01, 17, lambda v: v / 10.0),       # 0x0111        The voltage applied to the hydrolysis cell (in 1/10 V). This register, together with that of MBF_HIDRO_CURRENT allows extrapolation of water salinity.
             })
             # fmt: on
 

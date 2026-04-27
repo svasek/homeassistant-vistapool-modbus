@@ -177,6 +177,7 @@ SENSOR_DEFINITIONS = {
         "device_class": SensorDeviceClass.VOLTAGE,
         "state_class": SensorStateClass.MEASUREMENT,
         "entity_category": EntityCategory.DIAGNOSTIC,
+        "display_precision": 1,
     },
     "MBF_PAR_FILT_MODE": {
         "name": "Filtration Mode",
@@ -251,7 +252,7 @@ BINARY_SENSOR_DEFINITIONS = {
     # Relay states
     "pH Acid Pump": {
         "name": "pH Regulating",
-        "device_class": None,
+        "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
         "icon_on": "mdi:pump",
         "icon_off": "mdi:pump-off",
@@ -299,11 +300,8 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     # pH/Redox/CL/CD status bits from decode_ph_rx_cl_cd_status_bits
     # pH
-    "pH module control status": {
-        "name": "pH Control Module Status",
-        "device_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
+    # Note: "pH module control status" (bit 10, MBMSK_PH_STATUS_CTRL_BY_FL) removed —
+    # it is a static config flag (flow detection control) that is always ON, not useful as a sensor.
     "pH acid pump active": {
         "name": "pH Acid Pump",
         "device_class": BinarySensorDeviceClass.RUNNING,
@@ -316,7 +314,7 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     "pH control module": {
         "name": "pH Control Module",
-        "device_class": None,
+        "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "pH measurement active": {
@@ -339,7 +337,7 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     "Redox control module": {
         "name": "Redox Control Module",
-        "device_class": None,
+        "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "Redox measurement active": {
@@ -367,7 +365,7 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     "Chlorine control module": {
         "name": "Chlorine Control Module",
-        "device_class": None,
+        "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "Chlorine measurement active": {
@@ -390,7 +388,7 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     "Conductivity control module": {
         "name": "Conductivity Control Module",
-        "device_class": None,
+        "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "Conductivity measurement active": {
@@ -427,11 +425,9 @@ BINARY_SENSOR_DEFINITIONS = {
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     # Hydrolysis status bits
-    "HIDRO On Target": {
-        "name": "Hydrolysis On Target",
-        "device_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
+    # Note: "HIDRO On Target" (bit 0, MBMSK_HIDRO_STATUS_ON_TARGET) removed —
+    # indicates setpoint reached, which is derivable from hidro_current vs hidro
+    # setpoint. Even Tasmota defines this bit but never displays it.
     "HIDRO Low Flow": {
         "name": "Hydrolysis Low Flow",
         "device_class": BinarySensorDeviceClass.PROBLEM,
@@ -442,11 +438,8 @@ BINARY_SENSOR_DEFINITIONS = {
     #     "device_class": None,
     #     "entity_category": EntityCategory.DIAGNOSTIC,
     # },
-    "HIDRO Cell Flow FL1": {
-        "name": "Hydrolysis Cell Flow FL1",
-        "device_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
+    # Note: "HIDRO Cell Flow FL1" (bit 3, MBMSK_HIDRO_STATUS_FL1) removed —
+    # merged into the HIDRO_POLARITY enum sensor as "no_flow" state.
     "Pool Cover": {
         "name": "Pool Cover",
         "device_class": BinarySensorDeviceClass.OPENING,
@@ -459,12 +452,12 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     "HIDRO Module regulated": {
         "name": "Hydrolysis Module Regulated",
-        "device_class": None,
+        "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "HIDRO Activated by the RX module": {
         "name": "Hydrolysis Activated by Redox Module",
-        "device_class": None,
+        "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     "HIDRO Chlorine shock mode": {
@@ -472,11 +465,9 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    "HIDRO Chlorine flow indicator FL2": {
-        "name": "Hydrolysis Chlorine Flow Indicator FL2",
-        "device_class": None,
-        "entity_category": EntityCategory.DIAGNOSTIC,
-    },
+    # Note: "HIDRO Chlorine flow indicator FL2" (bit 9, MBMSK_HIDRO_STATUS_FL2) removed —
+    # redundant with "Chlorine flow sensor problem" (MBF_CL_STATUS bit 3) for devices
+    # with a chlorine module, and irrelevant for devices without one.
     "HIDRO Activated by the CL module": {
         "name": "Hydrolysis Activated by Chlorine Module",
         "device_class": BinarySensorDeviceClass.RUNNING,

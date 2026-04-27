@@ -44,7 +44,6 @@ def test_decode_ph_rx_cl_cd_status_bits_basic():
     assert result["pH flow sensor problem"] is True
     assert result["pH acid pump active"] is True
     assert result["pH pump active"] is True
-    assert result["pH module control status"] is False
 
 
 def test_decode_ph_rx_cl_cd_status_bits_none():

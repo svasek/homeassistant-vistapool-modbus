@@ -103,6 +103,7 @@
           "pol1": "Polaryzacja 1",
           "pol2": "Polaryzacja 2",
           "dead_time": "Martwy czas",
+          "no_flow": "Brak przepływu",
           "off": "Wyłączone"
         }
       },
@@ -149,7 +150,7 @@
       "ph_acid_pump": { "name": "Pompa kwasu pH" },
       "filtration_pump": { "name": "Filtracja aktywna" },
       "pool_light": { "name": "Oświetlenie basenu" },
-      "ph_module_control_status": { "name": "Status modułu sterowania pH" },
+
       "ph_acid_pump_active": { "name": "Regulacja pH" },
       "ph_control_module": { "name": "Moduł sterowania pH" },
       "ph_measurement_active": { "name": "Pomiar pH" },
@@ -166,15 +167,12 @@
       "ion_on_target": { "name": "Jonizator na celu" },
       "ion_low_flow": { "name": "Niski przepływ jonizatora" },
       "ion_program_time_exceeded": { "name": "Przekroczony czas programu jonizatora" },
-      "hidro_on_target": { "name": "Elektroliza na celu" },
       "hidro_low_flow": { "name": "Niski przepływ elektrolizy" },
-      "hidro_cell_flow_fl1": { "name": "Przepływ komórki elektrolizy FL1" },
       "pool_cover": { "name": "Pokrywa basenu" },
       "hidro_module_active": { "name": "Moduł elektrolizy aktywny" },
       "hidro_module_regulated": { "name": "Moduł elektrolizy regulowany" },
       "hidro_activated_by_the_rx_module": { "name": "Elektroliza aktywowana przez moduł redoks" },
       "hidro_chlorine_shock_mode": { "name": "Tryb szoku chloru elektrolizy (Boost)" },
-      "hidro_chlorine_flow_indicator_fl2": { "name": "Wskaźnik przepływu chloru elektrolizy FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Elektroliza aktywowana przez moduł chloru" },
       "uv_lamp": { "name": "Lampa UV" },
       "device_time_out_of_sync": { "name": "Synchronizacja czasu urządzenia" },

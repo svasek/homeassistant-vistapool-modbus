@@ -103,6 +103,7 @@
           "pol1": "Polarita 1",
           "pol2": "Polarita 2",
           "dead_time": "Mrtvý čas",
+          "no_flow": "Bez průtoku",
           "off": "Vypnuto"
         }
       },
@@ -149,7 +150,7 @@
       "ph_acid_pump": { "name": "Čerpadlo kyseliny" },
       "filtration_pump": { "name": "Filtrace aktivní" },
       "pool_light": { "name": "Osvětlení bazénu" },
-      "ph_module_control_status": { "name": "Stav pH modulu" },
+
       "ph_acid_pump_active": { "name": "Regulace pH" },
       "ph_control_module": { "name": "pH řídicí modul" },
       "ph_measurement_active": { "name": "Měření pH" },
@@ -166,15 +167,12 @@
       "ion_on_target": { "name": "Ionizátor na cíli" },
       "ion_low_flow": { "name": "Nízký průtok ionizátoru" },
       "ion_program_time_exceeded": { "name": "Překročen čas programu ionizátoru" },
-      "hidro_on_target": { "name": "Hydrolýza na cíli" },
       "hidro_low_flow": { "name": "Nízký průtok hydrolýzy" },
-      "hidro_cell_flow_fl1": { "name": "Proudění článkem hydrolýzy FL1" },
       "pool_cover": { "name": "Zakrytí bazénu" },
       "hidro_module_active": { "name": "Modul hydrolýzy aktivní" },
       "hidro_module_regulated": { "name": "Modul hydrolýzy regulován" },
       "hidro_activated_by_the_rx_module": { "name": "Hydrolýza aktivována RX modulem" },
       "hidro_chlorine_shock_mode": { "name": "Hydrolýza šokový režim chloru (Boost)" },
-      "hidro_chlorine_flow_indicator_fl2": { "name": "Průtokový indikátor chloru hydrolýzy FL2" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolýza aktivována CL modulem" },
       "uv_lamp": { "name": "UV lampa" },
       "device_time_out_of_sync": { "name": "Čas v zařízení" },
