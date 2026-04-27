@@ -34,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def _cleanup_removed_entities(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Remove entity-registry entries for sensors that have been removed from definitions."""
+    """Remove orphaned entity-registry entries for entities no longer in definitions."""
     registry = er.async_get(hass)
     removed_uids = {f"{entry.entry_id}_{key}" for key in REMOVED_ENTITY_KEYS}
     for entity_entry in er.async_entries_for_config_entry(registry, entry.entry_id):
