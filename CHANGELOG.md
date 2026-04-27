@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.22.1...v1.23.0) (2026-04-27)
+
+
+### Features
+
+* **sensor:** ♻️ revamp binary sensor naming and remove dead entities ([#118](https://github.com/svasek/homeassistant-vistapool-modbus/issues/118)) ([9c22ce1](https://github.com/svasek/homeassistant-vistapool-modbus/commit/9c22ce17c5ebffe7a25af608bf1f7b588fc3c100))
+
 ## [1.22.1](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.22.0...v1.22.1) (2026-04-26)
 
 
