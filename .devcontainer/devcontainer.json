@@ -17,7 +17,9 @@
   // Ensure pipx-installed tools and dev workspace are in PATH and PYTHONPATH.
   "remoteEnv": {
     "PATH": "${containerEnv:PATH}:/home/vscode/.local/bin",
-    "PYTHONPATH": "/usr/local/lib/python3.13/site-packages:/home/vscode/.local/lib/python3.13/site-packages:${containerWorkspaceFolder}"
+    "PYTHONPATH": "/usr/local/lib/python3.13/site-packages:/home/vscode/.local/lib/python3.13/site-packages:${containerWorkspaceFolder}",
+    "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}",
+    "GH_TOKEN": "${localEnv:GH_TOKEN}"
   },
 
   // Forward the HA HTTP port and open a browser automatically when it appears.
@@ -84,7 +86,7 @@
         "remote.otherPortsAttributes": { "onAutoForward": "ignore" },
 
         // Optional: allow auto tasks (e.g., from Docker extension)
-        "task.allowAutomaticTasks": "on"
+        "task.allowAutomaticTasks": "enabled"
       }
     }
   }

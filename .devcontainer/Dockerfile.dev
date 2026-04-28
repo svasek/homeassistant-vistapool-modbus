@@ -5,4 +5,4 @@ ARG USERNAME=vscode \
     USER_UID=1000 
 
 RUN adduser -u ${USER_UID} -D ${USERNAME} -s /bin/bash && \
-    apk -U add --no-cache doas gpg && echo "permit nopass ${USERNAME} as root" > /etc/doas.d/vscode.conf
+    apk -U add --no-cache doas gpg github-cli && echo "permit nopass ${USERNAME} as root" > /etc/doas.d/vscode.conf
