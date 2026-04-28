@@ -23,7 +23,8 @@ jobs:
         uses: googleapis/release-please-action@v5
         id: release
         with:
-          release-type: simple
+          config-file: .release-please-config.json
+          manifest-file: .release-please-manifest.json
           token: ${{ secrets.MY_RELEASE_PLEASE_TOKEN }}
 
       - name: Create release archive
