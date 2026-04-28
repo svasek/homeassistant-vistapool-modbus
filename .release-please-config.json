@@ -3,7 +3,20 @@
     ".": {
       "release-type": "simple",
       "changelog-path": "CHANGELOG.md",
-      "include-v-in-tag": true
+      "include-v-in-tag": true,
+      "pull-request-title-pattern": "chore${scope}: 🔖 release${component} v${version}",
+      "changelog-sections": [
+        { "type": "feat", "section": "✨ Features" },
+        { "type": "fix", "section": "🐛 Bug Fixes" },
+        { "type": "perf", "section": "⚡ Performance" },
+        { "type": "refactor", "section": "♻️ Refactoring" },
+        { "type": "docs", "section": "📝 Documentation", "hidden": true },
+        { "type": "chore", "section": "🔧 Miscellaneous", "hidden": true },
+        { "type": "ci", "section": "👷 CI", "hidden": true },
+        { "type": "test", "section": "✅ Tests", "hidden": true },
+        { "type": "style", "section": "🎨 Style" },
+        { "type": "revert", "section": "⏪ Reverts" }
+      ]
     }
   }
 }
