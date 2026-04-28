@@ -1901,6 +1901,7 @@ async def test_filtration_state_fixup_v8_07_firmware(config, monkeypatch):
 
     # installer block 1 (0x0408, 31 registers): MBF_PAR_FILTRATION_STATE at index 25 = 1
     installer_block1 = [0] * 31
+    installer_block1[10] = 2  # MBF_PAR_FILT_GPIO = 2 (relay 2, bit 1)
     installer_block1[25] = 1  # MBF_PAR_FILTRATION_STATE = 1 (pump running)
 
     fake_modbus.read_holding_registers = AsyncMock(
@@ -1951,6 +1952,7 @@ async def test_filtration_state_fixup_pump_off_agrees(config, monkeypatch):
     reg01[14] = 0x0000  # MBF_RELAY_STATE — bit 1 not set (pump off)
 
     installer_block1 = [0] * 31
+    installer_block1[10] = 2  # MBF_PAR_FILT_GPIO = 2 (relay 2, bit 1)
     installer_block1[25] = 0  # MBF_PAR_FILTRATION_STATE = 0 (pump off — agrees)
 
     fake_modbus.read_holding_registers = AsyncMock(
@@ -1998,6 +2000,7 @@ async def test_filtration_state_fixup_relay_on_but_state_off(config, monkeypatch
     reg01[14] = 0x0002  # MBF_RELAY_STATE — bit 1 set (relay claims pump on)
 
     installer_block1 = [0] * 31
+    installer_block1[10] = 2  # MBF_PAR_FILT_GPIO = 2 (relay 2, bit 1)
     installer_block1[25] = 0  # MBF_PAR_FILTRATION_STATE = 0 (authoritative: pump off)
 
     fake_modbus.read_holding_registers = AsyncMock(

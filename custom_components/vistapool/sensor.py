@@ -133,6 +133,11 @@ async def async_setup_entry(
                 continue
         if key == "MBF_PAR_FILTVALVE_REMAINING" and not has_filtvalve(coordinator.data):
             continue
+        if (
+            key == "PH_PUMP_STATUS"
+            and coordinator.data.get("pH measurement module detected") is not True
+        ):
+            continue
 
         entities.append(
             VistaPoolSensor(
@@ -271,6 +276,21 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
                 return None
 
         # Polarity sensors created from status register bits (Pol1, Pol2, dead time)
+        if self._key == "PH_PUMP_STATUS":
+            ctrl = self.coordinator.data.get("pH control module")
+            acid = self.coordinator.data.get("pH acid pump active")
+            base = self.coordinator.data.get("pH pump active")
+            if ctrl is None and acid is None and base is None:
+                return None
+            if not ctrl:
+                return "off"
+            if acid and base:
+                return "both"
+            if acid:
+                return "acid"
+            if base:
+                return "base"
+            return "idle"
         if self._key == "HIDRO_POLARITY":
             pol1 = self.coordinator.data.get("HIDRO in Pol1")
             pol2 = self.coordinator.data.get("HIDRO in Pol2")
@@ -331,4 +351,6 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             return ["pol1", "pol2", "dead_time", "no_flow", "off"]
         if self._key == "ION_POLARITY":
             return ["pol1", "pol2", "dead_time", "off"]
+        if self._key == "PH_PUMP_STATUS":
+            return ["off", "idle", "acid", "base", "both"]
         return None  # pragma: no cover

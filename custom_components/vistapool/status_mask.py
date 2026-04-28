@@ -45,44 +45,54 @@ def decode_uv_lamp_state(relay_state: int | None, uv_relay_gpio: int) -> dict:
 
 
 def decode_relay_state(value: int | None) -> dict:
-    """Decode the relay state bits."""
-    # Relay state bits are 16 bits, where each bit represents a relay state
-    # Bit 0: pH Acid Pump
-    # Bit 1: Filtration Pump
-    # Bit 2: Pool Light
-    # Bit 3: AUX1
-    # Bit 4: AUX2
-    # Bit 5: AUX3
-    # Bit 6: AUX4
-    # Bit 8: Filtration low speed
-    # Bit 9: Filtration mid speed
-    # Bit 10: Filtration high speed
+    """Decode the relay state bits.
+
+    Only fixed-position relays (AUX1–4) and speed bits are decoded here.
+    Named functional relays (Filtration, Light, pH Acid Pump, …) use dynamic
+    GPIO mapping via decode_named_relay_states().
+    """
+    # Relay state bits are 16 bits, where each bit represents a relay state.
+    # Bits 0-6: relay outputs 1-7 (function assignment is configurable)
+    # Bits 3-6: AUX1-AUX4 (always at fixed positions)
     # Bits 8-10: Filtration current speed (0: off, 1: low, 2: mid, 3: high)
     if value is None:
         return {}
     return {
-        "pH Acid Pump": bool(value & 0x0001),
-        "Filtration Pump": bool(value & 0x0002),
-        "Pool Light": bool(value & 0x0004),
         "AUX1": bool(value & 0x0008),
         "AUX2": bool(value & 0x0010),
         "AUX3": bool(value & 0x0020),
         "AUX4": bool(value & 0x0040),
-        "Filtration low speed": bool(value & 0x0100),
-        "Filtration mid speed": bool(value & 0x0200),
-        "Filtration high speed": bool(value & 0x0400),
-        "Filtration current speed": (value & 0x0700) >> 8,
     }
+
+
+def decode_named_relay_states(
+    relay_state: int | None, gpio_map: dict[str, int]
+) -> dict:
+    """Decode named relay states using dynamic GPIO mapping.
+
+    Each entry in *gpio_map* is ``{"Entity Name": gpio_number}`` where
+    *gpio_number* is a 1-based relay index read from a ``MBF_PAR_*_RELAY_GPIO``
+    register.  A gpio_number of 0 means "not assigned" and is skipped.
+    """
+    from .const import is_valid_relay_gpio
+
+    if relay_state is None:
+        return {}
+    result: dict[str, bool] = {}
+    for name, gpio in gpio_map.items():
+        if is_valid_relay_gpio(gpio):
+            result[name] = bool((relay_state >> (gpio - 1)) & 1)
+    return result
 
 
 def decode_ph_rx_cl_cd_status_bits(status: int | None, unit: str) -> dict:
     """Decode the status bits for pH, Redox, Chlorine, and Conductivity sensors."""
     # Status bits are 16 bits, where each bit represents a status flag
-    # Bit 0: Flow sensor problem
-    # Bit 10: Module control status
-    # Bit 11: Acid pump active (not decoded — always 0 on known firmware)
-    # Bit 12: Pump active (not decoded — always 0 on known firmware)
-    # Bit 13: Control module
+    # Bit 3:  Flow sensor problem
+    # Bit 10: Module control status (flow detection control)
+    # Bit 11: Acid pump active (pH only; depends on MBF_PAR_PH_ACID_RELAY_GPIO)
+    # Bit 12: Pump active (base pump for pH; dosing pump for Rx/CL/CD)
+    # Bit 13: Control module (active regulation)
     # Bit 14: Measurement active
     # Bit 15: Measurement module detected
     if status is None:
@@ -90,6 +100,8 @@ def decode_ph_rx_cl_cd_status_bits(status: int | None, unit: str) -> dict:
     return {
         f"{unit} flow sensor problem": bool(status & 0x0008),
         f"{unit} module control status": bool(status & 0x0400),
+        f"{unit} acid pump active": bool(status & 0x0800),
+        f"{unit} pump active": bool(status & 0x1000),
         f"{unit} control module": bool(status & 0x2000),
         f"{unit} measurement active": bool(status & 0x4000),
         f"{unit} measurement module detected": bool(status & 0x8000),

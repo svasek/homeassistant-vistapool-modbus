@@ -51,9 +51,14 @@ async def test_async_setup_entry_adds_entities(monkeypatch):
             "MBF_PAR_MODEL": 0x000F,  # All bits set (should allow all modules)
             "MBF_PAR_PH_BASE_RELAY_GPIO": 1,
             "MBF_PAR_PH_ACID_RELAY_GPIO": 1,
+            "MBF_PAR_RX_RELAY_GPIO": 2,
+            "MBF_PAR_CL_RELAY_GPIO": 3,
+            "MBF_PAR_CD_RELAY_GPIO": 4,
             "Hydrolysis module detected": True,
             "Chlorine measurement module detected": True,
             "Redox measurement module detected": True,
+            "pH measurement module detected": True,
+            "Conductivity measurement module detected": True,
         }
         config_entry = DummyEntry()
         device_slug = "vistapool"
@@ -565,3 +570,50 @@ def test_uv_lamp_is_on(mock_coordinator):
     assert ent.is_on is False
     mock_coordinator.data = {}
     assert ent.is_on is None
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_skips_pump_sensors_without_relay():
+    """Pump status sensors are skipped when their relay GPIO is not assigned."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "Hydrolysis module detected": True,
+            "pH measurement module detected": True,
+            "Redox measurement module detected": True,
+            "Chlorine measurement module detected": True,
+            "Conductivity measurement module detected": True,
+            # pH acid relay assigned, base not assigned
+            "MBF_PAR_PH_ACID_RELAY_GPIO": 3,
+            "MBF_PAR_PH_BASE_RELAY_GPIO": 0,
+            # Redox relay assigned, Chlorine not
+            "MBF_PAR_RX_RELAY_GPIO": 4,
+            "MBF_PAR_CL_RELAY_GPIO": 0,
+            "MBF_PAR_CD_RELAY_GPIO": 0,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+
+    # pH acid/base pump active are now the PH_PUMP_STATUS enum sensor, not binary sensors
+    assert "pH acid pump active" not in keys
+    assert "pH pump active" not in keys
+    # Redox pump has relay → included
+    assert "Redox pump active" in keys
+    # Chlorine pump has no relay → skipped
+    assert "Chlorine pump active" not in keys
+    # Conductivity pump has no relay → skipped
+    assert "Conductivity pump active" not in keys

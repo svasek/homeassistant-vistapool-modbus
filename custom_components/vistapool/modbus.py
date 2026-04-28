@@ -24,7 +24,7 @@ from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.exceptions import ConnectionException, ModbusException
 from pymodbus.framer import FramerType
 
-from .const import DEFAULT_MODBUS_FRAMER, TIMER_BLOCKS
+from .const import DEFAULT_MODBUS_FRAMER, TIMER_BLOCKS, is_valid_relay_gpio
 from .helpers import (
     build_timer_block,
     get_filtration_speed,
@@ -35,6 +35,7 @@ from .modbus_compat import modbus_acall
 from .status_mask import (
     decode_hidro_status_bits,
     decode_ion_status_bits,
+    decode_named_relay_states,
     decode_ph_rx_cl_cd_status_bits,
     decode_relay_state,
     decode_uv_lamp_state,
@@ -901,6 +902,21 @@ class VistaPoolModbusClient:
             _uv_gpio = result.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
             result.update(decode_uv_lamp_state(result.get("MBF_RELAY_STATE"), _uv_gpio))
 
+            # Decode named relay states using dynamic GPIO mapping.
+            # Each functional relay (Filtration, Light, pH Acid Pump) is assigned
+            # to a physical relay output via MBF_PAR_*_RELAY_GPIO registers.
+            result.update(
+                decode_named_relay_states(
+                    result.get("MBF_RELAY_STATE"),
+                    {
+                        "pH Acid Pump": result.get("MBF_PAR_PH_ACID_RELAY_GPIO", 0)
+                        or 0,
+                        "Filtration Pump": result.get("MBF_PAR_FILT_GPIO", 0) or 0,
+                        "Pool Light": result.get("MBF_PAR_LIGHTING_GPIO", 0) or 0,
+                    },
+                )
+            )
+
             if force_full or (notification & _NOTIF_USER):
                 # MBF_PAR_RELAY_PH:
                 #   0: The equipment works with an acid and base pump
@@ -1067,26 +1083,31 @@ class VistaPoolModbusClient:
         self._last_was_full_read = force_full
 
         # Fixup: on some firmware versions (e.g. v8.07 on HIDRO-only variants),
-        # MBF_RELAY_STATE bit 1 is not set even when the filtration pump is running.
+        # the filtration relay bit in MBF_RELAY_STATE is not set even when the
+        # filtration pump is running.
         # MBF_PAR_FILTRATION_STATE (0x0421) is the authoritative source per vendor docs.
-        # When the two disagree, patch both the decoded key and the relay state bit so
-        # that get_filtration_speed() also sees the correct on/off state.
+        # When the two disagree, patch both the decoded key and the relay state bit
+        # (at the GPIO-assigned position) so downstream consumers stay consistent.
         filtration_state = result.get("MBF_PAR_FILTRATION_STATE")
         if filtration_state in (0, 1):
             authoritative = filtration_state == 1
             if result.get("Filtration Pump") != authoritative:
+                filt_gpio = result.get("MBF_PAR_FILT_GPIO", 0) or 0
                 _LOGGER.debug(
-                    "MBF_RELAY_STATE bit 1 disagrees with MBF_PAR_FILTRATION_STATE (%d); "
-                    "patching Filtration Pump state to %s",
+                    "MBF_RELAY_STATE filtration relay (GPIO %d) disagrees with "
+                    "MBF_PAR_FILTRATION_STATE (%d); patching Filtration Pump to %s",
+                    filt_gpio,
                     filtration_state,
                     authoritative,
                 )
                 result["Filtration Pump"] = authoritative
-                relay_state = result.get("MBF_RELAY_STATE", 0) or 0
-                if authoritative:
-                    result["MBF_RELAY_STATE"] = relay_state | 0x0002
-                else:
-                    result["MBF_RELAY_STATE"] = relay_state & ~0x0002
+                if is_valid_relay_gpio(filt_gpio):
+                    relay_state = result.get("MBF_RELAY_STATE", 0) or 0
+                    bit = 1 << (filt_gpio - 1)
+                    if authoritative:
+                        result["MBF_RELAY_STATE"] = relay_state | bit
+                    else:
+                        result["MBF_RELAY_STATE"] = relay_state & ~bit
 
         # Derive hydrolysis module presence:
         # MBF_PAR_MODEL bit 1 (MBMSK_MODEL_HIDRO) OR MBF_HIDRO_STATUS bit 6 (CTRL_ACTIVE)

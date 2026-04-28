@@ -37,7 +37,16 @@ DISABLED_SUFFIXES = [
     " low flow",
     " input active",
     " indicator fl2",
+    " module control status",
 ]
+
+# Pump status sensors are only relevant when the corresponding relay is assigned.
+# MBF_PAR_*_RELAY_GPIO = 0 means no pump is configured for that function.
+PUMP_RELAY_GPIO_MAP = {
+    "Redox pump active": "MBF_PAR_RX_RELAY_GPIO",
+    "Chlorine pump active": "MBF_PAR_CL_RELAY_GPIO",
+    "Conductivity pump active": "MBF_PAR_CD_RELAY_GPIO",
+}
 
 
 async def async_setup_entry(
@@ -85,6 +94,11 @@ async def async_setup_entry(
         if key == "UV Lamp":
             uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
             if not is_valid_relay_gpio(uv_gpio):
+                continue
+        # Skip pump status sensors if no relay is assigned for that pump
+        if key in PUMP_RELAY_GPIO_MAP:
+            gpio = coordinator.data.get(PUMP_RELAY_GPIO_MAP[key], 0) or 0
+            if not is_valid_relay_gpio(gpio):
                 continue
         # Hide all "measurement module detected" sensors
         if "measurement module detected" in key.lower():

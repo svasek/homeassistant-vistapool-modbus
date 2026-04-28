@@ -228,8 +228,8 @@ def generate_time_options(step_minutes=15) -> list[str]:
 def get_filtration_speed(data) -> int:
     """Get filtration speed based on relay state and configuration."""
     relay_state = data.get("MBF_RELAY_STATE", 0)
-    # Filtration is off if the bit 0x0002 is not set
-    if not (relay_state & 0x0002):
+    # Use the dynamically decoded "Filtration Pump" key (set via GPIO mapping)
+    if not data.get("Filtration Pump"):
         return 0  # Filtration is off
 
     par_filtration_conf = data.get("MBF_PAR_FILTRATION_CONF", 0)

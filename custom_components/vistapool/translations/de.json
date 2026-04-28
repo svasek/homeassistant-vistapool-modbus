@@ -107,6 +107,16 @@
           "off": "Aus"
         }
       },
+      "ph_pump_status": {
+        "name": "pH-Pumpenstatus",
+        "state": {
+          "off": "Aus",
+          "idle": "Leerlauf",
+          "acid": "Säurepumpe",
+          "base": "Basenpumpe",
+          "both": "Beide Pumpen"
+        }
+      },
       "ion_polarity": {
         "name": "Ionisator-Polarität",
         "state": {
@@ -150,13 +160,17 @@
       "ph_acid_pump": { "name": "pH-Säurepumpe" },
       "filtration_pump": { "name": "Filtration aktiv" },
       "pool_light": { "name": "Poollicht" },
+      "ph_module_control_status": { "name": "pH-Durchflussregelung" },
       "ph_control_module": { "name": "pH-Regelung aktiv" },
       "ph_measurement_active": { "name": "pH-Messung" },
+      "redox_pump_active": { "name": "Redox-Pumpe aktiv" },
       "redox_control_module": { "name": "Redox-Regelung aktiv" },
       "redox_measurement_active": { "name": "Redox-Messung" },
       "chlorine_flow_sensor_problem": { "name": "Chlor-Durchflusssensor" },
+      "chlorine_pump_active": { "name": "Chlor-Pumpe aktiv" },
       "chlorine_control_module": { "name": "Chlor-Regelung aktiv" },
       "chlorine_measurement_active": { "name": "Chlor-Messung" },
+      "conductivity_pump_active": { "name": "Leitfähigkeitspumpe aktiv" },
       "conductivity_control_module": { "name": "Leitfähigkeits-Regelung aktiv" },
       "conductivity_measurement_active": { "name": "Leitfähigkeitsmessung" },
       "ion_on_target": { "name": "Ionisator am Ziel" },

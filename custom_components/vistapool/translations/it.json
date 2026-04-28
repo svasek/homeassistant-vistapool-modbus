@@ -107,6 +107,16 @@
           "off": "Spento"
         }
       },
+      "ph_pump_status": {
+        "name": "Stato pompa pH",
+        "state": {
+          "off": "Spento",
+          "idle": "Inattivo",
+          "acid": "Pompa acido",
+          "base": "Pompa base",
+          "both": "Entrambe le pompe"
+        }
+      },
       "ion_polarity": {
         "name": "Polarità dell'ionizzatore",
         "state": {
@@ -150,13 +160,17 @@
       "ph_acid_pump": { "name": "Pompa acido pH" },
       "filtration_pump": { "name": "Filtrazione attiva" },
       "pool_light": { "name": "Luce piscina" },
+      "ph_module_control_status": { "name": "Controllo flusso pH" },
       "ph_control_module": { "name": "Regolazione pH attiva" },
       "ph_measurement_active": { "name": "Misurazione pH" },
+      "redox_pump_active": { "name": "Pompa Redox attiva" },
       "redox_control_module": { "name": "Regolazione Redox attiva" },
       "redox_measurement_active": { "name": "Misurazione Redox" },
-      "chlorine_flow_sensor_problem": { "name": "Sensore flusso cloro" },
+      "chlorine_flow_sensor_problem": { "name": "Sensore di flusso cloro" },
+      "chlorine_pump_active": { "name": "Pompa cloro attiva" },
       "chlorine_control_module": { "name": "Regolazione cloro attiva" },
       "chlorine_measurement_active": { "name": "Misurazione cloro" },
+      "conductivity_pump_active": { "name": "Pompa conducibilità attiva" },
       "conductivity_control_module": { "name": "Regolazione conducibilità attiva" },
       "conductivity_measurement_active": { "name": "Misurazione conducibilità" },
       "ion_on_target": { "name": "Ionizzatore a target" },

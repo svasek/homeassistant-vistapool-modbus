@@ -107,6 +107,16 @@
           "off": "Wyłączone"
         }
       },
+      "ph_pump_status": {
+        "name": "Stan pompy pH",
+        "state": {
+          "off": "Wyłączony",
+          "idle": "Bezczynny",
+          "acid": "Pompa kwasu",
+          "base": "Pompa zasady",
+          "both": "Obie pompy"
+        }
+      },
       "ion_polarity": {
         "name": "Polaryzacja jonizatora",
         "state": {
@@ -150,13 +160,17 @@
       "ph_acid_pump": { "name": "Pompa kwasu pH" },
       "filtration_pump": { "name": "Filtracja aktywna" },
       "pool_light": { "name": "Oświetlenie basenu" },
+      "ph_module_control_status": { "name": "Kontrola przepływu pH" },
       "ph_control_module": { "name": "Regulacja pH aktywna" },
       "ph_measurement_active": { "name": "Pomiar pH" },
+      "redox_pump_active": { "name": "Pompa Redox aktywna" },
       "redox_control_module": { "name": "Regulacja Redox aktywna" },
       "redox_measurement_active": { "name": "Pomiar Redox" },
       "chlorine_flow_sensor_problem": { "name": "Czujnik przepływu chloru" },
+      "chlorine_pump_active": { "name": "Pompa chloru aktywna" },
       "chlorine_control_module": { "name": "Regulacja chloru aktywna" },
       "chlorine_measurement_active": { "name": "Pomiar chloru" },
+      "conductivity_pump_active": { "name": "Pompa przewodności aktywna" },
       "conductivity_control_module": { "name": "Regulacja przewodności aktywna" },
       "conductivity_measurement_active": { "name": "Pomiar przewodności" },
       "ion_on_target": { "name": "Jonizator na celu" },
