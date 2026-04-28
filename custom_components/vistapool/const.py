@@ -108,8 +108,8 @@ REMOVED_ENTITY_KEYS = (
     "hidro chlorine flow indicator fl2",
     "hidro cell flow fl1",
     # Removed in PR #119 — merged into PH_PUMP_STATUS enum sensor
-    "pH acid pump active",
-    "pH pump active",
+    "ph acid pump active",
+    "ph pump active",
 )
 
 PERIOD_MAP = {

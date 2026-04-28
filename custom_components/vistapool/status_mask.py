@@ -45,16 +45,15 @@ def decode_uv_lamp_state(relay_state: int | None, uv_relay_gpio: int) -> dict:
 
 
 def decode_relay_state(value: int | None) -> dict:
-    """Decode the relay state bits.
+    """Decode AUX1–4 relay state bits from MBF_RELAY_STATE.
 
-    Only fixed-position relays (AUX1–4) and speed bits are decoded here.
+    Only AUX relays are decoded here (always at fixed bit positions 3–6).
     Named functional relays (Filtration, Light, pH Acid Pump, …) use dynamic
     GPIO mapping via decode_named_relay_states().
+    Speed bits (8–10) are consumed directly by get_filtration_speed().
     """
-    # Relay state bits are 16 bits, where each bit represents a relay state.
     # Bits 0-6: relay outputs 1-7 (function assignment is configurable)
     # Bits 3-6: AUX1-AUX4 (always at fixed positions)
-    # Bits 8-10: Filtration current speed (0: off, 1: low, 2: mid, 3: high)
     if value is None:
         return {}
     return {
