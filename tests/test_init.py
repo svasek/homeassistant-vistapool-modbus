@@ -212,6 +212,7 @@ async def test_async_unload_entry_success():
     coordinator = MagicMock()
     coordinator.client = AsyncMock()
     hass.data = {"vistapool": {"entry1": coordinator}}
+    hass.services.has_service = MagicMock(return_value=True)
     hass.services.async_remove = MagicMock()
     result = await async_unload_entry(hass, config_entry)
     assert result is True
@@ -229,6 +230,7 @@ async def test_async_unload_entry_no_coordinator():
     config_entry = MagicMock()
     config_entry.entry_id = "entryX"
     hass.data = {"vistapool": {}}
+    hass.services.has_service = MagicMock(return_value=True)
     hass.services.async_remove = MagicMock()
     result = await async_unload_entry(hass, config_entry)
     assert result is True
@@ -245,6 +247,7 @@ async def test_async_unload_entry_no_client():
     coordinator = MagicMock()
     coordinator.client = None
     hass.data = {"vistapool": {"entry2": coordinator}}
+    hass.services.has_service = MagicMock(return_value=True)
     hass.services.async_remove = MagicMock()
     result = await async_unload_entry(hass, config_entry)
     assert result is True

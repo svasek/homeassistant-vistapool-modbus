@@ -94,7 +94,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.data[DOMAIN].pop(entry.entry_id, None)
         # Cleanup services when last entry is removed
         if not hass.data[DOMAIN]:
-            hass.services.async_remove(DOMAIN, "set_timer")
+            if hass.services.has_service(DOMAIN, "set_timer"):
+                hass.services.async_remove(DOMAIN, "set_timer")
     return unload_ok
 
 
