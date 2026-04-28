@@ -617,3 +617,84 @@ async def test_async_setup_entry_skips_pump_sensors_without_relay():
     assert "Chlorine pump active" not in keys
     # Conductivity pump has no relay → skipped
     assert "Conductivity pump active" not in keys
+
+
+@pytest.mark.asyncio
+async def test_async_setup_entry_pump_sensors_with_capability_snapshot():
+    """Pump sensors survive HA restart in winter mode when GPIO keys are in capability snapshot."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        # Simulates capability snapshot (winter mode restart) — only CAPABILITY_KEYS present
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "Hydrolysis module detected": True,
+            "pH measurement module detected": True,
+            "Redox measurement module detected": True,
+            "Chlorine measurement module detected": True,
+            "Conductivity measurement module detected": True,
+            # GPIO keys — must be in CAPABILITY_KEYS to survive winter mode
+            "MBF_PAR_PH_ACID_RELAY_GPIO": 3,
+            "MBF_PAR_RX_RELAY_GPIO": 4,
+            "MBF_PAR_CL_RELAY_GPIO": 5,
+            "MBF_PAR_CD_RELAY_GPIO": 0,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    keys = [e._key for e in entities]
+
+    # Pump sensors with assigned relay must be created even from capability snapshot
+    assert "Redox pump active" in keys
+    assert "Chlorine pump active" in keys
+    # Conductivity has no relay → still skipped
+    assert "Conductivity pump active" not in keys
+
+
+@pytest.mark.asyncio
+async def test_enabled_default_for_pump_and_problem_sensors():
+    """Sensors like pH Acid Pump, HIDRO Low Flow, and shock mode are enabled by default."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "MBF_PAR_PH_ACID_RELAY_GPIO": 1,
+            "Hydrolysis module detected": True,
+            "pH measurement module detected": True,
+            "Redox measurement module detected": True,
+            "Chlorine measurement module detected": True,
+            "Conductivity measurement module detected": True,
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    by_key = {e._key: e for e in entities}
+
+    # These sensors should be enabled by default (not in DISABLED_SUFFIXES)
+    assert by_key["pH Acid Pump"]._attr_entity_registry_enabled_default is True
+    assert by_key["HIDRO Low Flow"]._attr_entity_registry_enabled_default is True
+    assert (
+        by_key["HIDRO Chlorine shock mode"]._attr_entity_registry_enabled_default
+        is True
+    )

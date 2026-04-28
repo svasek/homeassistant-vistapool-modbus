@@ -83,6 +83,14 @@ def test_decode_ph_rx_cl_cd_status_bits_none():
     assert decode_ph_rx_cl_cd_status_bits(None, "pH") == {}
 
 
+def test_decode_ph_rx_cl_cd_status_bits_no_acid_for_non_ph():
+    """Bit 11 (acid pump) is only emitted for pH, not for other units."""
+    status = 0x2808  # bit 11 set
+    result = decode_ph_rx_cl_cd_status_bits(status, "Redox")
+    assert "Redox acid pump active" not in result
+    assert "Redox pump active" in result
+
+
 def test_decode_ion_status_bits_basic():
     # ION On Target, ION in Pol2
     status = 0x4001

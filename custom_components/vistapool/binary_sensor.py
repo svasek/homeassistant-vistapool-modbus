@@ -31,10 +31,7 @@ _LOGGER = logging.getLogger(__name__)
 DISABLED_SUFFIXES = [
     " measurement active",
     " pump active",
-    " acid pump",
-    " shock mode",
     " on target",
-    " low flow",
     " input active",
     " indicator fl2",
     " module control status",

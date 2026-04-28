@@ -96,15 +96,18 @@ def decode_ph_rx_cl_cd_status_bits(status: int | None, unit: str) -> dict:
     # Bit 15: Measurement module detected
     if status is None:
         return {}
-    return {
+    result = {
         f"{unit} flow sensor problem": bool(status & 0x0008),
         f"{unit} module control status": bool(status & 0x0400),
-        f"{unit} acid pump active": bool(status & 0x0800),
         f"{unit} pump active": bool(status & 0x1000),
         f"{unit} control module": bool(status & 0x2000),
         f"{unit} measurement active": bool(status & 0x4000),
         f"{unit} measurement module detected": bool(status & 0x8000),
     }
+    # Bit 11 is the acid pump — only meaningful for the pH module
+    if unit == "pH":
+        result[f"{unit} acid pump active"] = bool(status & 0x0800)
+    return result
 
 
 def decode_ion_status_bits(status: int | None) -> dict:
