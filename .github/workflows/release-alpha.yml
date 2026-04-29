@@ -1,0 +1,178 @@
+name: Alpha Release
+
+on:
+  # Manual trigger from Actions tab – pick any branch
+  workflow_dispatch:
+    inputs:
+      version_suffix:
+        description: "Optional suffix (default: alpha). Examples: alpha, beta, rc"
+        required: false
+        default: "alpha"
+      bump_type:
+        description: "Version bump type"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - minor
+          - patch
+
+  # Comment "/alpha-release" on a PR to create an alpha from that PR branch
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  alpha-release:
+    runs-on: ubuntu-latest
+    # Run on workflow_dispatch OR when a PR comment starts with /alpha-release
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       startsWith(github.event.comment.body, '/alpha-release'))
+    steps:
+      # ── 1. Resolve the branch to build ──────────────────────────────
+      - name: Get PR info (issue_comment)
+        if: github.event_name == 'issue_comment'
+        id: pr
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_JSON=$(gh api repos/${{ github.repository }}/pulls/${{ github.event.issue.number }})
+          echo "ref=$(echo "$PR_JSON" | jq -r .head.ref)" >> "$GITHUB_OUTPUT"
+          echo "sha=$(echo "$PR_JSON" | jq -r .head.sha)" >> "$GITHUB_OUTPUT"
+          echo "title=$(echo "$PR_JSON" | jq -r .title)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'issue_comment' && steps.pr.outputs.ref || github.ref }}
+          fetch-depth: 0
+
+      # ── 2. Calculate alpha version ──────────────────────────────────
+      - name: Determine bump type from PR title
+        id: bump
+        run: |
+          # Get PR title (from PR comment trigger or from current branch's open PR)
+          if [[ "${{ github.event_name }}" == "issue_comment" ]]; then
+            PR_TITLE="${{ steps.pr.outputs.title }}"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.bump_type }}" != "auto" ]]; then
+            echo "type=${{ github.event.inputs.bump_type }}" >> "$GITHUB_OUTPUT"
+            echo "🔧 Bump type from manual input: ${{ github.event.inputs.bump_type }}"
+            exit 0
+          else
+            # Try to find an open PR for the current branch
+            PR_TITLE=$(gh pr view --json title -q .title 2>/dev/null || echo "")
+          fi
+
+          echo "PR title: $PR_TITLE"
+
+          # Detect type from conventional commit prefix in PR title
+          if echo "$PR_TITLE" | grep -qiP '^feat[(!:]'; then
+            echo "type=minor" >> "$GITHUB_OUTPUT"
+            echo "✨ Detected feat → minor bump"
+          else
+            echo "type=patch" >> "$GITHUB_OUTPUT"
+            echo "🐛 Detected fix/other → patch bump"
+          fi
+
+      - name: Determine alpha version
+        id: version
+        run: |
+          CURRENT=$(jq -r .version custom_components/vistapool/manifest.json)
+          SUFFIX="${{ github.event.inputs.version_suffix || 'alpha' }}"
+          BUMP="${{ steps.bump.outputs.type }}"
+
+          # Split current version into major.minor.patch (strip any existing pre-release)
+          BASE=$(echo "$CURRENT" | grep -oP '^\d+\.\d+\.\d+')
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$BASE"
+
+          if [[ "$BUMP" == "minor" ]]; then
+            NEXT_MINOR=$((MINOR + 1))
+            ALPHA_BASE="${MAJOR}.${NEXT_MINOR}.0"
+          else
+            NEXT_PATCH=$((PATCH + 1))
+            ALPHA_BASE="${MAJOR}.${MINOR}.${NEXT_PATCH}"
+          fi
+
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          RUN=${{ github.run_number }}
+
+          ALPHA_VERSION="${ALPHA_BASE}-${SUFFIX}.${RUN}"
+          TAG="v${ALPHA_VERSION}"
+
+          echo "version=$ALPHA_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "short_sha=$SHORT_SHA" >> "$GITHUB_OUTPUT"
+          echo "📦 Alpha version: $ALPHA_VERSION ($TAG) [${BUMP} bump]"
+
+      # ── 3. Build release zip ────────────────────────────────────────
+      - name: Patch manifest.json with alpha version
+        run: |
+          jq '.version = "${{ steps.version.outputs.version }}"' \
+            custom_components/vistapool/manifest.json > tmp.$$.json
+          mv tmp.$$.json custom_components/vistapool/manifest.json
+          echo "✅ manifest.json version set to ${{ steps.version.outputs.version }}"
+
+      - name: Create release archive
+        run: |
+          cd custom_components/vistapool
+          zip -r ../../vistapool_modbus.zip . -x "*.pyc" -x "__pycache__/*" -x "tmp/*"
+          cd ../..
+          echo "📦 Created vistapool_modbus.zip"
+          ls -lh vistapool_modbus.zip
+
+      # ── 4. Create GitHub pre-release ────────────────────────────────
+      - name: Create GitHub pre-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ github.event_name == 'issue_comment' && steps.pr.outputs.ref || github.ref_name }}"
+          SHORT_SHA="${{ steps.version.outputs.short_sha }}"
+          TAG="${{ steps.version.outputs.tag }}"
+          VERSION="${{ steps.version.outputs.version }}"
+
+          NOTES="## 🧪 Alpha Pre-release \`${VERSION}\`
+
+          **Branch:** \`${BRANCH}\`
+          **Commit:** \`${SHORT_SHA}\`
+
+          > ⚠️ This is a **pre-release** for testing purposes only.
+          > To install via HACS, enable *Show beta versions* in the integration settings.
+
+          ### Installation
+          1. Open HACS → Integrations → VistaPool Modbus
+          2. Click ⋮ → *Redownload* → enable *Show beta versions*
+          3. Select version \`${VERSION}\` and install
+          4. Restart Home Assistant"
+
+          gh release create "$TAG" vistapool_modbus.zip \
+            --title "🧪 ${TAG} (alpha)" \
+            --notes "$NOTES" \
+            --prerelease \
+            --target "$(git rev-parse HEAD)"
+
+      # ── 5. Comment on PR (if triggered from a PR comment) ──────────
+      - name: Comment on PR
+        if: github.event_name == 'issue_comment'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          VERSION="${{ steps.version.outputs.version }}"
+          RELEASE_URL="https://github.com/${{ github.repository }}/releases/tag/${TAG}"
+
+          COMMENT="🧪 **Alpha pre-release created:** [\`${VERSION}\`](${RELEASE_URL})
+
+          To install via HACS:
+          1. Open HACS → Integrations → VistaPool Modbus
+          2. Click ⋮ → *Redownload* → enable *Show beta versions*
+          3. Select version \`${VERSION}\` and install
+          4. Restart Home Assistant"
+
+          gh pr comment ${{ github.event.issue.number }} --body "$COMMENT"
