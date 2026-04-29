@@ -138,7 +138,10 @@ async def test_light_async_setup_entry_adds_entities(monkeypatch):
         options = {}
 
     class DummyCoordinator:
-        data = {"relay_light_enable": 3}
+        data = {
+            "relay_light_enable": 3,
+            "MBF_PAR_LIGHTING_GPIO": 3,
+        }
         config_entry = DummyEntry()
         device_slug = "vistapool"
 

@@ -20,7 +20,7 @@ from homeassistant.components.light import ColorMode, LightEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, EXEC_REGISTER, LIGHT_DEFINITIONS
+from .const import DOMAIN, EXEC_REGISTER, LIGHT_DEFINITIONS, is_valid_relay_gpio
 from .entity import VistaPoolEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,6 +45,11 @@ async def async_setup_entry(
         # Only create light if enabled in options
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):
+            continue
+        # Skip if lighting relay is not assigned
+        if not is_valid_relay_gpio(
+            coordinator.data.get("MBF_PAR_LIGHTING_GPIO", 0) or 0
+        ):
             continue
 
         entities.append(VistaPoolLight(coordinator, entry_id, key, props))
