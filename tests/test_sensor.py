@@ -244,13 +244,14 @@ def test_native_value_special_keys(mock_coordinator):
     assert ent.native_value == "off"
     mock_coordinator.data = {}
     assert ent.native_value is None
-    # PH_PUMP_STATUS enum sensor
+    # PH_PUMP_STATUS enum sensor — default: MBF_PAR_RELAY_PH=0 (acid+base)
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "PH_PUMP_STATUS", {})
     # Control module active, acid pump dosing
     mock_coordinator.data = {
         "pH control module": True,
         "pH acid pump active": True,
         "pH pump active": False,
+        "MBF_PAR_RELAY_PH": 0,
     }
     assert ent.native_value == "acid"
     # Control module active, base pump dosing
@@ -258,6 +259,7 @@ def test_native_value_special_keys(mock_coordinator):
         "pH control module": True,
         "pH acid pump active": False,
         "pH pump active": True,
+        "MBF_PAR_RELAY_PH": 0,
     }
     assert ent.native_value == "base"
     # Control module active, both pumps dosing
@@ -265,6 +267,7 @@ def test_native_value_special_keys(mock_coordinator):
         "pH control module": True,
         "pH acid pump active": True,
         "pH pump active": True,
+        "MBF_PAR_RELAY_PH": 0,
     }
     assert ent.native_value == "both"
     # Control module active, no pump dosing (idle)
@@ -272,6 +275,7 @@ def test_native_value_special_keys(mock_coordinator):
         "pH control module": True,
         "pH acid pump active": False,
         "pH pump active": False,
+        "MBF_PAR_RELAY_PH": 0,
     }
     assert ent.native_value == "idle"
     # Control module not active
@@ -284,6 +288,38 @@ def test_native_value_special_keys(mock_coordinator):
     # All keys absent → unknown
     mock_coordinator.data = {}
     assert ent.native_value is None
+    # MBF_PAR_RELAY_PH=1 (acid only): bit 12 is the acid pump
+    mock_coordinator.data = {
+        "pH control module": True,
+        "pH acid pump active": False,
+        "pH pump active": True,
+        "MBF_PAR_RELAY_PH": 1,
+    }
+    assert ent.native_value == "acid"
+    # MBF_PAR_RELAY_PH=1 (acid only): pump idle
+    mock_coordinator.data = {
+        "pH control module": True,
+        "pH acid pump active": False,
+        "pH pump active": False,
+        "MBF_PAR_RELAY_PH": 1,
+    }
+    assert ent.native_value == "idle"
+    # MBF_PAR_RELAY_PH=2 (base only): bit 12 is the base pump
+    mock_coordinator.data = {
+        "pH control module": True,
+        "pH acid pump active": False,
+        "pH pump active": True,
+        "MBF_PAR_RELAY_PH": 2,
+    }
+    assert ent.native_value == "base"
+    # MBF_PAR_RELAY_PH=2 (base only): pump idle
+    mock_coordinator.data = {
+        "pH control module": True,
+        "pH acid pump active": False,
+        "pH pump active": False,
+        "MBF_PAR_RELAY_PH": 2,
+    }
+    assert ent.native_value == "idle"
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "MBF_PAR_FILT_MODE", {})
     mock_coordinator.data = {"MBF_PAR_FILT_MODE": 1}
     assert ent.native_value == "auto"
@@ -319,6 +355,13 @@ def test_options_property(mock_coordinator):
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "ION_POLARITY", {})
     assert ent.options == ["pol1", "pol2", "dead_time", "off"]
     ent = VistaPoolSensor(mock_coordinator, "test_entry", "PH_PUMP_STATUS", {})
+    mock_coordinator.data = {"MBF_PAR_RELAY_PH": 0}
+    assert ent.options == ["off", "idle", "acid", "base", "both"]
+    mock_coordinator.data = {"MBF_PAR_RELAY_PH": 1}
+    assert ent.options == ["off", "idle", "acid"]
+    mock_coordinator.data = {"MBF_PAR_RELAY_PH": 2}
+    assert ent.options == ["off", "idle", "base"]
+    mock_coordinator.data = {}
     assert ent.options == ["off", "idle", "acid", "base", "both"]
 
 

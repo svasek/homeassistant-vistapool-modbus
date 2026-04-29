@@ -278,17 +278,29 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         # Polarity sensors created from status register bits (Pol1, Pol2, dead time)
         if self._key == "PH_PUMP_STATUS":
             ctrl = self.coordinator.data.get("pH control module")
-            acid = self.coordinator.data.get("pH acid pump active")
-            base = self.coordinator.data.get("pH pump active")
-            if ctrl is None and acid is None and base is None:
+            acid_bit = self.coordinator.data.get("pH acid pump active")
+            pump_bit = self.coordinator.data.get("pH pump active")
+            if ctrl is None and acid_bit is None and pump_bit is None:
                 return None
             if not ctrl:
                 return "off"
-            if acid and base:
+            # MBF_PAR_RELAY_PH determines the pH pump configuration:
+            #   0 = acid + base (bit 11 = acid, bit 12 = base)
+            #   1 = acid only   (bit 12 = acid pump; bit 11 unused)
+            #   2 = base only   (bit 12 = base pump; bit 11 unused)
+            relay_ph = self.coordinator.data.get("MBF_PAR_RELAY_PH", 0) or 0
+            if relay_ph == 1:
+                # Acid-only: bit 12 is the acid pump
+                return "acid" if pump_bit else "idle"
+            if relay_ph == 2:
+                # Base-only: bit 12 is the base pump
+                return "base" if pump_bit else "idle"
+            # Both pumps (relay_ph == 0): bit 11 = acid, bit 12 = base
+            if acid_bit and pump_bit:
                 return "both"
-            if acid:
+            if acid_bit:
                 return "acid"
-            if base:
+            if pump_bit:
                 return "base"
             return "idle"
         if self._key == "HIDRO_POLARITY":
@@ -352,5 +364,10 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
         if self._key == "ION_POLARITY":
             return ["pol1", "pol2", "dead_time", "off"]
         if self._key == "PH_PUMP_STATUS":
+            relay_ph = self.coordinator.data.get("MBF_PAR_RELAY_PH", 0) or 0
+            if relay_ph == 1:
+                return ["off", "idle", "acid"]
+            if relay_ph == 2:
+                return ["off", "idle", "base"]
             return ["off", "idle", "acid", "base", "both"]
         return None  # pragma: no cover
