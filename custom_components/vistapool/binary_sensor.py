@@ -32,8 +32,6 @@ DISABLED_SUFFIXES = [
     " measurement active",
     " pump active",
     " on target",
-    " input active",
-    " indicator fl2",
     " module control status",
 ]
 
