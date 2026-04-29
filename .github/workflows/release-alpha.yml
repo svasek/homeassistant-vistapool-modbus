@@ -29,12 +29,15 @@ permissions:
 jobs:
   alpha-release:
     runs-on: ubuntu-latest
-    # Run on workflow_dispatch OR when a PR comment starts with /alpha-release
+    # Run on workflow_dispatch OR when a PR comment matches one of the trigger commands
     if: >
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issue_comment' &&
        github.event.issue.pull_request &&
-       startsWith(github.event.comment.body, '/alpha-release'))
+       (startsWith(github.event.comment.body, '/alpha-release') ||
+        startsWith(github.event.comment.body, '/release-alpha') ||
+        startsWith(github.event.comment.body, '/dev-release') ||
+        startsWith(github.event.comment.body, '/release-dev')))
     steps:
       # ── 1. Resolve the branch to build ──────────────────────────────
       - name: Get PR info (issue_comment)
