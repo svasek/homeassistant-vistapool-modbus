@@ -510,8 +510,8 @@ async def test_async_setup_entry_skips_uv_lamp_when_no_relay():
 
 
 @pytest.mark.asyncio
-async def test_async_setup_entry_skips_uv_lamp_when_key_missing():
-    """UV Lamp binary sensor is skipped when MBF_PAR_UV_RELAY_GPIO is absent."""
+async def test_async_setup_entry_creates_uv_lamp_when_key_missing():
+    """UV Lamp binary sensor is created when MBF_PAR_UV_RELAY_GPIO is absent (old snapshot)."""
 
     class DummyEntry:
         entry_id = "test_entry"
@@ -531,7 +531,7 @@ async def test_async_setup_entry_skips_uv_lamp_when_key_missing():
 
     await async_setup_entry(hass, entry, async_add_entities)
     entities = async_add_entities.call_args[0][0]
-    assert not any(e._key == "UV Lamp" for e in entities)
+    assert any(e._key == "UV Lamp" for e in entities)
 
 
 @pytest.mark.asyncio

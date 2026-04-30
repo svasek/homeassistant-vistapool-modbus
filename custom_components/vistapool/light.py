@@ -46,9 +46,11 @@ async def async_setup_entry(
         option_key = props.get("option")
         if option_key and not entry.options.get(option_key, False):
             continue
-        # Skip if lighting relay is not assigned
-        if not is_valid_relay_gpio(
-            coordinator.data.get("MBF_PAR_LIGHTING_GPIO", 0) or 0
+        # Skip if lighting relay is not assigned.
+        # Only enforce when the GPIO key is present in data; a missing key
+        # (e.g. old capability snapshot) must not suppress the entity.
+        if "MBF_PAR_LIGHTING_GPIO" in coordinator.data and not is_valid_relay_gpio(
+            coordinator.data["MBF_PAR_LIGHTING_GPIO"] or 0
         ):
             continue
 
