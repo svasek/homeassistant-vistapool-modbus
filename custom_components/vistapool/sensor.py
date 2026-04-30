@@ -282,6 +282,8 @@ class VistaPoolSensor(VistaPoolEntity, SensorEntity):
             pump_bit = self.coordinator.data.get("pH pump active")
             if ctrl is None and acid_bit is None and pump_bit is None:
                 return None
+            if ctrl is None:
+                return None  # partial data — cannot determine status
             if not ctrl:
                 return "off"
             # MBF_PAR_RELAY_PH determines the pH pump configuration:

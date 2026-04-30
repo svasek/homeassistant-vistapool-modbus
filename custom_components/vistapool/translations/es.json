@@ -131,7 +131,7 @@
         "state": {
           "manual": "Manual",
           "auto": "Automático",
-          "heating": "Calefacción",
+          "heating": "Calentamiento",
           "smart": "Smart",
           "intelligent": "Inteligente",
           "backwash": "Lavado inverso"
@@ -183,6 +183,7 @@
       "hidro_activated_by_the_rx_module": { "name": "Hidrólisis activada por el módulo redox" },
       "hidro_chlorine_shock_mode": { "name": "Modo de choque de cloro de hidrólisis (Boost)" },
       "hidro_activated_by_the_cl_module": { "name": "Hidrólisis activada por el módulo de cloro" },
+      "heating": { "name": "Calentamiento" },
       "uv_lamp": { "name": "Lámpara UV" },
       "device_time_out_of_sync": { "name": "Sincronización de hora del dispositivo" },
       "aux1": { "name": "Relé Aux1" },
@@ -441,7 +442,7 @@
         "state": {
           "manual": "Manual",
           "auto": "Automático",
-          "heating": "Calefacción",
+          "heating": "Calentamiento",
           "smart": "Smart",
           "intelligent": "Inteligente",
           "backwash": "Lavado inverso"

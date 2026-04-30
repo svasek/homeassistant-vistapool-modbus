@@ -288,6 +288,12 @@ def test_native_value_special_keys(mock_coordinator):
     # All keys absent → unknown
     mock_coordinator.data = {}
     assert ent.native_value is None
+    # ctrl is None but pump bits present → unknown (partial data)
+    mock_coordinator.data = {
+        "pH acid pump active": True,
+        "pH pump active": False,
+    }
+    assert ent.native_value is None
     # MBF_PAR_RELAY_PH=1 (acid only): bit 12 is the acid pump
     mock_coordinator.data = {
         "pH control module": True,

@@ -19,16 +19,11 @@ Mask decoders for VistaPool / NeoPool integration, based on xsns_83_neopool.ino
 WARNING: DO NOT change names of this keys, they are used in the code !!!
 """
 
-# TODO: Check against GPIO configuration
-#     MBF_PAR_LIGHTING_GPIO for relay number assigned to the lighting function (0: inactive).
-#     MBF_PAR_FILT_GPIO for relay number assigned to the filtration function (0: inactive).
-#     MBF_PAR_PH_ACID_RELAY_GPIO for relay number assigned to the acid pump (0: inactive).
-#     MBF_PAR_HEATING_GPIO for relay number assigned to the heating function (0: inactive).
-#     MBF_PAR_UV_RELAY_GPIO for relay number assigned to the UV lamp (0: inactive).
-#
-#     There should be also name for each relay available in the settings.
+# TODO: There should be also name for each relay available in the settings.
 #     Each relay name has 5 register ASCIIZ string with up to 10 characters.
 #     (MBF_PAR_UICFG_MACH_NAME_AUX1, MBF_PAR_UICFG_MACH_NAME_AUX2, MBF_PAR_UICFG_MACH_NAME_AUX3, MBF_PAR_UICFG_MACH_NAME_AUX4)
+
+from .const import is_valid_relay_gpio
 
 
 def decode_uv_lamp_state(relay_state: int | None, uv_relay_gpio: int) -> dict:
@@ -73,8 +68,6 @@ def decode_named_relay_states(
     *gpio_number* is a 1-based relay index read from a ``MBF_PAR_*_RELAY_GPIO``
     register.  A gpio_number of 0 means "not assigned" and is skipped.
     """
-    from .const import is_valid_relay_gpio
-
     if relay_state is None:
         return {}
     result: dict[str, bool] = {}

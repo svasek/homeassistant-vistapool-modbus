@@ -92,6 +92,11 @@ async def async_setup_entry(
             coordinator.data.get("MBF_PAR_LIGHTING_GPIO", 0) or 0
         ):
             continue
+        # Skip Heating if heating relay is not assigned
+        if key == "Heating" and not is_valid_relay_gpio(
+            coordinator.data.get("MBF_PAR_HEATING_GPIO", 0) or 0
+        ):
+            continue
         # Skip UV Lamp if UV relay is not assigned
         if key == "UV Lamp":
             uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0

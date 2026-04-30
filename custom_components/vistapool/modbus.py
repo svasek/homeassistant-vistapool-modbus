@@ -903,8 +903,8 @@ class VistaPoolModbusClient:
             result.update(decode_uv_lamp_state(result.get("MBF_RELAY_STATE"), _uv_gpio))
 
             # Decode named relay states using dynamic GPIO mapping.
-            # Each functional relay (Filtration, Light, pH Acid Pump) is assigned
-            # to a physical relay output via MBF_PAR_*_RELAY_GPIO registers.
+            # Each functional relay (Filtration, Light, pH Acid Pump, Heating) is
+            # assigned to a physical relay output via MBF_PAR_*_RELAY_GPIO registers.
             result.update(
                 decode_named_relay_states(
                     result.get("MBF_RELAY_STATE"),
@@ -913,6 +913,7 @@ class VistaPoolModbusClient:
                         or 0,
                         "Filtration Pump": result.get("MBF_PAR_FILT_GPIO", 0) or 0,
                         "Pool Light": result.get("MBF_PAR_LIGHTING_GPIO", 0) or 0,
+                        "Heating": result.get("MBF_PAR_HEATING_GPIO", 0) or 0,
                     },
                 )
             )

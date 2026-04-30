@@ -184,6 +184,7 @@
       "hidro_activated_by_the_rx_module": { "name": "Hydrolyse activée par le module redox" },
       "hidro_chlorine_shock_mode": { "name": "Mode choc chlore hydrolyse (Boost)" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolyse activée par le module chlore" },
+      "heating": { "name": "Chauffage" },
       "uv_lamp": { "name": "Lampe UV" },
       "device_time_out_of_sync": { "name": "Synchronisation de l’heure de l’appareil" },
       "aux1": { "name": "Relais Aux1" },

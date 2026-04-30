@@ -183,6 +183,7 @@
       "hidro_activated_by_the_rx_module": { "name": "Elektroliza aktywowana przez moduł redoks" },
       "hidro_chlorine_shock_mode": { "name": "Tryb szoku chloru elektrolizy (Boost)" },
       "hidro_activated_by_the_cl_module": { "name": "Elektroliza aktywowana przez moduł chloru" },
+      "heating": { "name": "Ogrzewanie" },
       "uv_lamp": { "name": "Lampa UV" },
       "device_time_out_of_sync": { "name": "Synchronizacja czasu urządzenia" },
       "aux1": { "name": "Przekaźnik pomocniczy Aux1" },

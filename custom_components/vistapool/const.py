@@ -507,6 +507,13 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
+    "Heating": {
+        "name": "Heating",
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:radiator",
+        "icon_off": "mdi:radiator-off",
+    },
     "UV Lamp": {
         "name": "UV Lamp",
         "device_class": BinarySensorDeviceClass.RUNNING,

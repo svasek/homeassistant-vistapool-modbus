@@ -183,6 +183,7 @@
       "hidro_activated_by_the_rx_module": { "name": "Hydrolýza aktivována RX modulem" },
       "hidro_chlorine_shock_mode": { "name": "Hydrolýza šokový režim chloru (Boost)" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolýza aktivována CL modulem" },
+      "heating": { "name": "Ohřev" },
       "uv_lamp": { "name": "UV lampa" },
       "device_time_out_of_sync": { "name": "Čas v zařízení" },
       "aux1": { "name": "Pomocné relé Aux1" },

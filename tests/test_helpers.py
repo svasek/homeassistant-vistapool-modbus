@@ -137,8 +137,14 @@ def test_get_filtration_speed_no_match():
 
 
 def test_get_filtration_speed_none():
-    # Empty dict, relay_state=0, should return 0 (filtration is off)
-    assert get_filtration_speed({}) == 0
+    # Empty dict: "Filtration Pump" is None (not yet decoded), not False.
+    # Falls through to speed logic; relay_state=0, conf_speed=0 → Low (1).
+    assert get_filtration_speed({}) == 1
+
+
+def test_get_filtration_speed_pump_off():
+    # "Filtration Pump" explicitly False → 0 (off)
+    assert get_filtration_speed({"Filtration Pump": False}) == 0
 
 
 def test_get_filtration_pump_type():
