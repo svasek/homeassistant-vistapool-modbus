@@ -32,8 +32,6 @@ def decode_uv_lamp_state(relay_state: int | None, uv_relay_gpio: int) -> dict:
     Returns {"UV Lamp": bool} when relay_state and uv_relay_gpio are valid,
     otherwise returns an empty dict.
     """
-    from .const import is_valid_relay_gpio
-
     if relay_state is None or not is_valid_relay_gpio(uv_relay_gpio):
         return {}
     return {"UV Lamp": bool((relay_state >> (uv_relay_gpio - 1)) & 1)}
@@ -66,14 +64,17 @@ def decode_named_relay_states(
 
     Each entry in *gpio_map* is ``{"Entity Name": gpio_number}`` where
     *gpio_number* is a 1-based relay index read from a ``MBF_PAR_*_RELAY_GPIO``
-    register.  A gpio_number of 0 means "not assigned" and is skipped.
+    register.  A gpio_number of 0 means "not assigned"; the key is set to
+    ``None`` so any stale cached value is explicitly cleared.
     """
     if relay_state is None:
         return {}
-    result: dict[str, bool] = {}
+    result: dict[str, bool | None] = {}
     for name, gpio in gpio_map.items():
         if is_valid_relay_gpio(gpio):
             result[name] = bool((relay_state >> (gpio - 1)) & 1)
+        else:
+            result[name] = None
     return result
 
 

@@ -53,13 +53,13 @@ def test_decode_named_relay_states_basic():
 def test_decode_named_relay_states_invalid_gpio():
     relay_state = 0xFFFF
     gpio_map = {
-        "pH Acid Pump": 0,  # invalid -> skipped
-        "Filtration Pump": 8,  # out of range -> skipped
+        "pH Acid Pump": 0,  # invalid -> None
+        "Filtration Pump": 8,  # out of range -> None
         "Pool Light": 3,  # valid -> included
     }
     result = decode_named_relay_states(relay_state, gpio_map)
-    assert "pH Acid Pump" not in result
-    assert "Filtration Pump" not in result
+    assert result["pH Acid Pump"] is None
+    assert result["Filtration Pump"] is None
     assert result["Pool Light"] is True
 
 

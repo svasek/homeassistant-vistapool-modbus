@@ -229,10 +229,10 @@ def get_filtration_speed(data) -> int:
     """Get filtration speed based on relay state and configuration."""
     relay_state = data.get("MBF_RELAY_STATE", 0)
     # Use the dynamically decoded "Filtration Pump" key (set via GPIO mapping).
-    # Distinguish False (pump explicitly off) from None (key not yet available).
-    filt_pump = data.get("Filtration Pump")
-    if filt_pump is False:
-        return 0  # Filtration is off
+    # Only report a speed when the pump is explicitly on; treat both False
+    # (pump off) and None (key not yet decoded / GPIO not assigned) as off.
+    if data.get("Filtration Pump") is not True:
+        return 0  # Filtration is off or unknown
 
     par_filtration_conf = data.get("MBF_PAR_FILTRATION_CONF", 0)
     relay_speed = (relay_state & 0x0700) >> 8
