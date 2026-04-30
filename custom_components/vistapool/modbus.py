@@ -1089,11 +1089,12 @@ class VistaPoolModbusClient:
         # MBF_PAR_FILTRATION_STATE (0x0421) is the authoritative source per vendor docs.
         # When the two disagree, patch both the decoded key and the relay state bit
         # (at the GPIO-assigned position) so downstream consumers stay consistent.
+        # Only apply when filtration relay is actually assigned (valid GPIO).
+        filt_gpio = result.get("MBF_PAR_FILT_GPIO", 0) or 0
         filtration_state = result.get("MBF_PAR_FILTRATION_STATE")
-        if filtration_state in (0, 1):
+        if is_valid_relay_gpio(filt_gpio) and filtration_state in (0, 1):
             authoritative = filtration_state == 1
             if result.get("Filtration Pump") != authoritative:
-                filt_gpio = result.get("MBF_PAR_FILT_GPIO", 0) or 0
                 _LOGGER.debug(
                     "MBF_RELAY_STATE filtration relay (GPIO %d) disagrees with "
                     "MBF_PAR_FILTRATION_STATE (%d); patching Filtration Pump to %s",
@@ -1102,13 +1103,12 @@ class VistaPoolModbusClient:
                     authoritative,
                 )
                 result["Filtration Pump"] = authoritative
-                if is_valid_relay_gpio(filt_gpio):
-                    relay_state = result.get("MBF_RELAY_STATE", 0) or 0
-                    bit = 1 << (filt_gpio - 1)
-                    if authoritative:
-                        result["MBF_RELAY_STATE"] = relay_state | bit
-                    else:
-                        result["MBF_RELAY_STATE"] = relay_state & ~bit
+                relay_state = result.get("MBF_RELAY_STATE", 0) or 0
+                bit = 1 << (filt_gpio - 1)
+                if authoritative:
+                    result["MBF_RELAY_STATE"] = relay_state | bit
+                else:
+                    result["MBF_RELAY_STATE"] = relay_state & ~bit
 
         # Derive hydrolysis module presence:
         # MBF_PAR_MODEL bit 1 (MBMSK_MODEL_HIDRO) OR MBF_HIDRO_STATUS bit 6 (CTRL_ACTIVE)

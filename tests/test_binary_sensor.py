@@ -601,6 +601,34 @@ async def test_async_setup_entry_skips_pool_light_without_relay():
 
 
 @pytest.mark.asyncio
+async def test_async_setup_entry_skips_filtration_pump_without_relay():
+    """Test that Filtration Pump binary sensor is skipped when filtration relay is not assigned."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "MBF_PAR_MODEL": 0x000F,
+            "MBF_PAR_FILT_GPIO": 0,  # No filtration relay
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    await async_setup_entry(hass, entry, async_add_entities)
+
+    entities = async_add_entities.call_args[0][0]
+    entity_keys = [e._key for e in entities]
+    assert "Filtration Pump" not in entity_keys
+
+
+@pytest.mark.asyncio
 async def test_async_setup_entry_skips_pump_sensors_without_relay():
     """Pump status sensors are skipped when their relay GPIO is not assigned."""
 

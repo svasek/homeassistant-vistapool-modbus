@@ -45,6 +45,15 @@ PUMP_RELAY_GPIO_MAP = {
     "Conductivity pump active": "MBF_PAR_CD_RELAY_GPIO",
 }
 
+# Binary sensors that require a valid relay GPIO to be created.
+# Maps entity key → MBF_PAR register key for the relay GPIO.
+RELAY_GPIO_GUARD_MAP = {
+    "pH Acid Pump": "MBF_PAR_PH_ACID_RELAY_GPIO",
+    "Filtration Pump": "MBF_PAR_FILT_GPIO",
+    "Pool Light": "MBF_PAR_LIGHTING_GPIO",
+    "Heating": "MBF_PAR_HEATING_GPIO",
+}
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -82,21 +91,11 @@ async def async_setup_entry(
             "Hydrolysis module detected"
         ):
             continue
-        # Skip pH Acid Pump relay if acid pump relay is not assigned
-        if key == "pH Acid Pump" and not is_valid_relay_gpio(
-            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO", 0) or 0
-        ):
-            continue
-        # Skip Pool Light if lighting relay is not assigned
-        if key == "Pool Light" and not is_valid_relay_gpio(
-            coordinator.data.get("MBF_PAR_LIGHTING_GPIO", 0) or 0
-        ):
-            continue
-        # Skip Heating if heating relay is not assigned
-        if key == "Heating" and not is_valid_relay_gpio(
-            coordinator.data.get("MBF_PAR_HEATING_GPIO", 0) or 0
-        ):
-            continue
+        # Skip sensors whose relay GPIO is not assigned
+        if key in RELAY_GPIO_GUARD_MAP:
+            gpio = coordinator.data.get(RELAY_GPIO_GUARD_MAP[key], 0) or 0
+            if not is_valid_relay_gpio(gpio):
+                continue
         # Skip UV Lamp if UV relay is not assigned
         if key == "UV Lamp":
             uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
