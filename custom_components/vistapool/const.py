@@ -272,6 +272,14 @@ SENSOR_DEFINITIONS = {
         "icon": "mdi:timer-sand",
         "display_precision": 0,
     },
+    "filtration_remaining": {
+        "name": "Filtration Time Remaining",
+        "unit": "s",
+        "device_class": SensorDeviceClass.DURATION,
+        "state_class": SensorStateClass.MEASUREMENT,
+        "icon": "mdi:timer-sand",
+        "display_precision": 0,
+    },
 }
 
 BINARY_SENSOR_DEFINITIONS = {

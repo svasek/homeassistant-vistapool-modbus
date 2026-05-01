@@ -403,6 +403,7 @@ async def test_sensor_async_setup_entry_adds_entities(monkeypatch):
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         data = {
@@ -456,6 +457,7 @@ async def test_sensor_async_setup_entry_detected_flags(monkeypatch):
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         data = {
@@ -489,6 +491,7 @@ async def test_sensor_async_setup_entry_model_mask(monkeypatch):
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         data = {
@@ -515,6 +518,7 @@ async def test_sensor_hidro_skipped_without_hydrolysis(monkeypatch):
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         data = {
@@ -604,6 +608,7 @@ async def test_sensor_temperature_skip_when_inactive():
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         data = {
@@ -631,6 +636,7 @@ async def test_sensor_temperature_created_when_active():
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         data = {
@@ -665,6 +671,7 @@ async def test_sensor_intelligent_key_skip_without_heating(sensor_key, value):
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         config_entry = DummyEntry()
@@ -700,6 +707,7 @@ async def test_sensor_intelligent_key_created_with_heating(sensor_key, value):
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         config_entry = DummyEntry()
@@ -755,6 +763,7 @@ async def test_async_setup_entry_no_data(caplog):
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         data = None
@@ -783,6 +792,7 @@ async def test_sensor_setup_with_capability_snapshot_only():
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         # Simulates the capability snapshot stored by set_winter_mode(True)
@@ -838,6 +848,7 @@ async def test_sensor_filtvalve_remaining_skipped_without_besgo():
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         config_entry = DummyEntry()
@@ -862,6 +873,7 @@ async def test_sensor_filtvalve_remaining_created_with_besgo():
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         config_entry = DummyEntry()
@@ -889,6 +901,7 @@ async def test_sensor_filtvalve_remaining_created_with_gpio_only():
 
     class DummyEntry:
         entry_id = "test_entry"
+        options = {}
 
     class DummyCoordinator:
         config_entry = DummyEntry()
@@ -924,3 +937,29 @@ def test_sensor_filtvalve_remaining_native_value():
         mock_coordinator, "test_entry", "MBF_PAR_FILTVALVE_REMAINING", {}
     )
     assert ent.native_value == 90
+
+
+def test_sensor_filtration_remaining_native_value():
+    """filtration_remaining sensor returns the aggregated remaining time."""
+    mock_coordinator = MagicMock()
+    mock_coordinator.data = {"filtration_remaining": 1800}
+    mock_coordinator.config_entry.entry_id = "test_entry"
+    mock_coordinator.device_slug = "vistapool"
+
+    from custom_components.vistapool.sensor import VistaPoolSensor
+
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "filtration_remaining", {})
+    assert ent.native_value == 1800
+
+
+def test_sensor_filtration_remaining_none_when_idle():
+    """filtration_remaining sensor returns None when no timer is counting down."""
+    mock_coordinator = MagicMock()
+    mock_coordinator.data = {"filtration_remaining": None}
+    mock_coordinator.config_entry.entry_id = "test_entry"
+    mock_coordinator.device_slug = "vistapool"
+
+    from custom_components.vistapool.sensor import VistaPoolSensor
+
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "filtration_remaining", {})
+    assert ent.native_value is None

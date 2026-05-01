@@ -154,6 +154,9 @@
       },
       "filtvalve_remaining": {
         "name": "Tiempo restante de retrolavado"
+      },
+      "filtration_remaining": {
+        "name": "Tiempo restante de filtración"
       }
     },
     "binary_sensor": {

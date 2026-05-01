@@ -158,12 +158,14 @@ async def test_async_update_data_timer_processing(mock_entry):
                 "on": 1000,  # e.g. 1000 seconds since midnight
                 "interval": 3600,  # 1 hour
                 "period": 2,
+                "countdown": 1200,
             },
             "filtration2": {
                 "enable": False,
                 "on": None,
                 "interval": 1800,  # 30 minutes
                 "period": 1,
+                "countdown": 0,
             },
         }
     )
@@ -182,6 +184,7 @@ async def test_async_update_data_timer_processing(mock_entry):
     assert data["filtration1_start"] == 1000
     assert data["filtration1_interval"] == 3600
     assert data["filtration1_period"] == 2
+    assert data["filtration1_countdown"] == 1200
     # stop = (1000 + 3600) % 86400 = 4600
     assert data["filtration1_stop"] == 4600
 
@@ -189,7 +192,11 @@ async def test_async_update_data_timer_processing(mock_entry):
     assert data["filtration2_start"] is None
     assert data["filtration2_interval"] == 1800
     assert data["filtration2_period"] == 1
+    assert data["filtration2_countdown"] == 0
     assert data["filtration2_stop"] is None
+
+    # Aggregated filtration remaining: max of non-zero countdowns (1200)
+    assert data["filtration_remaining"] == 1200
 
 
 @pytest.mark.asyncio

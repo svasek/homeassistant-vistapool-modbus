@@ -150,11 +150,20 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 data[f"{t_name}_start"] = t["on"]  # saved as seconds since midnight
                 data[f"{t_name}_interval"] = t["interval"]
                 data[f"{t_name}_period"] = t["period"]
+                data[f"{t_name}_countdown"] = t["countdown"]
                 if t["on"] is not None and t["interval"] is not None:
                     stop = (t["on"] + t["interval"]) % 86400
                     data[f"{t_name}_stop"] = stop
                 else:
                     data[f"{t_name}_stop"] = None
+
+            # Aggregate filtration remaining time from active filtration timers
+            filt_remaining = None
+            for n in (1, 2, 3):
+                cd = data.get(f"filtration{n}_countdown")
+                if cd is not None and cd > 0:
+                    filt_remaining = max(filt_remaining or 0, cd)
+            data["filtration_remaining"] = filt_remaining
 
             if self.auto_time_sync:
                 if is_device_time_out_of_sync(data, self.hass):
