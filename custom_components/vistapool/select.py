@@ -46,6 +46,43 @@ _FILTRATION_SPEED_KEYS = (
 )
 
 
+def _should_skip_select(key: str, props: dict, data: dict, entry_options: dict) -> bool:
+    """Return True if a select entity should not be created."""
+    # Skip filtration speed selects if pump type is not set
+    if key in _FILTRATION_SPEED_KEYS and not bool(
+        get_filtration_pump_type(data.get("MBF_PAR_FILTRATION_CONF", 0))
+    ):
+        return True  # pragma: no cover
+    # Skip boost mode select if model does not support "Hydro/Electrolysis"
+    if key == "MBF_CELL_BOOST":
+        mbf_par_model = data.get("MBF_PAR_MODEL", 0)
+        if not (mbf_par_model & 0x0002):  # pragma: no cover
+            return True
+    # Conditionally add Intelligent min. filtration time only if heating relay is assigned
+    if key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
+        if not bool(data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+            data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+        ):
+            return True
+    # Besgo-valve selects: only when a Besgo valve is detected
+    if key in (
+        "MBF_PAR_FILTVALVE_PERIOD_MINUTES",
+        "MBF_PAR_FILTVALVE_MODE",
+    ) and not has_filtvalve(data):
+        return True
+    # Skip relay activation delay if no pH module is detected
+    if (
+        key == "MBF_PAR_RELAY_ACTIVATION_DELAY"
+        and data.get("pH measurement module detected") is not True
+    ):
+        return True
+    # Option-gated select
+    option_key = props.get("option")
+    if option_key and not entry_options.get(option_key, False):
+        return True
+    return False
+
+
 async def async_setup_entry(hass, entry, async_add_entities) -> None:
     """Set up VistaPool select entities from a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
@@ -57,37 +94,7 @@ async def async_setup_entry(hass, entry, async_add_entities) -> None:
         return
 
     for key, props in SELECT_DEFINITIONS.items():
-        # Skip the selects if they are not detected
-        if key in _FILTRATION_SPEED_KEYS and not bool(
-            get_filtration_pump_type(coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0))
-        ):
-            continue  # pragma: no cover
-        # Skip boost mode select if model does not support "Hydro/Electrolysis"
-        if key == "MBF_CELL_BOOST":
-            mbf_par_model = coordinator.data.get("MBF_PAR_MODEL", 0)
-            if not (mbf_par_model & 0x0002):  # pragma: no cover
-                continue
-        # Conditionally add Intelligent min. filtration time only if heating relay is assigned
-        if key == "MBF_PAR_INTELLIGENT_FILT_MIN_TIME":
-            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
-                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
-            ):
-                continue
-        # Besgo-valve selects: only when a Besgo valve is detected
-        if key in (
-            "MBF_PAR_FILTVALVE_PERIOD_MINUTES",
-            "MBF_PAR_FILTVALVE_MODE",
-        ) and not has_filtvalve(coordinator.data):
-            continue
-        # Skip relay activation delay if no pH module is detected
-        if (
-            key == "MBF_PAR_RELAY_ACTIVATION_DELAY"
-            and coordinator.data.get("pH measurement module detected") is not True
-        ):
-            continue
-
-        option_key = props.get("option")
-        if option_key and not entry.options.get(option_key, False):
+        if _should_skip_select(key, props, coordinator.data, entry.options):
             continue
 
         entities.append(VistaPoolSelect(coordinator, entry_id, key, props))

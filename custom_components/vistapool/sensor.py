@@ -63,6 +63,61 @@ PH_STATUS_ALARM_MAP = {
 }
 
 
+def _should_skip_sensor(key: str, data: dict) -> bool:
+    """Return True if a sensor entity should not be created."""
+    if key == "MBF_MEASURE_TEMPERATURE" and not bool(
+        data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+    ):
+        return True
+    if (
+        key in ("MBF_MEASURE_PH", "MBF_PH_STATUS_ALARM")
+        and data.get("pH measurement module detected") is not True
+    ):
+        return True
+    if (
+        key == "MBF_MEASURE_RX"
+        and data.get("Redox measurement module detected") is not True
+    ):
+        return True
+    if (
+        key == "MBF_MEASURE_CL"
+        and data.get("Chlorine measurement module detected") is not True
+    ):
+        return True
+    if (
+        key == "MBF_MEASURE_CONDUCTIVITY"
+        and data.get("Conductivity measurement module detected") is not True
+    ):
+        return True
+    if key == "MBF_ION_CURRENT" and not bool((data.get("MBF_PAR_MODEL") or 0) & 0x0001):
+        return True
+    if key in (
+        "MBF_HIDRO_CURRENT",
+        "MBF_HIDRO_VOLTAGE",
+        "HIDRO_POLARITY",
+    ) and not data.get("Hydrolysis module detected"):
+        return True
+    if key == "ION_POLARITY" and not bool((data.get("MBF_PAR_MODEL") or 0) & 0x0001):
+        return True
+    if key == "FILTRATION_SPEED" and not get_filtration_pump_type(
+        data.get("MBF_PAR_FILTRATION_CONF", 0)
+    ):
+        return True
+    if key in ("MBF_PAR_INTELLIGENT_INTERVALS", "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL"):
+        if not bool(data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+            data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+        ):
+            return True
+    if key == "MBF_PAR_FILTVALVE_REMAINING" and not has_filtvalve(data):
+        return True
+    if (
+        key == "PH_PUMP_STATUS"
+        and data.get("pH measurement module detected") is not True
+    ):
+        return True
+    return False
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -78,65 +133,7 @@ async def async_setup_entry(
 
     # Loop through the defined sensors and create SensorEntity instances
     for key, props in SENSOR_DEFINITIONS.items():
-        # Skip the sensors if they are not detected
-        if key == "MBF_MEASURE_TEMPERATURE" and not bool(
-            coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
-        ):
-            continue
-        if (
-            key in ("MBF_MEASURE_PH", "MBF_PH_STATUS_ALARM")
-            and coordinator.data.get("pH measurement module detected") is not True
-        ):
-            continue
-        if (
-            key == "MBF_MEASURE_RX"
-            and coordinator.data.get("Redox measurement module detected") is not True
-        ):
-            continue
-        if (
-            key == "MBF_MEASURE_CL"
-            and coordinator.data.get("Chlorine measurement module detected") is not True
-        ):
-            continue
-        if (
-            key == "MBF_MEASURE_CONDUCTIVITY"
-            and coordinator.data.get("Conductivity measurement module detected")
-            is not True
-        ):
-            continue
-        if key == "MBF_ION_CURRENT" and not bool(
-            (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
-        ):
-            continue
-        if key in (
-            "MBF_HIDRO_CURRENT",
-            "MBF_HIDRO_VOLTAGE",
-            "HIDRO_POLARITY",
-        ) and not coordinator.data.get("Hydrolysis module detected"):
-            continue
-        if key == "ION_POLARITY" and not bool(
-            (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
-        ):
-            continue
-        if key == "FILTRATION_SPEED" and not get_filtration_pump_type(
-            coordinator.data.get("MBF_PAR_FILTRATION_CONF", 0)
-        ):
-            continue
-        if (
-            key == "MBF_PAR_INTELLIGENT_INTERVALS"
-            or key == "MBF_PAR_INTELLIGENT_TT_NEXT_INTERVAL"
-        ):
-            # Skip if heating GPIO not assigned or temperature inactive
-            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
-                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
-            ):
-                continue
-        if key == "MBF_PAR_FILTVALVE_REMAINING" and not has_filtvalve(coordinator.data):
-            continue
-        if (
-            key == "PH_PUMP_STATUS"
-            and coordinator.data.get("pH measurement module detected") is not True
-        ):
+        if _should_skip_sensor(key, coordinator.data):
             continue
 
         entities.append(
