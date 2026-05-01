@@ -1291,7 +1291,7 @@ class VistaPoolModbusClient:
                 _LOGGER.error(
                     "Modbus client connection failed to %s:%s", self._host, self._port
                 )
-                return {}
+                return False
             result = await modbus_acall(
                 client.write_registers, self._unit, address=addr, values=regs
             )
