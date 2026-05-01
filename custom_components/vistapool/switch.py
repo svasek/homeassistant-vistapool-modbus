@@ -32,9 +32,7 @@ from .entity import VistaPoolEntity
 _LOGGER = logging.getLogger(__name__)
 
 
-def _should_skip_switch(
-    key: str, props: dict, data: dict, entry_options: dict
-) -> bool:
+def _should_skip_switch(key: str, props: dict, data: dict, entry_options: dict) -> bool:
     """Return True if a switch entity should not be created."""
     # Only create relay switches if enabled in options
     option_key = props.get("option")
