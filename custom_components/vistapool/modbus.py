@@ -426,7 +426,7 @@ class VistaPoolModbusClient:
         ranges: list[tuple[int, int]],
         read_func=None,
     ) -> list[int]:
-        """Read multiple contiguous register ranges and return a flat list of values.
+        """Read one or more register ranges and return a flat list of values.
 
         WARNING: Device limit for reading registers is 31 at one request!
 
@@ -440,9 +440,8 @@ class VistaPoolModbusClient:
             read_func = client.read_holding_registers
 
         registers: list[int] = []
-        for idx, (address, count) in enumerate(ranges):
-            if idx > 0:
-                await asyncio.sleep(0.05)
+        for address, count in ranges:
+            await asyncio.sleep(0.05)
             try:
                 rr = await modbus_acall(
                     read_func, self._unit, address=address, count=count
@@ -460,12 +459,12 @@ class VistaPoolModbusClient:
             self._successful_addresses.append((f"0x{address:04X}", time.time()))
             registers.extend(rr.registers)
             _LOGGER.debug("Raw registers from 0x%04X: %s", address, rr.registers)
-            if len(registers) < count:  # pragma: no cover
+            if len(rr.registers) < count:  # pragma: no cover
                 _LOGGER.warning(
                     "Expected at least %d registers from 0x%04X, got %d",
                     count,
                     address,
-                    len(registers),
+                    len(rr.registers),
                 )
         return registers
 
