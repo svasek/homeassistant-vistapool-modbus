@@ -153,7 +153,14 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
 
             # Bypass the notification cache for filtration timers while
             # filtration is running so the countdown values stay fresh.
-            filtration_active = bool(data.get("Filtration Pump"))
+            # Use both the relay bit and the previous countdown to avoid
+            # missing cycles when the relay bit is unreliable.
+            prev_remaining = (
+                self.data.get("FILTRATION_REMAINING") if self.data else None
+            )
+            filtration_active = bool(data.get("Filtration Pump")) or bool(
+                prev_remaining and prev_remaining > 0
+            )
             timers = await self.client.read_all_timers(
                 enabled_timers=enabled_timers,
                 force_read=_FILT_TIMERS if filtration_active else None,
