@@ -54,6 +54,89 @@ RELAY_GPIO_GUARD_MAP = {
     "Heating": "MBF_PAR_HEATING_GPIO",
 }
 
+# Suffixes used to match sensors against their measurement module detection status.
+_MODULE_SUFFIXES = (
+    "flow sensor problem",
+    "module control status",
+    "control status",
+    "pump active",
+    "control module",
+    "measurement active",
+)
+
+
+def _should_skip_binary_sensor(
+    key: str,
+    props: dict,
+    data: dict,
+    entry_options: dict,
+) -> bool:
+    """Return True if a binary sensor entity should not be created."""
+    # Option-gated sensor
+    option_key = props.get("option")
+    if option_key and not entry_options.get(option_key, False):
+        return True
+
+    # Skip ION entities if ionization module not present
+    if key.startswith("ION ") and not bool((data.get("MBF_PAR_MODEL") or 0) & 0x0001):
+        return True  # pragma: no cover
+
+    # Skip HIDRO entities if no hydrolysis module is installed
+    if key.startswith("HIDRO ") and not data.get("Hydrolysis module detected"):
+        return True
+
+    # Skip sensors whose relay GPIO is not assigned.
+    # Only enforce when the GPIO key is present in data; a missing key
+    # (e.g. old capability snapshot) must not suppress the entity.
+    if key in RELAY_GPIO_GUARD_MAP:
+        gpio_key = RELAY_GPIO_GUARD_MAP[key]
+        if gpio_key in data and not is_valid_relay_gpio(data[gpio_key] or 0):
+            return True
+
+    # Skip UV Lamp if UV relay is not assigned
+    if key == "UV Lamp" and "MBF_PAR_UV_RELAY_GPIO" in data:
+        if not is_valid_relay_gpio(data["MBF_PAR_UV_RELAY_GPIO"] or 0):
+            return True
+
+    # Skip pump status sensors if no relay is assigned for that pump
+    if key in PUMP_RELAY_GPIO_MAP:
+        gpio_key = PUMP_RELAY_GPIO_MAP[key]
+        if gpio_key in data and not is_valid_relay_gpio(data[gpio_key] or 0):
+            return True
+
+    # Hide all "measurement module detected" sensors
+    if "measurement module detected" in key.lower():
+        return True
+
+    # Skip chlorine related sensors
+    if (
+        key.endswith("Activated by the CL module")
+        and data.get("Chlorine measurement module detected") is not True
+    ):
+        return True
+
+    # Skip redox related sensors
+    if (
+        key.endswith("Activated by the RX module")
+        and data.get("Redox measurement module detected") is not True
+    ):
+        return True
+
+    # Hide selected sensors if their 'measurement module detected' status is False.
+    key_lower = key.lower()
+    for suffix in _MODULE_SUFFIXES:
+        if key_lower.endswith(suffix):
+            prefix = key_lower[: -len(suffix)].strip()
+            for data_key in data:
+                if data_key.lower().startswith(prefix) and data_key.lower().endswith(
+                    "measurement module detected"
+                ):
+                    if not data.get(data_key):  # pragma: no cover
+                        return True
+            break  # Only one suffix can match; no need to continue
+
+    return False
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -62,14 +145,6 @@ async def async_setup_entry(
 ) -> None:
     """Set up VistaPool binary sensors from a config entry."""
     coordinator: VistaPoolCoordinator = hass.data[DOMAIN][entry.entry_id]
-    SUFFIXES = (
-        "flow sensor problem",
-        "module control status",
-        "control status",
-        "pump active",
-        "control module",
-        "measurement active",
-    )
     entities = []
 
     if coordinator.data is None:
@@ -77,73 +152,10 @@ async def async_setup_entry(
         return
 
     for key, props in BINARY_SENSOR_DEFINITIONS.items():
+        if _should_skip_binary_sensor(key, props, coordinator.data, entry.options):
+            continue
+
         sensor_props = dict(props)
-        option_key = sensor_props.get("option")
-        if option_key and not entry.options.get(option_key, False):
-            continue
-        # Skip sensors that are not detected
-        if key.startswith("ION ") and not bool(
-            (coordinator.data.get("MBF_PAR_MODEL") or 0) & 0x0001
-        ):
-            continue  # pragma: no cover
-        # Skip HIDRO entities if no hydrolysis module is installed
-        if key.startswith("HIDRO ") and not coordinator.data.get(
-            "Hydrolysis module detected"
-        ):
-            continue
-        # Skip sensors whose relay GPIO is not assigned.
-        # Only enforce when the GPIO key is present in data; a missing key
-        # (e.g. old capability snapshot) must not suppress the entity.
-        if key in RELAY_GPIO_GUARD_MAP:
-            gpio_key = RELAY_GPIO_GUARD_MAP[key]
-            if gpio_key in coordinator.data and not is_valid_relay_gpio(
-                coordinator.data[gpio_key] or 0
-            ):
-                continue
-        # Skip UV Lamp if UV relay is not assigned
-        if key == "UV Lamp" and "MBF_PAR_UV_RELAY_GPIO" in coordinator.data:
-            if not is_valid_relay_gpio(coordinator.data["MBF_PAR_UV_RELAY_GPIO"] or 0):
-                continue
-        # Skip pump status sensors if no relay is assigned for that pump
-        if key in PUMP_RELAY_GPIO_MAP:
-            gpio_key = PUMP_RELAY_GPIO_MAP[key]
-            if gpio_key in coordinator.data and not is_valid_relay_gpio(
-                coordinator.data[gpio_key] or 0
-            ):
-                continue
-        # Hide all "measurement module detected" sensors
-        if "measurement module detected" in key.lower():
-            continue
-        # Skip chlorine related sensors
-        if (
-            key.endswith("Activated by the CL module")
-            and coordinator.data.get("Chlorine measurement module detected") is not True
-        ):
-            continue
-        # Skip redox related sensors
-        if (
-            key.endswith("Activated by the RX module")
-            and coordinator.data.get("Redox measurement module detected") is not True
-        ):
-            continue
-        # Check if the entity should be skipped based on the suffixes
-        # Hide selected sensors if their 'measurement module detected' status is False.
-        skip_entity = False
-        key_lower = key.lower()
-        for suffix in SUFFIXES:
-            if key_lower.endswith(suffix):
-                prefix = key_lower[: -len(suffix)].strip()
-                for data_key in coordinator.data:
-                    if data_key.lower().startswith(
-                        prefix
-                    ) and data_key.lower().endswith("measurement module detected"):
-                        if not coordinator.data.get(data_key):  # pragma: no cover
-                            skip_entity = True
-                            break
-                if skip_entity:  # pragma: no cover
-                    break
-        if skip_entity:  # pragma: no cover
-            continue  # Skip this entity
 
         # Check if the entity should be enabled by default
         # Disable some entities by default based on their key
