@@ -915,16 +915,22 @@ class VistaPoolModbusClient:
         self._last_notification = notification
         self._last_was_full_read = force_full
 
-        # Fixup: on some firmware versions (e.g. v8.07 on HIDRO-only variants),
-        # the filtration relay bit in MBF_RELAY_STATE is not set even when the
-        # filtration pump is running.
+        # Fixup: on some installations the filtration relay bit in
+        # MBF_RELAY_STATE is not set even when the filtration pump is running.
         # MBF_PAR_FILTRATION_STATE (0x0421) is the authoritative source per vendor docs.
-        # When the two disagree, patch both the decoded key and the relay state bit
-        # (at the GPIO-assigned position) so downstream consumers stay consistent.
-        # Only apply when filtration relay is actually assigned (valid GPIO).
+        # However, MBF_PAR_FILTRATION_STATE lives on the INSTALLER page which is
+        # only re-read on notification or periodic full reads. When it comes from
+        # cache it may be stale, so we must NOT let a stale cached value override
+        # the fresh relay bit from MBF_RELAY_STATE (read every poll cycle).
+        # Only apply the fixup when the INSTALLER page was actually read this cycle.
+        installer_fresh = force_full or bool(notification & _NOTIF_INSTALLER)
         filt_gpio = result.get("MBF_PAR_FILT_GPIO", 0) or 0
         filtration_state = result.get("MBF_PAR_FILTRATION_STATE")
-        if is_valid_relay_gpio(filt_gpio) and filtration_state in (0, 1):
+        if (
+            installer_fresh
+            and is_valid_relay_gpio(filt_gpio)
+            and filtration_state in (0, 1)
+        ):
             authoritative = filtration_state == 1
             if result.get("Filtration Pump") != authoritative:
                 _LOGGER.debug(
