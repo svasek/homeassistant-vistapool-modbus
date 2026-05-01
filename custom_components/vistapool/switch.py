@@ -32,6 +32,40 @@ from .entity import VistaPoolEntity
 _LOGGER = logging.getLogger(__name__)
 
 
+def _should_skip_switch(key: str, props: dict, data: dict, entry_options: dict) -> bool:
+    """Return True if a switch entity should not be created."""
+    # Only create relay switches if enabled in options
+    option_key = props.get("option")
+    if option_key and not entry_options.get(option_key, False):
+        return True
+    # Conditionally add clima mode only if heating relay is assigned
+    if key == "MBF_PAR_CLIMA_ONOFF":
+        if not bool(data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+            data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+        ):
+            return True
+    # Skip smart antifreeze if temperature sensor not active
+    if key == "MBF_PAR_SMART_ANTI_FREEZE":
+        if not bool(data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
+            return True
+    # Hydro cover-reduction switch only when hydrolysis module present
+    if key == "MBF_PAR_HIDRO_COVER_ENABLE":
+        if not data.get("Hydrolysis module detected"):
+            return True
+    # Hydro temp-shutdown switch needs hydrolysis and temperature sensor
+    if key == "MBF_PAR_HIDRO_TEMP_SHUTDOWN":
+        if not data.get("Hydrolysis module detected") or not bool(
+            data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+        ):
+            return True
+    # UV mode switch only when UV relay is assigned
+    if key == "MBF_PAR_UV_MODE":
+        uv_gpio = data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
+        if not is_valid_relay_gpio(uv_gpio):
+            return True
+    return False
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -48,35 +82,8 @@ async def async_setup_entry(
         return
 
     for key, props in SWITCH_DEFINITIONS.items():
-        # Only create relay switches if enabled in options
-        option_key = props.get("option")
-        if option_key and not entry.options.get(option_key, False):
+        if _should_skip_switch(key, props, coordinator.data, entry.options):
             continue
-        # Conditionally add clima mode only if heating relay is assigned
-        if key == "MBF_PAR_CLIMA_ONOFF":
-            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
-                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
-            ):
-                continue
-        # Skip smart antifreeze if temperature sensor not active
-        if key == "MBF_PAR_SMART_ANTI_FREEZE":
-            if not bool(coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
-                continue
-        # Hydro cover-reduction switch only when hydrolysis module present
-        if key == "MBF_PAR_HIDRO_COVER_ENABLE":
-            if not coordinator.data.get("Hydrolysis module detected"):
-                continue
-        # Hydro temp-shutdown switch needs hydrolysis and temperature sensor
-        if key == "MBF_PAR_HIDRO_TEMP_SHUTDOWN":
-            if not coordinator.data.get("Hydrolysis module detected") or not bool(
-                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
-            ):
-                continue
-        # UV mode switch only when UV relay is assigned
-        if key == "MBF_PAR_UV_MODE":
-            uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
-            if not is_valid_relay_gpio(uv_gpio):
-                continue
 
         entities.append(VistaPoolSwitch(coordinator, entry_id, key, props))
 
