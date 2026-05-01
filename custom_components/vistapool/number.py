@@ -27,6 +27,7 @@ from .const import (
     HEATING_SETPOINT_REGISTER,
     INTELLIGENT_SETPOINT_REGISTER,
     NUMBER_DEFINITIONS,
+    is_valid_relay_gpio,
 )
 from .coordinator import VistaPoolCoordinator
 from .entity import VistaPoolEntity
@@ -45,19 +46,29 @@ def _should_skip_number(key: str, props: dict, data: dict, entry_options: dict) 
     if key in ("MBF_PAR_SMART_TEMP_HIGH", "MBF_PAR_SMART_TEMP_LOW"):
         if not bool(data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
             return True
-    # Conditionally add heating setpoint only if heating relay is assigned
+    # Conditionally add heating setpoint only if heating relay is assigned.
+    # Only enforce when the GPIO key is present in data; a missing key
+    # (e.g. old capability snapshot) must not suppress the entity.
     if key == "MBF_PAR_HEATING_TEMP":
-        if not bool(data.get("MBF_PAR_HEATING_GPIO")) or not bool(
-            data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+        if "MBF_PAR_HEATING_GPIO" in data and not is_valid_relay_gpio(
+            data["MBF_PAR_HEATING_GPIO"] or 0
         ):
             return True
-    # Conditionally add pH high limit only if acid pump relay is assigned
-    if key == "MBF_PAR_PH1":
-        if not bool(data.get("MBF_PAR_PH_ACID_RELAY_GPIO")):
+        if not bool(data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
             return True
-    # Conditionally add pH low limit only if base pump relay is assigned
+    # Conditionally add pH high limit only if acid pump relay is assigned.
+    # Only enforce when the GPIO key is present in data.
+    if key == "MBF_PAR_PH1":
+        if "MBF_PAR_PH_ACID_RELAY_GPIO" in data and not is_valid_relay_gpio(
+            data["MBF_PAR_PH_ACID_RELAY_GPIO"] or 0
+        ):
+            return True
+    # Conditionally add pH low limit only if base pump relay is assigned.
+    # Only enforce when the GPIO key is present in data.
     if key == "MBF_PAR_PH2":
-        if not bool(data.get("MBF_PAR_PH_BASE_RELAY_GPIO")):
+        if "MBF_PAR_PH_BASE_RELAY_GPIO" in data and not is_valid_relay_gpio(
+            data["MBF_PAR_PH_BASE_RELAY_GPIO"] or 0
+        ):
             return True
     # Conditionally add redox setpoint only if redox module is detected
     if key == "MBF_PAR_RX1":
