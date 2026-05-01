@@ -35,6 +35,54 @@ from .helpers import is_hydrolysis_in_percent
 _LOGGER = logging.getLogger(__name__)
 
 
+def _should_skip_number(key: str, props: dict, data: dict, entry_options: dict) -> bool:
+    """Return True if a number entity should not be created."""
+    # Only create number entities if enabled in options
+    option_key = props.get("option")
+    if option_key and not entry_options.get(option_key, False):
+        return True
+    # Skip smart temperature numbers if no temperature sensor is active
+    if key in ("MBF_PAR_SMART_TEMP_HIGH", "MBF_PAR_SMART_TEMP_LOW"):
+        if not bool(data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
+            return True
+    # Conditionally add heating setpoint only if heating relay is assigned
+    if key == "MBF_PAR_HEATING_TEMP":
+        if not bool(data.get("MBF_PAR_HEATING_GPIO")) or not bool(
+            data.get("MBF_PAR_TEMPERATURE_ACTIVE")
+        ):
+            return True
+    # Conditionally add pH high limit only if acid pump relay is assigned
+    if key == "MBF_PAR_PH1":
+        if not bool(data.get("MBF_PAR_PH_ACID_RELAY_GPIO")):
+            return True
+    # Conditionally add pH low limit only if base pump relay is assigned
+    if key == "MBF_PAR_PH2":
+        if not bool(data.get("MBF_PAR_PH_BASE_RELAY_GPIO")):
+            return True
+    # Conditionally add redox setpoint only if redox relay is assigned
+    if key == "MBF_PAR_RX1":
+        if not bool(data.get("Redox measurement module detected")):
+            return True
+    # Conditionally add chlorine setpoint only if chlorine pump relay is assigned
+    if key == "MBF_PAR_CL1":
+        if not bool(data.get("Chlorine measurement module detected")):
+            return True
+    # Skip hydrolysis target if no hydrolysis module is installed
+    if key == "MBF_PAR_HIDRO" and not data.get("Hydrolysis module detected"):
+        return True
+    # Cover reduction numbers only visible when hydrolysis module present
+    if key == "MBF_PAR_HIDRO_COVER_REDUCTION":
+        if not data.get("Hydrolysis module detected"):
+            return True
+    # Shutdown temperature needs hydrolysis and temperature sensor
+    if key == "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE":
+        if not data.get("Hydrolysis module detected") or data.get(
+            "MBF_PAR_TEMPERATURE_ACTIVE", 0
+        ) == 0:
+            return True
+    return False
+
+
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
@@ -49,52 +97,8 @@ async def async_setup_entry(
         return
 
     for key, props in NUMBER_DEFINITIONS.items():
-        # Only create number entities if enabled in options
-        option_key = props.get("option")
-        if option_key and not entry.options.get(option_key, False):
+        if _should_skip_number(key, props, coordinator.data, entry.options):
             continue
-        # Skip smart temperature numbers if no temperature sensor is active
-        if key in ("MBF_PAR_SMART_TEMP_HIGH", "MBF_PAR_SMART_TEMP_LOW"):
-            if not bool(coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")):
-                continue
-        # Conditionally add heating setpoint only if heating relay is assigned
-        if key == "MBF_PAR_HEATING_TEMP":
-            if not bool(coordinator.data.get("MBF_PAR_HEATING_GPIO")) or not bool(
-                coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE")
-            ):
-                continue
-        # Conditionally add pH high limit only if acid pump relay is assigned
-        if key == "MBF_PAR_PH1":
-            if not bool(coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO")):
-                continue
-        # Conditionally add pH low limit only if base pump relay is assigned
-        if key == "MBF_PAR_PH2":
-            if not bool(coordinator.data.get("MBF_PAR_PH_BASE_RELAY_GPIO")):
-                continue
-        # Conditionally add redox setpoint only if redox relay is assigned
-        if key == "MBF_PAR_RX1":
-            if not bool(coordinator.data.get("Redox measurement module detected")):
-                continue
-        # Conditionally add chlorine setpoint only if chlorine pump relay is assigned
-        if key == "MBF_PAR_CL1":
-            if not bool(coordinator.data.get("Chlorine measurement module detected")):
-                continue
-        # Skip hydrolysis target if no hydrolysis module is installed
-        if key == "MBF_PAR_HIDRO" and not coordinator.data.get(
-            "Hydrolysis module detected"
-        ):
-            continue
-        # Cover reduction numbers only visible when hydrolysis module present
-        if key == "MBF_PAR_HIDRO_COVER_REDUCTION":
-            if not coordinator.data.get("Hydrolysis module detected"):
-                continue
-        # Shutdown temperature needs hydrolysis and temperature sensor
-        if key == "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE":
-            if (
-                not coordinator.data.get("Hydrolysis module detected")
-                or coordinator.data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
-            ):
-                continue
 
         entities.append(VistaPoolNumber(coordinator, entry_id, key, props))
 
