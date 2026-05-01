@@ -425,6 +425,7 @@ class VistaPoolModbusClient:
         client,
         ranges: list[tuple[int, int]],
         read_func=None,
+        label: str = "",
     ) -> list[int]:
         """Read one or more register ranges and return a flat list of values.
 
@@ -435,6 +436,7 @@ class VistaPoolModbusClient:
             ranges: List of (start_address, count) tuples.
             read_func: The pymodbus read function to use.
                        Defaults to client.read_holding_registers.
+            label: Optional label for debug/warning log messages (e.g. "rr01").
         """
         if read_func is None:
             read_func = client.read_holding_registers
@@ -458,12 +460,14 @@ class VistaPoolModbusClient:
                 raise ModbusException(f"Modbus read error from 0x{address:04X}: {rr}")
             self._successful_addresses.append((f"0x{address:04X}", time.time()))
             registers.extend(rr.registers)
-            _LOGGER.debug("Raw registers from 0x%04X: %s", address, rr.registers)
+            _log_prefix = f"Raw {label} from" if label else "Raw registers from"
+            _LOGGER.debug("%s 0x%04X: %s", _log_prefix, address, rr.registers)
             if len(rr.registers) < count:  # pragma: no cover
                 _LOGGER.warning(
-                    "Expected at least %d registers from 0x%04X, got %d",
-                    count,
+                    "%s 0x%04X: expected at least %d registers, got %d",
+                    _log_prefix,
                     address,
+                    count,
                     len(rr.registers),
                 )
         return registers
@@ -508,6 +512,7 @@ class VistaPoolModbusClient:
                 client,
                 [(0x0100, 18)],  # 0x0100–0x0111
                 read_func=client.read_input_registers,
+                label="rr01",
             )
 
             # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
@@ -594,6 +599,7 @@ class VistaPoolModbusClient:
                         # (0x006A, 1),  # 0x006A (5V line)
                         # (0x0072, 1),  # 0x0072 (4-20mA line)
                     ],
+                    label="rr00",
                 )
 
                 # Example: [1, 3, 1280, 32768, 88, 47, 16707, 20497, 8248, 12592, 0, 0, 0, 22069, 0]
@@ -628,6 +634,7 @@ class VistaPoolModbusClient:
                         (0x0206, 20),  # 0x0206–0x0219
                         (0x0280, 2),   # 0x0280–0x0281 (hidrolysis module version and connectivity)
                     ],
+                    label="rr02",
                 )
                 # fmt: on
 
@@ -669,6 +676,7 @@ class VistaPoolModbusClient:
                         (0x0300, 13),  # 0x0300–0x030C
                         (0x0322, 4),  # 0x0322–0x0325
                     ],
+                    label="rr03",
                 )
 
                 # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297, 125, 2, 100, 100]
@@ -718,6 +726,7 @@ class VistaPoolModbusClient:
                         (0x0427, 13),  # 0x0427–0x0433
                         (0x04E8, 8),  # 0x04E8–0x04EF  FILTVALVE / backwash registers
                     ],
+                    label="rr04",
                 )
 
                 # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -818,6 +827,7 @@ class VistaPoolModbusClient:
                 reg05 = await self._read_register_ranges(
                     client,
                     [(0x0502, 14)],  # 0x0502–0x050F
+                    label="rr05",
                 )
 
                 # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
@@ -851,6 +861,7 @@ class VistaPoolModbusClient:
                         # Includes full NAME_BOLD 0x0608-0x060B and NAME_LIGHT 0x060C-0x060F
                         (0x0600, 16),  # 0x0600–0x060F
                     ],
+                    label="rr06",
                 )
 
                 # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0, 0, 0, 0]
