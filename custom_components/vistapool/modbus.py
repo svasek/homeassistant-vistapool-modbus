@@ -1179,11 +1179,9 @@ class VistaPoolModbusClient:
         )
         if can_use_cache and self._cached_timers and not force_read:
             _LOGGER.debug("Skipping timer read (no INSTALLER change notification)")
-            if enabled_timers is not None:
-                return {
-                    k: v for k, v in self._cached_timers.items() if k in enabled_timers
-                }
-            return dict(self._cached_timers)
+            return {
+                k: v for k, v in self._cached_timers.items() if k in effective_timers
+            }
 
         client = await self.get_client()
         if client is None or not client.connected:
@@ -1194,8 +1192,7 @@ class VistaPoolModbusClient:
                 f"Modbus client connection failed to {self._host}:{self._port}"
             )
         for name, addr in TIMER_BLOCKS.items():
-            # If enabled_timers is provided, limit to those timers only
-            if enabled_timers is not None and name not in enabled_timers:
+            if name not in effective_timers:
                 continue
             # Use cache for non-forced timers when INSTALLER page hasn't changed
             if can_use_cache and name not in force_read and name in self._cached_timers:
