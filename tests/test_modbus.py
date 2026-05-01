@@ -1878,6 +1878,77 @@ async def test_perform_read_all_timers_reads_on_full_read_even_without_notificat
 
 
 @pytest.mark.asyncio
+async def test_filtration_fixup_skipped_on_partial_read(config, monkeypatch):
+    """Cached MBF_PAR_FILTRATION_STATE must not override a fresh MBF_RELAY_STATE.
+
+    Scenario (issue #122): On a partial read (no INSTALLER notification), the
+    INSTALLER page is not re-read. The cached MBF_PAR_FILTRATION_STATE may be
+    stale (0=off) while the fresh MBF_RELAY_STATE correctly shows the pump ON.
+    The fixup must NOT fire in this case — the relay bit should be trusted.
+    """
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+
+    class DummyResp:
+        def __init__(self, regs, is_error=False):
+            self.registers = regs
+            self.isError = lambda: is_error
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+
+    # --- First poll: full read, pump off everywhere ---
+    reg01_off = [0] * 18
+    reg01_off[14] = 0x0000  # MBF_RELAY_STATE — pump off
+    reg01_off[16] = 0  # MBF_NOTIFICATION — no changes
+
+    installer_block1 = [0] * 31
+    installer_block1[10] = 2  # MBF_PAR_FILT_GPIO = 2
+    installer_block1[25] = 0  # MBF_PAR_FILTRATION_STATE = 0 (off)
+
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01_off))
+    fake_modbus.read_holding_registers = AsyncMock(
+        side_effect=[
+            DummyResp([1, 3, 1280, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            DummyResp([0] * 20),
+            DummyResp([0, 0]),
+            DummyResp([0] * 13),
+            DummyResp([0] * 4),
+            DummyResp(installer_block1),
+            DummyResp([0] * 13),
+            DummyResp([0] * 8),
+            DummyResp([0] * 14),
+            DummyResp([0] * 13),
+        ]
+    )
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+    result1 = await client._perform_read_all()
+    assert result1["Filtration Pump"] is False
+
+    # --- Second poll: partial read (no notification), pump now ON in relay ---
+    # Simulate enough polls so this is NOT a full read
+    client._polls_since_full_read = 1  # just after full read
+
+    reg01_on = [0] * 18
+    reg01_on[14] = 0x0002  # MBF_RELAY_STATE — bit 1 set (pump ON)
+    reg01_on[16] = 0  # MBF_NOTIFICATION — no INSTALLER change
+
+    fake_modbus.read_input_registers = AsyncMock(return_value=DummyResp(reg01_on))
+    # No holding register reads expected (partial read, no notification)
+    fake_modbus.read_holding_registers = AsyncMock(side_effect=[])
+
+    result2 = await client._perform_read_all()
+
+    # The relay bit is fresh and says pump ON. Cached MBF_PAR_FILTRATION_STATE
+    # is stale (0). Fixup must NOT override → Filtration Pump stays True.
+    assert result2["Filtration Pump"] is True, (
+        "Fresh relay bit should not be overridden by stale cached MBF_PAR_FILTRATION_STATE"
+    )
+    assert result2["MBF_RELAY_STATE"] & 0x0002, (
+        "MBF_RELAY_STATE bit 1 should remain set"
+    )
+
+
+@pytest.mark.asyncio
 async def test_filtration_state_fixup_v8_07_firmware(config, monkeypatch):
     """Test that MBF_PAR_FILTRATION_STATE overrides MBF_RELAY_STATE bit 1 when they disagree.
 
