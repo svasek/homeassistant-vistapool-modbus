@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.24.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.23.0...v1.24.0) (2026-05-01)
+
+
+### ✨ Features
+
+* **sensor:** ✨ add dynamic relay GPIO mapping and pH pump status sensor ([#120](https://github.com/svasek/homeassistant-vistapool-modbus/issues/120)) ([977f5a4](https://github.com/svasek/homeassistant-vistapool-modbus/commit/977f5a45ba2158c253842ef2f64584038e2b9ba4))
+* **sensor:** ✨ add filtration time remaining sensor ([#126](https://github.com/svasek/homeassistant-vistapool-modbus/issues/126)) ([2977072](https://github.com/svasek/homeassistant-vistapool-modbus/commit/29770721d05b38426b7af65d2be623dab86d2f02))
+
+
+### 🐛 Bug Fixes
+
+* 🐛 guard set_timer service removal with has_service check ([c2b8dca](https://github.com/svasek/homeassistant-vistapool-modbus/commit/c2b8dca7e7530a839ce3440d28da63d8d6646464))
+* **modbus:** 🐛 skip filtration state fixup when INSTALLER page is stale ([3a2c07e](https://github.com/svasek/homeassistant-vistapool-modbus/commit/3a2c07ecbe4125eb21b97a270a3b6cdb51429f27)), closes [#122](https://github.com/svasek/homeassistant-vistapool-modbus/issues/122)
+* **modbus:** 🩹 return False instead of {} in _perform_write_timer ([ea9ba7a](https://github.com/svasek/homeassistant-vistapool-modbus/commit/ea9ba7a49f2464cdf76e8da60c1383a86e3a5519))
+
+
+### ♻️ Refactoring
+
+* **binary_sensor:** ♻️ extract entity skip logic into helper function ([#125](https://github.com/svasek/homeassistant-vistapool-modbus/issues/125)) ([1980fbc](https://github.com/svasek/homeassistant-vistapool-modbus/commit/1980fbc772691c138d8d4390e8c62627eafdd3d7))
+* **modbus:** ♻️ extract register read helper to reduce duplication ([#123](https://github.com/svasek/homeassistant-vistapool-modbus/issues/123)) ([2cea603](https://github.com/svasek/homeassistant-vistapool-modbus/commit/2cea6038e3906e152339b69e02e00f4f93da6b2f))
+* **number:** ♻️ extract entity skip logic into helper function ([#129](https://github.com/svasek/homeassistant-vistapool-modbus/issues/129)) ([e750c90](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e750c904a5a840a4aa1004cf2c83cd2cbd2fb9f6))
+* **select:** ♻️ extract entity skip logic into helper function ([#130](https://github.com/svasek/homeassistant-vistapool-modbus/issues/130)) ([e34d608](https://github.com/svasek/homeassistant-vistapool-modbus/commit/e34d6082cc6c0f4040f69572d2ef17d1952bd552))
+* **sensor:** ♻️ extract entity skip logic into helper function ([#128](https://github.com/svasek/homeassistant-vistapool-modbus/issues/128)) ([b51a50a](https://github.com/svasek/homeassistant-vistapool-modbus/commit/b51a50a24a7936d07c198d9a8adb3d14852584d8))
+* **switch:** ♻️ extract entity skip logic into helper function ([#131](https://github.com/svasek/homeassistant-vistapool-modbus/issues/131)) ([29d3884](https://github.com/svasek/homeassistant-vistapool-modbus/commit/29d3884c8b3ab459fc62006414ec56754ce5e518))
+
 ## [1.23.0](https://github.com/svasek/homeassistant-vistapool-modbus/compare/v1.22.1...v1.23.0) (2026-04-27)
 
 
