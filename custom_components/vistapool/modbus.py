@@ -420,10 +420,60 @@ class VistaPoolModbusClient:
         _LOGGER.error("All read attempts failed: %s", last_error)
         raise last_error
 
+    async def _read_register_ranges(
+        self,
+        client,
+        ranges: list[tuple[int, int]],
+        read_func=None,
+        label: str = "",
+    ) -> list[int]:
+        """Read one or more register ranges and return a flat list of values.
+
+        WARNING: Device limit for reading registers is 31 at one request!
+
+        Args:
+            client: Connected Modbus client.
+            ranges: List of (start_address, count) tuples.
+            read_func: The pymodbus read function to use.
+                       Defaults to client.read_holding_registers.
+            label: Optional label for debug/warning log messages (e.g. "rr01").
+        """
+        if read_func is None:
+            read_func = client.read_holding_registers
+
+        registers: list[int] = []
+        for address, count in ranges:
+            await asyncio.sleep(0.05)
+            try:
+                rr = await modbus_acall(
+                    read_func, self._unit, address=address, count=count
+                )
+            except Exception as e:
+                self._failed_reads[f"0x{address:04X}"] = (
+                    self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                )
+                raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
+            if rr.isError():
+                self._failed_reads[f"0x{address:04X}"] = (
+                    self._failed_reads.get(f"0x{address:04X}", 0) + 1
+                )
+                raise ModbusException(f"Modbus read error from 0x{address:04X}: {rr}")
+            self._successful_addresses.append((f"0x{address:04X}", time.time()))
+            registers.extend(rr.registers)
+            _log_prefix = f"Raw {label} from" if label else "Raw registers from"
+            _LOGGER.debug("%s 0x%04X: %s", _log_prefix, address, rr.registers)
+            if len(rr.registers) < count:  # pragma: no cover
+                _LOGGER.warning(
+                    "%s 0x%04X: expected at least %d registers, got %d",
+                    _log_prefix,
+                    address,
+                    count,
+                    len(rr.registers),
+                )
+        return registers
+
     async def _perform_read_all(self) -> dict:
         result = {}
-
-        """WARNING: Device limit for reading registers is 31 at one request !!!"""
 
         def get_safe(regs, idx, transform=None) -> int | None:
             """Safely get a register value or return None if missing. Optionally apply a transform."""
@@ -458,42 +508,12 @@ class VistaPoolModbusClient:
             (0x0110) which determines which configuration pages need to be refreshed.
             """
 
-            rr01_ranges = [
-                (0x0100, 18),  # 0x0100–0x0111
-            ]
-
-            reg01 = []
-            for address, count in rr01_ranges:
-                try:
-                    rr01 = await modbus_acall(
-                        client.read_input_registers,
-                        self._unit,
-                        address=address,
-                        count=count,
-                    )
-                except Exception as e:
-                    self._failed_reads[f"0x{address:04X}"] = (
-                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                    )
-                    raise ModbusException(f"Read error at 0x{address:04X}: {e}") from e
-                if rr01.isError():  # pragma: no cover
-                    self._failed_reads[f"0x{address:04X}"] = (
-                        self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                    )
-                    raise ModbusException(
-                        f"Modbus read error from 0x{address:04X}: {rr01}"
-                    )
-                self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                reg01.extend(rr01.registers)
-                _LOGGER.debug("Raw rr01 from 0x%04X: %s", address, rr01.registers)
-
-                if len(reg01) < count:  # pragma: no cover
-                    _LOGGER.warning(
-                        "Expected at least %d registers from 0x%04X, got %d",
-                        count,
-                        address,
-                        len(reg01),
-                    )
+            reg01 = await self._read_register_ranges(
+                client,
+                [(0x0100, 18)],  # 0x0100–0x0111
+                read_func=client.read_input_registers,
+                label="rr01",
+            )
 
             # Example: [0, 0, 820, 709, 0, 0, 140, 50560, 49536, 1280, 1280, 0, 8192, 16928, 0, 0, 9, 0]
             # fmt: off
@@ -571,48 +591,16 @@ class VistaPoolModbusClient:
             Manages general configuration of the box. This page is reserved for internal purposes
             """
             if force_full or (notification & _NOTIF_MODBUS):
-                rr00_ranges = [
-                    (0x0000, 16),  # 0x0000–0x000F
-                    # (0x0022, 2),  # 0x0022–0x0024 (24-36V, 12V, 5V lines)
-                    # (0x006A, 1),  # 0x006A (5V line)
-                    # (0x0072, 1),  # 0x0072 (4-20mA line)
-                ]
-
-                reg00 = []
-                for address, count in rr00_ranges:
-                    await asyncio.sleep(0.05)
-                    try:
-                        rr00 = await modbus_acall(
-                            client.read_holding_registers,
-                            self._unit,
-                            address=address,
-                            count=count,
-                        )
-                    except Exception as e:
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Read error at 0x{address:04X}: {e}"
-                        ) from e
-                    if rr00.isError():  # pragma: no cover
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Modbus read error from 0x{address:04X}: {rr00}"
-                        )
-                    self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    reg00.extend(rr00.registers)
-                    _LOGGER.debug("Raw rr00 from 0x%04X: %s", address, rr00.registers)
-
-                    if len(reg00) < count:  # pragma: no cover
-                        _LOGGER.warning(
-                            "Expected at least %d registers from 0x%04X, got %d",
-                            count,
-                            address,
-                            len(reg00),
-                        )
+                reg00 = await self._read_register_ranges(
+                    client,
+                    [
+                        (0x0000, 16),  # 0x0000–0x000F
+                        # (0x0022, 2),  # 0x0022–0x0024 (24-36V, 12V, 5V lines)
+                        # (0x006A, 1),  # 0x006A (5V line)
+                        # (0x0072, 1),  # 0x0072 (4-20mA line)
+                    ],
+                    label="rr00",
+                )
 
                 # Example: [1, 3, 1280, 32768, 88, 47, 16707, 20497, 8248, 12592, 0, 0, 0, 22069, 0]
                 # fmt: off
@@ -640,45 +628,15 @@ class VistaPoolModbusClient:
             """
             if force_full or (notification & _NOTIF_GLOBAL):
                 # fmt: off
-                rr02_ranges = [
-                    (0x0206, 20),  # 0x0206–0x0219
-                    (0x0280, 2,),  # 0x0280–0x0281 (hidrolysis module version and connectivity)
-                ]
+                reg02 = await self._read_register_ranges(
+                    client,
+                    [
+                        (0x0206, 20),  # 0x0206–0x0219
+                        (0x0280, 2),   # 0x0280–0x0281 (hidrolysis module version and connectivity)
+                    ],
+                    label="rr02",
+                )
                 # fmt: on
-
-                reg02 = []
-                for address, count in rr02_ranges:
-                    await asyncio.sleep(0.05)
-                    try:
-                        rr02 = await modbus_acall(
-                            client.read_holding_registers,
-                            self._unit,
-                            address=address,
-                            count=count,
-                        )
-                    except Exception as e:
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(f"Read error 0x{address:04X}: {e}") from e
-                    if rr02.isError():  # pragma: no cover
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Modbus read error from 0x{address:04X}: {rr02}"
-                        )
-                    self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    reg02.extend(rr02.registers)
-                    _LOGGER.debug("Raw rr02 from 0x%04X: %s", address, rr02.registers)
-
-                    if len(reg02) < count:  # pragma: no cover
-                        _LOGGER.warning(
-                            "Expected at least %d registers from 0x%04X, got %d",
-                            count,
-                            address,
-                            len(reg02),
-                        )
 
                 # Example: [23971, 8, 23971, 8, 26922, 0, 34208, 0, 0, 65426, 0, 0, 0, 0, 64136, 3, 25371, 4, 16, 0]
                 # fmt: off
@@ -712,46 +670,14 @@ class VistaPoolModbusClient:
                 Contains factory data such as calibration parameters for the different power units.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
                 """
-                rr03_ranges = [
-                    (0x0300, 13),  # 0x0300–0x030C
-                    (0x0322, 4),  # 0x0322–0x0325
-                ]
-
-                reg03 = []
-                for address, count in rr03_ranges:
-                    await asyncio.sleep(0.05)
-                    try:
-                        rr03 = await modbus_acall(
-                            client.read_holding_registers,
-                            self._unit,
-                            address=address,
-                            count=count,
-                        )
-                    except Exception as e:
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Read error at 0x{address:04X}: {e}"
-                        ) from e
-                    if rr03.isError():
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Modbus read error from 0x{address:04X}: {rr03}"
-                        )
-                    reg03.extend(rr03.registers)
-                    self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    _LOGGER.debug("Raw rr03 from 0x%04X: %s", address, rr03.registers)
-
-                    if len(reg03) < count:  # pragma: no cover
-                        _LOGGER.warning(
-                            "Expected at least %d registers from 0x%04X, got %d",
-                            count,
-                            address,
-                            len(reg03),
-                        )
+                reg03 = await self._read_register_ranges(
+                    client,
+                    [
+                        (0x0300, 13),  # 0x0300–0x030C
+                        (0x0322, 4),  # 0x0322–0x0325
+                    ],
+                    label="rr03",
+                )
 
                 # [2055, 10, 0, 0, 0, 0, 1000, 50, 0, 14687, 2600, 2, 1297, 125, 2, 100, 100]
                 # fmt: off
@@ -793,47 +719,15 @@ class VistaPoolModbusClient:
                 #   0x0427–0x0433  (13 registers) - pH/redox/chlorine config
                 #   0x0434–0x04E7  - TIMER_BLOCKS, read separately via read_all_timers()
                 #   0x04E8–0x04EF  ( 8 registers) - FILTVALVE / backwash valve config
-                rr04_ranges = [
-                    (0x0408, 31),  # 0x0408–0x0426
-                    (0x0427, 13),  # 0x0427–0x0433
-                    (0x04E8, 8),  # 0x04E8–0x04EF  FILTVALVE / backwash registers
-                ]
-
-                reg04 = []
-                for address, count in rr04_ranges:
-                    await asyncio.sleep(0.05)
-                    try:
-                        rr04 = await modbus_acall(
-                            client.read_holding_registers,
-                            self._unit,
-                            address=address,
-                            count=count,
-                        )
-                    except Exception as e:
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Read error at 0x{address:04X}: {e}"
-                        ) from e
-                    if rr04.isError():  # pragma: no cover
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Modbus read error from 0x{address:04X}: {rr04}"
-                        )
-                    reg04.extend(rr04.registers)
-                    self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    _LOGGER.debug("Raw rr04 from 0x%04X: %s", address, rr04.registers)
-
-                    if len(reg04) < count:  # pragma: no cover
-                        _LOGGER.warning(
-                            "Expected at least %d registers from 0x%04X, got %d",
-                            count,
-                            address,
-                            len(reg04),
-                        )
+                reg04 = await self._read_register_ranges(
+                    client,
+                    [
+                        (0x0408, 31),  # 0x0408–0x0426
+                        (0x0427, 13),  # 0x0427–0x0433
+                        (0x04E8, 8),  # 0x04E8–0x04EF  FILTVALVE / backwash registers
+                    ],
+                    label="rr04",
+                )
 
                 # Example: [9861, 26670, 1, 0, 0, 0, 0, 1, 3, 1, 2, 0, 0, 0, 25, 0, 25, 10, 0, 0, 28, 480, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 # fmt: off
@@ -930,43 +824,11 @@ class VistaPoolModbusClient:
                 for the ionization and the hydrolysis, or the set points for the pH, redox, or chlorine regulation loops.
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
                 """
-                rr05_ranges = [
-                    (0x0502, 14),  # 0x0502–0x050F
-                ]
-
-                reg05 = []
-                for address, count in rr05_ranges:
-                    await asyncio.sleep(0.05)
-                    try:
-                        rr05 = await modbus_acall(
-                            client.read_holding_registers,
-                            self._unit,
-                            address=address,
-                            count=count,
-                        )
-                    except Exception as e:
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(f"Read error 0x{address:04X}: {e}") from e
-                    if rr05.isError():  # pragma: no cover
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Modbus read error from 0x{address:04X}: {rr05}"
-                        )
-                    self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    reg05.extend(rr05.registers)
-                    _LOGGER.debug("Raw rr05 from 0x%04X: %s", address, rr05.registers)
-
-                    if len(reg05) < count:  # pragma: no cover
-                        _LOGGER.warning(
-                            "Expected at least %d registers from 0x%04X, got %d",
-                            count,
-                            address,
-                            len(reg05),
-                        )
+                reg05 = await self._read_register_ranges(
+                    client,
+                    [(0x0502, 14)],  # 0x0502–0x050F
+                    label="rr05",
+                )
 
                 # Example: [650, 0, 750, 700, 0, 0, 700, 0, 100, 0, 0, 0, 5000, 0]
                 # fmt: off
@@ -993,44 +855,14 @@ class VistaPoolModbusClient:
                 Contains the configuration parameters for the screen controllers (language, colours, sound, etc).
                 For configuration registers, we have to use function 0x03 (Read Holding Registers)
                 """
-                rr06_ranges = [
-                    # Includes full NAME_BOLD 0x0608-0x060B and NAME_LIGHT 0x060C-0x060F
-                    (0x0600, 16),  # 0x0600–0x060F
-                ]
-
-                reg06 = []
-                for address, count in rr06_ranges:
-                    await asyncio.sleep(0.05)
-                    try:
-                        rr06 = await modbus_acall(
-                            client.read_holding_registers,
-                            self._unit,
-                            address=address,
-                            count=count,
-                        )
-                    except Exception as e:
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(f"Read error 0x{address:04X}: {e}") from e
-                    if rr06.isError():  # pragma: no cover
-                        self._failed_reads[f"0x{address:04X}"] = (
-                            self._failed_reads.get(f"0x{address:04X}", 0) + 1
-                        )
-                        raise ModbusException(
-                            f"Modbus read error from 0x{address:04X}: {rr06}"
-                        )
-                    self._successful_addresses.append((f"0x{address:04X}", time.time()))
-                    reg06.extend(rr06.registers)
-                    _LOGGER.debug("Raw rr06 from 0x%04X: %s", address, rr06.registers)
-
-                    if len(reg06) < count:  # pragma: no cover
-                        _LOGGER.warning(
-                            "Expected at least %d registers from 0x%04X, got %d",
-                            count,
-                            address,
-                            len(reg06),
-                        )
+                reg06 = await self._read_register_ranges(
+                    client,
+                    [
+                        # Includes full NAME_BOLD 0x0608-0x060B and NAME_LIGHT 0x060C-0x060F
+                        (0x0600, 16),  # 0x0600–0x060F
+                    ],
+                    label="rr06",
+                )
 
                 # Example: [9, 6, 25604, 5, 0, 2240, 545, 1281, 0, 0, 0, 0, 0, 0, 0, 0]
                 # fmt: off
