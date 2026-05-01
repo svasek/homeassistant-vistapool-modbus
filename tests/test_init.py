@@ -291,6 +291,40 @@ def test_cleanup_removes_orphaned_entities():
     )
 
 
+def test_cleanup_removes_ph_pump_entities():
+    """Test _cleanup_removed_entities matches lowercase pH pump unique_ids."""
+    hass = MagicMock()
+    entry = MagicMock()
+    entry.entry_id = "test_entry"
+
+    # unique_ids are built with key.lower() — REMOVED_ENTITY_KEYS must be lowercase
+    ph_acid = MagicMock()
+    ph_acid.unique_id = "test_entry_ph acid pump active"
+    ph_acid.entity_id = "binary_sensor.vistapool_ph_acid_pump_active"
+
+    ph_base = MagicMock()
+    ph_base.unique_id = "test_entry_ph pump active"
+    ph_base.entity_id = "binary_sensor.vistapool_ph_pump_active"
+
+    unrelated = MagicMock()
+    unrelated.unique_id = "test_entry_ph control module"
+    unrelated.entity_id = "binary_sensor.vistapool_ph_control_module"
+
+    mock_registry = MagicMock()
+
+    with patch("custom_components.vistapool.er.async_get", return_value=mock_registry):
+        with patch(
+            "custom_components.vistapool.er.async_entries_for_config_entry",
+            return_value=[ph_acid, ph_base, unrelated],
+        ):
+            _cleanup_removed_entities(hass, entry)
+
+    assert mock_registry.async_remove.call_count == 2
+    removed_ids = [c.args[0] for c in mock_registry.async_remove.call_args_list]
+    assert "binary_sensor.vistapool_ph_acid_pump_active" in removed_ids
+    assert "binary_sensor.vistapool_ph_pump_active" in removed_ids
+
+
 def test_cleanup_no_orphans():
     """Test _cleanup_removed_entities does nothing when no orphans exist."""
     hass = MagicMock()

@@ -107,6 +107,16 @@
           "off": "Vypnuto"
         }
       },
+      "ph_pump_status": {
+        "name": "Stav pH čerpadla",
+        "state": {
+          "off": "Vypnuto",
+          "idle": "Nečinné",
+          "acid": "Čerpadlo kyseliny",
+          "base": "Čerpadlo báze",
+          "both": "Obě čerpadla"
+        }
+      },
       "ion_polarity": {
         "name": "Polarita ionizátoru",
         "state": {
@@ -150,13 +160,17 @@
       "ph_acid_pump": { "name": "Čerpadlo kyseliny" },
       "filtration_pump": { "name": "Filtrace aktivní" },
       "pool_light": { "name": "Osvětlení bazénu" },
+      "ph_module_control_status": { "name": "Řízení pH průtokem" },
       "ph_control_module": { "name": "Regulace pH aktivní" },
       "ph_measurement_active": { "name": "Měření pH" },
+      "redox_pump_active": { "name": "Čerpadlo Redox aktivní" },
       "redox_control_module": { "name": "Regulace Redox aktivní" },
       "redox_measurement_active": { "name": "Měření Redox" },
       "chlorine_flow_sensor_problem": { "name": "Senzor průtoku chloru" },
+      "chlorine_pump_active": { "name": "Čerpadlo chloru aktivní" },
       "chlorine_control_module": { "name": "Regulace chloru aktivní" },
       "chlorine_measurement_active": { "name": "Měření chloru" },
+      "conductivity_pump_active": { "name": "Čerpadlo vodivosti aktivní" },
       "conductivity_control_module": { "name": "Regulace vodivosti aktivní" },
       "conductivity_measurement_active": { "name": "Měření vodivosti" },
       "ion_on_target": { "name": "Ionizátor na cíli" },
@@ -169,6 +183,7 @@
       "hidro_activated_by_the_rx_module": { "name": "Hydrolýza aktivována RX modulem" },
       "hidro_chlorine_shock_mode": { "name": "Hydrolýza šokový režim chloru (Boost)" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolýza aktivována CL modulem" },
+      "heating": { "name": "Ohřev" },
       "uv_lamp": { "name": "UV lampa" },
       "device_time_out_of_sync": { "name": "Čas v zařízení" },
       "aux1": { "name": "Pomocné relé Aux1" },

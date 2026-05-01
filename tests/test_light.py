@@ -138,7 +138,10 @@ async def test_light_async_setup_entry_adds_entities(monkeypatch):
         options = {}
 
     class DummyCoordinator:
-        data = {"relay_light_enable": 3}
+        data = {
+            "relay_light_enable": 3,
+            "MBF_PAR_LIGHTING_GPIO": 3,
+        }
         config_entry = DummyEntry()
         device_slug = "vistapool"
 
@@ -188,6 +191,44 @@ async def test_light_async_setup_entry_no_data(caplog):
         await async_setup_entry(hass, entry, async_add_entities)
         assert "No data from Modbus" in caplog.text
     async_add_entities.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_light_async_setup_entry_skips_without_lighting_gpio(monkeypatch):
+    """Test async_setup_entry skips light when MBF_PAR_LIGHTING_GPIO is not assigned."""
+
+    class DummyEntry:
+        entry_id = "test_entry"
+        options = {}
+
+    class DummyCoordinator:
+        data = {
+            "relay_light_enable": 3,
+            "MBF_PAR_LIGHTING_GPIO": 0,  # No lighting relay
+        }
+        config_entry = DummyEntry()
+        device_slug = "vistapool"
+
+    hass = MagicMock()
+    hass.data = {"vistapool": {"test_entry": DummyCoordinator()}}
+    entry = DummyEntry()
+    async_add_entities = MagicMock()
+
+    from custom_components.vistapool import light as light_module
+
+    monkeypatch.setitem(
+        light_module.LIGHT_DEFINITIONS,
+        "Test Light",
+        {
+            "switch_type": "relay_timer",
+            "icon_on": "mdi:lightbulb-on",
+            "icon_off": "mdi:lightbulb-off",
+        },
+    )
+
+    await async_setup_entry(hass, entry, async_add_entities)
+    entities = async_add_entities.call_args[0][0]
+    assert not any(e._key == "Test Light" for e in entities)
 
 
 @pytest.mark.asyncio

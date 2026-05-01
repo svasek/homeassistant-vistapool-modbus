@@ -107,6 +107,16 @@
           "off": "Apagado"
         }
       },
+      "ph_pump_status": {
+        "name": "Estado de la bomba pH",
+        "state": {
+          "off": "Apagado",
+          "idle": "Inactivo",
+          "acid": "Bomba de ácido",
+          "base": "Bomba de base",
+          "both": "Ambas bombas"
+        }
+      },
       "ion_polarity": {
         "name": "Polaridad del ionizador",
         "state": {
@@ -121,7 +131,7 @@
         "state": {
           "manual": "Manual",
           "auto": "Automático",
-          "heating": "Calefacción",
+          "heating": "Calentamiento",
           "smart": "Smart",
           "intelligent": "Inteligente",
           "backwash": "Lavado inverso"
@@ -150,13 +160,17 @@
       "ph_acid_pump": { "name": "Bomba de ácido pH" },
       "filtration_pump": { "name": "Filtración activa" },
       "pool_light": { "name": "Luz de la piscina" },
+      "ph_module_control_status": { "name": "Control de flujo de pH" },
       "ph_control_module": { "name": "Regulación de pH activa" },
       "ph_measurement_active": { "name": "Medición de pH" },
+      "redox_pump_active": { "name": "Bomba Redox activa" },
       "redox_control_module": { "name": "Regulación Redox activa" },
-      "redox_measurement_active": { "name": "Medición redox" },
+      "redox_measurement_active": { "name": "Medición Redox" },
       "chlorine_flow_sensor_problem": { "name": "Sensor de flujo de cloro" },
+      "chlorine_pump_active": { "name": "Bomba de cloro activa" },
       "chlorine_control_module": { "name": "Regulación de cloro activa" },
       "chlorine_measurement_active": { "name": "Medición de cloro" },
+      "conductivity_pump_active": { "name": "Bomba de conductividad activa" },
       "conductivity_control_module": { "name": "Regulación de conductividad activa" },
       "conductivity_measurement_active": { "name": "Medición de conductividad" },
       "ion_on_target": { "name": "Ionizador en objetivo" },
@@ -169,6 +183,7 @@
       "hidro_activated_by_the_rx_module": { "name": "Hidrólisis activada por el módulo redox" },
       "hidro_chlorine_shock_mode": { "name": "Modo de choque de cloro de hidrólisis (Boost)" },
       "hidro_activated_by_the_cl_module": { "name": "Hidrólisis activada por el módulo de cloro" },
+      "heating": { "name": "Calentamiento" },
       "uv_lamp": { "name": "Lámpara UV" },
       "device_time_out_of_sync": { "name": "Sincronización de hora del dispositivo" },
       "aux1": { "name": "Relé Aux1" },
@@ -427,7 +442,7 @@
         "state": {
           "manual": "Manual",
           "auto": "Automático",
-          "heating": "Calefacción",
+          "heating": "Calentamiento",
           "smart": "Smart",
           "intelligent": "Inteligente",
           "backwash": "Lavado inverso"

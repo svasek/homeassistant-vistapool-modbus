@@ -107,6 +107,16 @@
           "off": "Off"
         }
       },
+      "ph_pump_status": {
+        "name": "pH Pump Status",
+        "state": {
+          "off": "Off",
+          "idle": "Idle",
+          "acid": "Acid Pump",
+          "base": "Base Pump",
+          "both": "Both Pumps"
+        }
+      },
       "ion_polarity": {
         "name": "Ionizer Polarity",
         "state": {
@@ -150,13 +160,17 @@
       "ph_acid_pump": { "name": "pH Acid Pump" },
       "filtration_pump": { "name": "Filtration Active" },
       "pool_light": { "name": "Pool Light" },
+      "ph_module_control_status": { "name": "pH Flow Detection Control" },
       "ph_control_module": { "name": "pH Regulation Active" },
       "ph_measurement_active": { "name": "pH Measurement" },
+      "redox_pump_active": { "name": "Redox Pump Active" },
       "redox_control_module": { "name": "Redox Regulation Active" },
       "redox_measurement_active": { "name": "Redox Measurement" },
       "chlorine_flow_sensor_problem": { "name": "Chlorine Flow Sensor" },
+      "chlorine_pump_active": { "name": "Chlorine Pump Active" },
       "chlorine_control_module": { "name": "Chlorine Regulation Active" },
       "chlorine_measurement_active": { "name": "Chlorine Measurement" },
+      "conductivity_pump_active": { "name": "Conductivity Pump Active" },
       "conductivity_control_module": { "name": "Conductivity Regulation Active" },
       "conductivity_measurement_active": { "name": "Conductivity Measurement" },
       "ion_on_target": { "name": "Ionizer On Target" },
@@ -169,6 +183,7 @@
       "hidro_activated_by_the_rx_module": { "name": "Hydrolysis Activated by Redox Module" },
       "hidro_chlorine_shock_mode": { "name": "Hydrolysis Chlorine Shock Mode (Boost)" },
       "hidro_activated_by_the_cl_module": { "name": "Hydrolysis Activated by Chlorine Module" },
+      "heating": { "name": "Heating" },
       "uv_lamp": { "name": "UV Lamp" },
       "device_time_out_of_sync": { "name": "Device Time Sync" },
       "aux1": { "name": "Relay Aux1" },

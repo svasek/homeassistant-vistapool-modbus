@@ -83,7 +83,13 @@ CAPABILITY_KEYS = (
     "MBF_PAR_HIDRO_COVER_ENABLE",
     "MBF_PAR_PH_ACID_RELAY_GPIO",
     "MBF_PAR_PH_BASE_RELAY_GPIO",
+    "MBF_PAR_RX_RELAY_GPIO",
+    "MBF_PAR_CL_RELAY_GPIO",
+    "MBF_PAR_CD_RELAY_GPIO",
     "MBF_PAR_UV_RELAY_GPIO",
+    "MBF_PAR_RELAY_PH",
+    "MBF_PAR_FILT_GPIO",
+    "MBF_PAR_LIGHTING_GPIO",
     "MBF_PAR_FILTVALVE_ENABLE",
     "MBF_PAR_FILTVALVE_GPIO",
     "Hydrolysis module detected",
@@ -106,14 +112,10 @@ REMOVED_ENTITY_KEYS = (
     # Removed in PR #118 — redundant / not useful as sensors
     "hidro on target",
     "hidro chlorine flow indicator fl2",
-    "ph module control status",
     "hidro cell flow fl1",
-    # Removed in PR #118 — pump status bits (0x0800/0x1000) always read as 0
+    # Removed in PR #119 — merged into PH_PUMP_STATUS enum sensor
     "ph acid pump active",
     "ph pump active",
-    "redox pump active",
-    "chlorine pump active",
-    "conductivity pump active",
 )
 
 PERIOD_MAP = {
@@ -231,6 +233,14 @@ SENSOR_DEFINITIONS = {
         "state_class": None,
         "icon": "mdi:plus-minus-variant",
     },
+    "PH_PUMP_STATUS": {
+        "name": "pH Pump Status",
+        "unit": None,
+        "device_class": SensorDeviceClass.ENUM,
+        "state_class": None,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon": "mdi:pump",
+    },
     "FILTRATION_SPEED": {
         "name": "Filtration Current Speed",
         "unit": None,
@@ -323,11 +333,13 @@ BINARY_SENSOR_DEFINITIONS = {
     },
     # pH/Redox/CL/CD status bits from decode_ph_rx_cl_cd_status_bits
     # pH
-    # Note: "pH module control status" (bit 10, MBMSK_PH_STATUS_CTRL_BY_FL) removed —
-    # it is a static config flag (flow detection control) that is always ON, not useful as a sensor.
-    # Note: "pH acid pump active" (bit 11) and "pH pump active" (bit 12) removed —
-    # these status bits are always 0 on known firmware; the relay-based "pH Acid Pump"
-    # from MBF_RELAY_STATE provides reliable pump state instead.
+    "pH module control status": {
+        "name": "pH Flow Detection Control",
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+    },
+    # Note: "pH acid pump active" and "pH pump active" (MBF_PH_STATUS bits 11/12)
+    # are merged into the PH_PUMP_STATUS enum sensor.
     "pH control module": {
         "name": "pH Regulation Active",
         "device_class": BinarySensorDeviceClass.RUNNING,
@@ -346,7 +358,13 @@ BINARY_SENSOR_DEFINITIONS = {
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     # Redox
-    # Note: "Redox pump active" (bit 12) removed — always 0.
+    "Redox pump active": {
+        "name": "Redox Pump Active",
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:pump",
+        "icon_off": "mdi:pump-off",
+    },
     "Redox control module": {
         "name": "Redox Regulation Active",
         "device_class": BinarySensorDeviceClass.RUNNING,
@@ -370,7 +388,13 @@ BINARY_SENSOR_DEFINITIONS = {
         "device_class": BinarySensorDeviceClass.PROBLEM,
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
-    # Note: "Chlorine pump active" (bit 12) removed — always 0.
+    "Chlorine pump active": {
+        "name": "Chlorine Pump Active",
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:pump",
+        "icon_off": "mdi:pump-off",
+    },
     "Chlorine control module": {
         "name": "Chlorine Regulation Active",
         "device_class": BinarySensorDeviceClass.RUNNING,
@@ -389,7 +413,13 @@ BINARY_SENSOR_DEFINITIONS = {
         "entity_category": EntityCategory.DIAGNOSTIC,
     },
     # Conductivity
-    # Note: "Conductivity pump active" (bit 12) removed — always 0.
+    "Conductivity pump active": {
+        "name": "Conductivity Pump Active",
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:pump",
+        "icon_off": "mdi:pump-off",
+    },
     "Conductivity control module": {
         "name": "Conductivity Regulation Active",
         "device_class": BinarySensorDeviceClass.RUNNING,
@@ -476,6 +506,13 @@ BINARY_SENSOR_DEFINITIONS = {
         "name": "Hydrolysis Activated by Chlorine Module",
         "device_class": BinarySensorDeviceClass.RUNNING,
         "entity_category": EntityCategory.DIAGNOSTIC,
+    },
+    "Heating": {
+        "name": "Heating",
+        "device_class": BinarySensorDeviceClass.RUNNING,
+        "entity_category": EntityCategory.DIAGNOSTIC,
+        "icon_on": "mdi:radiator",
+        "icon_off": "mdi:radiator-off",
     },
     "UV Lamp": {
         "name": "UV Lamp",

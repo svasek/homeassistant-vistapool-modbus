@@ -29,15 +29,30 @@ from .helpers import is_device_time_out_of_sync
 _LOGGER = logging.getLogger(__name__)
 
 DISABLED_SUFFIXES = [
+    " control module",
+    " module regulated",
     " measurement active",
     " pump active",
-    " acid pump",
-    " shock mode",
     " on target",
-    " low flow",
-    " input active",
-    " indicator fl2",
+    " module control status",
 ]
+
+# Pump status sensors are only relevant when the corresponding relay is assigned.
+# MBF_PAR_*_RELAY_GPIO = 0 means no pump is configured for that function.
+PUMP_RELAY_GPIO_MAP = {
+    "Redox pump active": "MBF_PAR_RX_RELAY_GPIO",
+    "Chlorine pump active": "MBF_PAR_CL_RELAY_GPIO",
+    "Conductivity pump active": "MBF_PAR_CD_RELAY_GPIO",
+}
+
+# Binary sensors that require a valid relay GPIO to be created.
+# Maps entity key → MBF_PAR register key for the relay GPIO.
+RELAY_GPIO_GUARD_MAP = {
+    "pH Acid Pump": "MBF_PAR_PH_ACID_RELAY_GPIO",
+    "Filtration Pump": "MBF_PAR_FILT_GPIO",
+    "Pool Light": "MBF_PAR_LIGHTING_GPIO",
+    "Heating": "MBF_PAR_HEATING_GPIO",
+}
 
 
 async def async_setup_entry(
@@ -76,15 +91,25 @@ async def async_setup_entry(
             "Hydrolysis module detected"
         ):
             continue
-        # Skip pH Acid Pump relay if acid pump relay is not assigned
-        if key == "pH Acid Pump" and not is_valid_relay_gpio(
-            coordinator.data.get("MBF_PAR_PH_ACID_RELAY_GPIO", 0) or 0
-        ):
-            continue
+        # Skip sensors whose relay GPIO is not assigned.
+        # Only enforce when the GPIO key is present in data; a missing key
+        # (e.g. old capability snapshot) must not suppress the entity.
+        if key in RELAY_GPIO_GUARD_MAP:
+            gpio_key = RELAY_GPIO_GUARD_MAP[key]
+            if gpio_key in coordinator.data and not is_valid_relay_gpio(
+                coordinator.data[gpio_key] or 0
+            ):
+                continue
         # Skip UV Lamp if UV relay is not assigned
-        if key == "UV Lamp":
-            uv_gpio = coordinator.data.get("MBF_PAR_UV_RELAY_GPIO", 0) or 0
-            if not is_valid_relay_gpio(uv_gpio):
+        if key == "UV Lamp" and "MBF_PAR_UV_RELAY_GPIO" in coordinator.data:
+            if not is_valid_relay_gpio(coordinator.data["MBF_PAR_UV_RELAY_GPIO"] or 0):
+                continue
+        # Skip pump status sensors if no relay is assigned for that pump
+        if key in PUMP_RELAY_GPIO_MAP:
+            gpio_key = PUMP_RELAY_GPIO_MAP[key]
+            if gpio_key in coordinator.data and not is_valid_relay_gpio(
+                coordinator.data[gpio_key] or 0
+            ):
                 continue
         # Hide all "measurement module detected" sensors
         if "measurement module detected" in key.lower():
