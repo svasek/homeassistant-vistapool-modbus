@@ -1167,7 +1167,10 @@ class VistaPoolModbusClient:
         """
         timers = {}
         start = time.monotonic()
-        force_read = set(force_read or ())
+        effective_timers = (
+            set(enabled_timers) if enabled_timers is not None else set(TIMER_BLOCKS)
+        )
+        force_read = set(force_read or ()) & effective_timers
 
         # Skip timer reads if the INSTALLER page has not changed since the last poll
         # and this is not a forced full read.
