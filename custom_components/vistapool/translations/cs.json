@@ -154,6 +154,9 @@
       },
       "filtvalve_remaining": {
         "name": "Zbývající čas proplachování"
+      },
+      "filtration_remaining": {
+        "name": "Zbývající čas filtrace"
       }
     },
     "binary_sensor": {

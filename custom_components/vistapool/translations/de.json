@@ -154,6 +154,9 @@
       },
       "filtvalve_remaining": {
         "name": "Verbleibende Rückspülzeit"
+      },
+      "filtration_remaining": {
+        "name": "Verbleibende Filtrationszeit"
       }
     },
     "binary_sensor": {

@@ -149,7 +149,12 @@ def test_firmware_and_model_property(mock_entry):
 async def test_async_update_data_timer_processing(mock_entry):
     # Prepare a fake timer block with different value combinations
     client = AsyncMock()
-    client.async_read_all = AsyncMock(return_value={"MBF_POWER_MODULE_VERSION": 0x1234})
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "Filtration Pump": True,
+        }
+    )
     # Simulate two timers: one with both 'on' and 'interval', another with 'on' missing
     client.read_all_timers = AsyncMock(
         return_value={
@@ -158,12 +163,14 @@ async def test_async_update_data_timer_processing(mock_entry):
                 "on": 1000,  # e.g. 1000 seconds since midnight
                 "interval": 3600,  # 1 hour
                 "period": 2,
+                "countdown": 1200,
             },
             "filtration2": {
                 "enable": False,
                 "on": None,
                 "interval": 1800,  # 30 minutes
                 "period": 1,
+                "countdown": 0,
             },
         }
     )
@@ -177,11 +184,32 @@ async def test_async_update_data_timer_processing(mock_entry):
     coordinator = VistaPoolCoordinator(MagicMock(), client, entry, entry.entry_id)
     data = await coordinator._async_update_data()
 
+    # Filtration timer blocks are always read regardless of use_filtration* options
+    call_args = client.read_all_timers.call_args
+    timers_requested = (
+        call_args.kwargs.get("enabled_timers")
+        if "enabled_timers" in call_args.kwargs
+        else call_args.args[0]
+        if call_args.args
+        else None
+    )
+    for ft in ("filtration1", "filtration2", "filtration3"):
+        assert ft in timers_requested, (
+            f"{ft} must always be read for countdown aggregation"
+        )
+
+    # force_read must include filtration timers when filtration is active
+    force_read = call_args[1].get("force_read")
+    assert force_read is not None, "force_read must be set when filtration is running"
+    for ft in ("filtration1", "filtration2", "filtration3"):
+        assert ft in force_read, f"{ft} must bypass timer cache while filtration runs"
+
     # Check that timer data keys are present and correctly computed
     assert data["filtration1_enable"] is True
     assert data["filtration1_start"] == 1000
     assert data["filtration1_interval"] == 3600
     assert data["filtration1_period"] == 2
+    assert data["filtration1_countdown"] == 1200
     # stop = (1000 + 3600) % 86400 = 4600
     assert data["filtration1_stop"] == 4600
 
@@ -189,7 +217,11 @@ async def test_async_update_data_timer_processing(mock_entry):
     assert data["filtration2_start"] is None
     assert data["filtration2_interval"] == 1800
     assert data["filtration2_period"] == 1
+    assert data["filtration2_countdown"] == 0
     assert data["filtration2_stop"] is None
+
+    # Aggregated filtration remaining: max of non-zero countdowns (1200)
+    assert data["FILTRATION_REMAINING"] == 1200
 
 
 @pytest.mark.asyncio

@@ -38,6 +38,8 @@ from .helpers import is_device_time_out_of_sync, parse_version, prepare_device_t
 
 MAX_SCAN_INTERVAL = timedelta(seconds=180)  # Maximum allowed scan interval (3 minutes)
 
+_FILT_TIMERS = ("filtration1", "filtration2", "filtration3")
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -143,18 +145,46 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 if options.get(option_key, False):
                     enabled_timers.append(key)
 
-            timers = await self.client.read_all_timers(enabled_timers=enabled_timers)
+            # Always read filtration timer blocks for countdown aggregation,
+            # even if the user hasn't enabled their configuration entities.
+            for ft in _FILT_TIMERS:
+                if ft not in enabled_timers:
+                    enabled_timers.append(ft)
+
+            # Bypass the notification cache for filtration timers while
+            # filtration is running so the countdown values stay fresh.
+            # Use both the relay bit and the previous countdown to avoid
+            # missing cycles when the relay bit is unreliable.
+            prev_remaining = (
+                self.data.get("FILTRATION_REMAINING") if self.data else None
+            )
+            filtration_active = bool(data.get("Filtration Pump")) or bool(
+                prev_remaining and prev_remaining > 0
+            )
+            timers = await self.client.read_all_timers(
+                enabled_timers=enabled_timers,
+                force_read=_FILT_TIMERS if filtration_active else None,
+            )
 
             for t_name, t in timers.items():
                 data[f"{t_name}_enable"] = t["enable"]
                 data[f"{t_name}_start"] = t["on"]  # saved as seconds since midnight
                 data[f"{t_name}_interval"] = t["interval"]
                 data[f"{t_name}_period"] = t["period"]
+                data[f"{t_name}_countdown"] = t["countdown"]
                 if t["on"] is not None and t["interval"] is not None:
                     stop = (t["on"] + t["interval"]) % 86400
                     data[f"{t_name}_stop"] = stop
                 else:
                     data[f"{t_name}_stop"] = None
+
+            # Aggregate filtration remaining time from active filtration timers
+            filt_remaining = None
+            for n in (1, 2, 3):
+                cd = data.get(f"filtration{n}_countdown")
+                if cd is not None and cd > 0:
+                    filt_remaining = max(filt_remaining or 0, cd)
+            data["FILTRATION_REMAINING"] = filt_remaining
 
             if self.auto_time_sync:
                 if is_device_time_out_of_sync(data, self.hass):
