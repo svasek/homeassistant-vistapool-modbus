@@ -76,9 +76,10 @@ def _should_skip_number(key: str, props: dict, data: dict, entry_options: dict) 
             return True
     # Shutdown temperature needs hydrolysis and temperature sensor
     if key == "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE":
-        if not data.get("Hydrolysis module detected") or data.get(
-            "MBF_PAR_TEMPERATURE_ACTIVE", 0
-        ) == 0:
+        if (
+            not data.get("Hydrolysis module detected")
+            or data.get("MBF_PAR_TEMPERATURE_ACTIVE", 0) == 0
+        ):
             return True
     return False
 
