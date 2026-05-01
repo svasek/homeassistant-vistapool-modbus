@@ -149,7 +149,12 @@ def test_firmware_and_model_property(mock_entry):
 async def test_async_update_data_timer_processing(mock_entry):
     # Prepare a fake timer block with different value combinations
     client = AsyncMock()
-    client.async_read_all = AsyncMock(return_value={"MBF_POWER_MODULE_VERSION": 0x1234})
+    client.async_read_all = AsyncMock(
+        return_value={
+            "MBF_POWER_MODULE_VERSION": 0x1234,
+            "Filtration Pump": True,
+        }
+    )
     # Simulate two timers: one with both 'on' and 'interval', another with 'on' missing
     client.read_all_timers = AsyncMock(
         return_value={
@@ -181,11 +186,23 @@ async def test_async_update_data_timer_processing(mock_entry):
 
     # Filtration timer blocks are always read regardless of use_filtration* options
     call_args = client.read_all_timers.call_args
-    timers_requested = call_args[1].get("enabled_timers") or call_args[0][0]
+    timers_requested = (
+        call_args.kwargs.get("enabled_timers")
+        if "enabled_timers" in call_args.kwargs
+        else call_args.args[0]
+        if call_args.args
+        else None
+    )
     for ft in ("filtration1", "filtration2", "filtration3"):
         assert ft in timers_requested, (
             f"{ft} must always be read for countdown aggregation"
         )
+
+    # force_read must include filtration timers when filtration is active
+    force_read = call_args[1].get("force_read")
+    assert force_read is not None, "force_read must be set when filtration is running"
+    for ft in ("filtration1", "filtration2", "filtration3"):
+        assert ft in force_read, f"{ft} must bypass timer cache while filtration runs"
 
     # Check that timer data keys are present and correctly computed
     assert data["filtration1_enable"] is True

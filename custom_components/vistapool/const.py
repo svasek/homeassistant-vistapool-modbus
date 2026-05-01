@@ -276,7 +276,7 @@ SENSOR_DEFINITIONS = {
         "name": "Filtration Time Remaining",
         "unit": "s",
         "device_class": SensorDeviceClass.DURATION,
-        "state_class": SensorStateClass.MEASUREMENT,
+        "state_class": None,
         "icon": "mdi:timer-sand",
         "display_precision": 0,
     },

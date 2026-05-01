@@ -1832,6 +1832,43 @@ async def test_perform_read_all_timers_skips_returns_all_cached_when_enabled_tim
 
 
 @pytest.mark.asyncio
+async def test_perform_read_all_timers_force_read_bypasses_cache(
+    config, monkeypatch
+):
+    """force_read timers are re-read from Modbus even when the cache would be used."""
+    client = vistapool_modbus.VistaPoolModbusClient(config)
+    client._last_was_full_read = False
+    client._last_notification = 0  # no notification — cache would normally be used
+    client._cached_timers = {
+        "filtration1": {
+            "enable": 1, "on": 3600, "interval": 7200,
+            "period": 1, "function": 1, "countdown": 999,
+        },
+        "filtration2": {
+            "enable": 0, "on": 0, "interval": 0,
+            "period": 1, "function": 1, "countdown": 0,
+        },
+    }
+
+    fake_modbus = AsyncMock()
+    fake_modbus.connected = True
+    fake_modbus.read_holding_registers = AsyncMock(return_value=_DummyResp([0] * 15))
+    monkeypatch.setattr(client, "get_client", AsyncMock(return_value=fake_modbus))
+
+    result = await client._perform_read_all_timers(
+        enabled_timers=["filtration1", "filtration2"],
+        force_read=["filtration1"],
+    )
+
+    # filtration1 must be read fresh (force_read), filtration2 served from cache
+    assert fake_modbus.read_holding_registers.await_count == 1
+    assert "filtration1" in result
+    assert "filtration2" in result
+    # filtration2 should retain cached countdown value
+    assert result["filtration2"]["countdown"] == 0
+
+
+@pytest.mark.asyncio
 async def test_perform_read_all_timers_reads_when_installer_notified(
     config, monkeypatch
 ):

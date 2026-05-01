@@ -145,11 +145,18 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
 
             # Always read filtration timer blocks for countdown aggregation,
             # even if the user hasn't enabled their configuration entities.
-            for ft in ("filtration1", "filtration2", "filtration3"):
+            _FILT_TIMERS = ("filtration1", "filtration2", "filtration3")
+            for ft in _FILT_TIMERS:
                 if ft not in enabled_timers:
                     enabled_timers.append(ft)
 
-            timers = await self.client.read_all_timers(enabled_timers=enabled_timers)
+            # Bypass the notification cache for filtration timers while
+            # filtration is running so the countdown values stay fresh.
+            filtration_active = bool(data.get("Filtration Pump"))
+            timers = await self.client.read_all_timers(
+                enabled_timers=enabled_timers,
+                force_read=_FILT_TIMERS if filtration_active else None,
+            )
 
             for t_name, t in timers.items():
                 data[f"{t_name}_enable"] = t["enable"]

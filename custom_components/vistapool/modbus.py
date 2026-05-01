@@ -1142,10 +1142,10 @@ class VistaPoolModbusClient:
             end = time.monotonic()
             self._write_response_times.append(end - start)
 
-    async def read_all_timers(self, enabled_timers=None) -> dict:
+    async def read_all_timers(self, enabled_timers=None, force_read=None) -> dict:
         """Read timers with retry."""
         try:
-            result = await self._perform_read_all_timers(enabled_timers)
+            result = await self._perform_read_all_timers(enabled_timers, force_read)
             self._last_successful_operation = datetime.now()
             return result
         except Exception:
@@ -1155,29 +1155,32 @@ class VistaPoolModbusClient:
                 self._client = None
             raise
 
-    async def _perform_read_all_timers(self, enabled_timers=None) -> dict:
+    async def _perform_read_all_timers(
+        self, enabled_timers=None, force_read=None
+    ) -> dict:
         """Reads all timer blocks from the device.
         If enabled_timers is provided, only those timers will be read.
         If enabled_timers is None, all timers will be read.
+        If force_read is provided, those timers bypass the notification cache
+        and are always read fresh from the device.
         Returns a dictionary with timer names as keys and parsed timer data as values.
         """
         timers = {}
         start = time.monotonic()
+        force_read = set(force_read or ())
 
         # Skip timer reads if the INSTALLER page has not changed since the last poll
         # and this is not a forced full read.
-        if not self._last_was_full_read and not (
+        can_use_cache = not self._last_was_full_read and not (
             self._last_notification & _NOTIF_INSTALLER
-        ):
-            if self._cached_timers:
-                _LOGGER.debug("Skipping timer read (no INSTALLER change notification)")
-                if enabled_timers is not None:
-                    return {
-                        k: v
-                        for k, v in self._cached_timers.items()
-                        if k in enabled_timers
-                    }
-                return dict(self._cached_timers)
+        )
+        if can_use_cache and self._cached_timers and not force_read:
+            _LOGGER.debug("Skipping timer read (no INSTALLER change notification)")
+            if enabled_timers is not None:
+                return {
+                    k: v for k, v in self._cached_timers.items() if k in enabled_timers
+                }
+            return dict(self._cached_timers)
 
         client = await self.get_client()
         if client is None or not client.connected:
@@ -1190,6 +1193,10 @@ class VistaPoolModbusClient:
         for name, addr in TIMER_BLOCKS.items():
             # If enabled_timers is provided, limit to those timers only
             if enabled_timers is not None and name not in enabled_timers:
+                continue
+            # Use cache for non-forced timers when INSTALLER page hasn't changed
+            if can_use_cache and name not in force_read and name in self._cached_timers:
+                timers[name] = self._cached_timers[name]
                 continue
             try:
                 rr = await modbus_acall(
