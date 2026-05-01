@@ -59,11 +59,11 @@ def _should_skip_number(key: str, props: dict, data: dict, entry_options: dict) 
     if key == "MBF_PAR_PH2":
         if not bool(data.get("MBF_PAR_PH_BASE_RELAY_GPIO")):
             return True
-    # Conditionally add redox setpoint only if redox relay is assigned
+    # Conditionally add redox setpoint only if redox module is detected
     if key == "MBF_PAR_RX1":
         if not bool(data.get("Redox measurement module detected")):
             return True
-    # Conditionally add chlorine setpoint only if chlorine pump relay is assigned
+    # Conditionally add chlorine setpoint only if chlorine module is detected
     if key == "MBF_PAR_CL1":
         if not bool(data.get("Chlorine measurement module detected")):
             return True
