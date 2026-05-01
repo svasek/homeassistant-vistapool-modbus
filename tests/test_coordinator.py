@@ -179,6 +179,14 @@ async def test_async_update_data_timer_processing(mock_entry):
     coordinator = VistaPoolCoordinator(MagicMock(), client, entry, entry.entry_id)
     data = await coordinator._async_update_data()
 
+    # Filtration timer blocks are always read regardless of use_filtration* options
+    call_args = client.read_all_timers.call_args
+    timers_requested = call_args[1].get("enabled_timers") or call_args[0][0]
+    for ft in ("filtration1", "filtration2", "filtration3"):
+        assert ft in timers_requested, (
+            f"{ft} must always be read for countdown aggregation"
+        )
+
     # Check that timer data keys are present and correctly computed
     assert data["filtration1_enable"] is True
     assert data["filtration1_start"] == 1000
@@ -196,7 +204,7 @@ async def test_async_update_data_timer_processing(mock_entry):
     assert data["filtration2_stop"] is None
 
     # Aggregated filtration remaining: max of non-zero countdowns (1200)
-    assert data["filtration_remaining"] == 1200
+    assert data["FILTRATION_REMAINING"] == 1200
 
 
 @pytest.mark.asyncio

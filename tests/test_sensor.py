@@ -942,24 +942,26 @@ def test_sensor_filtvalve_remaining_native_value():
 def test_sensor_filtration_remaining_native_value():
     """filtration_remaining sensor returns the aggregated remaining time."""
     mock_coordinator = MagicMock()
-    mock_coordinator.data = {"filtration_remaining": 1800}
+    mock_coordinator.data = {"FILTRATION_REMAINING": 1800}
     mock_coordinator.config_entry.entry_id = "test_entry"
+    mock_coordinator.config_entry.options = {}
     mock_coordinator.device_slug = "vistapool"
 
     from custom_components.vistapool.sensor import VistaPoolSensor
 
-    ent = VistaPoolSensor(mock_coordinator, "test_entry", "filtration_remaining", {})
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "FILTRATION_REMAINING", {})
     assert ent.native_value == 1800
 
 
 def test_sensor_filtration_remaining_none_when_idle():
     """filtration_remaining sensor returns None when no timer is counting down."""
     mock_coordinator = MagicMock()
-    mock_coordinator.data = {"filtration_remaining": None}
+    mock_coordinator.data = {"FILTRATION_REMAINING": None}
     mock_coordinator.config_entry.entry_id = "test_entry"
+    mock_coordinator.config_entry.options = {}
     mock_coordinator.device_slug = "vistapool"
 
     from custom_components.vistapool.sensor import VistaPoolSensor
 
-    ent = VistaPoolSensor(mock_coordinator, "test_entry", "filtration_remaining", {})
+    ent = VistaPoolSensor(mock_coordinator, "test_entry", "FILTRATION_REMAINING", {})
     assert ent.native_value is None

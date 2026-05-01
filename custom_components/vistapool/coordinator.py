@@ -143,6 +143,12 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 if options.get(option_key, False):
                     enabled_timers.append(key)
 
+            # Always read filtration timer blocks for countdown aggregation,
+            # even if the user hasn't enabled their configuration entities.
+            for ft in ("filtration1", "filtration2", "filtration3"):
+                if ft not in enabled_timers:
+                    enabled_timers.append(ft)
+
             timers = await self.client.read_all_timers(enabled_timers=enabled_timers)
 
             for t_name, t in timers.items():
@@ -163,7 +169,7 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
                 cd = data.get(f"filtration{n}_countdown")
                 if cd is not None and cd > 0:
                     filt_remaining = max(filt_remaining or 0, cd)
-            data["filtration_remaining"] = filt_remaining
+            data["FILTRATION_REMAINING"] = filt_remaining
 
             if self.auto_time_sync:
                 if is_device_time_out_of_sync(data, self.hass):
