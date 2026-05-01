@@ -38,6 +38,8 @@ from .helpers import is_device_time_out_of_sync, parse_version, prepare_device_t
 
 MAX_SCAN_INTERVAL = timedelta(seconds=180)  # Maximum allowed scan interval (3 minutes)
 
+_FILT_TIMERS = ("filtration1", "filtration2", "filtration3")
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -145,7 +147,6 @@ class VistaPoolCoordinator(DataUpdateCoordinator):
 
             # Always read filtration timer blocks for countdown aggregation,
             # even if the user hasn't enabled their configuration entities.
-            _FILT_TIMERS = ("filtration1", "filtration2", "filtration3")
             for ft in _FILT_TIMERS:
                 if ft not in enabled_timers:
                     enabled_timers.append(ft)
