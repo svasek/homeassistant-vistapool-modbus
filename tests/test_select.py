@@ -1,11 +1,15 @@
 """Tests for the NeoPool select platform."""
 
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from neopool_modbus import NeoPoolError
 from neopool_modbus.registers import ConfigKind, FiltValveMode, RelayKind, RelayMode
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    snapshot_platform,
+)
 from syrupy.assertion import SnapshotAssertion
 
 from homeassistant.components.select import DOMAIN as SELECT_DOMAIN
@@ -307,24 +311,14 @@ async def test_filtvalve_mode_maps_communication_error_to_home_assistant_error(
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
 async def test_cell_boost_active_redox_writes_composite_value(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """active_redox option writes 0x05A0 to the cell boost register."""
-    mock_config_entry_timers.add_to_hass(hass)
-    # Pre-create the registry entry as ENABLED so the disabled-by-default
-    # MBF_CELL_BOOST select shows up after setup.
-    er.async_get(hass).async_get_or_create(
-        domain="select",
-        platform="neopool",
-        unique_id=f"{mock_config_entry_timers.unique_id}_mbf_cell_boost",
-        config_entry=mock_config_entry_timers,
-        suggested_object_id="pool_mbf_cell_boost",
-    )
-    await hass.config_entries.async_setup(mock_config_entry_timers.entry_id)
-    await hass.async_block_till_done()
+    await setup_integration(hass, mock_config_entry_timers)
 
     entity_id = _select_entity_id(hass, mock_config_entry_timers, "mbf_cell_boost")
     mock_neopool_client.async_set_cell_boost.reset_mock()
@@ -332,22 +326,13 @@ async def test_cell_boost_active_redox_writes_composite_value(
     mock_neopool_client.async_set_cell_boost.assert_awaited_once_with("active_redox")
 
 
-@pytest.mark.usefixtures("mock_neopool_client")
+@pytest.mark.usefixtures("entity_registry_enabled_by_default", "mock_neopool_client")
 async def test_cell_boost_current_option_decodes_register_bits(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
 ) -> None:
     """current_option for MBF_CELL_BOOST decodes the register bit pattern."""
-    mock_config_entry_timers.add_to_hass(hass)
-    er.async_get(hass).async_get_or_create(
-        domain="select",
-        platform="neopool",
-        unique_id=f"{mock_config_entry_timers.unique_id}_mbf_cell_boost",
-        config_entry=mock_config_entry_timers,
-        suggested_object_id="pool_mbf_cell_boost",
-    )
-    await hass.config_entries.async_setup(mock_config_entry_timers.entry_id)
-    await hass.async_block_till_done()
+    await setup_integration(hass, mock_config_entry_timers)
     coordinator = mock_config_entry_timers.runtime_data
 
     entity_obj = None
@@ -440,22 +425,13 @@ async def test_timer_period_options_and_current_option(
     assert "1_week" in entity_obj.options
 
 
-@pytest.mark.usefixtures("mock_neopool_client")
+@pytest.mark.usefixtures("entity_registry_enabled_by_default", "mock_neopool_client")
 async def test_cell_boost_options_drop_active_redox_when_no_redox_module(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
 ) -> None:
     """Without the Redox module flag, the cell-boost options drop 'active_redox'."""
-    mock_config_entry_timers.add_to_hass(hass)
-    er.async_get(hass).async_get_or_create(
-        domain="select",
-        platform="neopool",
-        unique_id=f"{mock_config_entry_timers.unique_id}_mbf_cell_boost",
-        config_entry=mock_config_entry_timers,
-        suggested_object_id="pool_mbf_cell_boost",
-    )
-    await hass.config_entries.async_setup(mock_config_entry_timers.entry_id)
-    await hass.async_block_till_done()
+    await setup_integration(hass, mock_config_entry_timers)
     coordinator = mock_config_entry_timers.runtime_data
     coordinator.data["Redox measurement module detected"] = False
 
@@ -640,53 +616,34 @@ async def test_relay_mode_maps_communication_error_to_home_assistant_error(
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.usefixtures("mock_neopool_client")
+@pytest.mark.usefixtures("entity_registry_enabled_by_default", "mock_neopool_client")
 async def test_all_entities(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
     mock_config_entry_timers: MockConfigEntry,
 ) -> None:
-    """Snapshot every entity registered by the select platform.
-
-    Snapshot the registry entries directly rather than via
-    `snapshot_platform`, which assumes every entity is enabled and has
-    state. NeoPool ships several `entity_registry_enabled_default=False`
-    entities; including them via state lookup would either fail or pull
-    entire state machines into the snapshot. The registry entry alone
-    (unique_id, name, disabled_by, ...) is the stable shape we care about.
-    """
+    """Snapshot every entity registered by the select platform."""
     with patch("custom_components.neopool.PLATFORMS", [Platform.SELECT]):
         await setup_integration(hass, mock_config_entry_timers)
-    entries = sorted(
-        er.async_entries_for_config_entry(
-            entity_registry, mock_config_entry_timers.entry_id
-        ),
-        key=lambda e: e.entity_id,
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_timers.entry_id
     )
-    assert entries == snapshot
 
 
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
 async def test_setup_when_modules_absent(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
     mock_config_entry_timers: MockConfigEntry,
-    mock_neopool_client_minimal: MagicMock,
+    mock_neopool_client: MagicMock,
+    minimal_pool_data: dict[str, Any],
 ) -> None:
-    """Snapshot the select entities registered when no modules are present.
-
-    Drives setup with the lean `mock_neopool_client_minimal` fixture (no
-    modules detected, no relay GPIOs assigned). Each platform's gating
-    branches fire and entities depending on the missing hardware are
-    skipped; the resulting registry shape is captured as a snapshot.
-    """
+    """Snapshot the select entities registered when no modules are present."""
+    mock_neopool_client.async_read_all.return_value = minimal_pool_data
     with patch("custom_components.neopool.PLATFORMS", [Platform.SELECT]):
         await setup_integration(hass, mock_config_entry_timers)
-    entries = sorted(
-        er.async_entries_for_config_entry(
-            entity_registry, mock_config_entry_timers.entry_id
-        ),
-        key=lambda e: e.entity_id,
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_timers.entry_id
     )
-    assert entries == snapshot
