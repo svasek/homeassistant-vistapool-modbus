@@ -43,12 +43,10 @@ def get_device_time(
     return decode_device_time(unix_ts, tz)
 
 
-def prepare_device_time(hass: HomeAssistant | None = None) -> int:
+def prepare_device_time(hass: HomeAssistant) -> int:
     """Return the unix timestamp the device should display as local wall-clock."""
-    if hass:
-        tz = dt_util.get_time_zone(hass.config.time_zone) or datetime.UTC
-        return encode_device_time(dt_util.now(tz))
-    return encode_device_time(dt_util.utcnow())  # pragma: no cover
+    tz = dt_util.get_time_zone(hass.config.time_zone) or datetime.UTC
+    return encode_device_time(dt_util.now(tz))
 
 
 def is_device_time_out_of_sync(
