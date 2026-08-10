@@ -20,11 +20,13 @@ from dataclasses import dataclass
 from datetime import time as dt_time
 from typing import Any, Literal, override
 
-from neopool_modbus.decoders import seconds_to_hhmm
+from neopool_modbus.decoders import get_timer_interval
+from neopool_modbus.exceptions import NeoPoolError
 
 from homeassistant.components.time import TimeEntity, TimeEntityDescription
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import (
@@ -165,18 +167,20 @@ class NeoPoolTime(NeoPoolEntity, TimeEntity):
             await asyncio.sleep(self._debounce_delay)
         except asyncio.CancelledError:  # pragma: no cover
             return
-        desc = self.entity_description
-        block = desc.timer_block
+        block = self.entity_description.timer_block
         data = self.coordinator.data
-        start = seconds_to_hhmm(int(data.get(f"{block}_start", 0)))
-        stop = seconds_to_hhmm(int(data.get(f"{block}_stop", 0)))
-        await self.hass.services.async_call(
-            DOMAIN,
-            "set_timer",
-            {
-                "entry_id": self.coordinator.config_entry.entry_id,
-                "timer": block,
-                "start": start,
-                "stop": stop,
-            },
-        )
+        start_sec = int(data.get(f"{block}_start", 0))
+        stop_sec = int(data.get(f"{block}_stop", 0))
+        timer_data = {
+            "on": start_sec,
+            "interval": get_timer_interval(start_sec, stop_sec),
+        }
+        try:
+            await self.coordinator.client.write_timer(block, timer_data)
+        except (NeoPoolError, OSError) as err:
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="modbus_communication_error",
+                translation_placeholders={"error": str(err)},
+            ) from err
+        self.coordinator.request_refresh_with_followup()
