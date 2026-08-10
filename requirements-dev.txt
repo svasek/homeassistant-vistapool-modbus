@@ -8,7 +8,7 @@ homeassistant-stubs
 pytest
 pytest-cov
 pytest-asyncio
-pytest-homeassistant-custom-component>=0.13.344
+pytest-homeassistant-custom-component>=0.13.355
 syrupy
 
 # Linting & formatting
