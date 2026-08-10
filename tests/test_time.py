@@ -5,6 +5,7 @@ from datetime import time as dt_time, timedelta
 from typing import Any
 from unittest.mock import MagicMock, patch
 
+from neopool_modbus.exceptions import NeoPoolConnectionError
 import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
@@ -16,6 +17,7 @@ from syrupy.assertion import SnapshotAssertion
 from homeassistant.components.time import DOMAIN as TIME_DOMAIN, SERVICE_SET_VALUE
 from homeassistant.const import ATTR_TIME, Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_platform as ep, entity_registry as er
 
 from . import setup_integration
@@ -148,11 +150,11 @@ async def test_native_value_handles_out_of_range_seconds(
 
 
 # ---------------------------------------------------------------------------
-# async_set_value -> set_timer service
+# async_set_value -> client.write_timer
 # ---------------------------------------------------------------------------
 
 
-async def test_set_value_on_start_calls_set_timer(
+async def test_set_value_on_start_writes_timer(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
     mock_neopool_client: MagicMock,
@@ -181,7 +183,7 @@ async def test_set_value_on_start_calls_set_timer(
     assert payload["interval"] == 4 * 3600
 
 
-async def test_set_value_on_stop_calls_set_timer(
+async def test_set_value_on_stop_writes_timer(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
     mock_neopool_client: MagicMock,
@@ -208,6 +210,36 @@ async def test_set_value_on_stop_calls_set_timer(
     assert timer_name == "filtration1"
     assert payload["on"] == 6 * 3600
     assert payload["interval"] == 4 * 3600
+
+
+@pytest.mark.parametrize(
+    "write_error",
+    [
+        pytest.param(NeoPoolConnectionError("boom"), id="lib-connection-error"),
+        pytest.param(OSError("boom"), id="os-error"),
+    ],
+)
+async def test_set_value_maps_communication_error_to_home_assistant_error(
+    hass: HomeAssistant,
+    mock_config_entry_timers: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+    freezer,
+    write_error: Exception,
+) -> None:
+    """A failed timer write surfaces as a translated HomeAssistantError."""
+    await setup_integration(hass, mock_config_entry_timers)
+    _disable_debounce(hass)
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    entity_id = _time_entity_id(hass, mock_config_entry_timers, "filtration1_start")
+    entity_obj = _time_entity(hass, entity_id)
+    mock_neopool_client.write_timer.side_effect = write_error
+
+    await entity_obj.async_set_value(dt_time(6, 0))
+    with pytest.raises(HomeAssistantError):
+        await _flush_debounce(hass, entity_obj)
 
 
 async def test_rapid_set_value_coalesces_via_debounce(
