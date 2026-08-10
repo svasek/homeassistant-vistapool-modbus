@@ -116,7 +116,6 @@
         'relay_aux2_enable': 4,
         'relay_aux3_enable': 4,
         'relay_aux4_enable': 4,
-        'relay_light_enable': 4,
       }),
       'firmware': '18.52',
       'last_exception': 'None',
