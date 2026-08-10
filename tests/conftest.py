@@ -157,6 +157,10 @@ MOCK_POOL_DATA: dict[str, Any] = {
     # (lower byte = cover reduction %, upper byte = shutdown temperature).
     # Pre-seeded so async_added_to_hass exercises the mask-decode path.
     "MBF_PAR_HIDRO_COVER_REDUCTION": 0x0C19,
+    # HIDRO options bitfield (bit 0 = cover reduction enabled, bit 1 =
+    # shutdown-on-high-temperature enabled). Both switches read their is_on
+    # from this key; the library returns it in optimistic writes.
+    "MBF_PAR_HIDRO_COVER_ENABLE": 0x0000,
     # Pool cover sensor binary (1 = pool covered, 0 = uncovered).
     "Pool Cover": 0,
     # Timer-block enable mirrors so aux relay-timer entities report the
