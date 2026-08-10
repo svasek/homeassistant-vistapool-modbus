@@ -15,7 +15,6 @@ from syrupy.assertion import SnapshotAssertion
 # CUSTOM-ONLY END
 from custom_components.neopool.const import (
     CONF_MODBUS_FRAMER,
-    CONF_SCAN_INTERVAL,
     CONF_UNIT_ID,
     CONF_USE_AUX1,
     CONF_USE_AUX2,
@@ -59,6 +58,21 @@ def snapshot(snapshot: SnapshotAssertion) -> SnapshotAssertion:
     instead of syrupy's default `tests/__snapshots__/`.
     """
     return snapshot.use_extension(HomeAssistantSnapshotExtension)
+
+
+@pytest.fixture
+def entity_registry_enabled_by_default() -> Generator[None]:
+    """Enable all entities in the registry (local copy of the core fixture).
+
+    Core ships this in tests/components/conftest.py; phacc does not, so the
+    custom suite defines it locally. Lets snapshot tests capture entities
+    that are `entity_registry_enabled_default=False`.
+    """
+    with patch(
+        "homeassistant.helpers.entity.Entity.entity_registry_enabled_default",
+        return_value=True,
+    ):
+        yield
 
 
 # CUSTOM-ONLY END
@@ -175,11 +189,123 @@ def mock_setup_entry() -> Generator[AsyncMock]:
 
 @pytest.fixture
 def mock_config_entry() -> MockConfigEntry:
-    """Return a config entry with every optional feature toggle enabled.
+    """Return a config entry with no optional features enabled.
 
-    Keeping every option turned on by default means a single fixture covers
-    the entity-discovery happy path for every platform; tests that need a
-    leaner setup can override `options` per-test.
+    Feature-gated entities are exercised through the per-feature fixtures
+    (`mock_config_entry_light`, `mock_config_entry_switch`, ...) or by
+    overriding `options` per-test.
+    """
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title=MOCK_NAME,
+        unique_id=MOCK_SERIAL,
+        version=CURRENT_VERSION,
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_NAME: MOCK_NAME,
+            CONF_UNIT_ID: DEFAULT_UNIT_ID,
+            CONF_MODBUS_FRAMER: "tcp",
+        },
+    )
+
+
+@pytest.fixture
+def mock_config_entry_light() -> MockConfigEntry:
+    """Return a config entry with the pool light option enabled."""
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title=MOCK_NAME,
+        unique_id=MOCK_SERIAL,
+        version=CURRENT_VERSION,
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_NAME: MOCK_NAME,
+            CONF_UNIT_ID: DEFAULT_UNIT_ID,
+            CONF_MODBUS_FRAMER: "tcp",
+        },
+        options={CONF_USE_LIGHT: True},
+    )
+
+
+@pytest.fixture
+def mock_config_entry_switch() -> MockConfigEntry:
+    """Return a config entry with the option-gated switches enabled."""
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title=MOCK_NAME,
+        unique_id=MOCK_SERIAL,
+        version=CURRENT_VERSION,
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_NAME: MOCK_NAME,
+            CONF_UNIT_ID: DEFAULT_UNIT_ID,
+            CONF_MODBUS_FRAMER: "tcp",
+        },
+        options={
+            CONF_USE_COVER_SENSOR: True,
+            CONF_USE_AUX1: True,
+            CONF_USE_AUX2: True,
+            CONF_USE_AUX3: True,
+            CONF_USE_AUX4: True,
+        },
+    )
+
+
+# CUSTOM-ONLY START
+@pytest.fixture
+def mock_config_entry_number() -> MockConfigEntry:
+    """Return a config entry with the options the number platform gates on."""
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title=MOCK_NAME,
+        unique_id=MOCK_SERIAL,
+        version=CURRENT_VERSION,
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_NAME: MOCK_NAME,
+            CONF_UNIT_ID: DEFAULT_UNIT_ID,
+            CONF_MODBUS_FRAMER: "tcp",
+        },
+        options={CONF_USE_COVER_SENSOR: True},
+    )
+
+
+@pytest.fixture
+def mock_config_entry_binary_sensor() -> MockConfigEntry:
+    """Return a config entry with the options the binary_sensor platform gates on."""
+    return MockConfigEntry(
+        domain=DOMAIN,
+        title=MOCK_NAME,
+        unique_id=MOCK_SERIAL,
+        version=CURRENT_VERSION,
+        data={
+            CONF_HOST: MOCK_HOST,
+            CONF_PORT: MOCK_PORT,
+            CONF_NAME: MOCK_NAME,
+            CONF_UNIT_ID: DEFAULT_UNIT_ID,
+            CONF_MODBUS_FRAMER: "tcp",
+        },
+        options={
+            CONF_USE_LIGHT: True,
+            CONF_USE_COVER_SENSOR: True,
+            CONF_USE_AUX1: True,
+            CONF_USE_AUX2: True,
+            CONF_USE_AUX3: True,
+            CONF_USE_AUX4: True,
+        },
+    )
+
+
+@pytest.fixture
+def mock_config_entry_timers() -> MockConfigEntry:
+    """Return a config entry enabling the light, aux, and filtration timers.
+
+    Shared by the time and select platforms, which register timer / mode
+    entities for every enabled relay-timer block.
     """
     return MockConfigEntry(
         domain=DOMAIN,
@@ -194,21 +320,19 @@ def mock_config_entry() -> MockConfigEntry:
             CONF_MODBUS_FRAMER: "tcp",
         },
         options={
-            # CUSTOM-ONLY START
-            CONF_SCAN_INTERVAL: 30,
-            # CUSTOM-ONLY END
-            CONF_MODBUS_FRAMER: "tcp",
+            CONF_USE_LIGHT: True,
             CONF_USE_FILTRATION1: True,
             CONF_USE_FILTRATION2: True,
             CONF_USE_FILTRATION3: True,
-            CONF_USE_LIGHT: True,
-            CONF_USE_COVER_SENSOR: True,
             CONF_USE_AUX1: True,
             CONF_USE_AUX2: True,
             CONF_USE_AUX3: True,
             CONF_USE_AUX4: True,
         },
     )
+
+
+# CUSTOM-ONLY END
 
 
 @pytest.fixture
@@ -227,24 +351,29 @@ def mock_neopool_client() -> Generator[MagicMock]:
         mock_client = mock_client_cls.return_value
         mock_client.async_read_all = AsyncMock(return_value=dict(MOCK_POOL_DATA))
         mock_client.read_all_timers = AsyncMock(return_value={})
+        mock_client.async_set_relay_state = AsyncMock(return_value={})
+        mock_client.async_set_manual_filtration = AsyncMock(return_value={})
+        mock_client.async_set_binary_flag = AsyncMock(return_value={})
+        mock_client.async_set_bitmask_flag = AsyncMock(return_value={})
+        mock_client.async_start_backwash = AsyncMock(return_value=None)
+        mock_client.async_stop_backwash = AsyncMock(return_value=None)
+        mock_client.close = AsyncMock()
+        # CUSTOM-ONLY START
         mock_client.async_write_register = AsyncMock(
             return_value={"value": 0, "confirmed": 0}
         )
         mock_client.async_set_filtration_mode = AsyncMock(return_value=None)
         mock_client.async_set_cell_boost = AsyncMock(return_value=None)
         mock_client.async_set_filtration_speed = AsyncMock(return_value=None)
-        mock_client.async_start_backwash = AsyncMock(return_value=None)
-        mock_client.async_stop_backwash = AsyncMock(return_value=None)
         mock_client.async_set_filtvalve_mode = AsyncMock(return_value={})
         mock_client.async_set_temp_setpoint = AsyncMock(return_value=None)
         mock_client.async_set_setpoint = AsyncMock(return_value={})
         mock_client.async_set_config_option = AsyncMock(return_value={})
-        mock_client.async_set_manual_filtration = AsyncMock(return_value={})
         mock_client.async_sync_device_time = AsyncMock(return_value=None)
         mock_client.async_clear_errors = AsyncMock(return_value=None)
         mock_client.async_reset_user_counters = AsyncMock(return_value=None)
         mock_client.write_timer = AsyncMock()
-        mock_client.close = AsyncMock()
+        # CUSTOM-ONLY END
         yield mock_client
 
 

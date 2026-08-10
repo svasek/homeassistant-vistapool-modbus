@@ -20,13 +20,13 @@ async def test_entry_diagnostics(
     hass: HomeAssistant,
     hass_client: ClientSessionGenerator,
     snapshot: SnapshotAssertion,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_timers: MockConfigEntry,
 ) -> None:
     """Test config entry diagnostics output is stable and redacts host/port."""
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_timers)
 
     result = await get_diagnostics_for_config_entry(
-        hass, hass_client, mock_config_entry
+        hass, hass_client, mock_config_entry_timers
     )
 
     # Properties that legitimately vary between test runs (timestamps,

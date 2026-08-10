@@ -60,13 +60,13 @@ async def _turn_off(hass: HomeAssistant, entity_id: str) -> None:
 
 async def test_light_turn_on_off_writes_to_relay_timer(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_light: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """Light on/off delegates to the high-level async_set_relay_state API."""
 
-    await setup_integration(hass, mock_config_entry)
-    entity_id = _light_entity_id(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_light)
+    entity_id = _light_entity_id(hass, mock_config_entry_light)
 
     # Stub the high-level relay setter to return an optimistic-update dict
     # (light.py merges it into coordinator.data via ``data.update(overrides)``).
@@ -94,13 +94,13 @@ async def test_light_turn_on_off_writes_to_relay_timer(
 
 async def test_light_is_on_reflects_relay_enable(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_light: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
     """is_on tracks the "Pool Light" relay state, regardless of mode."""
-    await setup_integration(hass, mock_config_entry)
-    entity_id = _light_entity_id(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_light)
+    entity_id = _light_entity_id(hass, mock_config_entry_light)
 
     # Manual on: relay active.
     mock_neopool_client.async_read_all.return_value = {
@@ -150,14 +150,14 @@ _MISSING = object()
 )
 async def test_light_turn_on_raises_when_not_in_manual_mode(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_light: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
     enable_value: object,
 ) -> None:
     """Light refuses to fire unless the relay is in a manual mode."""
-    await setup_integration(hass, mock_config_entry)
-    entity_id = _light_entity_id(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_light)
+    entity_id = _light_entity_id(hass, mock_config_entry_light)
 
     data = {**MOCK_POOL_DATA}
     if enable_value is _MISSING:
@@ -183,7 +183,7 @@ async def test_light_turn_on_raises_when_not_in_manual_mode(
 
 async def test_light_turn_on_maps_lib_invalid_state_to_service_validation_error(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_light: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """Race window: custom guard sees manual but the lib sees AUTO and refuses.
@@ -193,8 +193,8 @@ async def test_light_turn_on_maps_lib_invalid_state_to_service_validation_error(
     lib raises ``NeoPoolInvalidStateError``, the light platform remaps it to
     a translated ``ServiceValidationError`` instead of leaking the raw error.
     """
-    await setup_integration(hass, mock_config_entry)
-    entity_id = _light_entity_id(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_light)
+    entity_id = _light_entity_id(hass, mock_config_entry_light)
 
     mock_neopool_client.async_set_relay_state = AsyncMock(
         side_effect=NeoPoolInvalidStateError("relay in auto mode")
@@ -217,13 +217,13 @@ async def test_light_turn_on_maps_lib_invalid_state_to_service_validation_error(
 )
 async def test_light_turn_on_maps_communication_error_to_home_assistant_error(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_light: MockConfigEntry,
     mock_neopool_client: MagicMock,
     write_error: Exception,
 ) -> None:
     """Communication errors on write are surfaced as translated HomeAssistantError."""
-    await setup_integration(hass, mock_config_entry)
-    entity_id = _light_entity_id(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_light)
+    entity_id = _light_entity_id(hass, mock_config_entry_light)
 
     mock_neopool_client.async_set_relay_state = AsyncMock(side_effect=write_error)
     with pytest.raises(HomeAssistantError):
@@ -243,7 +243,7 @@ async def test_all_entities(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_light: MockConfigEntry,
 ) -> None:
     """Snapshot every entity registered by the light platform.
 
@@ -255,9 +255,11 @@ async def test_all_entities(
     (unique_id, name, disabled_by, ...) is the stable shape we care about.
     """
     with patch("custom_components.neopool.PLATFORMS", [Platform.LIGHT]):
-        await setup_integration(hass, mock_config_entry)
+        await setup_integration(hass, mock_config_entry_light)
     entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
+        er.async_entries_for_config_entry(
+            entity_registry, mock_config_entry_light.entry_id
+        ),
         key=lambda e: e.entity_id,
     )
     assert entries == snapshot
@@ -267,7 +269,7 @@ async def test_setup_when_modules_absent(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_light: MockConfigEntry,
     mock_neopool_client_minimal: MagicMock,
 ) -> None:
     """Snapshot the light entities registered when no modules are present.
@@ -278,9 +280,11 @@ async def test_setup_when_modules_absent(
     skipped; the resulting registry shape is captured as a snapshot.
     """
     with patch("custom_components.neopool.PLATFORMS", [Platform.LIGHT]):
-        await setup_integration(hass, mock_config_entry)
+        await setup_integration(hass, mock_config_entry_light)
     entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
+        er.async_entries_for_config_entry(
+            entity_registry, mock_config_entry_light.entry_id
+        ),
         key=lambda e: e.entity_id,
     )
     assert entries == snapshot

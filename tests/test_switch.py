@@ -387,7 +387,7 @@ async def test_climate_smart_uv_writes_to_function_register(
 
 async def test_aux_relay_turn_on_writes_relay_index(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_switch: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """aux1 turn_on/off dispatches to async_set_relay_state(RelayKind.AUX1, state)."""
@@ -395,11 +395,13 @@ async def test_aux_relay_turn_on_writes_relay_index(
     mock_neopool_client.async_set_relay_state.side_effect = lambda relay, state: {
         "AUX1": state
     }
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_switch)
     registry = er.async_get(hass)
     entries = [
         e
-        for e in er.async_entries_for_config_entry(registry, mock_config_entry.entry_id)
+        for e in er.async_entries_for_config_entry(
+            registry, mock_config_entry_switch.entry_id
+        )
         if e.domain == SWITCH_DOMAIN and e.unique_id.endswith("_aux1")
     ]
     assert entries
@@ -434,7 +436,7 @@ async def test_aux_relay_turn_on_writes_relay_index(
 )
 async def test_aux_relay_turn_on_raises_when_not_in_manual_mode(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_switch: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
     aux_key: str,
@@ -442,11 +444,13 @@ async def test_aux_relay_turn_on_raises_when_not_in_manual_mode(
     enable_value: int | None,
 ) -> None:
     """Aux relay refuses to fire unless the relay is in a manual mode."""
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_switch)
     registry = er.async_get(hass)
     entries = [
         e
-        for e in er.async_entries_for_config_entry(registry, mock_config_entry.entry_id)
+        for e in er.async_entries_for_config_entry(
+            registry, mock_config_entry_switch.entry_id
+        )
         if e.domain == SWITCH_DOMAIN and e.unique_id.endswith(f"_{aux_key}")
     ]
     assert entries
@@ -476,7 +480,7 @@ async def test_aux_relay_turn_on_raises_when_not_in_manual_mode(
 
 async def test_aux_relay_maps_lib_invalid_state_to_service_validation_error(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_switch: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """Race window: custom guard passes but the lib refuses on write.
@@ -485,11 +489,13 @@ async def test_aux_relay_maps_lib_invalid_state_to_service_validation_error(
     landed after the pre-check). Remap ``NeoPoolInvalidStateError`` to a
     translated ``ServiceValidationError`` instead of leaking the raw error.
     """
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_switch)
     registry = er.async_get(hass)
     entries = [
         e
-        for e in er.async_entries_for_config_entry(registry, mock_config_entry.entry_id)
+        for e in er.async_entries_for_config_entry(
+            registry, mock_config_entry_switch.entry_id
+        )
         if e.domain == SWITCH_DOMAIN and e.unique_id.endswith("_aux1")
     ]
     assert entries
@@ -515,16 +521,18 @@ async def test_aux_relay_maps_lib_invalid_state_to_service_validation_error(
 )
 async def test_aux_relay_maps_communication_error_to_home_assistant_error(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_switch: MockConfigEntry,
     mock_neopool_client: MagicMock,
     write_error: Exception,
 ) -> None:
     """Communication errors on switch write are surfaced as translated HomeAssistantError."""
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_switch)
     registry = er.async_get(hass)
     entries = [
         e
-        for e in er.async_entries_for_config_entry(registry, mock_config_entry.entry_id)
+        for e in er.async_entries_for_config_entry(
+            registry, mock_config_entry_switch.entry_id
+        )
         if e.domain == SWITCH_DOMAIN and e.unique_id.endswith("_aux1")
     ]
     assert entries
@@ -617,7 +625,7 @@ async def test_filtration_switch_maps_boost_reason_to_dedicated_key(
 
 async def test_hidro_cover_enable_bitmask_writes_or_pattern(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_switch: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """The hydro cover-enable bitmask switch dispatches to async_set_bitmask_flag."""
@@ -625,11 +633,13 @@ async def test_hidro_cover_enable_bitmask_writes_or_pattern(
     mock_neopool_client.async_set_bitmask_flag.side_effect = lambda flag, state: {
         "MBF_PAR_HIDRO_COVER_ENABLE": 1 if state else 0
     }
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_switch)
     registry = er.async_get(hass)
     entries = [
         e
-        for e in er.async_entries_for_config_entry(registry, mock_config_entry.entry_id)
+        for e in er.async_entries_for_config_entry(
+            registry, mock_config_entry_switch.entry_id
+        )
         if e.domain == SWITCH_DOMAIN
         and e.unique_id.endswith("_mbf_par_hidro_cover_enable")
     ]
@@ -867,7 +877,7 @@ async def test_all_entities(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_switch: MockConfigEntry,
 ) -> None:
     """Snapshot every entity registered by the switch platform.
 
@@ -879,9 +889,11 @@ async def test_all_entities(
     (unique_id, name, disabled_by, ...) is the stable shape we care about.
     """
     with patch("custom_components.neopool.PLATFORMS", [Platform.SWITCH]):
-        await setup_integration(hass, mock_config_entry)
+        await setup_integration(hass, mock_config_entry_switch)
     entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
+        er.async_entries_for_config_entry(
+            entity_registry, mock_config_entry_switch.entry_id
+        ),
         key=lambda e: e.entity_id,
     )
     assert entries == snapshot
@@ -891,7 +903,7 @@ async def test_setup_when_modules_absent(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_switch: MockConfigEntry,
     mock_neopool_client_minimal: MagicMock,
 ) -> None:
     """Snapshot the switch entities registered when no modules are present.
@@ -902,9 +914,11 @@ async def test_setup_when_modules_absent(
     skipped; the resulting registry shape is captured as a snapshot.
     """
     with patch("custom_components.neopool.PLATFORMS", [Platform.SWITCH]):
-        await setup_integration(hass, mock_config_entry)
+        await setup_integration(hass, mock_config_entry_switch)
     entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
+        er.async_entries_for_config_entry(
+            entity_registry, mock_config_entry_switch.entry_id
+        ),
         key=lambda e: e.entity_id,
     )
     assert entries == snapshot
