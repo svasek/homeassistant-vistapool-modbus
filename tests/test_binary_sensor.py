@@ -1,22 +1,23 @@
 """Tests for the NeoPool binary_sensor platform value decoders."""
 
 from datetime import timedelta
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
+    snapshot_platform,
 )
 from syrupy.assertion import SnapshotAssertion
 
-from custom_components.neopool.const import DOMAIN
 from homeassistant.const import STATE_OFF, STATE_ON, STATE_UNKNOWN, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform as ep, entity_registry as er
 
 from . import setup_integration
-from .conftest import MOCK_POOL_DATA, MOCK_SERIAL
+from .conftest import MOCK_POOL_DATA
 
 
 def _binary_by_key(hass: HomeAssistant, key: str):
@@ -47,12 +48,12 @@ def _binary_state(hass: HomeAssistant, entity_registry: er.EntityRegistry, key: 
 async def test_direct_key_reflects_coordinator_value(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_binary_sensor: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
     """A simple boolean key from coordinator.data flows straight through is_on."""
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_binary_sensor)
 
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
@@ -85,7 +86,7 @@ async def test_direct_key_reflects_coordinator_value(
 async def test_pool_cover_inverts_hardware_value(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_binary_sensor: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
@@ -94,7 +95,7 @@ async def test_pool_cover_inverts_hardware_value(
     The OPENING device class needs the opposite polarity from the raw
     register, so the entity inverts the value before returning is_on.
     """
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_binary_sensor)
 
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
@@ -124,12 +125,12 @@ async def test_pool_cover_inverts_hardware_value(
 async def test_pool_cover_none_yields_unknown(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_binary_sensor: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
     """Missing Pool Cover key surfaces as STATE_UNKNOWN, not on/off."""
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_binary_sensor)
 
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
@@ -147,12 +148,12 @@ async def test_pool_cover_none_yields_unknown(
 async def test_pool_cover_unknown_when_filtration_off(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_binary_sensor: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
     """Cover reads unknown while filtration is off, not a false "open"."""
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_binary_sensor)
 
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
@@ -172,24 +173,16 @@ async def test_pool_cover_unknown_when_filtration_off(
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
 async def test_measurement_module_off_when_filtration_off(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_binary_sensor: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
     """Measurement-module sensors report OFF when the filtration pump is idle."""
-    mock_config_entry.add_to_hass(hass)
-    registry = er.async_get(hass)
-    registry.async_get_or_create(
-        "binary_sensor",
-        DOMAIN,
-        f"{MOCK_SERIAL}_ph measurement active",
-        config_entry=mock_config_entry,
-        disabled_by=None,
-    )
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_binary_sensor)
 
     entity = _binary_by_key(hass, "pH measurement active")
     assert entity is not None
@@ -236,11 +229,11 @@ async def test_measurement_module_off_when_filtration_off(
 @pytest.mark.usefixtures("mock_neopool_client")
 async def test_mbf_status_dict_keys_resolve(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_binary_sensor: MockConfigEntry,
 ) -> None:
     """An MBF_STATUS_<flag> key reads from the nested dict in coordinator.data."""
-    await setup_integration(hass, mock_config_entry)
-    coordinator = mock_config_entry.runtime_data
+    await setup_integration(hass, mock_config_entry_binary_sensor)
+    coordinator = mock_config_entry_binary_sensor.runtime_data
 
     entity = _binary_by_key(hass, "MBF_STATUS_pump_on")
     if entity is None:
@@ -266,49 +259,34 @@ async def test_mbf_status_dict_keys_resolve(
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.usefixtures("mock_neopool_client")
+@pytest.mark.usefixtures("entity_registry_enabled_by_default", "mock_neopool_client")
 async def test_all_entities(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_binary_sensor: MockConfigEntry,
 ) -> None:
-    """Snapshot every entity registered by the binary_sensor platform.
-
-    Snapshot the registry entries directly rather than via
-    `snapshot_platform`, which assumes every entity is enabled and has
-    state. NeoPool ships several `entity_registry_enabled_default=False`
-    entities; including them via state lookup would either fail or pull
-    entire state machines into the snapshot. The registry entry alone
-    (unique_id, name, disabled_by, ...) is the stable shape we care about.
-    """
+    """Snapshot every entity registered by the binary_sensor platform."""
     with patch("custom_components.neopool.PLATFORMS", [Platform.BINARY_SENSOR]):
-        await setup_integration(hass, mock_config_entry)
-    entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
-        key=lambda e: e.entity_id,
+        await setup_integration(hass, mock_config_entry_binary_sensor)
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_binary_sensor.entry_id
     )
-    assert entries == snapshot
 
 
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
 async def test_setup_when_modules_absent(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
-    mock_neopool_client_minimal: MagicMock,
+    mock_config_entry_binary_sensor: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+    minimal_pool_data: dict[str, Any],
 ) -> None:
-    """Snapshot the binary_sensor entities registered when no modules are present.
-
-    Drives setup with the lean `mock_neopool_client_minimal` fixture (no
-    modules detected, no relay GPIOs assigned). Each platform's gating
-    branches fire and entities depending on the missing hardware are
-    skipped; the resulting registry shape is captured as a snapshot.
-    """
+    """Snapshot the binary_sensor entities registered when no modules are present."""
+    mock_neopool_client.async_read_all.return_value = minimal_pool_data
     with patch("custom_components.neopool.PLATFORMS", [Platform.BINARY_SENSOR]):
-        await setup_integration(hass, mock_config_entry)
-    entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
-        key=lambda e: e.entity_id,
+        await setup_integration(hass, mock_config_entry_binary_sensor)
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_binary_sensor.entry_id
     )
-    assert entries == snapshot

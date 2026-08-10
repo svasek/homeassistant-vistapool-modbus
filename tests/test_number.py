@@ -2,6 +2,7 @@
 
 import asyncio
 from datetime import timedelta
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from neopool_modbus.exceptions import NeoPoolConnectionError
@@ -10,6 +11,7 @@ import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
+    snapshot_platform,
 )
 from syrupy.assertion import SnapshotAssertion
 
@@ -91,7 +93,7 @@ def _entity_by_id(hass: HomeAssistant, entity_id: str):
 
 async def test_simple_number_writes_register_after_debounce(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """Setting a numeric value dispatches to the correct lib high-level API.
@@ -104,11 +106,11 @@ async def test_simple_number_writes_register_after_debounce(
         return_value={"MBF_PAR_PH1": 750}
     )
 
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     _disable_debounce(hass)
 
     # Setpoint path: PH1 → SetpointKind.PH_MAX, scale=100 → raw=750.
-    ph1_entity_id = _number_entity_id(hass, mock_config_entry, "mbf_par_ph1")
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
     mock_neopool_client.async_set_setpoint.reset_mock()
 
     await _set_value(hass, ph1_entity_id, 7.5)
@@ -122,7 +124,7 @@ async def test_simple_number_writes_register_after_debounce(
 
     # SMART_TEMP path (lib 4.1.0): SMART_TEMP_HIGH → SetpointKind.SMART_TEMP_HIGH.
     smart_entity_id = _number_entity_id(
-        hass, mock_config_entry, "mbf_par_smart_temp_high"
+        hass, mock_config_entry_number, "mbf_par_smart_temp_high"
     )
     mock_neopool_client.async_set_setpoint.reset_mock()
 
@@ -138,7 +140,7 @@ async def test_simple_number_writes_register_after_debounce(
 
 async def test_scaled_setpoint_optimistic_value_is_ui_scaled(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """Optimistic native_value after a scaled setpoint write is UI-scaled.
@@ -152,10 +154,10 @@ async def test_scaled_setpoint_optimistic_value_is_ui_scaled(
         return_value={"MBF_PAR_PH1": 750}
     )
 
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     _disable_debounce(hass)
 
-    ph1_entity_id = _number_entity_id(hass, mock_config_entry, "mbf_par_ph1")
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
     ph1_obj = _entity_by_id(hass, ph1_entity_id)
 
     with patch.object(ph1_obj.coordinator, "async_request_refresh", AsyncMock()):
@@ -167,7 +169,7 @@ async def test_scaled_setpoint_optimistic_value_is_ui_scaled(
 
 async def test_heating_setpoint_mirrors_to_intelligent(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
     """Writing the heating setpoint delegates to async_set_setpoint(HEATING).
@@ -182,9 +184,11 @@ async def test_heating_setpoint_mirrors_to_intelligent(
         return_value={"MBF_PAR_HEATING_TEMP": 28}
     )
 
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     _disable_debounce(hass)
-    entity_id = _number_entity_id(hass, mock_config_entry, "mbf_par_heating_temp")
+    entity_id = _number_entity_id(
+        hass, mock_config_entry_number, "mbf_par_heating_temp"
+    )
 
     mock_neopool_client.async_set_setpoint.reset_mock()
     await _set_value(hass, entity_id, 28.0)
@@ -199,13 +203,13 @@ async def test_heating_setpoint_mirrors_to_intelligent(
 
 async def test_number_native_value_returns_rounded_raw(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
     """native_value returns round(raw, 2) when coordinator has the register."""
 
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
         "MBF_PAR_PH1": 7.55,
@@ -232,13 +236,13 @@ async def test_number_native_value_returns_rounded_raw(
 
 async def test_hidro_native_value_in_percent_mode(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
     """MBF_PAR_HIDRO with hidro_nom set surfaces it as native_max_value."""
 
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
         "MBF_PAR_HIDRO_NOM": 100,
@@ -266,7 +270,7 @@ async def test_hidro_native_value_in_percent_mode(
 
 async def test_masked_number_native_value_decodes_via_mask_shift(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
@@ -276,7 +280,7 @@ async def test_masked_number_native_value_decodes_via_mask_shift(
     lower byte holds cover reduction %, upper byte the shutdown
     temperature. native_value must isolate each via _mask/_shift.
     """
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     # Pack: cover reduction = 25 (0x19), shutdown temp = 12 (0x0C) → 0x0C19.
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
@@ -306,7 +310,7 @@ async def test_masked_number_native_value_decodes_via_mask_shift(
 
 async def test_masked_number_write_preserves_other_byte(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
     freezer,
 ) -> None:
@@ -323,7 +327,7 @@ async def test_masked_number_write_preserves_other_byte(
         return_value={"MBF_PAR_HIDRO_COVER_REDUCTION": 0x0C32}
     )
 
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     _disable_debounce(hass)
     # Existing combined register: cover=25, shutdown=12 (0x0C19).
     mock_neopool_client.async_read_all.return_value = {
@@ -377,7 +381,7 @@ async def test_masked_number_write_preserves_other_byte(
 )
 async def test_number_debounced_write_logs_communication_error(
     hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
     caplog: pytest.LogCaptureFixture,
     write_error: Exception,
@@ -389,9 +393,9 @@ async def test_number_debounced_write_logs_communication_error(
     entity state.
     """
     mock_neopool_client.async_set_setpoint = AsyncMock(side_effect=write_error)
-    await setup_integration(hass, mock_config_entry)
+    await setup_integration(hass, mock_config_entry_number)
     _disable_debounce(hass)
-    ph1_entity_id = _number_entity_id(hass, mock_config_entry, "mbf_par_ph1")
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
     ph1_obj = _entity_by_id(hass, ph1_entity_id)
 
     caplog.clear()
@@ -412,44 +416,28 @@ async def test_all_entities(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
+    mock_config_entry_number: MockConfigEntry,
 ) -> None:
-    """Snapshot every entity registered by the number platform.
-
-    Snapshot the registry entries directly rather than via
-    `snapshot_platform`, which assumes every entity is enabled and has
-    state. NeoPool ships several `entity_registry_enabled_default=False`
-    entities; including them via state lookup would either fail or pull
-    entire state machines into the snapshot. The registry entry alone
-    (unique_id, name, disabled_by, ...) is the stable shape we care about.
-    """
+    """Snapshot every entity registered by the number platform."""
     with patch("custom_components.neopool.PLATFORMS", [Platform.NUMBER]):
-        await setup_integration(hass, mock_config_entry)
-    entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
-        key=lambda e: e.entity_id,
+        await setup_integration(hass, mock_config_entry_number)
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_number.entry_id
     )
-    assert entries == snapshot
 
 
 async def test_setup_when_modules_absent(
     hass: HomeAssistant,
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
-    mock_config_entry: MockConfigEntry,
-    mock_neopool_client_minimal: MagicMock,
+    mock_config_entry_number: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+    minimal_pool_data: dict[str, Any],
 ) -> None:
-    """Snapshot the number entities registered when no modules are present.
-
-    Drives setup with the lean `mock_neopool_client_minimal` fixture (no
-    modules detected, no relay GPIOs assigned). Each platform's gating
-    branches fire and entities depending on the missing hardware are
-    skipped; the resulting registry shape is captured as a snapshot.
-    """
+    """Snapshot the number entities registered when no modules are present."""
+    mock_neopool_client.async_read_all.return_value = minimal_pool_data
     with patch("custom_components.neopool.PLATFORMS", [Platform.NUMBER]):
-        await setup_integration(hass, mock_config_entry)
-    entries = sorted(
-        er.async_entries_for_config_entry(entity_registry, mock_config_entry.entry_id),
-        key=lambda e: e.entity_id,
+        await setup_integration(hass, mock_config_entry_number)
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_number.entry_id
     )
-    assert entries == snapshot
