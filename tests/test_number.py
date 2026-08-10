@@ -2,6 +2,7 @@
 
 import asyncio
 from datetime import timedelta
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from neopool_modbus.exceptions import NeoPoolConnectionError
@@ -10,6 +11,7 @@ import pytest
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
+    snapshot_platform,
 )
 from syrupy.assertion import SnapshotAssertion
 
@@ -416,24 +418,12 @@ async def test_all_entities(
     entity_registry: er.EntityRegistry,
     mock_config_entry_number: MockConfigEntry,
 ) -> None:
-    """Snapshot every entity registered by the number platform.
-
-    Snapshot the registry entries directly rather than via
-    `snapshot_platform`, which assumes every entity is enabled and has
-    state. NeoPool ships several `entity_registry_enabled_default=False`
-    entities; including them via state lookup would either fail or pull
-    entire state machines into the snapshot. The registry entry alone
-    (unique_id, name, disabled_by, ...) is the stable shape we care about.
-    """
+    """Snapshot every entity registered by the number platform."""
     with patch("custom_components.neopool.PLATFORMS", [Platform.NUMBER]):
         await setup_integration(hass, mock_config_entry_number)
-    entries = sorted(
-        er.async_entries_for_config_entry(
-            entity_registry, mock_config_entry_number.entry_id
-        ),
-        key=lambda e: e.entity_id,
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_number.entry_id
     )
-    assert entries == snapshot
 
 
 async def test_setup_when_modules_absent(
@@ -441,21 +431,13 @@ async def test_setup_when_modules_absent(
     snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
     mock_config_entry_number: MockConfigEntry,
-    mock_neopool_client_minimal: MagicMock,
+    mock_neopool_client: MagicMock,
+    minimal_pool_data: dict[str, Any],
 ) -> None:
-    """Snapshot the number entities registered when no modules are present.
-
-    Drives setup with the lean `mock_neopool_client_minimal` fixture (no
-    modules detected, no relay GPIOs assigned). Each platform's gating
-    branches fire and entities depending on the missing hardware are
-    skipped; the resulting registry shape is captured as a snapshot.
-    """
+    """Snapshot the number entities registered when no modules are present."""
+    mock_neopool_client.async_read_all.return_value = minimal_pool_data
     with patch("custom_components.neopool.PLATFORMS", [Platform.NUMBER]):
         await setup_integration(hass, mock_config_entry_number)
-    entries = sorted(
-        er.async_entries_for_config_entry(
-            entity_registry, mock_config_entry_number.entry_id
-        ),
-        key=lambda e: e.entity_id,
+    await snapshot_platform(
+        hass, entity_registry, snapshot, mock_config_entry_number.entry_id
     )
-    assert entries == snapshot
