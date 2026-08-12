@@ -1375,7 +1375,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux1-entry]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_1-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1389,7 +1389,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux1',
+    'entity_id': 'binary_sensor.neopool_relay_aux_1',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1397,36 +1397,36 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux1',
+    'object_id_base': 'Relay Aux 1',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux1',
+    'original_name': 'Relay Aux 1',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux1',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux1',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux1-state]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_1-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux1',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 1',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux1',
+    'entity_id': 'binary_sensor.neopool_relay_aux_1',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux2-entry]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_2-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1440,7 +1440,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux2',
+    'entity_id': 'binary_sensor.neopool_relay_aux_2',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1448,36 +1448,36 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux2',
+    'object_id_base': 'Relay Aux 2',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux2',
+    'original_name': 'Relay Aux 2',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux2',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux2',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux2-state]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_2-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux2',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 2',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux2',
+    'entity_id': 'binary_sensor.neopool_relay_aux_2',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux3-entry]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_3-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1491,7 +1491,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux3',
+    'entity_id': 'binary_sensor.neopool_relay_aux_3',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1499,36 +1499,36 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux3',
+    'object_id_base': 'Relay Aux 3',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux3',
+    'original_name': 'Relay Aux 3',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux3',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux3',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux3-state]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_3-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux3',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 3',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux3',
+    'entity_id': 'binary_sensor.neopool_relay_aux_3',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux4-entry]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_4-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1542,7 +1542,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux4',
+    'entity_id': 'binary_sensor.neopool_relay_aux_4',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1550,29 +1550,29 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux4',
+    'object_id_base': 'Relay Aux 4',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux4',
+    'original_name': 'Relay Aux 4',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux4',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux4',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[binary_sensor.neopool_relay_aux4-state]
+# name: test_all_entities[binary_sensor.neopool_relay_aux_4-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux4',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 4',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux4',
+    'entity_id': 'binary_sensor.neopool_relay_aux_4',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
@@ -1732,7 +1732,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux1-entry]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_1-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1746,7 +1746,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux1',
+    'entity_id': 'binary_sensor.neopool_relay_aux_1',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1754,36 +1754,36 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux1',
+    'object_id_base': 'Relay Aux 1',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux1',
+    'original_name': 'Relay Aux 1',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux1',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux1',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux1-state]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_1-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux1',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 1',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux1',
+    'entity_id': 'binary_sensor.neopool_relay_aux_1',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux2-entry]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_2-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1797,7 +1797,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux2',
+    'entity_id': 'binary_sensor.neopool_relay_aux_2',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1805,36 +1805,36 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux2',
+    'object_id_base': 'Relay Aux 2',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux2',
+    'original_name': 'Relay Aux 2',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux2',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux2',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux2-state]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_2-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux2',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 2',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux2',
+    'entity_id': 'binary_sensor.neopool_relay_aux_2',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux3-entry]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_3-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1848,7 +1848,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux3',
+    'entity_id': 'binary_sensor.neopool_relay_aux_3',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1856,36 +1856,36 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux3',
+    'object_id_base': 'Relay Aux 3',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux3',
+    'original_name': 'Relay Aux 3',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux3',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux3',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux3-state]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_3-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux3',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 3',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux3',
+    'entity_id': 'binary_sensor.neopool_relay_aux_3',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux4-entry]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_4-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1899,7 +1899,7 @@
     'disabled_by': None,
     'domain': 'binary_sensor',
     'entity_category': None,
-    'entity_id': 'binary_sensor.neopool_relay_aux4',
+    'entity_id': 'binary_sensor.neopool_relay_aux_4',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1907,29 +1907,29 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux4',
+    'object_id_base': 'Relay Aux 4',
     'options': dict({
     }),
     'original_device_class': <BinarySensorDeviceClass.POWER: 'power'>,
     'original_icon': None,
-    'original_name': 'Relay Aux4',
+    'original_name': 'Relay Aux 4',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'aux4',
+    'translation_key': 'aux',
     'unique_id': '1234567890_aux4',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux4-state]
+# name: test_setup_when_modules_absent[binary_sensor.neopool_relay_aux_4-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
       <EntityStateAttribute.DEVICE_CLASS: 'device_class'>: 'power',
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux4',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 4',
     }),
     'context': <ANY>,
-    'entity_id': 'binary_sensor.neopool_relay_aux4',
+    'entity_id': 'binary_sensor.neopool_relay_aux_4',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,

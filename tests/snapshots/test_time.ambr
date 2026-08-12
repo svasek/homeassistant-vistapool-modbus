@@ -131,7 +131,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration1_start',
+    'translation_key': 'filtration_start',
     'unique_id': '1234567890_filtration1_start',
     'unit_of_measurement': None,
   })
@@ -181,7 +181,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration1_stop',
+    'translation_key': 'filtration_stop',
     'unique_id': '1234567890_filtration1_stop',
     'unit_of_measurement': None,
   })
@@ -231,7 +231,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration2_start',
+    'translation_key': 'filtration_start',
     'unique_id': '1234567890_filtration2_start',
     'unit_of_measurement': None,
   })
@@ -281,7 +281,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration2_stop',
+    'translation_key': 'filtration_stop',
     'unique_id': '1234567890_filtration2_stop',
     'unit_of_measurement': None,
   })
@@ -331,7 +331,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration3_start',
+    'translation_key': 'filtration_start',
     'unique_id': '1234567890_filtration3_start',
     'unit_of_measurement': None,
   })
@@ -381,7 +381,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration3_stop',
+    'translation_key': 'filtration_stop',
     'unique_id': '1234567890_filtration3_stop',
     'unit_of_measurement': None,
   })
@@ -1331,7 +1331,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration1_start',
+    'translation_key': 'filtration_start',
     'unique_id': '1234567890_filtration1_start',
     'unit_of_measurement': None,
   })
@@ -1381,7 +1381,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration1_stop',
+    'translation_key': 'filtration_stop',
     'unique_id': '1234567890_filtration1_stop',
     'unit_of_measurement': None,
   })
@@ -1431,7 +1431,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration2_start',
+    'translation_key': 'filtration_start',
     'unique_id': '1234567890_filtration2_start',
     'unit_of_measurement': None,
   })
@@ -1481,7 +1481,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration2_stop',
+    'translation_key': 'filtration_stop',
     'unique_id': '1234567890_filtration2_stop',
     'unit_of_measurement': None,
   })
@@ -1531,7 +1531,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration3_start',
+    'translation_key': 'filtration_start',
     'unique_id': '1234567890_filtration3_start',
     'unit_of_measurement': None,
   })
@@ -1581,7 +1581,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration3_stop',
+    'translation_key': 'filtration_stop',
     'unique_id': '1234567890_filtration3_stop',
     'unit_of_measurement': None,
   })

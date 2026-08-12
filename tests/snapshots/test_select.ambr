@@ -679,7 +679,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux1_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_1_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -698,7 +698,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -706,39 +706,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux1 mode',
+    'object_id_base': 'Relay Aux 1 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux1 mode',
+    'original_name': 'Relay Aux 1 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux1_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux1_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_1_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux1 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 1 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'manual',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux2_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_2_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -757,7 +757,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -765,39 +765,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux2 mode',
+    'object_id_base': 'Relay Aux 2 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux2 mode',
+    'original_name': 'Relay Aux 2 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux2_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux2_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_2_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux2 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 2 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'manual',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux3_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_3_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -816,7 +816,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -824,39 +824,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux3 mode',
+    'object_id_base': 'Relay Aux 3 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux3 mode',
+    'original_name': 'Relay Aux 3 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux3_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux3_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_3_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux3 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 3 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'manual',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux4_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_4_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -875,7 +875,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -883,32 +883,32 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux4 mode',
+    'object_id_base': 'Relay Aux 4 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux4 mode',
+    'original_name': 'Relay Aux 4 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux4_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux4_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_4_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux4 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 4 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
@@ -953,7 +953,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration1_speed',
+    'translation_key': 'filtration_speed_timer',
     'unique_id': '1234567890_filtration1_speed',
     'unit_of_measurement': None,
   })
@@ -1014,7 +1014,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration2_speed',
+    'translation_key': 'filtration_speed_timer',
     'unique_id': '1234567890_filtration2_speed',
     'unit_of_measurement': None,
   })
@@ -1075,7 +1075,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration3_speed',
+    'translation_key': 'filtration_speed_timer',
     'unique_id': '1234567890_filtration3_speed',
     'unit_of_measurement': None,
   })
@@ -1873,7 +1873,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux1_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_1_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1892,7 +1892,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1900,39 +1900,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux1 mode',
+    'object_id_base': 'Relay Aux 1 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux1 mode',
+    'original_name': 'Relay Aux 1 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux1_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux1_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_1_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux1 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 1 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux2_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_2_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1951,7 +1951,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1959,39 +1959,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux2 mode',
+    'object_id_base': 'Relay Aux 2 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux2 mode',
+    'original_name': 'Relay Aux 2 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux2_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux2_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_2_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux2 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 2 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux3_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_3_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2010,7 +2010,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2018,39 +2018,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux3 mode',
+    'object_id_base': 'Relay Aux 3 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux3 mode',
+    'original_name': 'Relay Aux 3 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux3_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux3_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_3_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux3 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 3 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux4_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_4_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2069,7 +2069,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2077,32 +2077,32 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux4 mode',
+    'object_id_base': 'Relay Aux 4 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux4 mode',
+    'original_name': 'Relay Aux 4 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux4_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux4_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_4_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux4 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 4 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,

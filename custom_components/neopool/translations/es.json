@@ -55,18 +55,6 @@
     },
     "entity": {
         "binary_sensor": {
-            "aux1": {
-                "name": "Relé Aux1"
-            },
-            "aux2": {
-                "name": "Relé Aux2"
-            },
-            "aux3": {
-                "name": "Relé Aux3"
-            },
-            "aux4": {
-                "name": "Relé Aux4"
-            },
             "chlorine_control_module": {
                 "name": "Regulación de cloro activa"
             },
@@ -153,6 +141,9 @@
             },
             "uv_lamp": {
                 "name": "Lámpara UV"
+            },
+            "aux": {
+                "name": "Relé Aux {number}"
             }
         },
         "button": {
@@ -223,30 +214,6 @@
                     "smart": "Smart"
                 }
             },
-            "filtration1_speed": {
-                "name": "Temporizador 1 - Velocidad de filtración",
-                "state": {
-                    "high": "Alta",
-                    "low": "Baja",
-                    "mid": "Media"
-                }
-            },
-            "filtration2_speed": {
-                "name": "Temporizador 2 - Velocidad de filtración",
-                "state": {
-                    "high": "Alta",
-                    "low": "Baja",
-                    "mid": "Media"
-                }
-            },
-            "filtration3_speed": {
-                "name": "Temporizador 3 - Velocidad de filtración",
-                "state": {
-                    "high": "Alta",
-                    "low": "Baja",
-                    "mid": "Media"
-                }
-            },
             "filtration_speed": {
                 "name": "Velocidad de filtración",
                 "state": {
@@ -310,15 +277,6 @@
                     "900": "15 minutos"
                 }
             },
-            "relay_aux1_mode": {
-                "name": "Modo de relé Aux1",
-                "state": {
-                    "auto": "Automático",
-                    "auto_linked": "Automático (enlazado)",
-                    "disabled": "Desactivado",
-                    "manual": "Manual"
-                }
-            },
             "relay_aux1_period": {
                 "name": "Temporizador Aux1 (1) - Intervalo",
                 "state": {
@@ -345,15 +303,6 @@
                     "4_days": "4 días",
                     "4_weeks": "4 semanas",
                     "5_days": "5 días"
-                }
-            },
-            "relay_aux2_mode": {
-                "name": "Modo de relé Aux2",
-                "state": {
-                    "auto": "Automático",
-                    "auto_linked": "Automático (enlazado)",
-                    "disabled": "Desactivado",
-                    "manual": "Manual"
                 }
             },
             "relay_aux2_period": {
@@ -384,15 +333,6 @@
                     "5_days": "5 días"
                 }
             },
-            "relay_aux3_mode": {
-                "name": "Modo de relé Aux3",
-                "state": {
-                    "auto": "Automático",
-                    "auto_linked": "Automático (enlazado)",
-                    "disabled": "Desactivado",
-                    "manual": "Manual"
-                }
-            },
             "relay_aux3_period": {
                 "name": "Temporizador Aux3 (1) - Intervalo",
                 "state": {
@@ -419,15 +359,6 @@
                     "4_days": "4 días",
                     "4_weeks": "4 semanas",
                     "5_days": "5 días"
-                }
-            },
-            "relay_aux4_mode": {
-                "name": "Modo de relé Aux4",
-                "state": {
-                    "auto": "Automático",
-                    "auto_linked": "Automático (enlazado)",
-                    "disabled": "Desactivado",
-                    "manual": "Manual"
                 }
             },
             "relay_aux4_period": {
@@ -478,6 +409,23 @@
                     "4_days": "4 días",
                     "4_weeks": "4 semanas",
                     "5_days": "5 días"
+                }
+            },
+            "filtration_speed_timer": {
+                "name": "Temporizador {number} - Velocidad de filtración",
+                "state": {
+                    "high": "Alta",
+                    "low": "Baja",
+                    "mid": "Media"
+                }
+            },
+            "relay_aux_mode": {
+                "name": "Modo de relé Aux {number}",
+                "state": {
+                    "auto": "Automático",
+                    "auto_linked": "Automático (enlazado)",
+                    "disabled": "Desactivado",
+                    "manual": "Manual"
                 }
             }
         },
@@ -602,18 +550,6 @@
             }
         },
         "switch": {
-            "aux1": {
-                "name": "Relé Aux1"
-            },
-            "aux2": {
-                "name": "Relé Aux2"
-            },
-            "aux3": {
-                "name": "Relé Aux3"
-            },
-            "aux4": {
-                "name": "Relé Aux4"
-            },
             "backwash": {
                 "name": "Lavado inverso"
             },
@@ -640,27 +576,12 @@
             },
             "winter_mode": {
                 "name": "Modo invierno"
+            },
+            "aux": {
+                "name": "Relé Aux {number}"
             }
         },
         "time": {
-            "filtration1_start": {
-                "name": "Temporizador 1 - Inicio de filtración"
-            },
-            "filtration1_stop": {
-                "name": "Temporizador 1 - Fin de filtración"
-            },
-            "filtration2_start": {
-                "name": "Temporizador 2 - Inicio de filtración"
-            },
-            "filtration2_stop": {
-                "name": "Temporizador 2 - Fin de filtración"
-            },
-            "filtration3_start": {
-                "name": "Temporizador 3 - Inicio de filtración"
-            },
-            "filtration3_stop": {
-                "name": "Temporizador 3 - Fin de filtración"
-            },
             "relay_aux1_start": {
                 "name": "Temporizador Aux1 (1) - Inicio"
             },
@@ -714,6 +635,12 @@
             },
             "relay_light_stop": {
                 "name": "Temporizador Luz - Parada"
+            },
+            "filtration_start": {
+                "name": "Temporizador {number} - Inicio de filtración"
+            },
+            "filtration_stop": {
+                "name": "Temporizador {number} - Fin de filtración"
             }
         }
     },

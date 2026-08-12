@@ -55,18 +55,6 @@
     },
     "entity": {
         "binary_sensor": {
-            "aux1": {
-                "name": "Przekaźnik pomocniczy Aux1"
-            },
-            "aux2": {
-                "name": "Przekaźnik pomocniczy Aux2"
-            },
-            "aux3": {
-                "name": "Przekaźnik pomocniczy Aux3"
-            },
-            "aux4": {
-                "name": "Przekaźnik pomocniczy Aux4"
-            },
             "chlorine_control_module": {
                 "name": "Regulacja chloru aktywna"
             },
@@ -153,6 +141,9 @@
             },
             "uv_lamp": {
                 "name": "Lampa UV"
+            },
+            "aux": {
+                "name": "Przekaźnik pomocniczy Aux {number}"
             }
         },
         "button": {
@@ -223,30 +214,6 @@
                     "smart": "Smart"
                 }
             },
-            "filtration1_speed": {
-                "name": "Timer 1 - Prędkość filtracji",
-                "state": {
-                    "high": "Wysoka",
-                    "low": "Niska",
-                    "mid": "Średnia"
-                }
-            },
-            "filtration2_speed": {
-                "name": "Timer 2 - Prędkość filtracji",
-                "state": {
-                    "high": "Wysoka",
-                    "low": "Niska",
-                    "mid": "Średnia"
-                }
-            },
-            "filtration3_speed": {
-                "name": "Timer 3 - Prędkość filtracji",
-                "state": {
-                    "high": "Wysoka",
-                    "low": "Niska",
-                    "mid": "Średnia"
-                }
-            },
             "filtration_speed": {
                 "name": "Prędkość filtracji",
                 "state": {
@@ -310,15 +277,6 @@
                     "900": "15 minut"
                 }
             },
-            "relay_aux1_mode": {
-                "name": "Tryb przekaźnika Aux1",
-                "state": {
-                    "auto": "Automatyczny",
-                    "auto_linked": "Automatyczny (połączony)",
-                    "disabled": "Wyłączone",
-                    "manual": "Ręczny"
-                }
-            },
             "relay_aux1_period": {
                 "name": "Timer Aux1 (1) - Interwał",
                 "state": {
@@ -345,15 +303,6 @@
                     "4_days": "4 dni",
                     "4_weeks": "4 tygodnie",
                     "5_days": "5 dni"
-                }
-            },
-            "relay_aux2_mode": {
-                "name": "Tryb przekaźnika Aux2",
-                "state": {
-                    "auto": "Automatyczny",
-                    "auto_linked": "Automatyczny (połączony)",
-                    "disabled": "Wyłączone",
-                    "manual": "Ręczny"
                 }
             },
             "relay_aux2_period": {
@@ -384,15 +333,6 @@
                     "5_days": "5 dni"
                 }
             },
-            "relay_aux3_mode": {
-                "name": "Tryb przekaźnika Aux3",
-                "state": {
-                    "auto": "Automatyczny",
-                    "auto_linked": "Automatyczny (połączony)",
-                    "disabled": "Wyłączone",
-                    "manual": "Ręczny"
-                }
-            },
             "relay_aux3_period": {
                 "name": "Timer Aux3 (1) - Interwał",
                 "state": {
@@ -419,15 +359,6 @@
                     "4_days": "4 dni",
                     "4_weeks": "4 tygodnie",
                     "5_days": "5 dni"
-                }
-            },
-            "relay_aux4_mode": {
-                "name": "Tryb przekaźnika Aux4",
-                "state": {
-                    "auto": "Automatyczny",
-                    "auto_linked": "Automatyczny (połączony)",
-                    "disabled": "Wyłączone",
-                    "manual": "Ręczny"
                 }
             },
             "relay_aux4_period": {
@@ -478,6 +409,23 @@
                     "4_days": "4 dni",
                     "4_weeks": "4 tygodnie",
                     "5_days": "5 dni"
+                }
+            },
+            "filtration_speed_timer": {
+                "name": "Timer {number} - Prędkość filtracji",
+                "state": {
+                    "high": "Wysoka",
+                    "low": "Niska",
+                    "mid": "Średnia"
+                }
+            },
+            "relay_aux_mode": {
+                "name": "Tryb przekaźnika Aux {number}",
+                "state": {
+                    "auto": "Automatyczny",
+                    "auto_linked": "Automatyczny (połączony)",
+                    "disabled": "Wyłączone",
+                    "manual": "Ręczny"
                 }
             }
         },
@@ -602,18 +550,6 @@
             }
         },
         "switch": {
-            "aux1": {
-                "name": "Przekaźnik pomocniczy Aux1"
-            },
-            "aux2": {
-                "name": "Przekaźnik pomocniczy Aux2"
-            },
-            "aux3": {
-                "name": "Przekaźnik pomocniczy Aux3"
-            },
-            "aux4": {
-                "name": "Przekaźnik pomocniczy Aux4"
-            },
             "backwash": {
                 "name": "Płukanie wsteczne"
             },
@@ -640,27 +576,12 @@
             },
             "winter_mode": {
                 "name": "Tryb zimowy"
+            },
+            "aux": {
+                "name": "Przekaźnik pomocniczy Aux {number}"
             }
         },
         "time": {
-            "filtration1_start": {
-                "name": "Timer 1 - Start filtracji"
-            },
-            "filtration1_stop": {
-                "name": "Timer 1 - Stop filtracji"
-            },
-            "filtration2_start": {
-                "name": "Timer 2 - Start filtracji"
-            },
-            "filtration2_stop": {
-                "name": "Timer 2 - Stop filtracji"
-            },
-            "filtration3_start": {
-                "name": "Timer 3 - Start filtracji"
-            },
-            "filtration3_stop": {
-                "name": "Timer 3 - Stop filtracji"
-            },
             "relay_aux1_start": {
                 "name": "Timer Aux1 (1) - Start"
             },
@@ -714,6 +635,12 @@
             },
             "relay_light_stop": {
                 "name": "Timer Światła - Zatrzymanie"
+            },
+            "filtration_start": {
+                "name": "Timer {number} - Start filtracji"
+            },
+            "filtration_stop": {
+                "name": "Timer {number} - Stop filtracji"
             }
         }
     },

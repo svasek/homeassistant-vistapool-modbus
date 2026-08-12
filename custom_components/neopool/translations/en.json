@@ -55,17 +55,8 @@
     },
     "entity": {
         "binary_sensor": {
-            "aux1": {
-                "name": "Relay Aux1"
-            },
-            "aux2": {
-                "name": "Relay Aux2"
-            },
-            "aux3": {
-                "name": "Relay Aux3"
-            },
-            "aux4": {
-                "name": "Relay Aux4"
+            "aux": {
+                "name": "Relay Aux {number}"
             },
             "chlorine_control_module": {
                 "name": "Chlorine regulation active"
@@ -223,24 +214,8 @@
                     "smart": "Smart"
                 }
             },
-            "filtration1_speed": {
-                "name": "Timer 1 - filtration speed",
-                "state": {
-                    "high": "High",
-                    "low": "Low",
-                    "mid": "Medium"
-                }
-            },
-            "filtration2_speed": {
-                "name": "Timer 2 - filtration speed",
-                "state": {
-                    "high": "High",
-                    "low": "Low",
-                    "mid": "Medium"
-                }
-            },
-            "filtration3_speed": {
-                "name": "Timer 3 - filtration speed",
+            "filtration_speed_timer": {
+                "name": "Timer {number} - filtration speed",
                 "state": {
                     "high": "High",
                     "low": "Low",
@@ -310,8 +285,8 @@
                     "900": "15 Minutes"
                 }
             },
-            "relay_aux1_mode": {
-                "name": "Relay Aux1 mode",
+            "relay_aux_mode": {
+                "name": "Relay Aux {number} mode",
                 "state": {
                     "auto": "Automatic",
                     "auto_linked": "Automatic (linked)",
@@ -347,15 +322,6 @@
                     "5_days": "5 Days"
                 }
             },
-            "relay_aux2_mode": {
-                "name": "Relay Aux2 mode",
-                "state": {
-                    "auto": "Automatic",
-                    "auto_linked": "Automatic (linked)",
-                    "disabled": "Disabled",
-                    "manual": "Manual"
-                }
-            },
             "relay_aux2_period": {
                 "name": "Timer Aux2 (1) - interval",
                 "state": {
@@ -384,15 +350,6 @@
                     "5_days": "5 Days"
                 }
             },
-            "relay_aux3_mode": {
-                "name": "Relay Aux3 mode",
-                "state": {
-                    "auto": "Automatic",
-                    "auto_linked": "Automatic (linked)",
-                    "disabled": "Disabled",
-                    "manual": "Manual"
-                }
-            },
             "relay_aux3_period": {
                 "name": "Timer Aux3 (1) - interval",
                 "state": {
@@ -419,15 +376,6 @@
                     "4_days": "4 Days",
                     "4_weeks": "4 Weeks",
                     "5_days": "5 Days"
-                }
-            },
-            "relay_aux4_mode": {
-                "name": "Relay Aux4 mode",
-                "state": {
-                    "auto": "Automatic",
-                    "auto_linked": "Automatic (linked)",
-                    "disabled": "Disabled",
-                    "manual": "Manual"
                 }
             },
             "relay_aux4_period": {
@@ -602,17 +550,8 @@
             }
         },
         "switch": {
-            "aux1": {
-                "name": "Relay Aux1"
-            },
-            "aux2": {
-                "name": "Relay Aux2"
-            },
-            "aux3": {
-                "name": "Relay Aux3"
-            },
-            "aux4": {
-                "name": "Relay Aux4"
+            "aux": {
+                "name": "Auxiliary relay {number}"
             },
             "backwash": {
                 "name": "Backwash"
@@ -643,23 +582,11 @@
             }
         },
         "time": {
-            "filtration1_start": {
-                "name": "Timer 1 - filtration start"
+            "filtration_start": {
+                "name": "Timer {number} - filtration start"
             },
-            "filtration1_stop": {
-                "name": "Timer 1 - filtration stop"
-            },
-            "filtration2_start": {
-                "name": "Timer 2 - filtration start"
-            },
-            "filtration2_stop": {
-                "name": "Timer 2 - filtration stop"
-            },
-            "filtration3_start": {
-                "name": "Timer 3 - filtration start"
-            },
-            "filtration3_stop": {
-                "name": "Timer 3 - filtration stop"
+            "filtration_stop": {
+                "name": "Timer {number} - filtration stop"
             },
             "relay_aux1_start": {
                 "name": "Timer Aux1 (1) - start"
