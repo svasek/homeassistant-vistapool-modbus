@@ -56,6 +56,8 @@ CONF_USE_AUX4 = "use_aux4"
 
 # Internal option keys
 CONF_AUTO_TIME_SYNC = "auto_time_sync"
+# Winter mode is backed by the native config_entry.pref_disable_polling flag;
+# this constant survives only as the winter-mode switch translation_key.
 CONF_WINTER_MODE = "winter_mode"
 CONF_CAPABILITIES = "_capabilities"
 

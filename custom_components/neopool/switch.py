@@ -380,9 +380,10 @@ class NeoPoolSwitch(NeoPoolEntity, SwitchEntity):
 
         # HA-side settings live entirely outside the Modbus client.
         if desc.ha_setting == _HA_SETTING_WINTER_MODE:
+            # set_winter_mode flips pref_disable_polling and schedules an entry
+            # reload, which rebuilds the coordinator and re-renders this entity,
+            # so there's nothing more to write here.
             await self.coordinator.set_winter_mode(state)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
             return
         if desc.ha_setting == _HA_SETTING_AUTO_TIME_SYNC:
             await self.coordinator.set_auto_time_sync(state)
@@ -427,7 +428,7 @@ class NeoPoolSwitch(NeoPoolEntity, SwitchEntity):
         if desc.ha_setting == _HA_SETTING_AUTO_TIME_SYNC:
             return getattr(self.coordinator, CONF_AUTO_TIME_SYNC, False)
         if desc.ha_setting == _HA_SETTING_WINTER_MODE:
-            return getattr(self.coordinator, CONF_WINTER_MODE, False)
+            return self.coordinator.config_entry.pref_disable_polling
         return False  # pragma: no cover
 
     @property

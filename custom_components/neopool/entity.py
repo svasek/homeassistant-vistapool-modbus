@@ -26,7 +26,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import slugify as ha_slugify
 
-from .const import CONF_WINTER_MODE, DOMAIN, NAME
+from .const import DOMAIN, NAME
 from .coordinator import NeoPoolCoordinator
 
 # CUSTOM-ONLY START, detected-module labels surfaced as hw_version in HACS.
@@ -53,8 +53,9 @@ class NeoPoolEntity(CoordinatorEntity[NeoPoolCoordinator]):
     @override
     def available(self) -> bool:
         """Return False for control entities while winter mode is active."""
-        if self._winter_mode_active and getattr(
-            self.coordinator, CONF_WINTER_MODE, False
+        if (
+            self._winter_mode_active
+            and self.coordinator.config_entry.pref_disable_polling
         ):
             return False
         return super().available

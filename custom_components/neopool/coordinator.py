@@ -45,7 +45,6 @@ from .const import (
     CONF_FILTRATION_PUMP_POWER,
     CONF_SCAN_INTERVAL,
     CONF_USE_LIGHT,
-    CONF_WINTER_MODE,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     FOLLOW_UP_REFRESH_DELAY,
@@ -89,7 +88,9 @@ class NeoPoolCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
         self.client = client
         self.auto_time_sync = entry.options.get(CONF_AUTO_TIME_SYNC, False)
-        self.winter_mode = entry.options.get(CONF_WINTER_MODE, False)
+        # Winter mode maps onto the native per-entry "disable polling" system
+        # option; the base coordinator already skips scheduling when it's set.
+        self.winter_mode = entry.pref_disable_polling
         # Persisted in options for winter mode (no Modbus reads).
         self._capability_snapshot: dict[str, Any] = dict(
             entry.options.get(CONF_CAPABILITIES, {})
@@ -358,16 +359,22 @@ class NeoPoolCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.hass.config_entries.async_update_entry(self.config_entry, options=options)
 
     async def set_winter_mode(self, enabled: bool) -> None:
-        """Toggle winter mode and persist the capability snapshot."""
+        """Toggle winter mode via the native disable-polling flag.
+
+        Winter mode is backed by ``config_entry.pref_disable_polling`` so the
+        base coordinator stops scheduling refreshes entirely (no no-op polls,
+        no reconnect attempts). When enabling, the capability snapshot is
+        persisted first so the reload can set entities up offline, then the
+        entry is reloaded to rebuild the coordinator with the new flag.
+        """
         self.winter_mode = enabled
-        options = dict(self.config_entry.options)
-        options[CONF_WINTER_MODE] = enabled
-        if enabled:
-            if self.data:
-                self._capability_snapshot = {
-                    k: self.data[k] for k in CAPABILITY_KEYS if k in self.data
-                }
+        updates: dict[str, Any] = {"pref_disable_polling": enabled}
+        if enabled and self.data:
+            self._capability_snapshot = {
+                k: self.data[k] for k in CAPABILITY_KEYS if k in self.data
+            }
+            options = dict(self.config_entry.options)
             options[CONF_CAPABILITIES] = dict(self._capability_snapshot)
-        self.hass.config_entries.async_update_entry(self.config_entry, options=options)
-        if enabled:
-            self.async_set_updated_data(dict(self._capability_snapshot))
+            updates["options"] = options
+        self.hass.config_entries.async_update_entry(self.config_entry, **updates)
+        self.hass.config_entries.async_schedule_reload(self.config_entry.entry_id)
