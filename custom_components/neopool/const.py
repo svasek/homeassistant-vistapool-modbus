@@ -83,6 +83,8 @@ _CUSTOM_CAPABILITY_KEYS: tuple[str, ...] = (
     "MBF_PAR_RELAY_PH",
     "MBF_PAR_FILT_GPIO",
     "MBF_PAR_LIGHTING_GPIO",
+    "MBF_POWER_MODULE_VERSION",
+    "MBF_PAR_VERSION",
 )
 
 CAPABILITY_KEYS: tuple[str, ...] = tuple(
