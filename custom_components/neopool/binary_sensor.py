@@ -61,6 +61,7 @@ class NeoPoolBinarySensorEntityDescription(BinarySensorEntityDescription):
 
     supported_fn: _SupportedFn | None = None
     value_fn: Callable[[dict[str, Any], HomeAssistant], bool | None] | None = None
+    translation_placeholders: dict[str, str] | None = None
 
 
 def _gpio_ok(gpio_key: str) -> _SupportedFn:
@@ -118,22 +119,26 @@ BINARY_SENSOR_DESCRIPTIONS: dict[str, NeoPoolBinarySensorEntityDescription] = {
     ),
     "AUX1": NeoPoolBinarySensorEntityDescription(
         key="AUX1",
-        translation_key="aux1",
+        translation_key="aux",
+        translation_placeholders={"number": "1"},
         device_class=BinarySensorDeviceClass.POWER,
     ),
     "AUX2": NeoPoolBinarySensorEntityDescription(
         key="AUX2",
-        translation_key="aux2",
+        translation_key="aux",
+        translation_placeholders={"number": "2"},
         device_class=BinarySensorDeviceClass.POWER,
     ),
     "AUX3": NeoPoolBinarySensorEntityDescription(
         key="AUX3",
-        translation_key="aux3",
+        translation_key="aux",
+        translation_placeholders={"number": "3"},
         device_class=BinarySensorDeviceClass.POWER,
     ),
     "AUX4": NeoPoolBinarySensorEntityDescription(
         key="AUX4",
-        translation_key="aux4",
+        translation_key="aux",
+        translation_placeholders={"number": "4"},
         device_class=BinarySensorDeviceClass.POWER,
     ),
     "pH module control status": NeoPoolBinarySensorEntityDescription(
@@ -401,6 +406,8 @@ class NeoPoolBinarySensor(NeoPoolEntity, BinarySensorEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._key = key
+        if description.translation_placeholders is not None:
+            self._attr_translation_placeholders = description.translation_placeholders
         self._attr_unique_id = (
             f"{self.coordinator.config_entry.unique_id}_{key.lower()}"
         )

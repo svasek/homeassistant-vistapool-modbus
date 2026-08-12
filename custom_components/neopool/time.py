@@ -53,6 +53,7 @@ class NeoPoolTimeEntityDescription(TimeEntityDescription):
     timer_block: str
     timer_field: Literal["start", "stop"]
     supported_fn: Callable[[dict[str, Any], Mapping[str, Any]], bool] | None = None
+    translation_placeholders: dict[str, str] | None = None
 
 
 _DEBOUNCE_DELAY = 10.0
@@ -79,9 +80,24 @@ def _build_descriptions() -> dict[str, NeoPoolTimeEntityDescription]:
     for block, opt_flag, enabled_default in _TIMER_BLOCKS:
         for field in ("start", "stop"):
             key = f"{block}_{field}"
+            # Filtration and aux timers share one translation per field with
+            # number placeholders; other blocks keep their own translation key.
+            translation_key = key
+            placeholders: dict[str, str] | None = None
+            if block.startswith("filtration"):
+                translation_key = f"filtration_{field}"
+                placeholders = {"number": block.removeprefix("filtration")}
+            elif block.startswith("relay_aux"):
+                translation_key = f"relay_aux_{field}"
+                digits = block.removeprefix("relay_aux")
+                placeholders = {
+                    "number": digits.rstrip("b"),
+                    "subtimer": "2" if digits.endswith("b") else "1",
+                }
             out[key] = NeoPoolTimeEntityDescription(
                 key=key,
-                translation_key=key,
+                translation_key=translation_key,
+                translation_placeholders=placeholders,
                 entity_category=EntityCategory.CONFIG,
                 entity_registry_enabled_default=enabled_default,
                 timer_block=block,
@@ -125,6 +141,8 @@ class NeoPoolTime(NeoPoolEntity, TimeEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._key = key
+        if description.translation_placeholders is not None:
+            self._attr_translation_placeholders = description.translation_placeholders
         self._attr_unique_id = (
             f"{self.coordinator.config_entry.unique_id}_{key.lower()}"
         )

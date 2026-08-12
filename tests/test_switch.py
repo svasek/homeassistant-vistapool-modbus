@@ -714,12 +714,12 @@ async def test_io_switch_unavailable_in_winter_mode(
     io_entity = next(
         e
         for e in platform.entities.values()
-        if getattr(e, "key", None) == "MBF_PAR_FILT_MANUAL_STATE"
+        if getattr(e.entity_description, "key", None) == "MBF_PAR_FILT_MANUAL_STATE"
     )
     winter_entity = next(
         e
         for e in platform.entities.values()
-        if getattr(e, "key", None) == "WINTER_MODE"
+        if getattr(e.entity_description, "key", None) == "WINTER_MODE"
     )
     # IO switch inherits the winter-mode availability gate.
     assert io_entity.available is False
