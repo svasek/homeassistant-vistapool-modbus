@@ -28,7 +28,6 @@ from custom_components.neopool.const import (
     CONF_MODBUS_FRAMER,
     CONF_UNIT_ID,
     CONF_USE_FILTRATION1,
-    CONF_WINTER_MODE,
     CURRENT_VERSION,
     FOLLOW_UP_REFRESH_DELAY,
 )
@@ -649,15 +648,20 @@ async def test_winter_mode_turn_on_off(
     hass: HomeAssistant,
     mock_config_entry: MockConfigEntry,
 ) -> None:
-    """Toggling the winter_mode switch flips its state."""
+    """Toggling the winter_mode switch flips pref_disable_polling."""
     await setup_integration(hass, mock_config_entry)
     entity_id = "switch.neopool_winter_mode"
     assert hass.states.get(entity_id).state == STATE_OFF
+    assert mock_config_entry.pref_disable_polling is False
 
     await _turn_on(hass, entity_id)
+    await hass.async_block_till_done()
+    assert mock_config_entry.pref_disable_polling is True
     assert hass.states.get(entity_id).state == STATE_ON
 
     await _turn_off(hass, entity_id)
+    await hass.async_block_till_done()
+    assert mock_config_entry.pref_disable_polling is False
     assert hass.states.get(entity_id).state == STATE_OFF
 
 
@@ -693,6 +697,7 @@ async def test_io_switch_unavailable_in_winter_mode(
         title="Winter Pool",
         unique_id="neopool_winter_io",
         version=CURRENT_VERSION,
+        pref_disable_polling=True,
         data={
             "host": "192.0.2.7",
             "port": 502,
@@ -702,7 +707,6 @@ async def test_io_switch_unavailable_in_winter_mode(
         },
         options={
             CONF_MODBUS_FRAMER: "tcp",
-            CONF_WINTER_MODE: True,
             CONF_USE_FILTRATION1: True,
             CONF_CAPABILITIES: {"MBF_PAR_FILT_GPIO": 1},
         },
@@ -714,12 +718,12 @@ async def test_io_switch_unavailable_in_winter_mode(
     io_entity = next(
         e
         for e in platform.entities.values()
-        if getattr(e, "key", None) == "MBF_PAR_FILT_MANUAL_STATE"
+        if getattr(e.entity_description, "key", None) == "MBF_PAR_FILT_MANUAL_STATE"
     )
     winter_entity = next(
         e
         for e in platform.entities.values()
-        if getattr(e, "key", None) == "WINTER_MODE"
+        if getattr(e.entity_description, "key", None) == "WINTER_MODE"
     )
     # IO switch inherits the winter-mode availability gate.
     assert io_entity.available is False

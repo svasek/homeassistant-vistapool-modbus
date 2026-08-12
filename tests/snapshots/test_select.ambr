@@ -679,7 +679,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux1_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_1_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -698,7 +698,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -706,39 +706,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux1 mode',
+    'object_id_base': 'Relay Aux 1 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux1 mode',
+    'original_name': 'Relay Aux 1 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux1_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux1_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_1_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux1 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 1 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'manual',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux2_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_2_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -757,7 +757,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -765,39 +765,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux2 mode',
+    'object_id_base': 'Relay Aux 2 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux2 mode',
+    'original_name': 'Relay Aux 2 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux2_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux2_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_2_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux2 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 2 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'manual',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux3_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_3_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -816,7 +816,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -824,39 +824,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux3 mode',
+    'object_id_base': 'Relay Aux 3 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux3 mode',
+    'original_name': 'Relay Aux 3 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux3_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux3_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_3_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux3 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 3 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'manual',
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux4_mode-entry]
+# name: test_all_entities[select.neopool_relay_aux_4_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -875,7 +875,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -883,32 +883,32 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux4 mode',
+    'object_id_base': 'Relay Aux 4 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux4 mode',
+    'original_name': 'Relay Aux 4 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux4_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_relay_aux4_mode-state]
+# name: test_all_entities[select.neopool_relay_aux_4_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux4 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 4 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
@@ -953,7 +953,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration1_speed',
+    'translation_key': 'filtration_speed_timer',
     'unique_id': '1234567890_filtration1_speed',
     'unit_of_measurement': None,
   })
@@ -1014,7 +1014,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration2_speed',
+    'translation_key': 'filtration_speed_timer',
     'unique_id': '1234567890_filtration2_speed',
     'unit_of_measurement': None,
   })
@@ -1075,7 +1075,7 @@
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'filtration3_speed',
+    'translation_key': 'filtration_speed_timer',
     'unique_id': '1234567890_filtration3_speed',
     'unit_of_measurement': None,
   })
@@ -1098,7 +1098,7 @@
     'state': 'low',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux1_1_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_1_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1124,7 +1124,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux1_1_interval',
+    'entity_id': 'select.neopool_timer_aux_1_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1132,25 +1132,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (1) - interval',
+    'object_id_base': 'Timer Aux 1 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (1) - interval',
+    'original_name': 'Timer Aux 1 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux1_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux1_1_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_1_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1164,14 +1164,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux1_1_interval',
+    'entity_id': 'select.neopool_timer_aux_1_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux1_2_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_1_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1197,7 +1197,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux1_2_interval',
+    'entity_id': 'select.neopool_timer_aux_1_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1205,25 +1205,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (2) - interval',
+    'object_id_base': 'Timer Aux 1 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (2) - interval',
+    'original_name': 'Timer Aux 1 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux1b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux1_2_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_1_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1237,14 +1237,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux1_2_interval',
+    'entity_id': 'select.neopool_timer_aux_1_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux2_1_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_2_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1270,7 +1270,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux2_1_interval',
+    'entity_id': 'select.neopool_timer_aux_2_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1278,25 +1278,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (1) - interval',
+    'object_id_base': 'Timer Aux 2 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (1) - interval',
+    'original_name': 'Timer Aux 2 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux2_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux2_1_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_2_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1310,14 +1310,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux2_1_interval',
+    'entity_id': 'select.neopool_timer_aux_2_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux2_2_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_2_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1343,7 +1343,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux2_2_interval',
+    'entity_id': 'select.neopool_timer_aux_2_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1351,25 +1351,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (2) - interval',
+    'object_id_base': 'Timer Aux 2 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (2) - interval',
+    'original_name': 'Timer Aux 2 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux2b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux2_2_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_2_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1383,14 +1383,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux2_2_interval',
+    'entity_id': 'select.neopool_timer_aux_2_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux3_1_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_3_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1416,7 +1416,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux3_1_interval',
+    'entity_id': 'select.neopool_timer_aux_3_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1424,25 +1424,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (1) - interval',
+    'object_id_base': 'Timer Aux 3 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (1) - interval',
+    'original_name': 'Timer Aux 3 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux3_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux3_1_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_3_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1456,14 +1456,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux3_1_interval',
+    'entity_id': 'select.neopool_timer_aux_3_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux3_2_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_3_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1489,7 +1489,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux3_2_interval',
+    'entity_id': 'select.neopool_timer_aux_3_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1497,25 +1497,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (2) - interval',
+    'object_id_base': 'Timer Aux 3 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (2) - interval',
+    'original_name': 'Timer Aux 3 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux3b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux3_2_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_3_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1529,14 +1529,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux3_2_interval',
+    'entity_id': 'select.neopool_timer_aux_3_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux4_1_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_4_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1562,7 +1562,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux4_1_interval',
+    'entity_id': 'select.neopool_timer_aux_4_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1570,25 +1570,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (1) - interval',
+    'object_id_base': 'Timer Aux 4 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (1) - interval',
+    'original_name': 'Timer Aux 4 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux4_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux4_1_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_4_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1602,14 +1602,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux4_1_interval',
+    'entity_id': 'select.neopool_timer_aux_4_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux4_2_interval-entry]
+# name: test_all_entities[select.neopool_timer_aux_4_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1635,7 +1635,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux4_2_interval',
+    'entity_id': 'select.neopool_timer_aux_4_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1643,25 +1643,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (2) - interval',
+    'object_id_base': 'Timer Aux 4 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (2) - interval',
+    'original_name': 'Timer Aux 4 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux4b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[select.neopool_timer_aux4_2_interval-state]
+# name: test_all_entities[select.neopool_timer_aux_4_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -1675,7 +1675,7 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux4_2_interval',
+    'entity_id': 'select.neopool_timer_aux_4_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
@@ -1873,7 +1873,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux1_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_1_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1892,7 +1892,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1900,39 +1900,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux1 mode',
+    'object_id_base': 'Relay Aux 1 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux1 mode',
+    'original_name': 'Relay Aux 1 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux1_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux1_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_1_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux1 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 1 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux1_mode',
+    'entity_id': 'select.neopool_relay_aux_1_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux2_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_2_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1951,7 +1951,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1959,39 +1959,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux2 mode',
+    'object_id_base': 'Relay Aux 2 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux2 mode',
+    'original_name': 'Relay Aux 2 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux2_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux2_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_2_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux2 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 2 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux2_mode',
+    'entity_id': 'select.neopool_relay_aux_2_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux3_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_3_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2010,7 +2010,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2018,39 +2018,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux3 mode',
+    'object_id_base': 'Relay Aux 3 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux3 mode',
+    'original_name': 'Relay Aux 3 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux3_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux3_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_3_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux3 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 3 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux3_mode',
+    'entity_id': 'select.neopool_relay_aux_3_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux4_mode-entry]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_4_mode-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2069,7 +2069,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': None,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2077,39 +2077,39 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Relay Aux4 mode',
+    'object_id_base': 'Relay Aux 4 mode',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Relay Aux4 mode',
+    'original_name': 'Relay Aux 4 mode',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_mode',
+    'translation_key': 'relay_aux_mode',
     'unique_id': '1234567890_relay_aux4_mode',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_relay_aux4_mode-state]
+# name: test_setup_when_modules_absent[select.neopool_relay_aux_4_mode-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux4 mode',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Relay Aux 4 mode',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         'auto',
         'manual',
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_relay_aux4_mode',
+    'entity_id': 'select.neopool_relay_aux_4_mode',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux1_1_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_1_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2135,7 +2135,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux1_1_interval',
+    'entity_id': 'select.neopool_timer_aux_1_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2143,25 +2143,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (1) - interval',
+    'object_id_base': 'Timer Aux 1 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (1) - interval',
+    'original_name': 'Timer Aux 1 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux1_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux1_1_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_1_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2175,14 +2175,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux1_1_interval',
+    'entity_id': 'select.neopool_timer_aux_1_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux1_2_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_1_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2208,7 +2208,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux1_2_interval',
+    'entity_id': 'select.neopool_timer_aux_1_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2216,25 +2216,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (2) - interval',
+    'object_id_base': 'Timer Aux 1 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (2) - interval',
+    'original_name': 'Timer Aux 1 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux1b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux1_2_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_1_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2248,14 +2248,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux1_2_interval',
+    'entity_id': 'select.neopool_timer_aux_1_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux2_1_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_2_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2281,7 +2281,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux2_1_interval',
+    'entity_id': 'select.neopool_timer_aux_2_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2289,25 +2289,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (1) - interval',
+    'object_id_base': 'Timer Aux 2 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (1) - interval',
+    'original_name': 'Timer Aux 2 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux2_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux2_1_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_2_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2321,14 +2321,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux2_1_interval',
+    'entity_id': 'select.neopool_timer_aux_2_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux2_2_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_2_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2354,7 +2354,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux2_2_interval',
+    'entity_id': 'select.neopool_timer_aux_2_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2362,25 +2362,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (2) - interval',
+    'object_id_base': 'Timer Aux 2 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (2) - interval',
+    'original_name': 'Timer Aux 2 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux2b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux2_2_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_2_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2394,14 +2394,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux2_2_interval',
+    'entity_id': 'select.neopool_timer_aux_2_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux3_1_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_3_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2427,7 +2427,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux3_1_interval',
+    'entity_id': 'select.neopool_timer_aux_3_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2435,25 +2435,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (1) - interval',
+    'object_id_base': 'Timer Aux 3 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (1) - interval',
+    'original_name': 'Timer Aux 3 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux3_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux3_1_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_3_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2467,14 +2467,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux3_1_interval',
+    'entity_id': 'select.neopool_timer_aux_3_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux3_2_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_3_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2500,7 +2500,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux3_2_interval',
+    'entity_id': 'select.neopool_timer_aux_3_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2508,25 +2508,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (2) - interval',
+    'object_id_base': 'Timer Aux 3 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (2) - interval',
+    'original_name': 'Timer Aux 3 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux3b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux3_2_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_3_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2540,14 +2540,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux3_2_interval',
+    'entity_id': 'select.neopool_timer_aux_3_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux4_1_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_4_1_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2573,7 +2573,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux4_1_interval',
+    'entity_id': 'select.neopool_timer_aux_4_1_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2581,25 +2581,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (1) - interval',
+    'object_id_base': 'Timer Aux 4 (1) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (1) - interval',
+    'original_name': 'Timer Aux 4 (1) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux4_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux4_1_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_4_1_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (1) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (1) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2613,14 +2613,14 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux4_1_interval',
+    'entity_id': 'select.neopool_timer_aux_4_1_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux4_2_interval-entry]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_4_2_interval-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2646,7 +2646,7 @@
     'disabled_by': None,
     'domain': 'select',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'select.neopool_timer_aux4_2_interval',
+    'entity_id': 'select.neopool_timer_aux_4_2_interval',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2654,25 +2654,25 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (2) - interval',
+    'object_id_base': 'Timer Aux 4 (2) - interval',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (2) - interval',
+    'original_name': 'Timer Aux 4 (2) - interval',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4b_period',
+    'translation_key': 'relay_aux_period',
     'unique_id': '1234567890_relay_aux4b_period',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[select.neopool_timer_aux4_2_interval-state]
+# name: test_setup_when_modules_absent[select.neopool_timer_aux_4_2_interval-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (2) - interval',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (2) - interval',
       <SelectEntityCapabilityAttribute.OPTIONS: 'options'>: list([
         '1_day',
         '2_days',
@@ -2686,7 +2686,7 @@
       ]),
     }),
     'context': <ANY>,
-    'entity_id': 'select.neopool_timer_aux4_2_interval',
+    'entity_id': 'select.neopool_timer_aux_4_2_interval',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
