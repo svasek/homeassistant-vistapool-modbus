@@ -277,118 +277,6 @@
                     "900": "15 minut"
                 }
             },
-            "relay_aux1_period": {
-                "name": "Timer Aux1 (1) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
-            "relay_aux1b_period": {
-                "name": "Timer Aux1 (2) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
-            "relay_aux2_period": {
-                "name": "Timer Aux2 (1) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
-            "relay_aux2b_period": {
-                "name": "Timer Aux2 (2) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
-            "relay_aux3_period": {
-                "name": "Timer Aux3 (1) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
-            "relay_aux3b_period": {
-                "name": "Timer Aux3 (2) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
-            "relay_aux4_period": {
-                "name": "Timer Aux4 (1) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
-            "relay_aux4b_period": {
-                "name": "Timer Aux4 (2) - Interval",
-                "state": {
-                    "1_day": "1 den",
-                    "1_week": "1 týden",
-                    "2_days": "2 dny",
-                    "2_weeks": "2 týdny",
-                    "3_days": "3 dny",
-                    "3_weeks": "3 týdny",
-                    "4_days": "4 dny",
-                    "4_weeks": "4 týdny",
-                    "5_days": "5 dní"
-                }
-            },
             "relay_light_mode": {
                 "name": "Režim světla",
                 "state": {
@@ -426,6 +314,20 @@
                     "auto_linked": "Automatický (propojený)",
                     "disabled": "Zakázáno",
                     "manual": "Ruční"
+                }
+            },
+            "relay_aux_period": {
+                "name": "Timer Aux {number} ({subtimer}) - Interval",
+                "state": {
+                    "1_day": "1 den",
+                    "1_week": "1 týden",
+                    "2_days": "2 dny",
+                    "2_weeks": "2 týdny",
+                    "3_days": "3 dny",
+                    "3_weeks": "3 týdny",
+                    "4_days": "4 dny",
+                    "4_weeks": "4 týdny",
+                    "5_days": "5 dní"
                 }
             }
         },
@@ -582,54 +484,6 @@
             }
         },
         "time": {
-            "relay_aux1_start": {
-                "name": "Timer Aux1 (1) -  Spuštění"
-            },
-            "relay_aux1_stop": {
-                "name": "Timer Aux1 (1) -  Vypnutí"
-            },
-            "relay_aux1b_start": {
-                "name": "Timer Aux1 (2) -  Spuštění"
-            },
-            "relay_aux1b_stop": {
-                "name": "Timer Aux1 (2) -  Vypnutí"
-            },
-            "relay_aux2_start": {
-                "name": "Timer Aux2 (1) -  Spuštění"
-            },
-            "relay_aux2_stop": {
-                "name": "Timer Aux2 (1) -  Vypnutí"
-            },
-            "relay_aux2b_start": {
-                "name": "Timer Aux2 (2) -  Spuštění"
-            },
-            "relay_aux2b_stop": {
-                "name": "Timer Aux2 (2) -  Vypnutí"
-            },
-            "relay_aux3_start": {
-                "name": "Timer Aux3 (1) -  Spuštění"
-            },
-            "relay_aux3_stop": {
-                "name": "Timer Aux3 (1) -  Vypnutí"
-            },
-            "relay_aux3b_start": {
-                "name": "Timer Aux3 (2) -  Spuštění"
-            },
-            "relay_aux3b_stop": {
-                "name": "Timer Aux3 (2) -  Vypnutí"
-            },
-            "relay_aux4_start": {
-                "name": "Timer Aux4 (1) -  Spuštění"
-            },
-            "relay_aux4_stop": {
-                "name": "Timer Aux4 (1) -  Vypnutí"
-            },
-            "relay_aux4b_start": {
-                "name": "Timer Aux4 (2) -  Spuštění"
-            },
-            "relay_aux4b_stop": {
-                "name": "Timer Aux4 (2) -  Vypnutí"
-            },
             "relay_light_start": {
                 "name": "Timer Světla -  Spuštění"
             },
@@ -641,6 +495,12 @@
             },
             "filtration_stop": {
                 "name": "Timer {number} - Vypnutí filtrace"
+            },
+            "relay_aux_start": {
+                "name": "Timer Aux {number} ({subtimer}) - Spuštění"
+            },
+            "relay_aux_stop": {
+                "name": "Timer Aux {number} ({subtimer}) - Vypnutí"
             }
         }
     },

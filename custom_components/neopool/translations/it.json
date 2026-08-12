@@ -277,118 +277,6 @@
                     "900": "15 minuti"
                 }
             },
-            "relay_aux1_period": {
-                "name": "Timer Aux1 (1) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
-            "relay_aux1b_period": {
-                "name": "Timer Aux1 (2) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
-            "relay_aux2_period": {
-                "name": "Timer Aux2 (1) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
-            "relay_aux2b_period": {
-                "name": "Timer Aux2 (2) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
-            "relay_aux3_period": {
-                "name": "Timer Aux3 (1) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
-            "relay_aux3b_period": {
-                "name": "Timer Aux3 (2) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
-            "relay_aux4_period": {
-                "name": "Timer Aux4 (1) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
-            "relay_aux4b_period": {
-                "name": "Timer Aux4 (2) - Intervallo",
-                "state": {
-                    "1_day": "1 giorno",
-                    "1_week": "1 settimana",
-                    "2_days": "2 giorni",
-                    "2_weeks": "2 settimane",
-                    "3_days": "3 giorni",
-                    "3_weeks": "3 settimane",
-                    "4_days": "4 giorni",
-                    "4_weeks": "4 settimane",
-                    "5_days": "5 giorni"
-                }
-            },
             "relay_light_mode": {
                 "name": "Modalità luce",
                 "state": {
@@ -426,6 +314,20 @@
                     "auto_linked": "Automatico (collegato)",
                     "disabled": "Disabilitato",
                     "manual": "Manuale"
+                }
+            },
+            "relay_aux_period": {
+                "name": "Timer Aux {number} ({subtimer}) - Intervallo",
+                "state": {
+                    "1_day": "1 giorno",
+                    "1_week": "1 settimana",
+                    "2_days": "2 giorni",
+                    "2_weeks": "2 settimane",
+                    "3_days": "3 giorni",
+                    "3_weeks": "3 settimane",
+                    "4_days": "4 giorni",
+                    "4_weeks": "4 settimane",
+                    "5_days": "5 giorni"
                 }
             }
         },
@@ -582,54 +484,6 @@
             }
         },
         "time": {
-            "relay_aux1_start": {
-                "name": "Timer Aux1 (1) - Avvio"
-            },
-            "relay_aux1_stop": {
-                "name": "Timer Aux1 (1) - Arresto"
-            },
-            "relay_aux1b_start": {
-                "name": "Timer Aux1 (2) - Avvio"
-            },
-            "relay_aux1b_stop": {
-                "name": "Timer Aux1 (2) - Arresto"
-            },
-            "relay_aux2_start": {
-                "name": "Timer Aux2 (1) - Avvio"
-            },
-            "relay_aux2_stop": {
-                "name": "Timer Aux2 (1) - Arresto"
-            },
-            "relay_aux2b_start": {
-                "name": "Timer Aux2 (2) - Avvio"
-            },
-            "relay_aux2b_stop": {
-                "name": "Timer Aux2 (2) - Arresto"
-            },
-            "relay_aux3_start": {
-                "name": "Timer Aux3 (1) - Avvio"
-            },
-            "relay_aux3_stop": {
-                "name": "Timer Aux3 (1) - Arresto"
-            },
-            "relay_aux3b_start": {
-                "name": "Timer Aux3 (2) - Avvio"
-            },
-            "relay_aux3b_stop": {
-                "name": "Timer Aux3 (2) - Arresto"
-            },
-            "relay_aux4_start": {
-                "name": "Timer Aux4 (1) - Avvio"
-            },
-            "relay_aux4_stop": {
-                "name": "Timer Aux4 (1) - Arresto"
-            },
-            "relay_aux4b_start": {
-                "name": "Timer Aux4 (2) - Avvio"
-            },
-            "relay_aux4b_stop": {
-                "name": "Timer Aux4 (2) - Arresto"
-            },
             "relay_light_start": {
                 "name": "Timer Luce - Avvio"
             },
@@ -641,6 +495,12 @@
             },
             "filtration_stop": {
                 "name": "Timer {number} - Fine filtrazione"
+            },
+            "relay_aux_start": {
+                "name": "Timer Aux {number} ({subtimer}) - Avvio"
+            },
+            "relay_aux_stop": {
+                "name": "Timer Aux {number} ({subtimer}) - Arresto"
             }
         }
     },

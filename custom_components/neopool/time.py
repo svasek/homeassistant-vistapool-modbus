@@ -80,13 +80,20 @@ def _build_descriptions() -> dict[str, NeoPoolTimeEntityDescription]:
     for block, opt_flag, enabled_default in _TIMER_BLOCKS:
         for field in ("start", "stop"):
             key = f"{block}_{field}"
-            # Filtration timers share one translation per field with a number
-            # placeholder; other blocks keep their own translation key.
+            # Filtration and aux timers share one translation per field with
+            # number placeholders; other blocks keep their own translation key.
             translation_key = key
             placeholders: dict[str, str] | None = None
             if block.startswith("filtration"):
                 translation_key = f"filtration_{field}"
                 placeholders = {"number": block.removeprefix("filtration")}
+            elif block.startswith("relay_aux"):
+                translation_key = f"relay_aux_{field}"
+                digits = block.removeprefix("relay_aux")
+                placeholders = {
+                    "number": digits.rstrip("b"),
+                    "subtimer": "2" if digits.endswith("b") else "1",
+                }
             out[key] = NeoPoolTimeEntityDescription(
                 key=key,
                 translation_key=translation_key,

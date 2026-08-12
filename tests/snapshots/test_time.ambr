@@ -399,7 +399,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_1_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_1_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -413,7 +413,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_1_start',
+    'entity_id': 'time.neopool_timer_aux_1_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -421,35 +421,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (1) - start',
+    'object_id_base': 'Timer Aux 1 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (1) - start',
+    'original_name': 'Timer Aux 1 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux1_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_1_start-state]
+# name: test_all_entities[time.neopool_timer_aux_1_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_1_start',
+    'entity_id': 'time.neopool_timer_aux_1_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_1_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_1_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -463,7 +463,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_1_stop',
+    'entity_id': 'time.neopool_timer_aux_1_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -471,35 +471,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (1) - stop',
+    'object_id_base': 'Timer Aux 1 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (1) - stop',
+    'original_name': 'Timer Aux 1 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux1_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_1_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_1_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_1_stop',
+    'entity_id': 'time.neopool_timer_aux_1_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_2_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_1_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -513,7 +513,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_2_start',
+    'entity_id': 'time.neopool_timer_aux_1_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -521,35 +521,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (2) - start',
+    'object_id_base': 'Timer Aux 1 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (2) - start',
+    'original_name': 'Timer Aux 1 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux1b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_2_start-state]
+# name: test_all_entities[time.neopool_timer_aux_1_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_2_start',
+    'entity_id': 'time.neopool_timer_aux_1_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_2_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_1_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -563,7 +563,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_2_stop',
+    'entity_id': 'time.neopool_timer_aux_1_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -571,35 +571,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (2) - stop',
+    'object_id_base': 'Timer Aux 1 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (2) - stop',
+    'original_name': 'Timer Aux 1 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux1b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux1_2_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_1_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_2_stop',
+    'entity_id': 'time.neopool_timer_aux_1_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_1_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_2_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -613,7 +613,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_1_start',
+    'entity_id': 'time.neopool_timer_aux_2_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -621,35 +621,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (1) - start',
+    'object_id_base': 'Timer Aux 2 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (1) - start',
+    'original_name': 'Timer Aux 2 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux2_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_1_start-state]
+# name: test_all_entities[time.neopool_timer_aux_2_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_1_start',
+    'entity_id': 'time.neopool_timer_aux_2_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_1_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_2_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -663,7 +663,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_1_stop',
+    'entity_id': 'time.neopool_timer_aux_2_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -671,35 +671,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (1) - stop',
+    'object_id_base': 'Timer Aux 2 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (1) - stop',
+    'original_name': 'Timer Aux 2 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux2_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_1_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_2_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_1_stop',
+    'entity_id': 'time.neopool_timer_aux_2_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_2_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_2_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -713,7 +713,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_2_start',
+    'entity_id': 'time.neopool_timer_aux_2_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -721,35 +721,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (2) - start',
+    'object_id_base': 'Timer Aux 2 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (2) - start',
+    'original_name': 'Timer Aux 2 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux2b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_2_start-state]
+# name: test_all_entities[time.neopool_timer_aux_2_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_2_start',
+    'entity_id': 'time.neopool_timer_aux_2_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_2_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_2_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -763,7 +763,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_2_stop',
+    'entity_id': 'time.neopool_timer_aux_2_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -771,35 +771,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (2) - stop',
+    'object_id_base': 'Timer Aux 2 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (2) - stop',
+    'original_name': 'Timer Aux 2 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux2b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux2_2_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_2_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_2_stop',
+    'entity_id': 'time.neopool_timer_aux_2_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_1_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_3_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -813,7 +813,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_1_start',
+    'entity_id': 'time.neopool_timer_aux_3_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -821,35 +821,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (1) - start',
+    'object_id_base': 'Timer Aux 3 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (1) - start',
+    'original_name': 'Timer Aux 3 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux3_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_1_start-state]
+# name: test_all_entities[time.neopool_timer_aux_3_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_1_start',
+    'entity_id': 'time.neopool_timer_aux_3_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_1_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_3_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -863,7 +863,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_1_stop',
+    'entity_id': 'time.neopool_timer_aux_3_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -871,35 +871,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (1) - stop',
+    'object_id_base': 'Timer Aux 3 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (1) - stop',
+    'original_name': 'Timer Aux 3 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux3_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_1_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_3_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_1_stop',
+    'entity_id': 'time.neopool_timer_aux_3_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_2_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_3_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -913,7 +913,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_2_start',
+    'entity_id': 'time.neopool_timer_aux_3_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -921,35 +921,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (2) - start',
+    'object_id_base': 'Timer Aux 3 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (2) - start',
+    'original_name': 'Timer Aux 3 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux3b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_2_start-state]
+# name: test_all_entities[time.neopool_timer_aux_3_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_2_start',
+    'entity_id': 'time.neopool_timer_aux_3_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_2_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_3_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -963,7 +963,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_2_stop',
+    'entity_id': 'time.neopool_timer_aux_3_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -971,35 +971,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (2) - stop',
+    'object_id_base': 'Timer Aux 3 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (2) - stop',
+    'original_name': 'Timer Aux 3 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux3b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux3_2_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_3_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_2_stop',
+    'entity_id': 'time.neopool_timer_aux_3_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_1_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_4_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1013,7 +1013,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_1_start',
+    'entity_id': 'time.neopool_timer_aux_4_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1021,35 +1021,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (1) - start',
+    'object_id_base': 'Timer Aux 4 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (1) - start',
+    'original_name': 'Timer Aux 4 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux4_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_1_start-state]
+# name: test_all_entities[time.neopool_timer_aux_4_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_1_start',
+    'entity_id': 'time.neopool_timer_aux_4_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_1_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_4_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1063,7 +1063,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_1_stop',
+    'entity_id': 'time.neopool_timer_aux_4_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1071,35 +1071,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (1) - stop',
+    'object_id_base': 'Timer Aux 4 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (1) - stop',
+    'original_name': 'Timer Aux 4 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux4_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_1_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_4_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_1_stop',
+    'entity_id': 'time.neopool_timer_aux_4_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_2_start-entry]
+# name: test_all_entities[time.neopool_timer_aux_4_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1113,7 +1113,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_2_start',
+    'entity_id': 'time.neopool_timer_aux_4_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1121,35 +1121,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (2) - start',
+    'object_id_base': 'Timer Aux 4 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (2) - start',
+    'original_name': 'Timer Aux 4 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux4b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_2_start-state]
+# name: test_all_entities[time.neopool_timer_aux_4_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_2_start',
+    'entity_id': 'time.neopool_timer_aux_4_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_2_stop-entry]
+# name: test_all_entities[time.neopool_timer_aux_4_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1163,7 +1163,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_2_stop',
+    'entity_id': 'time.neopool_timer_aux_4_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1171,28 +1171,28 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (2) - stop',
+    'object_id_base': 'Timer Aux 4 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (2) - stop',
+    'original_name': 'Timer Aux 4 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux4b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_all_entities[time.neopool_timer_aux4_2_stop-state]
+# name: test_all_entities[time.neopool_timer_aux_4_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_2_stop',
+    'entity_id': 'time.neopool_timer_aux_4_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
@@ -1599,7 +1599,7 @@
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_1_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1613,7 +1613,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_1_start',
+    'entity_id': 'time.neopool_timer_aux_1_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1621,35 +1621,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (1) - start',
+    'object_id_base': 'Timer Aux 1 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (1) - start',
+    'original_name': 'Timer Aux 1 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux1_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_1_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_1_start',
+    'entity_id': 'time.neopool_timer_aux_1_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_1_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1663,7 +1663,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_1_stop',
+    'entity_id': 'time.neopool_timer_aux_1_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1671,35 +1671,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (1) - stop',
+    'object_id_base': 'Timer Aux 1 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (1) - stop',
+    'original_name': 'Timer Aux 1 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux1_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_1_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_1_stop',
+    'entity_id': 'time.neopool_timer_aux_1_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_2_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1713,7 +1713,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_2_start',
+    'entity_id': 'time.neopool_timer_aux_1_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1721,35 +1721,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (2) - start',
+    'object_id_base': 'Timer Aux 1 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (2) - start',
+    'original_name': 'Timer Aux 1 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux1b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_2_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_2_start',
+    'entity_id': 'time.neopool_timer_aux_1_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_2_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1763,7 +1763,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux1_2_stop',
+    'entity_id': 'time.neopool_timer_aux_1_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1771,35 +1771,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux1 (2) - stop',
+    'object_id_base': 'Timer Aux 1 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux1 (2) - stop',
+    'original_name': 'Timer Aux 1 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux1b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux1b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux1_2_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_1_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux1 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 1 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux1_2_stop',
+    'entity_id': 'time.neopool_timer_aux_1_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_1_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1813,7 +1813,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_1_start',
+    'entity_id': 'time.neopool_timer_aux_2_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1821,35 +1821,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (1) - start',
+    'object_id_base': 'Timer Aux 2 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (1) - start',
+    'original_name': 'Timer Aux 2 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux2_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_1_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_1_start',
+    'entity_id': 'time.neopool_timer_aux_2_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_1_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1863,7 +1863,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_1_stop',
+    'entity_id': 'time.neopool_timer_aux_2_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1871,35 +1871,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (1) - stop',
+    'object_id_base': 'Timer Aux 2 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (1) - stop',
+    'original_name': 'Timer Aux 2 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux2_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_1_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_1_stop',
+    'entity_id': 'time.neopool_timer_aux_2_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_2_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1913,7 +1913,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_2_start',
+    'entity_id': 'time.neopool_timer_aux_2_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1921,35 +1921,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (2) - start',
+    'object_id_base': 'Timer Aux 2 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (2) - start',
+    'original_name': 'Timer Aux 2 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux2b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_2_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_2_start',
+    'entity_id': 'time.neopool_timer_aux_2_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_2_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -1963,7 +1963,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux2_2_stop',
+    'entity_id': 'time.neopool_timer_aux_2_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -1971,35 +1971,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux2 (2) - stop',
+    'object_id_base': 'Timer Aux 2 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux2 (2) - stop',
+    'original_name': 'Timer Aux 2 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux2b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux2b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux2_2_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_2_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux2 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 2 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux2_2_stop',
+    'entity_id': 'time.neopool_timer_aux_2_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_1_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2013,7 +2013,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_1_start',
+    'entity_id': 'time.neopool_timer_aux_3_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2021,35 +2021,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (1) - start',
+    'object_id_base': 'Timer Aux 3 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (1) - start',
+    'original_name': 'Timer Aux 3 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux3_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_1_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_1_start',
+    'entity_id': 'time.neopool_timer_aux_3_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_1_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2063,7 +2063,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_1_stop',
+    'entity_id': 'time.neopool_timer_aux_3_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2071,35 +2071,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (1) - stop',
+    'object_id_base': 'Timer Aux 3 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (1) - stop',
+    'original_name': 'Timer Aux 3 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux3_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_1_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_1_stop',
+    'entity_id': 'time.neopool_timer_aux_3_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_2_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2113,7 +2113,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_2_start',
+    'entity_id': 'time.neopool_timer_aux_3_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2121,35 +2121,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (2) - start',
+    'object_id_base': 'Timer Aux 3 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (2) - start',
+    'original_name': 'Timer Aux 3 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux3b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_2_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_2_start',
+    'entity_id': 'time.neopool_timer_aux_3_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_2_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2163,7 +2163,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux3_2_stop',
+    'entity_id': 'time.neopool_timer_aux_3_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2171,35 +2171,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux3 (2) - stop',
+    'object_id_base': 'Timer Aux 3 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux3 (2) - stop',
+    'original_name': 'Timer Aux 3 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux3b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux3b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux3_2_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_3_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux3 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 3 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux3_2_stop',
+    'entity_id': 'time.neopool_timer_aux_3_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_1_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_1_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2213,7 +2213,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_1_start',
+    'entity_id': 'time.neopool_timer_aux_4_1_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2221,35 +2221,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (1) - start',
+    'object_id_base': 'Timer Aux 4 (1) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (1) - start',
+    'original_name': 'Timer Aux 4 (1) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux4_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_1_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_1_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (1) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (1) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_1_start',
+    'entity_id': 'time.neopool_timer_aux_4_1_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_1_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_1_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2263,7 +2263,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_1_stop',
+    'entity_id': 'time.neopool_timer_aux_4_1_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2271,35 +2271,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (1) - stop',
+    'object_id_base': 'Timer Aux 4 (1) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (1) - stop',
+    'original_name': 'Timer Aux 4 (1) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux4_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_1_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_1_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (1) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (1) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_1_stop',
+    'entity_id': 'time.neopool_timer_aux_4_1_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_2_start-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_2_start-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2313,7 +2313,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_2_start',
+    'entity_id': 'time.neopool_timer_aux_4_2_start',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2321,35 +2321,35 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (2) - start',
+    'object_id_base': 'Timer Aux 4 (2) - start',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (2) - start',
+    'original_name': 'Timer Aux 4 (2) - start',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4b_start',
+    'translation_key': 'relay_aux_start',
     'unique_id': '1234567890_relay_aux4b_start',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_2_start-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_2_start-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (2) - start',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (2) - start',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_2_start',
+    'entity_id': 'time.neopool_timer_aux_4_2_start',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
     'state': 'unknown',
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_2_stop-entry]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_2_stop-entry]
   EntityRegistryEntrySnapshot({
     'aliases': list([
       None,
@@ -2363,7 +2363,7 @@
     'disabled_by': None,
     'domain': 'time',
     'entity_category': <EntityCategory.CONFIG: 'config'>,
-    'entity_id': 'time.neopool_timer_aux4_2_stop',
+    'entity_id': 'time.neopool_timer_aux_4_2_stop',
     'has_entity_name': True,
     'hidden_by': None,
     'icon': None,
@@ -2371,28 +2371,28 @@
     'labels': set({
     }),
     'name': None,
-    'object_id_base': 'Timer Aux4 (2) - stop',
+    'object_id_base': 'Timer Aux 4 (2) - stop',
     'options': dict({
     }),
     'original_device_class': None,
     'original_icon': None,
-    'original_name': 'Timer Aux4 (2) - stop',
+    'original_name': 'Timer Aux 4 (2) - stop',
     'platform': 'neopool',
     'previous_unique_id': None,
     'suggested_object_id': None,
     'supported_features': 0,
-    'translation_key': 'relay_aux4b_stop',
+    'translation_key': 'relay_aux_stop',
     'unique_id': '1234567890_relay_aux4b_stop',
     'unit_of_measurement': None,
   })
 # ---
-# name: test_setup_when_modules_absent[time.neopool_timer_aux4_2_stop-state]
+# name: test_setup_when_modules_absent[time.neopool_timer_aux_4_2_stop-state]
   StateSnapshot({
     'attributes': ReadOnlyDict({
-      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux4 (2) - stop',
+      <EntityStateAttribute.FRIENDLY_NAME: 'friendly_name'>: 'NeoPool Timer Aux 4 (2) - stop',
     }),
     'context': <ANY>,
-    'entity_id': 'time.neopool_timer_aux4_2_stop',
+    'entity_id': 'time.neopool_timer_aux_4_2_stop',
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,

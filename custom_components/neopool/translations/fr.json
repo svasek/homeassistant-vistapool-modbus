@@ -277,118 +277,6 @@
                     "900": "15 minutes"
                 }
             },
-            "relay_aux1_period": {
-                "name": "Minuteur Aux1 (1) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
-            "relay_aux1b_period": {
-                "name": "Minuteur Aux1 (2) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
-            "relay_aux2_period": {
-                "name": "Minuteur Aux2 (1) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
-            "relay_aux2b_period": {
-                "name": "Minuteur Aux2 (2) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
-            "relay_aux3_period": {
-                "name": "Minuteur Aux3 (1) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
-            "relay_aux3b_period": {
-                "name": "Minuteur Aux3 (2) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
-            "relay_aux4_period": {
-                "name": "Minuteur Aux4 (1) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
-            "relay_aux4b_period": {
-                "name": "Minuteur Aux4 (2) - Intervalle",
-                "state": {
-                    "1_day": "1 jour",
-                    "1_week": "1 semaine",
-                    "2_days": "2 jours",
-                    "2_weeks": "2 semaines",
-                    "3_days": "3 jours",
-                    "3_weeks": "3 semaines",
-                    "4_days": "4 jours",
-                    "4_weeks": "4 semaines",
-                    "5_days": "5 jours"
-                }
-            },
             "relay_light_mode": {
                 "name": "Mode lumière",
                 "state": {
@@ -426,6 +314,20 @@
                     "auto_linked": "Automatique (lié)",
                     "disabled": "Désactivé",
                     "manual": "Manuel"
+                }
+            },
+            "relay_aux_period": {
+                "name": "Minuteur Aux {number} ({subtimer}) - Intervalle",
+                "state": {
+                    "1_day": "1 jour",
+                    "1_week": "1 semaine",
+                    "2_days": "2 jours",
+                    "2_weeks": "2 semaines",
+                    "3_days": "3 jours",
+                    "3_weeks": "3 semaines",
+                    "4_days": "4 jours",
+                    "4_weeks": "4 semaines",
+                    "5_days": "5 jours"
                 }
             }
         },
@@ -582,54 +484,6 @@
             }
         },
         "time": {
-            "relay_aux1_start": {
-                "name": "Minuteur Aux1 (1) - Démarrage"
-            },
-            "relay_aux1_stop": {
-                "name": "Minuteur Aux1 (1) - Arrêt"
-            },
-            "relay_aux1b_start": {
-                "name": "Minuteur Aux1 (2) - Démarrage"
-            },
-            "relay_aux1b_stop": {
-                "name": "Minuteur Aux1 (2) - Arrêt"
-            },
-            "relay_aux2_start": {
-                "name": "Minuteur Aux2 (1) - Démarrage"
-            },
-            "relay_aux2_stop": {
-                "name": "Minuteur Aux2 (1) - Arrêt"
-            },
-            "relay_aux2b_start": {
-                "name": "Minuteur Aux2 (2) - Démarrage"
-            },
-            "relay_aux2b_stop": {
-                "name": "Minuteur Aux2 (2) - Arrêt"
-            },
-            "relay_aux3_start": {
-                "name": "Minuteur Aux3 (1) - Démarrage"
-            },
-            "relay_aux3_stop": {
-                "name": "Minuteur Aux3 (1) - Arrêt"
-            },
-            "relay_aux3b_start": {
-                "name": "Minuteur Aux3 (2) - Démarrage"
-            },
-            "relay_aux3b_stop": {
-                "name": "Minuteur Aux3 (2) - Arrêt"
-            },
-            "relay_aux4_start": {
-                "name": "Minuteur Aux4 (1) - Démarrage"
-            },
-            "relay_aux4_stop": {
-                "name": "Minuteur Aux4 (1) - Arrêt"
-            },
-            "relay_aux4b_start": {
-                "name": "Minuteur Aux4 (2) - Démarrage"
-            },
-            "relay_aux4b_stop": {
-                "name": "Minuteur Aux4 (2) - Arrêt"
-            },
             "relay_light_start": {
                 "name": "Minuteur Lumière - Démarrage"
             },
@@ -641,6 +495,12 @@
             },
             "filtration_stop": {
                 "name": "Minuteur {number} - Fin de filtration"
+            },
+            "relay_aux_start": {
+                "name": "Minuteur Aux {number} ({subtimer}) - Démarrage"
+            },
+            "relay_aux_stop": {
+                "name": "Minuteur Aux {number} ({subtimer}) - Arrêt"
             }
         }
     },
