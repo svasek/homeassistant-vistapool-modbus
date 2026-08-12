@@ -19,7 +19,6 @@ from custom_components.neopool.const import (
     CONF_DEV_OVERRIDES_ENABLED,
     CONF_MODBUS_FRAMER,
     CONF_UNIT_ID,
-    CONF_WINTER_MODE,
     CURRENT_VERSION,
     DOMAIN,
 )
@@ -81,14 +80,16 @@ async def test_transient_modbus_failure_after_first_success_marks_unavailable(
 @pytest.mark.usefixtures("mock_neopool_client")
 async def test_winter_mode_skips_modbus(
     hass: HomeAssistant,
+    mock_neopool_client: MagicMock,
 ) -> None:
-    """When winter_mode is on we never call async_read_all on subsequent updates."""
+    """When winter mode is on we never call async_read_all, even on manual refresh."""
     snapshot = {"MBF_PAR_FILT_GPIO": 1, "MBF_PAR_LIGHTING_GPIO": 2}
     entry = MockConfigEntry(
         domain=DOMAIN,
         title="Winter Pool",
         unique_id="neopool_winter",
         version=CURRENT_VERSION,
+        pref_disable_polling=True,
         data={
             "host": "192.0.2.5",
             "port": 502,
@@ -98,12 +99,17 @@ async def test_winter_mode_skips_modbus(
         },
         options={
             CONF_MODBUS_FRAMER: "tcp",
-            CONF_WINTER_MODE: True,
             CONF_CAPABILITIES: snapshot,
         },
     )
     await setup_integration(hass, entry)
     assert entry.state is ConfigEntryState.LOADED
+    assert mock_neopool_client.async_read_all.await_count == 0
+
+    # A manual refresh must still no-op against the disconnected controller.
+    await entry.runtime_data.async_refresh()
+    await hass.async_block_till_done()
+    assert mock_neopool_client.async_read_all.await_count == 0
 
 
 # ---------------------------------------------------------------------------
