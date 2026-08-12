@@ -1,5 +1,21 @@
 # Changelog
 
+## [6.7.0](https://github.com/svasek/homeassistant-neopool-modbus/compare/v6.6.0...v6.7.0) (2026-08-12)
+
+
+### 🐛 Bug Fixes
+
+* **switch:** 🐛 stop gating high-temp shutdown on cover sensor option ([#243](https://github.com/svasek/homeassistant-neopool-modbus/issues/243)) ([6cda1bd](https://github.com/svasek/homeassistant-neopool-modbus/commit/6cda1bdcd29cfbb1a51038f3ad781f4550d0e64a))
+
+
+### ♻️ Refactoring
+
+* ♻️ collapse numbered entity names via translation placeholders ([#249](https://github.com/svasek/homeassistant-neopool-modbus/issues/249)) ([77e0926](https://github.com/svasek/homeassistant-neopool-modbus/commit/77e0926b6dc93d7ee8e3ce2ce6f4b2ba862568a2))
+* **button:** ♻️ simplify press handlers and gating test ([#248](https://github.com/svasek/homeassistant-neopool-modbus/issues/248)) ([56df7cd](https://github.com/svasek/homeassistant-neopool-modbus/commit/56df7cdf854c2a41639bd45f205e42480167f964))
+* **helpers:** ♻️ require hass in prepare_device_time ([d0082c9](https://github.com/svasek/homeassistant-neopool-modbus/commit/d0082c9b2abd1baadaf7961e726590d4db463709))
+* **switch:** ♻️ back winter mode with native pref_disable_polling ([#247](https://github.com/svasek/homeassistant-neopool-modbus/issues/247)) ([c64ae4f](https://github.com/svasek/homeassistant-neopool-modbus/commit/c64ae4fede72539d307910e7f761476fe254b2bd))
+* **time:** ♻️ write timers directly via the client ([#245](https://github.com/svasek/homeassistant-neopool-modbus/issues/245)) ([6f367cb](https://github.com/svasek/homeassistant-neopool-modbus/commit/6f367cb5bcae45996cfbf6090a4aa5cff678423d))
+
 ## [6.6.0](https://github.com/svasek/homeassistant-neopool-modbus/compare/v6.5.1...v6.6.0) (2026-07-24)
 
 
