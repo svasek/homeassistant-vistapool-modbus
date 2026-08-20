@@ -23,7 +23,7 @@ from homeassistant.core import HomeAssistant
 
 from .coordinator import NeoPoolConfigEntry
 
-TO_REDACT = {"password", "token", "host", "port"}
+TO_REDACT = {"password", "token", "host", "port", "MBF_PAR_SERNUM"}
 
 
 async def async_get_config_entry_diagnostics(
@@ -53,8 +53,7 @@ async def async_get_config_entry_diagnostics(
 
     diagnostics["coordinator"] = {
         "last_update_success": getattr(coordinator, "last_update_success", None),
-        "last_update_time": str(getattr(coordinator, "last_update_time", None)),
-        "data": getattr(coordinator, "data", {}),
+        "data": async_redact_data(getattr(coordinator, "data", {}), TO_REDACT),
         "update_interval": str(getattr(coordinator, "update_interval", None)),
         "last_exception": str(getattr(coordinator, "last_exception", "")),
         "firmware": parse_version(

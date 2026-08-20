@@ -29,19 +29,29 @@ async def test_entry_diagnostics(
         hass, hass_client, mock_config_entry_timers
     )
 
-    # Properties that legitimately vary between test runs (timestamps,
-    # generated entry IDs, mock object identity) are excluded from the
-    # snapshot, what we care about is the stable shape of the payload
-    # plus the host/port redaction.
+    # Properties that legitimately vary between test runs (generated
+    # entry IDs, mock object identity) are excluded from the snapshot,
+    # what we care about is the stable shape of the payload plus the
+    # host/port/serial redaction.
     assert result == snapshot(
         exclude=props(
             "created_at",
             "modified_at",
             "entry_id",
-            "last_update_time",
             "update_interval",
         )
     )
+
+
+@pytest.mark.usefixtures("mock_neopool_client")
+async def test_entry_diagnostics_redacts_serial_in_data(
+    hass: HomeAssistant,
+    mock_config_entry_timers: MockConfigEntry,
+) -> None:
+    """MBF_PAR_SERNUM is the device serial; ensure it is redacted in data."""
+    await setup_integration(hass, mock_config_entry_timers)
+    result = await async_get_config_entry_diagnostics(hass, mock_config_entry_timers)
+    assert result["coordinator"]["data"]["MBF_PAR_SERNUM"] == "**REDACTED**"
 
 
 async def test_entry_diagnostics_without_runtime_data(
