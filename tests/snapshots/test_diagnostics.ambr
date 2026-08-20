@@ -122,7 +122,7 @@
         'relay_aux4_enable': 4,
       }),
       'firmware': '18.52',
-      'last_exception': 'None',
+      'last_exception': None,
       'last_update_success': True,
     }),
   })
