@@ -100,7 +100,7 @@
         'MBF_PAR_PH_BASE_RELAY_GPIO': 5,
         'MBF_PAR_RELAY_PH': 0,
         'MBF_PAR_RX_RELAY_GPIO': 6,
-        'MBF_PAR_SERNUM': 1234567890,
+        'MBF_PAR_SERNUM': '**REDACTED**',
         'MBF_PAR_TEMPERATURE_ACTIVE': 1,
         'MBF_PAR_UICFG_MACHINE': 0,
         'MBF_PAR_UV_RELAY_GPIO': 1,
@@ -122,7 +122,7 @@
         'relay_aux4_enable': 4,
       }),
       'firmware': '18.52',
-      'last_exception': 'None',
+      'last_exception': None,
       'last_update_success': True,
     }),
   })
