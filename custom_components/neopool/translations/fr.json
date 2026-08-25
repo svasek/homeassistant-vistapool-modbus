@@ -151,7 +151,7 @@
                 "name": "Effacer les messages d'erreur"
             },
             "reset_cell_partial": {
-                "name": "Réinitialiser le compteur de fonctionnement de la cellule"
+                "name": "Réinitialiser les compteurs de fonctionnement partiel"
             },
             "sync_time": {
                 "name": "Synchroniser l’heure de l’appareil"
