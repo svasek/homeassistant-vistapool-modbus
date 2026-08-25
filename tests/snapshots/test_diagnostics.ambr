@@ -5,7 +5,7 @@
       'data': dict({
         'host': '**REDACTED**',
         'modbus_framer': 'tcp',
-        'name': 'Pool',
+        'name': '**REDACTED**',
         'port': '**REDACTED**',
         'unit_id': 1,
       }),
@@ -124,6 +124,7 @@
       'firmware': '18.52',
       'last_exception': None,
       'last_update_success': True,
+      'update_interval': '0:00:20',
     }),
   })
 # ---
