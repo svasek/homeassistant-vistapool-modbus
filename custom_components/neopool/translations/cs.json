@@ -611,7 +611,7 @@
                     "use_aux2": "Vytvoří přepínač a entity časovačů pro tento pomocný reléový výstup.",
                     "use_aux3": "Vytvoří přepínač a entity časovačů pro tento pomocný reléový výstup.",
                     "use_aux4": "Vytvoří přepínač a entity časovačů pro tento pomocný reléový výstup.",
-                    "use_cover_sensor": "Vytvoří binární senzor a povolí entity související se zakrytím (redukce hydrolýzy, teplotní limit).",
+                    "use_cover_sensor": "Vytvoří binární senzor a povolí přepínač redukce hydrolýzy při zakrytí.",
                     "use_filtration1": "Vytvoří entity časovačů pro konfiguraci automatického plánu filtrace.",
                     "use_filtration2": "Vytvoří entity časovačů pro konfiguraci automatického plánu filtrace.",
                     "use_filtration3": "Vytvoří entity časovačů pro konfiguraci automatického plánu filtrace.",

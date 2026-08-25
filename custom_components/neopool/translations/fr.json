@@ -611,7 +611,7 @@
                     "use_aux2": "Crée des entités d'interrupteur et de minuterie pour cette sortie relais auxiliaire.",
                     "use_aux3": "Crée des entités d'interrupteur et de minuterie pour cette sortie relais auxiliaire.",
                     "use_aux4": "Crée des entités d'interrupteur et de minuterie pour cette sortie relais auxiliaire.",
-                    "use_cover_sensor": "Crée un capteur binaire et active les entités liées à la couverture (réduction d'hydrolyse, température d'arrêt).",
+                    "use_cover_sensor": "Crée un capteur binaire et active l'interrupteur de réduction d'hydrolyse lorsque la piscine est couverte.",
                     "use_filtration1": "Crée des entités de minuterie pour configurer le programme automatique de filtration.",
                     "use_filtration2": "Crée des entités de minuterie pour configurer le programme automatique de filtration.",
                     "use_filtration3": "Crée des entités de minuterie pour configurer le programme automatique de filtration.",

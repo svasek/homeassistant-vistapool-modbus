@@ -611,7 +611,7 @@
                     "use_aux2": "Crea entidades de interruptor y temporizador para esta salida de relé auxiliar.",
                     "use_aux3": "Crea entidades de interruptor y temporizador para esta salida de relé auxiliar.",
                     "use_aux4": "Crea entidades de interruptor y temporizador para esta salida de relé auxiliar.",
-                    "use_cover_sensor": "Crea un sensor binario y habilita entidades relacionadas con la cubierta (reducción de hidrólisis, temperatura de apagado).",
+                    "use_cover_sensor": "Crea un sensor binario y habilita el interruptor de reducción de hidrólisis con cubierta.",
                     "use_filtration1": "Crea entidades de temporizador para configurar el horario automático de filtración.",
                     "use_filtration2": "Crea entidades de temporizador para configurar el horario automático de filtración.",
                     "use_filtration3": "Crea entidades de temporizador para configurar el horario automático de filtración.",
