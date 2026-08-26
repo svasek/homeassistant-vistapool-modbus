@@ -151,7 +151,7 @@
                 "name": "Borrar mensajes de error"
             },
             "reset_cell_partial": {
-                "name": "Reiniciar contador de tiempo de uso de la celda"
+                "name": "Reiniciar contadores de tiempo de uso parcial"
             },
             "sync_time": {
                 "name": "Sincronizar hora del dispositivo"

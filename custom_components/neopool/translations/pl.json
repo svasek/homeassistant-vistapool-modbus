@@ -151,7 +151,7 @@
                 "name": "Wyczyść komunikaty o błędach"
             },
             "reset_cell_partial": {
-                "name": "Wyzeruj licznik czasu pracy ogniwa"
+                "name": "Wyzeruj liczniki częściowego czasu pracy"
             },
             "sync_time": {
                 "name": "Synchronizuj czas urządzenia"

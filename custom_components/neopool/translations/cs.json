@@ -151,7 +151,7 @@
                 "name": "Vymazat chybová hlášení"
             },
             "reset_cell_partial": {
-                "name": "Vynulovat čítač doby běhu komory"
+                "name": "Vynulovat čítače dílčí doby běhu"
             },
             "sync_time": {
                 "name": "Synchronizovat čas zařízení"

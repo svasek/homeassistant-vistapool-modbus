@@ -151,7 +151,7 @@
                 "name": "Cancella messaggi di errore"
             },
             "reset_cell_partial": {
-                "name": "Azzera contatore di funzionamento cella"
+                "name": "Azzera contatori di funzionamento parziale"
             },
             "sync_time": {
                 "name": "Sincronizza orario dispositivo"

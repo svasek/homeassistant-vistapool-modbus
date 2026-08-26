@@ -151,7 +151,7 @@
                 "name": "Fehlermeldungen löschen"
             },
             "reset_cell_partial": {
-                "name": "Zellenlaufzeit-Zähler zurücksetzen"
+                "name": "Teillaufzeit-Zähler zurücksetzen"
             },
             "sync_time": {
                 "name": "Gerätezeit synchronisieren"
