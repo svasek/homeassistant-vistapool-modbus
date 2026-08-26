@@ -94,6 +94,15 @@ class NeoPoolConfigFlow(ConfigFlow, domain=DOMAIN):
 
     VERSION = CURRENT_VERSION
 
+    @staticmethod
+    @callback
+    @override
+    def async_get_options_flow(
+        config_entry: NeoPoolConfigEntry,
+    ) -> "NeoPoolOptionsFlowHandler":
+        """Return the options flow handler."""
+        return NeoPoolOptionsFlowHandler()
+
     @override
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -170,18 +179,12 @@ class NeoPoolConfigFlow(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Handle reconfiguration of an existing entry."""
-        entry_id = self.context.get("entry_id")
-        if entry_id is None:
-            return self.async_abort(reason="entry_not_found")
-        entry = self.hass.config_entries.async_get_entry(entry_id)
-        if entry is None:
-            return self.async_abort(reason="entry_not_found")
-
+        entry = self._get_reconfigure_entry()
         current = entry.data
 
         data_schema = vol.Schema(
             {
-                vol.Required(CONF_HOST, default=current.get(CONF_HOST, "")): str,
+                vol.Required(CONF_HOST, default=current[CONF_HOST]): str,
                 vol.Optional(
                     CONF_PORT, default=current.get(CONF_PORT, DEFAULT_PORT)
                 ): vol.Coerce(int),
@@ -209,18 +212,11 @@ class NeoPoolConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reconfigure",
-            data_schema=data_schema,
+            data_schema=self.add_suggested_values_to_schema(
+                data_schema, user_input or current
+            ),
             errors=errors,
         )
-
-    @staticmethod
-    @callback
-    @override
-    def async_get_options_flow(
-        config_entry: NeoPoolConfigEntry,
-    ) -> "NeoPoolOptionsFlowHandler":
-        """Return the options flow."""
-        return NeoPoolOptionsFlowHandler()
 
 
 class NeoPoolOptionsFlowHandler(OptionsFlowWithReload):

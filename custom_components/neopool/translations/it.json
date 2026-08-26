@@ -2,7 +2,6 @@
     "config": {
         "abort": {
             "already_configured": "Il dispositivo è già configurato",
-            "entry_not_found": "Voce di integrazione non trovata.",
             "migration_complete": "Migration completed successfully. Your VistaPool integration was moved to the new NeoPool domain. Please **restart Home Assistant** to clean up the old integration loaded in memory.",
             "migration_failed": "Migration failed: {error}\n\nCheck the Home Assistant logs and report the issue on GitHub. The legacy VistaPool integration is unaffected and continues to work.",
             "reconfigure_successful": "La riconfigurazione è andata a buon fine"
