@@ -163,13 +163,6 @@ MOCK_POOL_DATA: dict[str, Any] = {
     "MBF_PAR_HIDRO_COVER_ENABLE": 0x0000,
     # Pool cover sensor binary (1 = pool covered, 0 = uncovered).
     "Pool Cover": 0,
-    # Timer-block enable mirrors so aux relay-timer entities report the
-    # correct state (3 = always ON, 4 = always OFF, 1 = auto). The light
-    # timer enable is seeded per-test by the light suite.
-    "relay_aux1_enable": 4,
-    "relay_aux2_enable": 4,
-    "relay_aux3_enable": 4,
-    "relay_aux4_enable": 4,
     # Cell-runtime 32-bit counters (lib 3.1.3+ collapses LOW/HIGH pairs).
     # Total = 0x0001_0000 s = 65536 s; Partial = 0x0000_0E10 s = 3600 s (1 hour);
     # Pol1/Pol2 split the partial roughly in half; pol-changes count = 7.
@@ -179,6 +172,43 @@ MOCK_POOL_DATA: dict[str, Any] = {
     "CELL_RUNTIME_POLB": 0x00000708,
     "CELL_RUNTIME_POL_CHANGES": 0x00000007,
 }
+
+
+# Aux relay timer blocks default to a manual (ALWAYS_OFF) mode so switch writes
+# pass the manual-mode guard; tests override the returned mode per case. Every
+# field consumed by the coordinator is present (enable/on/interval/period/
+# countdown/stop) so the derived data keys resolve for real timer polling.
+def _timer_block(enable: int = 4) -> dict[str, Any]:
+    """Return a full timer block dict for the mock read_all_timers."""
+    return {
+        "enable": enable,
+        "on": 0,
+        "interval": 0,
+        "period": 0,
+        "countdown": 0,
+        "stop": None,
+    }
+
+
+MOCK_TIMER_BLOCKS: dict[str, dict[str, Any]] = {
+    "relay_aux1": _timer_block(),
+    "relay_aux2": _timer_block(),
+    "relay_aux3": _timer_block(),
+    "relay_aux4": _timer_block(),
+}
+
+
+def _read_all_timers(
+    enabled_timers: list[str] | None = None, **_kwargs: Any
+) -> dict[str, dict[str, Any]]:
+    """Return the requested timer blocks, mirroring the library contract."""
+    if enabled_timers is None:
+        return {name: dict(block) for name, block in MOCK_TIMER_BLOCKS.items()}
+    return {
+        name: dict(MOCK_TIMER_BLOCKS[name])
+        for name in enabled_timers
+        if name in MOCK_TIMER_BLOCKS
+    }
 
 
 @pytest.fixture
@@ -353,7 +383,7 @@ def mock_neopool_client() -> Generator[MagicMock]:
     ):
         mock_client = mock_client_cls.return_value
         mock_client.async_read_all = AsyncMock(return_value=dict(MOCK_POOL_DATA))
-        mock_client.read_all_timers = AsyncMock(return_value={})
+        mock_client.read_all_timers = AsyncMock(side_effect=_read_all_timers)
         mock_client.connection_stats = {
             "host": MOCK_HOST,
             "port": MOCK_PORT,

@@ -399,10 +399,18 @@ async def test_timer_period_options_and_current_option(
     mock_neopool_client: MagicMock,
 ) -> None:
     """timer_period select reads options + current_option from coordinator data."""
-    # Pre-set the relay_aux1_period to a known PERIOD_MAP value (1 day).
-    mock_neopool_client.async_read_all.return_value = {
-        **MOCK_POOL_DATA,
-        "relay_aux1_period": 86400,
+    # Pre-set the relay_aux1 timer period to a known PERIOD_MAP value (1 day)
+    # via the timer read, mirroring how the coordinator derives the key.
+    mock_neopool_client.read_all_timers.side_effect = None
+    mock_neopool_client.read_all_timers.return_value = {
+        "relay_aux1": {
+            "enable": 4,
+            "on": 0,
+            "interval": 0,
+            "period": 86400,
+            "countdown": 0,
+            "stop": None,
+        }
     }
     await setup_integration(hass, mock_config_entry_timers)
 

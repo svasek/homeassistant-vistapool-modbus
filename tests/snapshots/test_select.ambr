@@ -1929,7 +1929,7 @@
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
-    'state': 'unknown',
+    'state': 'manual',
   })
 # ---
 # name: test_setup_when_modules_absent[select.neopool_relay_aux_2_mode-entry]
@@ -1988,7 +1988,7 @@
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
-    'state': 'unknown',
+    'state': 'manual',
   })
 # ---
 # name: test_setup_when_modules_absent[select.neopool_relay_aux_3_mode-entry]
@@ -2047,7 +2047,7 @@
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
-    'state': 'unknown',
+    'state': 'manual',
   })
 # ---
 # name: test_setup_when_modules_absent[select.neopool_relay_aux_4_mode-entry]
@@ -2106,7 +2106,7 @@
     'last_changed': <ANY>,
     'last_reported': <ANY>,
     'last_updated': <ANY>,
-    'state': 'unknown',
+    'state': 'manual',
   })
 # ---
 # name: test_setup_when_modules_absent[select.neopool_timer_aux_1_1_interval-entry]
