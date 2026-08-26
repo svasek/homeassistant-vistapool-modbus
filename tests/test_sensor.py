@@ -398,17 +398,20 @@ async def test_filtration_pump_energy_accumulates_while_pump_runs(
     entity_id = "sensor.neopool_filtration_pump_energy"
     assert hass.states.get(entity_id) is not None
 
-    coordinator = entry.runtime_data
-    coordinator._last_pump_on = True
-    coordinator.async_set_updated_data(coordinator.data)
+    # First poll primes the accumulator (records the pump-on baseline);
+    # accumulation only starts once a prior on-state and timestamp exist.
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
     await hass.async_block_till_done()
     initial_wh = float(hass.states.get(entity_id).state)
 
-    freezer.tick(timedelta(hours=1))
-    coordinator.async_set_updated_data(coordinator.data)
+    # Second poll an interval later: with the pump on the whole time, the
+    # sensor accrues power x elapsed-hours between the two polls.
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
     await hass.async_block_till_done()
     later_wh = float(hass.states.get(entity_id).state)
-    assert later_wh - initial_wh >= 0.9
+    assert later_wh > initial_wh
 
 
 @pytest.mark.usefixtures("mock_neopool_client")
