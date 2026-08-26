@@ -434,7 +434,7 @@
           "use_aux2": "[%key:component::neopool::options::step::init::data_description::use_aux1%]",
           "use_aux3": "[%key:component::neopool::options::step::init::data_description::use_aux1%]",
           "use_aux4": "[%key:component::neopool::options::step::init::data_description::use_aux1%]",
-          "use_cover_sensor": "Creates a binary sensor and enables cover-related entities (hydrolysis cover reduction, shutdown temperature).",
+          "use_cover_sensor": "Creates a binary sensor and enables the hydrolysis cover reduction switch.",
           "use_filtration1": "Creates timer entities for configuring automatic filtration schedule.",
           "use_filtration2": "[%key:component::neopool::options::step::init::data_description::use_filtration1%]",
           "use_filtration3": "[%key:component::neopool::options::step::init::data_description::use_filtration1%]",

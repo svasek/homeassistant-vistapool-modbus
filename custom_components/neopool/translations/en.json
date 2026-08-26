@@ -611,7 +611,7 @@
                     "use_aux2": "Creates switch and timer entities for this auxiliary relay output.",
                     "use_aux3": "Creates switch and timer entities for this auxiliary relay output.",
                     "use_aux4": "Creates switch and timer entities for this auxiliary relay output.",
-                    "use_cover_sensor": "Creates a binary sensor and enables cover-related entities (hydrolysis cover reduction, shutdown temperature).",
+                    "use_cover_sensor": "Creates a binary sensor and enables the hydrolysis cover reduction switch.",
                     "use_filtration1": "Creates timer entities for configuring automatic filtration schedule.",
                     "use_filtration2": "Creates timer entities for configuring automatic filtration schedule.",
                     "use_filtration3": "Creates timer entities for configuring automatic filtration schedule.",

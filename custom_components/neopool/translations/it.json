@@ -611,7 +611,7 @@
                     "use_aux2": "Crea entità interruttore e timer per questa uscita relè ausiliaria.",
                     "use_aux3": "Crea entità interruttore e timer per questa uscita relè ausiliaria.",
                     "use_aux4": "Crea entità interruttore e timer per questa uscita relè ausiliaria.",
-                    "use_cover_sensor": "Crea un sensore binario e abilita le entità relative alla copertura (riduzione idrolisi, temperatura di spegnimento).",
+                    "use_cover_sensor": "Crea un sensore binario e abilita l'interruttore di riduzione idrolisi con copertura.",
                     "use_filtration1": "Crea entità timer per configurare la programmazione automatica della filtrazione.",
                     "use_filtration2": "Crea entità timer per configurare la programmazione automatica della filtrazione.",
                     "use_filtration3": "Crea entità timer per configurare la programmazione automatica della filtrazione.",

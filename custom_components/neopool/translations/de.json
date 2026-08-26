@@ -611,7 +611,7 @@
                     "use_aux2": "Erstellt Schalter- und Timer-Entitäten für diesen Hilfsrelais-Ausgang.",
                     "use_aux3": "Erstellt Schalter- und Timer-Entitäten für diesen Hilfsrelais-Ausgang.",
                     "use_aux4": "Erstellt Schalter- und Timer-Entitäten für diesen Hilfsrelais-Ausgang.",
-                    "use_cover_sensor": "Erstellt einen Binärsensor und aktiviert abdeckungsbezogene Entitäten (Hydrolyse-Reduzierung, Abschalttemperatur).",
+                    "use_cover_sensor": "Erstellt einen Binärsensor und aktiviert den Schalter zur Hydrolyse-Reduzierung bei Abdeckung.",
                     "use_filtration1": "Erstellt Timer-Entitäten zur Konfiguration des automatischen Filterplans.",
                     "use_filtration2": "Erstellt Timer-Entitäten zur Konfiguration des automatischen Filterplans.",
                     "use_filtration3": "Erstellt Timer-Entitäten zur Konfiguration des automatischen Filterplans.",
