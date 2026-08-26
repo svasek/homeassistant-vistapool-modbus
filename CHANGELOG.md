@@ -1,5 +1,20 @@
 # Changelog
 
+## [6.7.1](https://github.com/svasek/homeassistant-neopool-modbus/compare/v6.7.0...v6.7.1) (2026-08-26)
+
+
+### 🐛 Bug Fixes
+
+* **button:** 🐛 broaden reset counters label and gating ([#257](https://github.com/svasek/homeassistant-neopool-modbus/issues/257)) ([67c6e6a](https://github.com/svasek/homeassistant-neopool-modbus/commit/67c6e6a9ce0784d4017a351fd079b73371963938))
+* **diagnostics:** 🔒️ prevent host/port and serial leaks ([#250](https://github.com/svasek/homeassistant-neopool-modbus/issues/250)) ([782ef11](https://github.com/svasek/homeassistant-neopool-modbus/commit/782ef112f32f6612d9619ddebb5b1669492441fe))
+* **icons:** 🩹 collapse aux1-4 icon keys into single aux key ([#255](https://github.com/svasek/homeassistant-neopool-modbus/issues/255)) ([9452643](https://github.com/svasek/homeassistant-neopool-modbus/commit/9452643ffea746d0083b856b7048fb8c658f3b78))
+* **switch:** 🐛 gate manual filtration on a valid filtration relay GPIO ([#258](https://github.com/svasek/homeassistant-neopool-modbus/issues/258)) ([aa4a79c](https://github.com/svasek/homeassistant-neopool-modbus/commit/aa4a79cf66ab7701eda6b628564337c4cfe842bf))
+
+
+### ♻️ Refactoring
+
+* **diagnostics:** ♻️ drop defensive getattr and redundant tests ([#254](https://github.com/svasek/homeassistant-neopool-modbus/issues/254)) ([58f770e](https://github.com/svasek/homeassistant-neopool-modbus/commit/58f770eef865b8fe328f39395bc515878cfb497c))
+
 ## [6.7.0](https://github.com/svasek/homeassistant-neopool-modbus/compare/v6.6.0...v6.7.0) (2026-08-12)
 
 
