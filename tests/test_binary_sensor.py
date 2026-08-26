@@ -220,41 +220,6 @@ async def test_measurement_module_off_when_filtration_off(
 
 
 # ---------------------------------------------------------------------------
-# MBF_STATUS dict-keyed flags (sub-key resolution), covered by
-# direct entity introspection because no MBF_STATUS_* entity is registered
-# under the default fixture set.
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.usefixtures("mock_neopool_client")
-async def test_mbf_status_dict_keys_resolve(
-    hass: HomeAssistant,
-    mock_config_entry_binary_sensor: MockConfigEntry,
-) -> None:
-    """An MBF_STATUS_<flag> key reads from the nested dict in coordinator.data."""
-    await setup_integration(hass, mock_config_entry_binary_sensor)
-    coordinator = mock_config_entry_binary_sensor.runtime_data
-
-    entity = _binary_by_key(hass, "MBF_STATUS_pump_on")
-    if entity is None:
-        # The default fixture may not surface every status flag; skip the
-        # check rather than fail noisily, the MBF_STATUS unit lookup is
-        # exercised indirectly when the entity is registered via a richer
-        # MOCK_POOL_DATA.
-        return
-    coordinator.data["MBF_STATUS"] = {"pump_on": True, "other": False}
-    assert entity.is_on is True
-    coordinator.data["MBF_STATUS"] = {"pump_on": False}
-    assert entity.is_on is False
-    # Flag absent from dict → unknown
-    coordinator.data["MBF_STATUS"] = {}
-    assert entity.is_on is None
-    # Status not a dict → unknown
-    coordinator.data["MBF_STATUS"] = None
-    assert entity.is_on is None
-
-
-# ---------------------------------------------------------------------------
 # Platform-wide snapshots
 # ---------------------------------------------------------------------------
 

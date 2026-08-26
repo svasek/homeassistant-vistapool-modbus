@@ -326,71 +326,64 @@ async def test_cell_boost_active_redox_writes_composite_value(
     mock_neopool_client.async_set_cell_boost.assert_awaited_once_with("active_redox")
 
 
-@pytest.mark.usefixtures("entity_registry_enabled_by_default", "mock_neopool_client")
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        (0, "inactive"),
+        (0x8000, "active"),  # redox control disabled
+        (0x0500 | 0x00A0, "active_redox"),  # both bit groups set, 0x8000 clear
+        (0x1234, "inactive"),  # fallback: arbitrary value
+    ],
+)
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
 async def test_cell_boost_current_option_decodes_register_bits(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+    raw: int,
+    expected: str,
 ) -> None:
     """current_option for MBF_CELL_BOOST decodes the register bit pattern."""
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_CELL_BOOST": raw,
+    }
     await setup_integration(hass, mock_config_entry_timers)
-    coordinator = mock_config_entry_timers.runtime_data
 
-    entity_obj = None
-    for platforms in ep.async_get_platforms(hass, "neopool"):
-        for ent in platforms.entities.values():
-            if (
-                ent.entity_id.startswith("select.")
-                and getattr(ent, "key", None) == "MBF_CELL_BOOST"
-            ):
-                entity_obj = ent
-                break
-        if entity_obj is not None:
-            break
-    assert entity_obj is not None
-
-    # 0 → "inactive"
-    coordinator.data["MBF_CELL_BOOST"] = 0
-    assert entity_obj.current_option == "inactive"
-    # bit 0x8000 set → "active" (redox control disabled)
-    coordinator.data["MBF_CELL_BOOST"] = 0x8000
-    assert entity_obj.current_option == "active"
-    # 0x0500 | 0x00A0 (both bit groups set, 0x8000 not set) → "active_redox"
-    coordinator.data["MBF_CELL_BOOST"] = 0x0500 | 0x00A0
-    assert entity_obj.current_option == "active_redox"
-    # Fallback: arbitrary value → "inactive"
-    coordinator.data["MBF_CELL_BOOST"] = 0x1234
-    assert entity_obj.current_option == "inactive"
+    entity_id = _select_entity_id(hass, mock_config_entry_timers, "mbf_cell_boost")
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert state.state == expected
 
 
-@pytest.mark.usefixtures("mock_neopool_client")
 async def test_relay_mode_current_option_handles_disabled_state(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
+    mock_neopool_client: MagicMock,
 ) -> None:
     """Verify the disabled-state branch of a relay_mode select.
 
     The options list adds 'disabled' when enable=0, and current_option
     returns 'disabled' for that state.
     """
-
+    mock_neopool_client.read_all_timers.side_effect = None
+    mock_neopool_client.read_all_timers.return_value = {
+        "relay_aux1": {
+            "enable": 0,  # disabled
+            "on": 0,
+            "interval": 0,
+            "period": 0,
+            "countdown": 0,
+            "stop": None,
+        }
+    }
     await setup_integration(hass, mock_config_entry_timers)
-    coordinator = mock_config_entry_timers.runtime_data
-    coordinator.data["relay_aux1_enable"] = 0  # disabled
 
-    entity_obj = None
-    for platforms in ep.async_get_platforms(hass, "neopool"):
-        for ent in platforms.entities.values():
-            if (
-                ent.entity_id.startswith("select.")
-                and getattr(ent, "key", None) == "relay_aux1_mode"
-            ):
-                entity_obj = ent
-                break
-        if entity_obj is not None:
-            break
-    assert entity_obj is not None
-    assert "disabled" in entity_obj.options
-    assert entity_obj.current_option == "disabled"
+    entity_id = _select_entity_id(hass, mock_config_entry_timers, "relay_aux1_mode")
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert "disabled" in state.attributes["options"]
+    assert state.state == "disabled"
 
 
 async def test_timer_period_options_and_current_option(
@@ -433,29 +426,23 @@ async def test_timer_period_options_and_current_option(
     assert "1_week" in entity_obj.options
 
 
-@pytest.mark.usefixtures("entity_registry_enabled_by_default", "mock_neopool_client")
+@pytest.mark.usefixtures("entity_registry_enabled_by_default")
 async def test_cell_boost_options_drop_active_redox_when_no_redox_module(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
+    mock_neopool_client: MagicMock,
 ) -> None:
     """Without the Redox module flag, the cell-boost options drop 'active_redox'."""
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "Redox measurement module detected": False,
+    }
     await setup_integration(hass, mock_config_entry_timers)
-    coordinator = mock_config_entry_timers.runtime_data
-    coordinator.data["Redox measurement module detected"] = False
 
-    entity_obj = None
-    for platforms in ep.async_get_platforms(hass, "neopool"):
-        for ent in platforms.entities.values():
-            if (
-                ent.entity_id.startswith("select.")
-                and getattr(ent, "key", None) == "MBF_CELL_BOOST"
-            ):
-                entity_obj = ent
-                break
-        if entity_obj is not None:
-            break
-    assert entity_obj is not None
-    assert "active_redox" not in entity_obj.options
+    entity_id = _select_entity_id(hass, mock_config_entry_timers, "mbf_cell_boost")
+    state = hass.states.get(entity_id)
+    assert state is not None
+    assert "active_redox" not in state.attributes["options"]
 
 
 # ---------------------------------------------------------------------------
@@ -469,11 +456,8 @@ async def test_filtration_speed_packs_into_filtration_conf(
     mock_neopool_client: MagicMock,
 ) -> None:
     """Selecting a speed delegates to the lib's async_set_filtration_speed."""
+    # MOCK_POOL_DATA seeds MBF_PAR_FILTRATION_CONF = 1 (variable-speed pump).
     await setup_integration(hass, mock_config_entry_timers)
-    coordinator = mock_config_entry_timers.runtime_data
-    coordinator.data["MBF_PAR_FILTRATION_CONF"] = 0
-    coordinator.async_set_updated_data(coordinator.data)
-    await hass.async_block_till_done()
 
     entity_id = _select_entity_id(
         hass, mock_config_entry_timers, "mbf_par_filtration_speed"
@@ -489,11 +473,11 @@ async def test_filtration_speed_raises_when_not_manual_mode(
     mock_neopool_client: MagicMock,
 ) -> None:
     """Changing filtration speed raises ServiceValidationError outside manual mode."""
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_FILT_MODE": 1,  # auto
+    }
     await setup_integration(hass, mock_config_entry_timers)
-    coordinator = mock_config_entry_timers.runtime_data
-    coordinator.data["MBF_PAR_FILT_MODE"] = 1  # auto
-    coordinator.async_set_updated_data(coordinator.data)
-    await hass.async_block_till_done()
 
     entity_id = _select_entity_id(
         hass, mock_config_entry_timers, "mbf_par_filtration_speed"
@@ -505,26 +489,28 @@ async def test_filtration_speed_raises_when_not_manual_mode(
 
 
 @pytest.mark.parametrize(
-    ("raw", "expected"),
+    ("speed_bits", "expected"),
     [
         (0x0000, "low"),
         (0x0010, "mid"),
         (0x0020, "high"),
     ],
 )
-@pytest.mark.usefixtures("mock_neopool_client")
 async def test_filtration_speed_current_option_decodes_filtration_conf(
     hass: HomeAssistant,
     mock_config_entry_timers: MockConfigEntry,
-    raw: int,
+    mock_neopool_client: MagicMock,
+    speed_bits: int,
     expected: str,
 ) -> None:
     """Current option decodes bits 4-6 of MBF_PAR_FILTRATION_CONF to a speed label."""
+    # Low nibble bit 0 marks a variable-speed pump so the entity registers;
+    # bits 4-6 carry the speed the decoder reads.
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_FILTRATION_CONF": speed_bits | 0x0001,
+    }
     await setup_integration(hass, mock_config_entry_timers)
-    coordinator = mock_config_entry_timers.runtime_data
-    coordinator.data["MBF_PAR_FILTRATION_CONF"] = raw
-    coordinator.async_set_updated_data(coordinator.data)
-    await hass.async_block_till_done()
 
     entity_id = _select_entity_id(
         hass, mock_config_entry_timers, "mbf_par_filtration_speed"
@@ -579,11 +565,18 @@ async def test_relay_mode_manual_to_manual_is_noop(
     mock_neopool_client: MagicMock,
 ) -> None:
     """Selecting 'manual' when the relay already is in a manual state does not write."""
+    mock_neopool_client.read_all_timers.side_effect = None
+    mock_neopool_client.read_all_timers.return_value = {
+        "relay_aux1": {
+            "enable": 3,  # ALWAYS_ON = manual on
+            "on": 0,
+            "interval": 0,
+            "period": 0,
+            "countdown": 0,
+            "stop": None,
+        }
+    }
     await setup_integration(hass, mock_config_entry_timers)
-    coordinator = mock_config_entry_timers.runtime_data
-    coordinator.data["relay_aux1_enable"] = 3  # ALWAYS_ON = manual on
-    coordinator.async_set_updated_data(coordinator.data)
-    await hass.async_block_till_done()
 
     entity_id = _select_entity_id(hass, mock_config_entry_timers, "relay_aux1_mode")
     mock_neopool_client.async_set_relay_mode = AsyncMock(return_value={})
