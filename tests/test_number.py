@@ -5,6 +5,7 @@ from datetime import timedelta
 from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
+from freezegun.api import FrozenDateTimeFactory
 from neopool_modbus.exceptions import NeoPoolConnectionError
 from neopool_modbus.registers import MaskedFlag, SetpointKind
 import pytest
@@ -20,7 +21,7 @@ from homeassistant.components.number import (
     DOMAIN as NUMBER_DOMAIN,
     SERVICE_SET_VALUE,
 )
-from homeassistant.const import Platform
+from homeassistant.const import PERCENTAGE, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform as ep, entity_registry as er
 
@@ -234,19 +235,35 @@ async def test_number_native_value_returns_rounded_raw(
     assert entity_obj.native_value == 7.55
 
 
-async def test_hidro_native_value_in_percent_mode(
+@pytest.mark.parametrize(
+    ("visual_style", "expected_unit", "expected_step", "expected_precision"),
+    [
+        pytest.param(0x4000, PERCENTAGE, 1.0, 0, id="percent"),
+        pytest.param(0x2000, "g/h", 0.1, 1, id="grh"),
+    ],
+)
+async def test_hidro_native_value_units_follow_visual_style(
     hass: HomeAssistant,
     mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
-    freezer,
+    freezer: FrozenDateTimeFactory,
+    visual_style: int,
+    expected_unit: str,
+    expected_step: float,
+    expected_precision: int,
 ) -> None:
-    """MBF_PAR_HIDRO with hidro_nom set surfaces it as native_max_value."""
+    """MBF_PAR_HIDRO unit, step and precision follow the reported percent/g-h mode.
 
+    ``MBF_PAR_UICFG_MACH_VISUAL_STYLE`` forces percentage (0x4000) or g/h
+    (0x2000); the nominal (``MBF_PAR_HIDRO_NOM``) drives native_max_value in
+    both modes.
+    """
     await setup_integration(hass, mock_config_entry_number)
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
         "MBF_PAR_HIDRO_NOM": 100,
         "MBF_PAR_MODEL": 0x0002,  # has hydro
+        "MBF_PAR_UICFG_MACH_VISUAL_STYLE": visual_style,
     }
     freezer.tick(timedelta(seconds=60))
     async_fire_time_changed(hass)
@@ -266,6 +283,9 @@ async def test_hidro_native_value_in_percent_mode(
     if entity_obj is None:
         pytest.skip("MBF_PAR_HIDRO entity not registered on this fixture")
     assert entity_obj.native_max_value == 100
+    assert entity_obj.native_unit_of_measurement == expected_unit
+    assert entity_obj.native_step == expected_step
+    assert entity_obj.suggested_display_precision == expected_precision
 
 
 async def test_masked_number_native_value_decodes_via_mask_shift(
@@ -406,6 +426,94 @@ async def test_number_debounced_write_logs_communication_error(
     assert "Failed to write" in caplog.text
 
 
+async def test_repeated_set_value_cancels_pending_task(
+    hass: HomeAssistant,
+    mock_config_entry_number: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+) -> None:
+    """A second set_value cancels the first pending task; only the latest writes."""
+    mock_neopool_client.async_set_setpoint = AsyncMock(
+        return_value={"MBF_PAR_PH1": 700}
+    )
+    await setup_integration(hass, mock_config_entry_number)
+
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
+    ph1_obj = _entity_by_id(hass, ph1_entity_id)
+    ph1_obj._debounce_delay = 0.05
+
+    mock_neopool_client.async_set_setpoint.reset_mock()
+    await ph1_obj.async_set_native_value(7.0)
+    first_task = ph1_obj._pending_write_task
+    await ph1_obj.async_set_native_value(7.5)
+    assert first_task is not None
+    await hass.async_block_till_done()
+    assert first_task.cancelled()
+    await _flush_debounce(hass, ph1_obj)
+
+    mock_neopool_client.async_set_setpoint.assert_awaited_once_with(
+        SetpointKind.PH_MAX, 750
+    )
+
+
+async def test_pending_write_cancelled_on_remove(
+    hass: HomeAssistant,
+    mock_config_entry_number: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+) -> None:
+    """Removing the entity cancels an in-flight debounced write."""
+    mock_neopool_client.async_set_setpoint = AsyncMock(
+        return_value={"MBF_PAR_PH1": 750}
+    )
+    await setup_integration(hass, mock_config_entry_number)
+
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
+    ph1_obj = _entity_by_id(hass, ph1_entity_id)
+    ph1_obj._debounce_delay = 5.0  # long enough that removal beats the write
+
+    await ph1_obj.async_set_native_value(7.5)
+    task = ph1_obj._pending_write_task
+    assert task is not None and not task.done()
+
+    await ph1_obj.async_will_remove_from_hass()
+    await hass.async_block_till_done()
+    assert task.cancelled()
+    mock_neopool_client.async_set_setpoint.assert_not_awaited()
+
+
+async def test_cancelled_debounce_swallows_cancelled_error(
+    hass: HomeAssistant,
+    mock_config_entry_number: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+) -> None:
+    """Cancelling a write already inside the debounce sleep is swallowed cleanly.
+
+    The task must be running its ``asyncio.sleep`` when cancelled so the
+    ``except asyncio.CancelledError`` branch in ``_debounced_write`` handles it,
+    rather than the task being cancelled before its body starts.
+    """
+    mock_neopool_client.async_set_setpoint = AsyncMock(
+        return_value={"MBF_PAR_PH1": 750}
+    )
+    await setup_integration(hass, mock_config_entry_number)
+
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
+    ph1_obj = _entity_by_id(hass, ph1_entity_id)
+    ph1_obj._debounce_delay = 5.0
+
+    await ph1_obj.async_set_native_value(7.5)
+    task = ph1_obj._pending_write_task
+    assert task is not None
+    # Let the task reach `asyncio.sleep` before cancelling it.
+    await asyncio.sleep(0)
+    task.cancel()
+    await hass.async_block_till_done()
+
+    # CancelledError is swallowed inside the task, so it finishes normally
+    # (not in the cancelled state) and the write never fires.
+    assert task.done() and not task.cancelled()
+    mock_neopool_client.async_set_setpoint.assert_not_awaited()
+
+
 # ---------------------------------------------------------------------------
 # Platform-wide snapshots
 # ---------------------------------------------------------------------------
@@ -428,16 +536,25 @@ async def test_all_entities(
 
 async def test_setup_when_modules_absent(
     hass: HomeAssistant,
-    snapshot: SnapshotAssertion,
     entity_registry: er.EntityRegistry,
     mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
     minimal_pool_data: dict[str, Any],
 ) -> None:
-    """Snapshot the number entities registered when no modules are present."""
+    """No number entities register when no modules are present.
+
+    Every number is gated on a module or relay, so a controller reporting
+    none registers nothing. In particular the cover-reduction number must
+    not appear without a hydrolysis module.
+    """
     mock_neopool_client.async_read_all.return_value = minimal_pool_data
     with patch("custom_components.neopool.PLATFORMS", [Platform.NUMBER]):
         await setup_integration(hass, mock_config_entry_number)
-    await snapshot_platform(
-        hass, entity_registry, snapshot, mock_config_entry_number.entry_id
-    )
+    number_entries = [
+        e
+        for e in er.async_entries_for_config_entry(
+            entity_registry, mock_config_entry_number.entry_id
+        )
+        if e.domain == NUMBER_DOMAIN
+    ]
+    assert number_entries == []

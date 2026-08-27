@@ -27,17 +27,9 @@ from neopool_modbus.capabilities import (
     is_redox_module_present,
     is_temperature_active,
 )
-from neopool_modbus.decoders import is_hydrolysis_in_percent
+from neopool_modbus.decoders import decode_masked_flag, is_hydrolysis_in_percent
 from neopool_modbus.exceptions import NeoPoolError
-from neopool_modbus.registers import (
-    HIDRO_COVER_REDUCTION_MASK,
-    HIDRO_COVER_REDUCTION_SHIFT,
-    HIDRO_SHUTDOWN_TEMP_MASK,
-    HIDRO_SHUTDOWN_TEMP_SHIFT,
-    MaskedFlag,
-    SetpointKind,
-    is_valid_relay_gpio,
-)
+from neopool_modbus.registers import MaskedFlag, SetpointKind, is_valid_relay_gpio
 
 from homeassistant.components.number import (
     NumberDeviceClass,
@@ -62,20 +54,6 @@ from .entity import NeoPoolEntity
 _LOGGER = logging.getLogger(__name__)
 
 PARALLEL_UPDATES = 1
-
-
-# Static mask/shift table for masked-flag entities so we can decode the raw
-# register value from coordinator data without importing internal lib layout.
-_MASK_LAYOUT: dict[MaskedFlag, tuple[int, int]] = {
-    MaskedFlag.HIDRO_COVER_REDUCTION_PERCENT: (
-        HIDRO_COVER_REDUCTION_MASK,
-        HIDRO_COVER_REDUCTION_SHIFT,
-    ),
-    MaskedFlag.HIDRO_SHUTDOWN_TEMPERATURE: (
-        HIDRO_SHUTDOWN_TEMP_MASK,
-        HIDRO_SHUTDOWN_TEMP_SHIFT,
-    ),
-}
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -247,6 +225,7 @@ NUMBER_DESCRIPTIONS: dict[str, NeoPoolNumberEntityDescription] = {
         data_key="MBF_PAR_HIDRO_COVER_REDUCTION",
         scale=1.0,
         entity_category=EntityCategory.CONFIG,
+        supported_fn=is_hydrolysis_present,
     ),
     "MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE": NeoPoolNumberEntityDescription(
         key="MBF_PAR_HIDRO_SHUTDOWN_TEMPERATURE",
@@ -318,13 +297,11 @@ class NeoPoolNumber(NeoPoolEntity, NumberEntity):
         self._pending_value: float | None = None
         self._debounce_delay = 2.0
 
-    def _decode_raw(self, raw: Any) -> float | None:
-        """Decode the raw coordinator-data value, applying a mask/shift for masked flags."""
-        if raw is None:
-            return None
+    def _decode_raw(self) -> float | None:
+        """Decode the current coordinator-data value for this entity."""
         if (flag := self.entity_description.masked_flag) is not None:
-            mask, shift = _MASK_LAYOUT[flag]
-            return (int(raw) & mask) >> shift
+            return decode_masked_flag(flag, self.coordinator.data)
+        raw = self.coordinator.data.get(self._data_key)
         return raw if isinstance(raw, (int, float)) else None
 
     @override
@@ -332,7 +309,7 @@ class NeoPoolNumber(NeoPoolEntity, NumberEntity):
         """Run when the entity is added to hass."""
         await super().async_added_to_hass()
 
-        val = self._decode_raw(self.coordinator.data.get(self._data_key))
+        val = self._decode_raw()
         self._attr_native_value = (
             round(val, 2) if isinstance(val, (int, float)) else None
         )
@@ -340,12 +317,17 @@ class NeoPoolNumber(NeoPoolEntity, NumberEntity):
         self.async_write_ha_state()
 
     @override
+    async def async_will_remove_from_hass(self) -> None:
+        """Cancel any pending debounced write when the entity is removed."""
+        if self._pending_write_task is not None and not self._pending_write_task.done():
+            self._pending_write_task.cancel()
+        await super().async_will_remove_from_hass()
+
+    @override
     async def async_set_native_value(self, value: float) -> None:
         """Set the native value of the number entity."""
         self._pending_value = value
-        if (
-            self._pending_write_task is not None and not self._pending_write_task.done()
-        ):  # pragma: no cover
+        if self._pending_write_task is not None and not self._pending_write_task.done():
             self._pending_write_task.cancel()
         self._pending_write_task = asyncio.create_task(self._debounced_write())
         # Show the pending value optimistically. Write happens after debounce.
@@ -373,7 +355,7 @@ class NeoPoolNumber(NeoPoolEntity, NumberEntity):
                 {**self.coordinator.data, **overrides}
             )
             await self.coordinator.async_request_refresh()
-        except asyncio.CancelledError:  # pragma: no cover
+        except asyncio.CancelledError:
             pass
         except (NeoPoolError, OSError, TimeoutError) as err:
             # Background write: log and drop; the next poll restores state.
@@ -390,10 +372,8 @@ class NeoPoolNumber(NeoPoolEntity, NumberEntity):
     @override
     def native_value(self) -> float | None:
         """Return the actual number value."""
-        raw = self._decode_raw(self.coordinator.data.get(self._data_key))
-        if (
-            self.suggested_display_precision == 0 and raw is not None
-        ):  # pragma: no cover
+        raw = self._decode_raw()
+        if self.suggested_display_precision == 0 and raw is not None:
             return float(round(raw))
         if raw is None:
             return self._attr_native_value
