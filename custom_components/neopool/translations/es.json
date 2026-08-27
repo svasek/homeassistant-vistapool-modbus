@@ -2,15 +2,14 @@
     "config": {
         "abort": {
             "already_configured": "El dispositivo ya está configurado",
-            "entry_not_found": "No se encontró la entrada de integración.",
             "migration_complete": "Migration completed successfully. Your VistaPool integration was moved to the new NeoPool domain. Please **restart Home Assistant** to clean up the old integration loaded in memory.",
             "migration_failed": "Migration failed: {error}\n\nCheck the Home Assistant logs and report the issue on GitHub. The legacy VistaPool integration is unaffected and continues to work.",
-            "reconfigure_successful": "La reconfiguración se realizó correctamente"
+            "reconfigure_successful": "La reconfiguración se realizó correctamente",
+            "serial_mismatch": "El dispositivo en esta dirección tiene un número de serie diferente al configurado originalmente."
         },
         "error": {
             "cannot_connect": "Error al conectar",
-            "cannot_read_modbus": "Conectado, pero no se puede leer del dispositivo Modbus. Verifique el ID de unidad y la configuración del marco.",
-            "serial_mismatch": "El dispositivo en esta dirección tiene un número de serie diferente al configurado originalmente."
+            "cannot_read_modbus": "Conectado, pero no se puede leer del dispositivo Modbus. Verifique el ID de unidad y la configuración del marco."
         },
         "step": {
             "import_from_vistapool": {

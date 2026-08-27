@@ -37,11 +37,9 @@ FOLLOW_UP_REFRESH_DELAY = 2.0  # seconds  (delay before a 2nd refresh for IO ent
 DEFAULT_PORT = 502
 DEFAULT_UNIT_ID = 1
 
-# Config-entry data keys (connection settings).
 CONF_UNIT_ID = "unit_id"
 CONF_MODBUS_FRAMER = "modbus_framer"
 
-# Options-flow keys.
 CONF_FILTRATION_PUMP_POWER = "filtration_pump_power"
 CONF_MEASURE_WHEN_FILTRATION_OFF = "measure_when_filtration_off"
 CONF_USE_FILTRATION1 = "use_filtration1"
