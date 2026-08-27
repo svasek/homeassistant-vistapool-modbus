@@ -249,8 +249,8 @@ async def test_reconfigure_flow_serial_mismatch(
                 CONF_MODBUS_FRAMER: "tcp",
             },
         )
-    assert result["type"] is FlowResultType.FORM
-    assert result["errors"] == {CONF_HOST: "serial_mismatch"}
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "serial_mismatch"
 
 
 async def test_async_get_options_flow_returns_handler() -> None:
