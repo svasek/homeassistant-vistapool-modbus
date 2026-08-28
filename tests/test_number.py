@@ -59,15 +59,7 @@ async def _set_value(hass: HomeAssistant, entity_id: str, value: float) -> None:
 
 
 def _disable_debounce(hass: HomeAssistant) -> None:
-    """Set `_debounce_delay = 0` on every number entity for this run.
-
-    The production code uses `asyncio.sleep(_debounce_delay)` (defaults to
-    2 s) before writing the register, so a normal test would block for
-    that long. Setting the delay to zero lets the write happen on the
-    next event-loop iteration without waiting on a real-time clock.
-    `freezer.tick + async_fire_time_changed` doesn't help here because
-    `asyncio.sleep` runs on the event-loop wall clock, not HA's scheduler.
-    """
+    """Set ``_debounce_delay = 0`` on every number entity so writes run at once."""
     for platforms in ep.async_get_platforms(hass, "neopool"):
         for ent in platforms.entities.values():
             if ent.entity_id.startswith("number."):
@@ -168,6 +160,66 @@ async def test_scaled_setpoint_optimistic_value_is_ui_scaled(
     assert ph1_obj.native_value == 7.5
 
 
+async def test_pending_value_shown_optimistically_before_write(
+    hass: HomeAssistant,
+    mock_config_entry_number: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+) -> None:
+    """native_value surfaces the pending value while the debounce is in flight.
+
+    Until the debounced write merges the override, the coordinator still holds
+    the old register. The entity must report the requested value optimistically
+    so the UI does not snap back to the stale reading.
+    """
+    mock_neopool_client.async_set_setpoint = AsyncMock(
+        return_value={"MBF_PAR_PH1": 750}
+    )
+    await setup_integration(hass, mock_config_entry_number)
+
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
+    ph1_obj = _entity_by_id(hass, ph1_entity_id)
+    ph1_obj._debounce_delay = 5.0  # keep the write pending
+
+    await ph1_obj.async_set_native_value(7.5)
+    task = ph1_obj._pending_write_task
+    assert task is not None and not task.done()
+
+    # Write has not landed yet, but native_value already reflects the request.
+    assert ph1_obj.native_value == 7.5
+    mock_neopool_client.async_set_setpoint.assert_not_awaited()
+
+    task.cancel()
+    await hass.async_block_till_done()
+
+
+async def test_scaled_write_rounds_to_nearest_register_int(
+    hass: HomeAssistant,
+    mock_config_entry_number: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+) -> None:
+    """The scaled register value is rounded, not truncated.
+
+    Regression guard: ``4.1 * 100`` evaluates to ``409.999...`` in float, so a
+    plain ``int()`` would write 409. The write must round to 410.
+    """
+    mock_neopool_client.async_set_setpoint = AsyncMock(
+        return_value={"MBF_PAR_PH1": 410}
+    )
+    await setup_integration(hass, mock_config_entry_number)
+    _disable_debounce(hass)
+
+    ph1_entity_id = _number_entity_id(hass, mock_config_entry_number, "mbf_par_ph1")
+    ph1_obj = _entity_by_id(hass, ph1_entity_id)
+
+    mock_neopool_client.async_set_setpoint.reset_mock()
+    await _set_value(hass, ph1_entity_id, 4.1)
+    await _flush_debounce(hass, ph1_obj)
+
+    mock_neopool_client.async_set_setpoint.assert_awaited_once_with(
+        SetpointKind.PH_MAX, 410
+    )
+
+
 async def test_heating_setpoint_mirrors_to_intelligent(
     hass: HomeAssistant,
     mock_config_entry_number: MockConfigEntry,
@@ -233,6 +285,40 @@ async def test_number_native_value_returns_rounded_raw(
     if entity_obj is None:
         pytest.skip("MBF_PAR_PH1 number entity not registered")
     assert entity_obj.native_value == 7.55
+
+
+async def test_native_value_zero_precision_rounds_to_int(
+    hass: HomeAssistant,
+    mock_config_entry_number: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A zero-precision entity rounds its coordinator value to a whole number."""
+    await setup_integration(hass, mock_config_entry_number)
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_HEATING_TEMP": 27.6,
+    }
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    entity_obj = None
+    for platforms in ep.async_get_platforms(hass, "neopool"):
+        for ent in platforms.entities.values():
+            if (
+                ent.entity_id.startswith("number.")
+                and getattr(ent.entity_description, "key", None)
+                == "MBF_PAR_HEATING_TEMP"
+            ):
+                entity_obj = ent
+                break
+        if entity_obj is not None:
+            break
+    if entity_obj is None:
+        pytest.skip("MBF_PAR_HEATING_TEMP number entity not registered")
+    assert entity_obj.suggested_display_precision == 0
+    assert entity_obj.native_value == 28.0
 
 
 @pytest.mark.parametrize(
@@ -460,7 +546,7 @@ async def test_pending_write_cancelled_on_remove(
     mock_config_entry_number: MockConfigEntry,
     mock_neopool_client: MagicMock,
 ) -> None:
-    """Removing the entity cancels an in-flight debounced write."""
+    """Removing the entity cancels and awaits an in-flight debounced write."""
     mock_neopool_client.async_set_setpoint = AsyncMock(
         return_value={"MBF_PAR_PH1": 750}
     )
@@ -475,8 +561,9 @@ async def test_pending_write_cancelled_on_remove(
     assert task is not None and not task.done()
 
     await ph1_obj.async_will_remove_from_hass()
-    await hass.async_block_till_done()
-    assert task.cancelled()
+    # The write is cancelled mid-sleep; CancelledError is swallowed inside the
+    # task so it finishes done (not in the cancelled state) and never writes.
+    assert task.done()
     mock_neopool_client.async_set_setpoint.assert_not_awaited()
 
 
@@ -512,11 +599,6 @@ async def test_cancelled_debounce_swallows_cancelled_error(
     # (not in the cancelled state) and the write never fires.
     assert task.done() and not task.cancelled()
     mock_neopool_client.async_set_setpoint.assert_not_awaited()
-
-
-# ---------------------------------------------------------------------------
-# Platform-wide snapshots
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.usefixtures("mock_neopool_client")
