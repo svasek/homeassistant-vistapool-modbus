@@ -153,6 +153,14 @@ MOCK_POOL_DATA: dict[str, Any] = {
     "ION in Pol2": False,
     "ION in dead time": False,
     "Filtration Pump": False,
+    # Measurement / module "active" bits. The controller keeps measuring the
+    # probes regardless of filtration state, so these read True even though the
+    # filtration pump above is off.
+    "pH measurement active": True,
+    "Redox measurement active": True,
+    "Chlorine measurement active": True,
+    "Conductivity measurement active": True,
+    "HIDRO Module active": True,
     # Combined cover reduction / shutdown temperature register
     # (lower byte = cover reduction %, upper byte = shutdown temperature).
     # Pre-seeded so async_added_to_hass exercises the mask-decode path.
