@@ -152,7 +152,9 @@ MOCK_POOL_DATA: dict[str, Any] = {
     "ION in Pol1": False,
     "ION in Pol2": False,
     "ION in dead time": False,
+    # Named relay states decoded from MBF_RELAY_STATE via the GPIO mapping.
     "Filtration Pump": False,
+    "pH Acid Pump": False,
     # Measurement / module "active" bits. The controller keeps measuring the
     # probes regardless of filtration state, so these read True even though the
     # filtration pump above is off.
