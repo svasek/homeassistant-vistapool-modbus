@@ -234,6 +234,25 @@ async def test_setup_when_modules_absent(
     )
 
 
+@pytest.mark.usefixtures("entity_registry_enabled_by_default", "mock_neopool_client")
+async def test_opt_in_entities_absent_without_options(
+    hass: HomeAssistant,
+    mock_config_entry: MockConfigEntry,
+) -> None:
+    """Opt-in entities are not registered when their config option is off.
+
+    Pool Light, the four auxiliary relays, and Pool Cover are gated on an
+    integration option in addition to any capability check. With every option
+    disabled they must not register, while an ungated relay sensor still does.
+    """
+    with patch("custom_components.neopool.PLATFORMS", [Platform.BINARY_SENSOR]):
+        await setup_integration(hass, mock_config_entry)
+
+    for key in ("Pool Light", "AUX1", "AUX2", "AUX3", "AUX4", "Pool Cover"):
+        assert _binary_state(hass, mock_config_entry, key) is None
+    assert _binary_state(hass, mock_config_entry, "Filtration Pump") is not None
+
+
 @pytest.mark.usefixtures("entity_registry_enabled_by_default")
 @pytest.mark.parametrize("time_zone", ["UTC", "America/New_York"])
 async def test_device_time_drift(
