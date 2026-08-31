@@ -123,6 +123,7 @@
         'filtration_mode': 'manual',
         'filtration_pump_power': 0,
         'filtration_speed_state': 'off',
+        'pH Acid Pump': False,
         'pH acid pump active': False,
         'pH control module': True,
         'pH measurement active': True,
