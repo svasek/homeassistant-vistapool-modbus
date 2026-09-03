@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.7.2](https://github.com/svasek/homeassistant-neopool-modbus/compare/v6.7.1...v6.7.2) (2026-09-03)
+
+
+### 🐛 Bug Fixes
+
+* **config:** 🐛 harden reconfigure flow validation and input handling ([#260](https://github.com/svasek/homeassistant-neopool-modbus/issues/260)) ([86a98d1](https://github.com/svasek/homeassistant-neopool-modbus/commit/86a98d15ec42543aee1422bed1b758b2f0716812))
+
+
+### ♻️ Refactoring
+
+* **migration:** ♻️ replace deprecated device_registry lookup ([#264](https://github.com/svasek/homeassistant-neopool-modbus/issues/264)) ([1225ee9](https://github.com/svasek/homeassistant-neopool-modbus/commit/1225ee92b01a3f73679dbc40eef72ec4a3ef8088))
+
 ## [6.7.1](https://github.com/svasek/homeassistant-neopool-modbus/compare/v6.7.0...v6.7.1) (2026-08-26)
 
 
