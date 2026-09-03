@@ -2,15 +2,14 @@
     "config": {
         "abort": {
             "already_configured": "L'appareil est déjà configuré",
-            "entry_not_found": "L'entrée d'intégration est introuvable.",
             "migration_complete": "Migration completed successfully. Your VistaPool integration was moved to the new NeoPool domain. Please **restart Home Assistant** to clean up the old integration loaded in memory.",
             "migration_failed": "Migration failed: {error}\n\nCheck the Home Assistant logs and report the issue on GitHub. The legacy VistaPool integration is unaffected and continues to work.",
-            "reconfigure_successful": "La reconfiguration a réussi"
+            "reconfigure_successful": "La reconfiguration a réussi",
+            "serial_mismatch": "L'appareil à cette adresse a un numéro de série différent de celui configuré à l'origine."
         },
         "error": {
             "cannot_connect": "Échec de la connexion",
-            "cannot_read_modbus": "Connecté, mais impossible de lire le périphérique Modbus. Vérifiez l'ID d'unité et les paramètres du cadre.",
-            "serial_mismatch": "L'appareil à cette adresse a un numéro de série différent de celui configuré à l'origine."
+            "cannot_read_modbus": "Connecté, mais impossible de lire le périphérique Modbus. Vérifiez l'ID d'unité et les paramètres du cadre."
         },
         "step": {
             "import_from_vistapool": {
@@ -151,7 +150,7 @@
                 "name": "Effacer les messages d'erreur"
             },
             "reset_cell_partial": {
-                "name": "Réinitialiser le compteur de fonctionnement de la cellule"
+                "name": "Réinitialiser les compteurs de fonctionnement partiel"
             },
             "sync_time": {
                 "name": "Synchroniser l’heure de l’appareil"
@@ -611,7 +610,7 @@
                     "use_aux2": "Crée des entités d'interrupteur et de minuterie pour cette sortie relais auxiliaire.",
                     "use_aux3": "Crée des entités d'interrupteur et de minuterie pour cette sortie relais auxiliaire.",
                     "use_aux4": "Crée des entités d'interrupteur et de minuterie pour cette sortie relais auxiliaire.",
-                    "use_cover_sensor": "Crée un capteur binaire et active les entités liées à la couverture (réduction d'hydrolyse, température d'arrêt).",
+                    "use_cover_sensor": "Crée un capteur binaire et active l'interrupteur de réduction d'hydrolyse lorsque la piscine est couverte.",
                     "use_filtration1": "Crée des entités de minuterie pour configurer le programme automatique de filtration.",
                     "use_filtration2": "Crée des entités de minuterie pour configurer le programme automatique de filtration.",
                     "use_filtration3": "Crée des entités de minuterie pour configurer le programme automatique de filtration.",

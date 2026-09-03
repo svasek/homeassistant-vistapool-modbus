@@ -323,12 +323,12 @@ async def test_aux_relay_turn_on_off_writes_relay_state(
 
 
 @pytest.mark.parametrize(
-    ("aux_suffix", "enable_key"),
+    ("aux_suffix", "block"),
     [
-        ("_aux1", "relay_aux1_enable"),
-        ("_aux2", "relay_aux2_enable"),
-        ("_aux3", "relay_aux3_enable"),
-        ("_aux4", "relay_aux4_enable"),
+        ("_aux1", "relay_aux1"),
+        ("_aux2", "relay_aux2"),
+        ("_aux3", "relay_aux3"),
+        ("_aux4", "relay_aux4"),
     ],
 )
 @pytest.mark.parametrize(
@@ -346,19 +346,33 @@ async def test_aux_relay_refuses_when_not_in_manual_mode(
     mock_neopool_client: MagicMock,
     freezer: FrozenDateTimeFactory,
     aux_suffix: str,
-    enable_key: str,
+    block: str,
     enable_value: int | None,
 ) -> None:
     """Aux relay refuses to fire unless the relay is in a manual mode."""
+
+    def _timers(
+        enabled_timers: list[str] | None = None, **_kwargs: Any
+    ) -> dict[str, dict[str, Any]]:
+        # "missing" drops the block entirely, mirroring a relay whose timer
+        # was never polled; the others return a non-manual enable value.
+        if enable_value is None:
+            return {}
+        return {
+            block: {
+                "enable": enable_value,
+                "on": 0,
+                "interval": 0,
+                "period": 0,
+                "countdown": 0,
+                "stop": None,
+            }
+        }
+
+    mock_neopool_client.read_all_timers.side_effect = _timers
     await setup_integration(hass, mock_config_entry_switch)
     entity_id = _entity_id_by_suffix(hass, mock_config_entry_switch, aux_suffix)
 
-    data: dict[str, Any] = {**MOCK_POOL_DATA}
-    if enable_value is None:
-        data.pop(enable_key, None)
-    else:
-        data[enable_key] = enable_value
-    mock_neopool_client.async_read_all.return_value = data
     freezer.tick(timedelta(seconds=60))
     async_fire_time_changed(hass)
     await hass.async_block_till_done()
@@ -421,17 +435,25 @@ async def test_backwash_turn_on_starts_and_reports_on(
     hass: HomeAssistant,
     mock_config_entry: MockConfigEntry,
     mock_neopool_client: MagicMock,
+    freezer: FrozenDateTimeFactory,
 ) -> None:
-    """turn_on starts the backwash and optimistically flips is_on to ON."""
+    """turn_on starts the backwash and reports ON once the device confirms."""
     await setup_integration(hass, mock_config_entry)
     entity_id = _entity_id_by_suffix(hass, mock_config_entry, "_backwash")
 
     mock_neopool_client.async_start_backwash.reset_mock()
     await _turn_on(hass, entity_id)
-
     mock_neopool_client.async_start_backwash.assert_awaited_once_with()
-    coordinator = mock_config_entry.runtime_data
-    assert coordinator.data["MBF_PAR_FILTVALVE_REMAINING"] == 150
+
+    # The device now reports a running cycle on the next poll.
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_FILTVALVE_REMAINING": 150,
+    }
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
     assert hass.states.get(entity_id).state == STATE_ON
 
 
@@ -439,21 +461,35 @@ async def test_backwash_turn_off_stops_and_reports_off(
     hass: HomeAssistant,
     mock_config_entry: MockConfigEntry,
     mock_neopool_client: MagicMock,
+    freezer: FrozenDateTimeFactory,
 ) -> None:
-    """turn_off stops the backwash and optimistically flips is_on to OFF."""
+    """turn_off stops the backwash and reports OFF once the device confirms."""
     await setup_integration(hass, mock_config_entry)
     entity_id = _entity_id_by_suffix(hass, mock_config_entry, "_backwash")
 
-    coordinator = mock_config_entry.runtime_data
-    coordinator.data["MBF_PAR_FILTVALVE_REMAINING"] = 120
-    coordinator.async_set_updated_data(coordinator.data)
+    # Start from a running cycle reported by the device.
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_FILTVALVE_REMAINING": 120,
+    }
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
     await hass.async_block_till_done()
+    assert hass.states.get(entity_id).state == STATE_ON
 
     mock_neopool_client.async_stop_backwash.reset_mock()
     await _turn_off(hass, entity_id)
-
     mock_neopool_client.async_stop_backwash.assert_awaited_once_with()
-    assert coordinator.data["MBF_PAR_FILTVALVE_REMAINING"] == 0
+
+    # The device reports the cycle cleared on the next poll.
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_FILTVALVE_REMAINING": 0,
+    }
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
     assert hass.states.get(entity_id).state == STATE_OFF
 
 
@@ -461,14 +497,19 @@ async def test_backwash_turn_on_raises_when_interval_unset(
     hass: HomeAssistant,
     mock_config_entry: MockConfigEntry,
     mock_neopool_client: MagicMock,
+    freezer: FrozenDateTimeFactory,
 ) -> None:
     """turn_on with no configured duration raises before touching the client."""
     await setup_integration(hass, mock_config_entry)
     entity_id = _entity_id_by_suffix(hass, mock_config_entry, "_backwash")
 
-    coordinator = mock_config_entry.runtime_data
-    coordinator.data["MBF_PAR_FILTVALVE_INTERVAL"] = 0
-    coordinator.async_set_updated_data(coordinator.data)
+    # The device reports no configured duration on the next poll.
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_FILTVALVE_INTERVAL": 0,
+    }
+    freezer.tick(timedelta(seconds=60))
+    async_fire_time_changed(hass)
     await hass.async_block_till_done()
 
     mock_neopool_client.async_start_backwash.reset_mock()
@@ -571,6 +612,30 @@ async def test_backwash_absent_without_filtvalve(
             entity_registry, mock_config_entry.entry_id
         )
         if e.domain == SWITCH_DOMAIN and e.unique_id.endswith("_backwash")
+    ]
+    assert matches == []
+
+
+async def test_manual_filtration_absent_without_filt_gpio(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    mock_config_entry: MockConfigEntry,
+    mock_neopool_client: MagicMock,
+) -> None:
+    """No manual filtration switch is registered when no filtration relay exists."""
+    mock_neopool_client.async_read_all.return_value = {
+        **MOCK_POOL_DATA,
+        "MBF_PAR_FILT_GPIO": 0,
+    }
+    await setup_integration(hass, mock_config_entry)
+
+    matches = [
+        e
+        for e in er.async_entries_for_config_entry(
+            entity_registry, mock_config_entry.entry_id
+        )
+        if e.domain == SWITCH_DOMAIN
+        and e.unique_id.endswith("_mbf_par_filt_manual_state")
     ]
     assert matches == []
 

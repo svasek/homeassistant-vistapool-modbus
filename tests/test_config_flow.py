@@ -249,13 +249,8 @@ async def test_reconfigure_flow_serial_mismatch(
                 CONF_MODBUS_FRAMER: "tcp",
             },
         )
-    assert result["type"] is FlowResultType.FORM
-    assert result["errors"] == {CONF_HOST: "serial_mismatch"}
-
-
-# ---------------------------------------------------------------------------
-# Edge cases on the reconfigure step
-# ---------------------------------------------------------------------------
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "serial_mismatch"
 
 
 async def test_async_get_options_flow_returns_handler() -> None:
@@ -263,32 +258,6 @@ async def test_async_get_options_flow_returns_handler() -> None:
 
     handler = NeoPoolConfigFlow.async_get_options_flow(MagicMock())
     assert isinstance(handler, NeoPoolOptionsFlowHandler)
-
-
-async def test_reconfigure_flow_aborts_when_entry_id_missing(
-    hass: HomeAssistant,
-) -> None:
-    """async_step_reconfigure aborts when context has no entry_id."""
-
-    flow = NeoPoolConfigFlow()
-    flow.hass = hass
-    flow.context = {}  # no entry_id at all
-    result = await flow.async_step_reconfigure()
-    assert result["type"] is FlowResultType.ABORT
-    assert result["reason"] == "entry_not_found"
-
-
-async def test_reconfigure_flow_aborts_when_entry_not_found(
-    hass: HomeAssistant,
-) -> None:
-    """async_step_reconfigure aborts when the referenced entry was deleted."""
-
-    flow = NeoPoolConfigFlow()
-    flow.hass = hass
-    flow.context = {"entry_id": "nonexistent"}
-    result = await flow.async_step_reconfigure()
-    assert result["type"] is FlowResultType.ABORT
-    assert result["reason"] == "entry_not_found"
 
 
 @pytest.mark.usefixtures("mock_neopool_client")
