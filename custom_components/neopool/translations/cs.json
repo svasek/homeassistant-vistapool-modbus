@@ -469,9 +469,6 @@
             "smart_anti_freeze": {
                 "name": "Smart: protimrazová ochrana"
             },
-            "time_auto_sync": {
-                "name": "Autosynchronizace času"
-            },
             "uv_mode": {
                 "name": "UV režim"
             },
@@ -589,6 +586,7 @@
         "step": {
             "init": {
                 "data": {
+                    "auto_time_sync": "Automaticky synchronizovat čas zařízení",
                     "filtration_pump_power": "Příkon filtračního čerpadla (W, 0 = zakázáno)",
                     "measure_when_filtration_off": "Měřit hodnoty i při vypnuté filtraci",
                     "scan_interval": "Interval aktualizace dat (v sekundách)",
@@ -603,6 +601,7 @@
                     "use_light": "Povolit relé Osvětlení"
                 },
                 "data_description": {
+                    "auto_time_sync": "Pokud je zapnuto, hodiny ovladače se při každém dotazu opraví, pokud se odchýlí od času Home Assistant.",
                     "filtration_pump_power": "Zadejte jmenovitý příkon filtračního čerpadla. Při nenulové hodnotě se vytvoří dva senzory: okamžitý příkon (W) a kumulativní spotřeba energie (Wh), oba použitelné v přehledu energie.",
                     "measure_when_filtration_off": "Pokud je vypnuto, chemická měření (pH, ORP atd.) probíhají pouze při běžícím filtračním čerpadle.",
                     "scan_interval": "Nižší hodnoty zvyšují rychlost odezvy, ale generují více Modbus komunikace.",

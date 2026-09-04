@@ -180,7 +180,6 @@
         "default": "mdi:snowflake-alert",
         "state": { "on": "mdi:snowflake-melt" }
       },
-      "time_auto_sync": { "default": "mdi:home-clock-outline" },
       "uv_mode": {
         "default": "mdi:lightbulb-fluorescent-tube-outline",
         "state": {

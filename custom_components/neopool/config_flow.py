@@ -41,6 +41,7 @@ from homeassistant.helpers.selector import SelectSelector, SelectSelectorConfig
 # CUSTOM-ONLY END
 from .const import (
     CONF_ADVANCED,
+    CONF_AUTO_TIME_SYNC,
     CONF_DEV_OVERRIDES,
     CONF_DEV_OVERRIDES_ENABLED,
     CONF_FILTRATION_PUMP_POWER,
@@ -242,6 +243,10 @@ class NeoPoolOptionsFlowHandler(OptionsFlowWithReload):
             vol.Optional(
                 CONF_MEASURE_WHEN_FILTRATION_OFF,
                 default=options.get(CONF_MEASURE_WHEN_FILTRATION_OFF, False),
+            ): bool,
+            vol.Optional(
+                CONF_AUTO_TIME_SYNC,
+                default=options.get(CONF_AUTO_TIME_SYNC, False),
             ): bool,
             vol.Optional(
                 CONF_FILTRATION_PUMP_POWER,

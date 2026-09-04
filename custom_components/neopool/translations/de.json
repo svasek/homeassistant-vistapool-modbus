@@ -469,9 +469,6 @@
             "smart_anti_freeze": {
                 "name": "Smart: Frostschutz"
             },
-            "time_auto_sync": {
-                "name": "Zeit automatische Synchronisierung"
-            },
             "uv_mode": {
                 "name": "UV-Modus"
             },
@@ -589,6 +586,7 @@
         "step": {
             "init": {
                 "data": {
+                    "auto_time_sync": "Gerätezeit automatisch synchronisieren",
                     "filtration_pump_power": "Leistung der Filtrationspumpe (W, 0 = deaktiviert)",
                     "measure_when_filtration_off": "Messwerte auch bei ausgeschalteter Filterung erfassen",
                     "scan_interval": "Datenaktualisierungsintervall (Sekunden)",
@@ -603,6 +601,7 @@
                     "use_light": "Licht-Relais aktivieren"
                 },
                 "data_description": {
+                    "auto_time_sync": "Wenn aktiviert, wird die Uhr des Reglers bei jeder Abfrage korrigiert, falls sie von der Home Assistant-Zeit abweicht.",
                     "filtration_pump_power": "Geben Sie die Nennleistung der Filtrationspumpe an. Bei einem Wert ungleich null werden zwei Sensoren erstellt: momentane Leistung (W) und kumulierter Energieverbrauch (Wh), beide nutzbar im Energie-Dashboard.",
                     "measure_when_filtration_off": "Wenn deaktiviert, werden chemische Messungen (pH, ORP usw.) nur bei laufender Filterpumpe durchgeführt.",
                     "scan_interval": "Niedrigere Werte erhöhen die Reaktionsfähigkeit, erzeugen aber mehr Modbus-Verkehr.",
