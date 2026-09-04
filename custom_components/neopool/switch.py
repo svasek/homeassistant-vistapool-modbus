@@ -45,7 +45,6 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from .const import (
-    CONF_AUTO_TIME_SYNC,
     CONF_USE_AUX1,
     CONF_USE_AUX2,
     CONF_USE_AUX3,
@@ -63,8 +62,7 @@ PARALLEL_UPDATES = 1
 # client, don't participate in the winter-mode guard, and stay available even
 # while winter mode is active.
 _HA_SETTING_WINTER_MODE = CONF_WINTER_MODE
-_HA_SETTING_AUTO_TIME_SYNC = CONF_AUTO_TIME_SYNC
-_HA_SETTING_TYPES = frozenset({_HA_SETTING_WINTER_MODE, _HA_SETTING_AUTO_TIME_SYNC})
+_HA_SETTING_TYPES = frozenset({_HA_SETTING_WINTER_MODE})
 
 
 type _WriteFn = Callable[["NeoPoolSwitch", Any, bool], Awaitable[dict[str, Any]]]
@@ -199,12 +197,6 @@ SWITCH_DESCRIPTIONS: dict[str, NeoPoolSwitchEntityDescription] = {
         translation_key=CONF_WINTER_MODE,
         entity_category=EntityCategory.CONFIG,
         ha_setting=_HA_SETTING_WINTER_MODE,
-    ),
-    "TIME_AUTO_SYNC": NeoPoolSwitchEntityDescription(
-        key="TIME_AUTO_SYNC",
-        translation_key="time_auto_sync",
-        entity_category=EntityCategory.CONFIG,
-        ha_setting=_HA_SETTING_AUTO_TIME_SYNC,
     ),
     "MBF_PAR_FILT_MANUAL_STATE": NeoPoolSwitchEntityDescription(
         key="MBF_PAR_FILT_MANUAL_STATE",
@@ -388,11 +380,6 @@ class NeoPoolSwitch(NeoPoolEntity, SwitchEntity):
             # so there's nothing more to write here.
             await self.coordinator.set_winter_mode(state)
             return
-        if desc.ha_setting == _HA_SETTING_AUTO_TIME_SYNC:
-            await self.coordinator.set_auto_time_sync(state)
-            await self.coordinator.async_request_refresh()
-            self.async_write_ha_state()
-            return
 
         if (
             desc.write_fn is None
@@ -428,8 +415,6 @@ class NeoPoolSwitch(NeoPoolEntity, SwitchEntity):
         desc = self.entity_description
         if desc.is_on_fn is not None:
             return desc.is_on_fn(self.coordinator.data)
-        if desc.ha_setting == _HA_SETTING_AUTO_TIME_SYNC:
-            return getattr(self.coordinator, CONF_AUTO_TIME_SYNC, False)
         if desc.ha_setting == _HA_SETTING_WINTER_MODE:
             return self.coordinator.config_entry.pref_disable_polling
         return False  # pragma: no cover

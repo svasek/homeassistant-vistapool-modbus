@@ -469,9 +469,6 @@
             "smart_anti_freeze": {
                 "name": "Smart: antigel"
             },
-            "time_auto_sync": {
-                "name": "Synchronisation automatique de l’heure"
-            },
             "uv_mode": {
                 "name": "Mode UV"
             },
@@ -589,6 +586,7 @@
         "step": {
             "init": {
                 "data": {
+                    "auto_time_sync": "Synchroniser automatiquement l'heure de l'appareil",
                     "filtration_pump_power": "Puissance de la pompe de filtration (W, 0 = désactivé)",
                     "measure_when_filtration_off": "Mesurer les valeurs même lorsque la filtration est arrêtée",
                     "scan_interval": "Intervalle de mise à jour des données (secondes)",
@@ -603,6 +601,7 @@
                     "use_light": "Activer le relais Lumière"
                 },
                 "data_description": {
+                    "auto_time_sync": "Lorsque activé, l'horloge du contrôleur est corrigée à chaque interrogation si elle dévie de l'heure de Home Assistant.",
                     "filtration_pump_power": "Indiquez la puissance nominale de la pompe de filtration. Avec une valeur non nulle, deux capteurs sont créés : puissance instantanée (W) et énergie cumulée (Wh), tous deux utilisables dans le tableau de bord énergétique.",
                     "measure_when_filtration_off": "Lorsque désactivé, les mesures chimiques (pH, ORP, etc.) ne sont effectuées que lorsque la pompe de filtration fonctionne.",
                     "scan_interval": "Des valeurs plus basses augmentent la réactivité mais génèrent plus de trafic Modbus.",

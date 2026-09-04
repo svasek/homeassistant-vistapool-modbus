@@ -17,6 +17,7 @@ from custom_components.neopool.config_flow import (
 )
 from custom_components.neopool.const import (
     CONF_ADVANCED,
+    CONF_AUTO_TIME_SYNC,
     CONF_DEV_OVERRIDES,
     CONF_DEV_OVERRIDES_ENABLED,
     CONF_MEASURE_WHEN_FILTRATION_OFF,
@@ -296,6 +297,7 @@ async def test_options_flow_save_changes(
             CONF_USE_AUX4: False,
             "filtration_pump_power": 0,
             CONF_MEASURE_WHEN_FILTRATION_OFF: False,
+            CONF_AUTO_TIME_SYNC: True,
             # CUSTOM-ONLY START
             CONF_ADVANCED: {},
             # CUSTOM-ONLY END
@@ -305,6 +307,7 @@ async def test_options_flow_save_changes(
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert mock_config_entry.options[CONF_USE_LIGHT] is True
     assert mock_config_entry.options[CONF_USE_FILTRATION1] is False
+    assert mock_config_entry.options[CONF_AUTO_TIME_SYNC] is True
 
     # CREATE_ENTRY triggers a background reload of the config entry. Wait for
     # it to finish before the test exits so the pytest-hass fixture can unload
