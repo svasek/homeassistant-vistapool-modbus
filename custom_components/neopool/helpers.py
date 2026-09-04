@@ -50,9 +50,15 @@ def prepare_device_time(hass: HomeAssistant) -> int:
 
 
 def is_device_time_out_of_sync(
-    data: dict[str, Any], hass: HomeAssistant | None = None, threshold_seconds: int = 60
+    data: dict[str, Any],
+    hass: HomeAssistant | None = None,
+    threshold_seconds: int = 300,
 ) -> bool:
-    """Returns True if device time and HA time differ by more than threshold_seconds."""
+    """Returns True if device time and HA time differ by more than threshold_seconds.
+
+    The default is loose on purpose: correct a clock that drifted far (e.g. after
+    a power loss), not small offsets from bus latency or minute-granular RTC.
+    """
     device_dt = get_device_time(data, hass)
     if device_dt is None:
         return False

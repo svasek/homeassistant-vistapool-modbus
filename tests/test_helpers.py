@@ -108,6 +108,20 @@ def test_is_device_time_out_of_sync_no_data() -> None:
     assert is_device_time_out_of_sync({}, None, threshold_seconds=60) is False
 
 
+def test_is_device_time_out_of_sync_default_threshold() -> None:
+    """The default tolerance is loose: a drift under 5 minutes is ignored."""
+    now = int(dt_util.utcnow().timestamp())
+    data = {"MBF_PAR_TIME": now - 120}  # 2 minutes ago
+    with patch(
+        "homeassistant.util.dt.utcnow",
+        return_value=datetime.fromtimestamp(now, tz=UTC),
+    ):
+        # Under the 300 s default it is not out of sync ...
+        assert is_device_time_out_of_sync(data, None) is False
+        # ... but a tighter explicit threshold still flags it.
+        assert is_device_time_out_of_sync(data, None, threshold_seconds=60) is True
+
+
 # ---------------------------------------------------------------------------
 # has_filtvalve
 # ---------------------------------------------------------------------------
