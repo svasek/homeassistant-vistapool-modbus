@@ -111,6 +111,8 @@ REMOVED_ENTITY_KEYS: tuple[str, ...] = (
     "select.relay_aux*_stop",
     "select.relay_light_start",
     "select.relay_light_stop",
+    # time auto-sync moved from a switch to an options toggle
+    "switch.time_auto_sync",
 )
 
 

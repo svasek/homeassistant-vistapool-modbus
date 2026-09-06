@@ -469,9 +469,6 @@
             "smart_anti_freeze": {
                 "name": "Smart: antyzamarzanie"
             },
-            "time_auto_sync": {
-                "name": "Automatyczna synchronizacja czasu"
-            },
             "uv_mode": {
                 "name": "Tryb UV"
             },
@@ -589,6 +586,7 @@
         "step": {
             "init": {
                 "data": {
+                    "auto_time_sync": "Automatycznie synchronizuj czas urządzenia",
                     "filtration_pump_power": "Moc pompy filtracyjnej (W, 0 = wyłączone)",
                     "measure_when_filtration_off": "Mierz wartości nawet gdy filtracja jest wyłączona",
                     "scan_interval": "Interwał aktualizacji danych (sekundy)",
@@ -603,6 +601,7 @@
                     "use_light": "Włącz przekaźnik oświetlenia"
                 },
                 "data_description": {
+                    "auto_time_sync": "Gdy włączone, zegar sterownika jest korygowany przy każdym odpytaniu, jeśli odbiega od czasu Home Assistant.",
                     "filtration_pump_power": "Podaj nominalną moc pompy filtracyjnej. Przy wartości różnej od zera tworzone są dwa czujniki: chwilowa moc (W) i skumulowana energia (Wh), oba możliwe do użycia na panelu energetycznym.",
                     "measure_when_filtration_off": "Gdy wyłączone, pomiary chemiczne (pH, ORP itp.) są wykonywane tylko podczas pracy pompy filtracyjnej.",
                     "scan_interval": "Niższe wartości zwiększają responsywność, ale generują więcej ruchu Modbus.",

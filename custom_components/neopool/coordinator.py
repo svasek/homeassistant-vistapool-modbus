@@ -351,13 +351,6 @@ class NeoPoolCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._persist_capability_snapshot(data)
         return data
 
-    async def set_auto_time_sync(self, enabled: bool) -> None:
-        """Persist the auto_time_sync flag and refresh the entry options."""
-        self.auto_time_sync = enabled
-        options = dict(self.config_entry.options)
-        options[CONF_AUTO_TIME_SYNC] = enabled
-        self.hass.config_entries.async_update_entry(self.config_entry, options=options)
-
     async def set_winter_mode(self, enabled: bool) -> None:
         """Toggle winter mode via the native disable-polling flag.
 
