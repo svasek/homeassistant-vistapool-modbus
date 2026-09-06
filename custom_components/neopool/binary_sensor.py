@@ -69,7 +69,11 @@ def _gpio_ok(gpio_key: str) -> _SupportedFn:
 
 
 def _device_time_drift(data: dict[str, Any], hass: HomeAssistant) -> bool | None:
-    """Compute whether the device clock is out of sync with HA."""
+    """Compute whether the device clock is out of sync with HA.
+
+    Uses the helper's default tolerance (a few minutes), so only a clock that
+    drifted far, e.g. after a power loss, trips the sensor.
+    """
     if data.get("MBF_PAR_TIME") is None:
         return None
     return is_device_time_out_of_sync(data, hass)

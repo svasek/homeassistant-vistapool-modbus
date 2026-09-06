@@ -266,9 +266,9 @@ async def test_device_time_drift(
     """The drift sensor decodes MBF_PAR_TIME in the HA timezone and thresholds it.
 
     MBF_PAR_TIME is the device wall-clock encoded as naive epoch seconds. In
-    sync means the decoded clock matches HA now within a minute; a two-minute
-    offset trips the PROBLEM sensor. Both the UTC and a non-UTC timezone are
-    exercised so the tz normalisation is covered.
+    sync means the decoded clock matches HA now within the tolerance; a large
+    offset (well past the default threshold) trips the PROBLEM sensor. Both the
+    UTC and a non-UTC timezone are exercised so the tz normalisation is covered.
     """
     await hass.config.async_set_time_zone(time_zone)
     freezer.move_to("2024-01-02 08:04:05+00:00")
@@ -289,11 +289,11 @@ async def test_device_time_drift(
     assert state is not None
     assert state.state == STATE_OFF
 
-    # Device clock two minutes ahead of HA: over the 60 s threshold, so ON.
+    # Device clock ten minutes ahead of HA: well over the threshold, so ON.
     mock_neopool_client.async_read_all.return_value = {
         **MOCK_POOL_DATA,
         "MBF_PAR_TIME": encode_device_time(
-            dt_util.now(tz) + timedelta(seconds=60) + timedelta(minutes=2)
+            dt_util.now(tz) + timedelta(seconds=60) + timedelta(minutes=10)
         ),
     }
     freezer.tick(timedelta(seconds=60))
