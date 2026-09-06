@@ -472,9 +472,6 @@
             "smart_anti_freeze": {
                 "name": "Smart antifreeze"
             },
-            "time_auto_sync": {
-                "name": "Time auto sync"
-            },
             "uv_mode": {
                 "name": "UV mode"
             },
@@ -589,6 +586,7 @@
         "step": {
             "init": {
                 "data": {
+                    "auto_time_sync": "Automatically sync device clock",
                     "filtration_pump_power": "Filtration pump power (W, 0 = disabled)",
                     "measure_when_filtration_off": "Measure values even when filtration is off",
                     "scan_interval": "Data update interval (seconds)",
@@ -603,6 +601,7 @@
                     "use_light": "Enable Light Relay"
                 },
                 "data_description": {
+                    "auto_time_sync": "When enabled, the controller clock is corrected on each poll if it drifts from Home Assistant time.",
                     "filtration_pump_power": "Set the rated wattage of the filtration pump. When non-zero, two sensors are created: instantaneous power (W) and cumulative energy (Wh), both usable in the Energy dashboard.",
                     "measure_when_filtration_off": "When disabled, chemical measurements (pH, ORP, etc.) are only taken while the filtration pump is running.",
                     "scan_interval": "Lower values increase responsiveness but generate more Modbus traffic.",

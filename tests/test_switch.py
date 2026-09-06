@@ -704,7 +704,7 @@ async def test_all_entities(
 
 # CUSTOM-ONLY START
 # ---------------------------------------------------------------------------
-# winter_mode / auto_time_sync (HA-side settings, HACS-only switches)
+# winter_mode (HA-side setting, HACS-only switch)
 # ---------------------------------------------------------------------------
 
 
@@ -727,23 +727,6 @@ async def test_winter_mode_turn_on_off(
     await _turn_off(hass, entity_id)
     await hass.async_block_till_done()
     assert mock_config_entry.pref_disable_polling is False
-    assert hass.states.get(entity_id).state == STATE_OFF
-
-
-@pytest.mark.usefixtures("mock_neopool_client")
-async def test_auto_time_sync_turn_on_off(
-    hass: HomeAssistant,
-    mock_config_entry: MockConfigEntry,
-) -> None:
-    """Toggling the auto_time_sync switch flips its state."""
-    await setup_integration(hass, mock_config_entry)
-    entity_id = "switch.neopool_time_auto_sync"
-    assert hass.states.get(entity_id).state == STATE_OFF
-
-    await _turn_on(hass, entity_id)
-    assert hass.states.get(entity_id).state == STATE_ON
-
-    await _turn_off(hass, entity_id)
     assert hass.states.get(entity_id).state == STATE_OFF
 
 
