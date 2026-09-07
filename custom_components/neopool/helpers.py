@@ -49,7 +49,7 @@ def is_device_time_out_of_sync(
     far (e.g. after a power loss), not small offsets from bus latency or
     minute-granular RTC.
     """
-    device_ts = data.get("MBF_PAR_TIME")
+    device_ts: int | None = data.get("MBF_PAR_TIME")
     if device_ts is None:
         return False
     return abs(device_ts - prepare_device_time(hass)) > threshold_seconds
